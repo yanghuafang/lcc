@@ -1,0 +1,367 @@
+digraph {
+Program [label = Program]
+Program -> FuncDecl_0
+FuncDecl_0 [label = FuncDecl]
+FuncDecl_0 -> BuiltinType_1
+BuiltinType_1 [label = BuiltinType]
+"int_1" [label = "int"]
+BuiltinType_1 -> "int_1"
+printf_0[ label = printf]
+FuncDecl_0 -> printf_0
+FuncDecl_0 -> ParamList_2
+ParamList_2 [label = ParamList]
+ParamList_2 -> Param_3
+Param_3 [label = Param]
+Param_3 -> PointerType_4
+PointerType_4 [label = PointerType]
+"char*_4" [label = "char*"]
+PointerType_4 -> "char*_4"
+anonymous_3 [label = anonymous]
+Param_3 -> anonymous_3
+"..._2" [label = "..."]
+ParamList_2 -> "..._2"
+Program -> TypeDecl_5
+TypeDecl_5 [label = TypeDecl]
+TypeDecl_5 -> UnionType_6
+UnionType_6 [label = UnionType]
+"IPv4_6" [label = "IPv4"]
+UnionType_6 -> "IPv4_6"
+UnionType_6 -> FieldDecl_7
+FieldDecl_7 [label = FieldDecl]
+FieldDecl_7 -> BuiltinType_8
+BuiltinType_8 [label = BuiltinType]
+"uint_8" [label = "uint"]
+BuiltinType_8 -> "uint_8"
+ip_7 [label = ip]
+FieldDecl_7 -> ip_7
+UnionType_6 -> FieldDecl_9
+FieldDecl_9 [label = FieldDecl]
+FieldDecl_9 -> BuiltinType_10
+BuiltinType_10 [label = BuiltinType]
+"uchar_10" [label = "uchar"]
+BuiltinType_10 -> "uchar_10"
+c_9 [label = c]
+FieldDecl_9 -> c_9
+Program -> FuncDecl_11
+FuncDecl_11 [label = FuncDecl]
+FuncDecl_11 -> BuiltinType_12
+BuiltinType_12 [label = BuiltinType]
+"int_12" [label = "int"]
+BuiltinType_12 -> "int_12"
+main_11[ label = main]
+FuncDecl_11 -> main_11
+FuncDecl_11 -> ParamList_13
+ParamList_13 [label = ParamList]
+FuncDecl_11 -> FuncBody_14
+FuncBody_14 [label = FuncBody]
+FuncBody_14 -> VarDecl_15
+VarDecl_15 [label = VarDecl]
+VarDecl_15 -> BuiltinType_16
+BuiltinType_16 [label = BuiltinType]
+"int_16" [label = "int"]
+BuiltinType_16 -> "int_16"
+VarDecl_15 -> VarInit_17
+VarInit_17 [label = VarInit]
+err_17 [label = err]
+VarInit_17 -> err_17
+VarInit_17 -> Constant_18
+Constant_18 [label = Constant]
+int_18 [label = "0"]
+Constant_18 -> int_18
+FuncBody_14 -> VarDecl_19
+VarDecl_19 [label = VarDecl]
+VarDecl_19 -> DefinedType_20
+DefinedType_20 [label = DefinedType]
+"IPv4_20" [label = "IPv4"]
+DefinedType_20 -> "IPv4_20"
+VarDecl_19 -> VarInit_21
+VarInit_21 [label = VarInit]
+ipv4_21 [label = ipv4]
+VarInit_21 -> ipv4_21
+FuncBody_14 -> VarDecl_22
+VarDecl_22 [label = VarDecl]
+VarDecl_22 -> BuiltinType_23
+BuiltinType_23 [label = BuiltinType]
+"uint_23" [label = "uint"]
+BuiltinType_23 -> "uint_23"
+VarDecl_22 -> VarInit_24
+VarInit_24 [label = VarInit]
+ip_24 [label = ip]
+VarInit_24 -> ip_24
+FuncBody_14 -> VarDecl_25
+VarDecl_25 [label = VarDecl]
+VarDecl_25 -> BuiltinType_26
+BuiltinType_26 [label = BuiltinType]
+"uchar_26" [label = "uchar"]
+BuiltinType_26 -> "uchar_26"
+VarDecl_25 -> VarInit_27
+VarInit_27 [label = VarInit]
+byte_27 [label = byte]
+VarInit_27 -> byte_27
+FuncBody_14 -> Assign_28
+Assign_28 [label = Assign]
+Assign_28 -> StructRef_29
+StructRef_29 [label = StructRef]
+StructRef_29 -> Variable_30
+Variable_30 [label = Variable]
+ipv4_30 [label = ipv4]
+Variable_30 -> ipv4_30
+ip_29[ label = ip]
+StructRef_29 -> ip_29
+Assign_28 -> Constant_31
+Constant_31 [label = Constant]
+uint_31 [label = "313249076"]
+Constant_31 -> uint_31
+FuncBody_14 -> Assign_32
+Assign_32 [label = Assign]
+Assign_32 -> Variable_33
+Variable_33 [label = Variable]
+ip_33 [label = ip]
+Variable_33 -> ip_33
+Assign_32 -> StructRef_34
+StructRef_34 [label = StructRef]
+StructRef_34 -> Variable_35
+Variable_35 [label = Variable]
+ipv4_35 [label = ipv4]
+Variable_35 -> ipv4_35
+ip_34[ label = ip]
+StructRef_34 -> ip_34
+FuncBody_14 -> Assign_36
+Assign_36 [label = Assign]
+Assign_36 -> Variable_37
+Variable_37 [label = Variable]
+byte_37 [label = byte]
+Variable_37 -> byte_37
+Assign_36 -> StructRef_38
+StructRef_38 [label = StructRef]
+StructRef_38 -> Variable_39
+Variable_39 [label = Variable]
+ipv4_39 [label = ipv4]
+Variable_39 -> ipv4_39
+c_38[ label = c]
+StructRef_38 -> c_38
+FuncBody_14 -> IfStmt_40
+IfStmt_40 [label = IfStmt]
+IfStmt_40 -> LogicNotEq_41
+LogicNotEq_41 [label = LogicNotEq]
+LogicNotEq_41 -> Variable_42
+Variable_42 [label = Variable]
+ip_42 [label = ip]
+Variable_42 -> ip_42
+LogicNotEq_41 -> Constant_43
+Constant_43 [label = Constant]
+uint_43 [label = "313249076"]
+Constant_43 -> uint_43
+IfStmt_40 -> Assign_44
+Assign_44 [label = Assign]
+Assign_44 -> Variable_45
+Variable_45 [label = Variable]
+err_45 [label = err]
+Variable_45 -> err_45
+Assign_44 -> Constant_46
+Constant_46 [label = Constant]
+int_46 [label = "1"]
+Constant_46 -> int_46
+FuncBody_14 -> Assign_47
+Assign_47 [label = Assign]
+Assign_47 -> StructRef_48
+StructRef_48 [label = StructRef]
+StructRef_48 -> Variable_49
+Variable_49 [label = Variable]
+ipv4_49 [label = ipv4]
+Variable_49 -> ipv4_49
+c_48[ label = c]
+StructRef_48 -> c_48
+Assign_47 -> Constant_50
+Constant_50 [label = Constant]
+uint_50 [label = "86"]
+Constant_50 -> uint_50
+FuncBody_14 -> Assign_51
+Assign_51 [label = Assign]
+Assign_51 -> Variable_52
+Variable_52 [label = Variable]
+ip_52 [label = ip]
+Variable_52 -> ip_52
+Assign_51 -> StructRef_53
+StructRef_53 [label = StructRef]
+StructRef_53 -> Variable_54
+Variable_54 [label = Variable]
+ipv4_54 [label = ipv4]
+Variable_54 -> ipv4_54
+ip_53[ label = ip]
+StructRef_53 -> ip_53
+FuncBody_14 -> Assign_55
+Assign_55 [label = Assign]
+Assign_55 -> Variable_56
+Variable_56 [label = Variable]
+byte_56 [label = byte]
+Variable_56 -> byte_56
+Assign_55 -> StructRef_57
+StructRef_57 [label = StructRef]
+StructRef_57 -> Variable_58
+Variable_58 [label = Variable]
+ipv4_58 [label = ipv4]
+Variable_58 -> ipv4_58
+c_57[ label = c]
+StructRef_57 -> c_57
+FuncBody_14 -> IfStmt_59
+IfStmt_59 [label = IfStmt]
+IfStmt_59 -> LogicNotEq_60
+LogicNotEq_60 [label = LogicNotEq]
+LogicNotEq_60 -> Variable_61
+Variable_61 [label = Variable]
+ip_61 [label = ip]
+Variable_61 -> ip_61
+LogicNotEq_60 -> Constant_62
+Constant_62 [label = Constant]
+uint_62 [label = "313249110"]
+Constant_62 -> uint_62
+IfStmt_59 -> Assign_63
+Assign_63 [label = Assign]
+Assign_63 -> Variable_64
+Variable_64 [label = Variable]
+err_64 [label = err]
+Variable_64 -> err_64
+Assign_63 -> Constant_65
+Constant_65 [label = Constant]
+int_65 [label = "1"]
+Constant_65 -> int_65
+FuncBody_14 -> Assign_66
+Assign_66 [label = Assign]
+Assign_66 -> StructRef_67
+StructRef_67 [label = StructRef]
+StructRef_67 -> Variable_68
+Variable_68 [label = Variable]
+ipv4_68 [label = ipv4]
+Variable_68 -> ipv4_68
+ip_67[ label = ip]
+StructRef_67 -> ip_67
+Assign_66 -> Constant_69
+Constant_69 [label = Constant]
+uint_69 [label = "4294967295"]
+Constant_69 -> uint_69
+FuncBody_14 -> Assign_70
+Assign_70 [label = Assign]
+Assign_70 -> Variable_71
+Variable_71 [label = Variable]
+ip_71 [label = ip]
+Variable_71 -> ip_71
+Assign_70 -> StructRef_72
+StructRef_72 [label = StructRef]
+StructRef_72 -> Variable_73
+Variable_73 [label = Variable]
+ipv4_73 [label = ipv4]
+Variable_73 -> ipv4_73
+ip_72[ label = ip]
+StructRef_72 -> ip_72
+FuncBody_14 -> IfStmt_74
+IfStmt_74 [label = IfStmt]
+IfStmt_74 -> LogicNotEq_75
+LogicNotEq_75 [label = LogicNotEq]
+LogicNotEq_75 -> Variable_76
+Variable_76 [label = Variable]
+ip_76 [label = ip]
+Variable_76 -> ip_76
+LogicNotEq_75 -> Constant_77
+Constant_77 [label = Constant]
+uint_77 [label = "4294967295"]
+Constant_77 -> uint_77
+IfStmt_74 -> Assign_78
+Assign_78 [label = Assign]
+Assign_78 -> Variable_79
+Variable_79 [label = Variable]
+err_79 [label = err]
+Variable_79 -> err_79
+Assign_78 -> Constant_80
+Constant_80 [label = Constant]
+int_80 [label = "1"]
+Constant_80 -> int_80
+FuncBody_14 -> Assign_81
+Assign_81 [label = Assign]
+Assign_81 -> StructRef_82
+StructRef_82 [label = StructRef]
+StructRef_82 -> Variable_83
+Variable_83 [label = Variable]
+ipv4_83 [label = ipv4]
+Variable_83 -> ipv4_83
+c_82[ label = c]
+StructRef_82 -> c_82
+Assign_81 -> Constant_84
+Constant_84 [label = Constant]
+int_84 [label = "0"]
+Constant_84 -> int_84
+FuncBody_14 -> Assign_85
+Assign_85 [label = Assign]
+Assign_85 -> Variable_86
+Variable_86 [label = Variable]
+ip_86 [label = ip]
+Variable_86 -> ip_86
+Assign_85 -> StructRef_87
+StructRef_87 [label = StructRef]
+StructRef_87 -> Variable_88
+Variable_88 [label = Variable]
+ipv4_88 [label = ipv4]
+Variable_88 -> ipv4_88
+ip_87[ label = ip]
+StructRef_87 -> ip_87
+FuncBody_14 -> IfStmt_89
+IfStmt_89 [label = IfStmt]
+IfStmt_89 -> LogicNotEq_90
+LogicNotEq_90 [label = LogicNotEq]
+LogicNotEq_90 -> Variable_91
+Variable_91 [label = Variable]
+ip_91 [label = ip]
+Variable_91 -> ip_91
+LogicNotEq_90 -> Constant_92
+Constant_92 [label = Constant]
+uint_92 [label = "4294967040"]
+Constant_92 -> uint_92
+IfStmt_89 -> Assign_93
+Assign_93 [label = Assign]
+Assign_93 -> Variable_94
+Variable_94 [label = Variable]
+err_94 [label = err]
+Variable_94 -> err_94
+Assign_93 -> Constant_95
+Constant_95 [label = Constant]
+int_95 [label = "1"]
+Constant_95 -> int_95
+FuncBody_14 -> IfStmt_96
+IfStmt_96 [label = IfStmt]
+IfStmt_96 -> LogicEq_97
+LogicEq_97 [label = LogicEq]
+LogicEq_97 -> Variable_98
+Variable_98 [label = Variable]
+err_98 [label = err]
+Variable_98 -> err_98
+LogicEq_97 -> Constant_99
+Constant_99 [label = Constant]
+int_99 [label = "0"]
+Constant_99 -> int_99
+IfStmt_96 -> Block_100
+Block_100 [label = Block]
+Block_100 -> FuncCall_101
+FuncCall_101 [label = FuncCall]
+printf_101[ label = printf]
+FuncCall_101 -> printf_101
+FuncCall_101 -> ConstStr_102
+ConstStr_102 [label = ConstStr]
+str_102 [label = "3.union_type.c PASS"]
+ConstStr_102 -> str_102
+IfStmt_96 -> Block_103
+Block_103 [label = Block]
+Block_103 -> FuncCall_104
+FuncCall_104 [label = FuncCall]
+printf_104[ label = printf]
+FuncCall_104 -> printf_104
+FuncCall_104 -> ConstStr_105
+ConstStr_105 [label = ConstStr]
+str_105 [label = "3.union_type.c FAIL"]
+ConstStr_105 -> str_105
+FuncBody_14 -> ReturnStmt_106
+ReturnStmt_106 [label = ReturnStmt]
+ReturnStmt_106 -> Variable_107
+Variable_107 [label = Variable]
+err_107 [label = err]
+Variable_107 -> err_107
+}

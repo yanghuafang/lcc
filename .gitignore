@@ -1,0 +1,53 @@
+# Prerequisites
+*.d
+
+# Compiled Object files
+*.slo
+*.lo
+*.o
+*.obj
+
+# Precompiled Headers
+*.gch
+*.pch
+
+# Compiled Dynamic libraries
+*.so
+*.dylib
+*.dll
+
+# Fortran module files
+*.mod
+*.smod
+
+# Compiled Static libraries
+*.lai
+*.la
+*.a
+*.lib
+
+# Executables
+*.exe
+*.out
+*.app
+
+# macOS (Finder metadata; AppleDouble sidecars on non-APFS volumes)
+.DS_Store
+._*
+
+# Linux (KDE per-folder view; NFS silly-rename temp files)
+.directory
+.nfs*
+
+# Editor backup / swap files (vim, emacs, gedit, nano, ...)
+*~
+*.swp
+*.swo
+*.swn
+
+# clangd / language-server index cache
+.cache/
+
+# Coverage profiles from an instrumented build.
+*.profraw
+*.profdata

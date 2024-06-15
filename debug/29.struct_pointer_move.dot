@@ -1,0 +1,741 @@
+digraph {
+Program [label = Program]
+Program -> FuncDecl_0
+FuncDecl_0 [label = FuncDecl]
+FuncDecl_0 -> BuiltinType_1
+BuiltinType_1 [label = BuiltinType]
+"int_1" [label = "int"]
+BuiltinType_1 -> "int_1"
+printf_0[ label = printf]
+FuncDecl_0 -> printf_0
+FuncDecl_0 -> ParamList_2
+ParamList_2 [label = ParamList]
+ParamList_2 -> Param_3
+Param_3 [label = Param]
+Param_3 -> PointerType_4
+PointerType_4 [label = PointerType]
+"char*_4" [label = "char*"]
+PointerType_4 -> "char*_4"
+anonymous_3 [label = anonymous]
+Param_3 -> anonymous_3
+"..._2" [label = "..."]
+ParamList_2 -> "..._2"
+Program -> TypeDecl_5
+TypeDecl_5 [label = TypeDecl]
+TypeDecl_5 -> StructType_6
+StructType_6 [label = StructType]
+"Data_6" [label = "Data"]
+StructType_6 -> "Data_6"
+StructType_6 -> FieldDecl_7
+FieldDecl_7 [label = FieldDecl]
+FieldDecl_7 -> BuiltinType_8
+BuiltinType_8 [label = BuiltinType]
+"int_8" [label = "int"]
+BuiltinType_8 -> "int_8"
+id_7 [label = id]
+FieldDecl_7 -> id_7
+StructType_6 -> FieldDecl_9
+FieldDecl_9 [label = FieldDecl]
+FieldDecl_9 -> BuiltinType_10
+BuiltinType_10 [label = BuiltinType]
+"int_10" [label = "int"]
+BuiltinType_10 -> "int_10"
+data_9 [label = data]
+FieldDecl_9 -> data_9
+Program -> FuncDecl_11
+FuncDecl_11 [label = FuncDecl]
+FuncDecl_11 -> BuiltinType_12
+BuiltinType_12 [label = BuiltinType]
+"int_12" [label = "int"]
+BuiltinType_12 -> "int_12"
+main_11[ label = main]
+FuncDecl_11 -> main_11
+FuncDecl_11 -> ParamList_13
+ParamList_13 [label = ParamList]
+FuncDecl_11 -> FuncBody_14
+FuncBody_14 [label = FuncBody]
+FuncBody_14 -> VarDecl_15
+VarDecl_15 [label = VarDecl]
+VarDecl_15 -> BuiltinType_16
+BuiltinType_16 [label = BuiltinType]
+"int_16" [label = "int"]
+BuiltinType_16 -> "int_16"
+VarDecl_15 -> VarInit_17
+VarInit_17 [label = VarInit]
+err_17 [label = err]
+VarInit_17 -> err_17
+VarInit_17 -> Constant_18
+Constant_18 [label = Constant]
+int_18 [label = "0"]
+Constant_18 -> int_18
+FuncBody_14 -> VarDecl_19
+VarDecl_19 [label = VarDecl]
+VarDecl_19 -> ArrayType_20
+ArrayType_20 [label = ArrayType]
+"Data[4]_20" [label = "Data[4]"]
+ArrayType_20 -> "Data[4]_20"
+VarDecl_19 -> VarInit_21
+VarInit_21 [label = VarInit]
+data_21 [label = data]
+VarInit_21 -> data_21
+FuncBody_14 -> VarDecl_22
+VarDecl_22 [label = VarDecl]
+VarDecl_22 -> BuiltinType_23
+BuiltinType_23 [label = BuiltinType]
+"int_23" [label = "int"]
+BuiltinType_23 -> "int_23"
+VarDecl_22 -> VarInit_24
+VarInit_24 [label = VarInit]
+id_24 [label = id]
+VarInit_24 -> id_24
+FuncBody_14 -> VarDecl_25
+VarDecl_25 [label = VarDecl]
+VarDecl_25 -> BuiltinType_26
+BuiltinType_26 [label = BuiltinType]
+"int_26" [label = "int"]
+BuiltinType_26 -> "int_26"
+VarDecl_25 -> VarInit_27
+VarInit_27 [label = VarInit]
+val_27 [label = val]
+VarInit_27 -> val_27
+FuncBody_14 -> Assign_28
+Assign_28 [label = Assign]
+Assign_28 -> StructRef_29
+StructRef_29 [label = StructRef]
+StructRef_29 -> Subscript_30
+Subscript_30 [label = Subscript]
+Subscript_30 -> Variable_31
+Variable_31 [label = Variable]
+data_31 [label = data]
+Variable_31 -> data_31
+Subscript_30 -> Constant_32
+Constant_32 [label = Constant]
+int_32 [label = "0"]
+Constant_32 -> int_32
+id_29[ label = id]
+StructRef_29 -> id_29
+Assign_28 -> Constant_33
+Constant_33 [label = Constant]
+int_33 [label = "10"]
+Constant_33 -> int_33
+FuncBody_14 -> Assign_34
+Assign_34 [label = Assign]
+Assign_34 -> StructRef_35
+StructRef_35 [label = StructRef]
+StructRef_35 -> Subscript_36
+Subscript_36 [label = Subscript]
+Subscript_36 -> Variable_37
+Variable_37 [label = Variable]
+data_37 [label = data]
+Variable_37 -> data_37
+Subscript_36 -> Constant_38
+Constant_38 [label = Constant]
+int_38 [label = "0"]
+Constant_38 -> int_38
+data_35[ label = data]
+StructRef_35 -> data_35
+Assign_34 -> Constant_39
+Constant_39 [label = Constant]
+int_39 [label = "12"]
+Constant_39 -> int_39
+FuncBody_14 -> Assign_40
+Assign_40 [label = Assign]
+Assign_40 -> StructRef_41
+StructRef_41 [label = StructRef]
+StructRef_41 -> Subscript_42
+Subscript_42 [label = Subscript]
+Subscript_42 -> Variable_43
+Variable_43 [label = Variable]
+data_43 [label = data]
+Variable_43 -> data_43
+Subscript_42 -> Constant_44
+Constant_44 [label = Constant]
+int_44 [label = "1"]
+Constant_44 -> int_44
+id_41[ label = id]
+StructRef_41 -> id_41
+Assign_40 -> Constant_45
+Constant_45 [label = Constant]
+int_45 [label = "20"]
+Constant_45 -> int_45
+FuncBody_14 -> Assign_46
+Assign_46 [label = Assign]
+Assign_46 -> StructRef_47
+StructRef_47 [label = StructRef]
+StructRef_47 -> Subscript_48
+Subscript_48 [label = Subscript]
+Subscript_48 -> Variable_49
+Variable_49 [label = Variable]
+data_49 [label = data]
+Variable_49 -> data_49
+Subscript_48 -> Constant_50
+Constant_50 [label = Constant]
+int_50 [label = "1"]
+Constant_50 -> int_50
+data_47[ label = data]
+StructRef_47 -> data_47
+Assign_46 -> Constant_51
+Constant_51 [label = Constant]
+int_51 [label = "24"]
+Constant_51 -> int_51
+FuncBody_14 -> Assign_52
+Assign_52 [label = Assign]
+Assign_52 -> StructRef_53
+StructRef_53 [label = StructRef]
+StructRef_53 -> Subscript_54
+Subscript_54 [label = Subscript]
+Subscript_54 -> Variable_55
+Variable_55 [label = Variable]
+data_55 [label = data]
+Variable_55 -> data_55
+Subscript_54 -> Constant_56
+Constant_56 [label = Constant]
+int_56 [label = "2"]
+Constant_56 -> int_56
+id_53[ label = id]
+StructRef_53 -> id_53
+Assign_52 -> Constant_57
+Constant_57 [label = Constant]
+int_57 [label = "30"]
+Constant_57 -> int_57
+FuncBody_14 -> Assign_58
+Assign_58 [label = Assign]
+Assign_58 -> StructRef_59
+StructRef_59 [label = StructRef]
+StructRef_59 -> Subscript_60
+Subscript_60 [label = Subscript]
+Subscript_60 -> Variable_61
+Variable_61 [label = Variable]
+data_61 [label = data]
+Variable_61 -> data_61
+Subscript_60 -> Constant_62
+Constant_62 [label = Constant]
+int_62 [label = "2"]
+Constant_62 -> int_62
+data_59[ label = data]
+StructRef_59 -> data_59
+Assign_58 -> Constant_63
+Constant_63 [label = Constant]
+int_63 [label = "36"]
+Constant_63 -> int_63
+FuncBody_14 -> Assign_64
+Assign_64 [label = Assign]
+Assign_64 -> StructRef_65
+StructRef_65 [label = StructRef]
+StructRef_65 -> Subscript_66
+Subscript_66 [label = Subscript]
+Subscript_66 -> Variable_67
+Variable_67 [label = Variable]
+data_67 [label = data]
+Variable_67 -> data_67
+Subscript_66 -> Constant_68
+Constant_68 [label = Constant]
+int_68 [label = "3"]
+Constant_68 -> int_68
+id_65[ label = id]
+StructRef_65 -> id_65
+Assign_64 -> Constant_69
+Constant_69 [label = Constant]
+int_69 [label = "40"]
+Constant_69 -> int_69
+FuncBody_14 -> Assign_70
+Assign_70 [label = Assign]
+Assign_70 -> StructRef_71
+StructRef_71 [label = StructRef]
+StructRef_71 -> Subscript_72
+Subscript_72 [label = Subscript]
+Subscript_72 -> Variable_73
+Variable_73 [label = Variable]
+data_73 [label = data]
+Variable_73 -> data_73
+Subscript_72 -> Constant_74
+Constant_74 [label = Constant]
+int_74 [label = "3"]
+Constant_74 -> int_74
+data_71[ label = data]
+StructRef_71 -> data_71
+Assign_70 -> Constant_75
+Constant_75 [label = Constant]
+int_75 [label = "48"]
+Constant_75 -> int_75
+FuncBody_14 -> VarDecl_76
+VarDecl_76 [label = VarDecl]
+VarDecl_76 -> PointerType_77
+PointerType_77 [label = PointerType]
+"Data*_77" [label = "Data*"]
+PointerType_77 -> "Data*_77"
+VarDecl_76 -> VarInit_78
+VarInit_78 [label = VarInit]
+p_78 [label = p]
+VarInit_78 -> p_78
+VarInit_78 -> Variable_79
+Variable_79 [label = Variable]
+data_79 [label = data]
+Variable_79 -> data_79
+FuncBody_14 -> Assign_80
+Assign_80 [label = Assign]
+Assign_80 -> Variable_81
+Variable_81 [label = Variable]
+id_81 [label = id]
+Variable_81 -> id_81
+Assign_80 -> StructDeref_82
+StructDeref_82 [label = StructDeref]
+StructDeref_82 -> Variable_83
+Variable_83 [label = Variable]
+p_83 [label = p]
+Variable_83 -> p_83
+id_82[ label = id]
+StructDeref_82 -> id_82
+FuncBody_14 -> Assign_84
+Assign_84 [label = Assign]
+Assign_84 -> Variable_85
+Variable_85 [label = Variable]
+val_85 [label = val]
+Variable_85 -> val_85
+Assign_84 -> StructRef_86
+StructRef_86 [label = StructRef]
+StructRef_86 -> PointerDeref_87
+PointerDeref_87 [label = PointerDeref]
+PointerDeref_87 -> Variable_88
+Variable_88 [label = Variable]
+p_88 [label = p]
+Variable_88 -> p_88
+data_86[ label = data]
+StructRef_86 -> data_86
+FuncBody_14 -> IfStmt_89
+IfStmt_89 [label = IfStmt]
+IfStmt_89 -> LogicNotEq_90
+LogicNotEq_90 [label = LogicNotEq]
+LogicNotEq_90 -> Variable_91
+Variable_91 [label = Variable]
+id_91 [label = id]
+Variable_91 -> id_91
+LogicNotEq_90 -> Constant_92
+Constant_92 [label = Constant]
+int_92 [label = "10"]
+Constant_92 -> int_92
+IfStmt_89 -> Assign_93
+Assign_93 [label = Assign]
+Assign_93 -> Variable_94
+Variable_94 [label = Variable]
+err_94 [label = err]
+Variable_94 -> err_94
+Assign_93 -> Constant_95
+Constant_95 [label = Constant]
+int_95 [label = "1"]
+Constant_95 -> int_95
+FuncBody_14 -> IfStmt_96
+IfStmt_96 [label = IfStmt]
+IfStmt_96 -> LogicNotEq_97
+LogicNotEq_97 [label = LogicNotEq]
+LogicNotEq_97 -> Variable_98
+Variable_98 [label = Variable]
+val_98 [label = val]
+Variable_98 -> val_98
+LogicNotEq_97 -> Constant_99
+Constant_99 [label = Constant]
+int_99 [label = "12"]
+Constant_99 -> int_99
+IfStmt_96 -> Assign_100
+Assign_100 [label = Assign]
+Assign_100 -> Variable_101
+Variable_101 [label = Variable]
+err_101 [label = err]
+Variable_101 -> err_101
+Assign_100 -> Constant_102
+Constant_102 [label = Constant]
+int_102 [label = "1"]
+Constant_102 -> int_102
+FuncBody_14 -> AddAssign_103
+AddAssign_103 [label = AddAssign]
+AddAssign_103 -> Variable_104
+Variable_104 [label = Variable]
+p_104 [label = p]
+Variable_104 -> p_104
+AddAssign_103 -> Constant_105
+Constant_105 [label = Constant]
+int_105 [label = "1"]
+Constant_105 -> int_105
+FuncBody_14 -> Assign_106
+Assign_106 [label = Assign]
+Assign_106 -> Variable_107
+Variable_107 [label = Variable]
+id_107 [label = id]
+Variable_107 -> id_107
+Assign_106 -> StructDeref_108
+StructDeref_108 [label = StructDeref]
+StructDeref_108 -> Variable_109
+Variable_109 [label = Variable]
+p_109 [label = p]
+Variable_109 -> p_109
+id_108[ label = id]
+StructDeref_108 -> id_108
+FuncBody_14 -> Assign_110
+Assign_110 [label = Assign]
+Assign_110 -> Variable_111
+Variable_111 [label = Variable]
+val_111 [label = val]
+Variable_111 -> val_111
+Assign_110 -> StructRef_112
+StructRef_112 [label = StructRef]
+StructRef_112 -> PointerDeref_113
+PointerDeref_113 [label = PointerDeref]
+PointerDeref_113 -> Variable_114
+Variable_114 [label = Variable]
+p_114 [label = p]
+Variable_114 -> p_114
+data_112[ label = data]
+StructRef_112 -> data_112
+FuncBody_14 -> IfStmt_115
+IfStmt_115 [label = IfStmt]
+IfStmt_115 -> LogicNotEq_116
+LogicNotEq_116 [label = LogicNotEq]
+LogicNotEq_116 -> Variable_117
+Variable_117 [label = Variable]
+id_117 [label = id]
+Variable_117 -> id_117
+LogicNotEq_116 -> Constant_118
+Constant_118 [label = Constant]
+int_118 [label = "20"]
+Constant_118 -> int_118
+IfStmt_115 -> Assign_119
+Assign_119 [label = Assign]
+Assign_119 -> Variable_120
+Variable_120 [label = Variable]
+err_120 [label = err]
+Variable_120 -> err_120
+Assign_119 -> Constant_121
+Constant_121 [label = Constant]
+int_121 [label = "1"]
+Constant_121 -> int_121
+FuncBody_14 -> IfStmt_122
+IfStmt_122 [label = IfStmt]
+IfStmt_122 -> LogicNotEq_123
+LogicNotEq_123 [label = LogicNotEq]
+LogicNotEq_123 -> Variable_124
+Variable_124 [label = Variable]
+val_124 [label = val]
+Variable_124 -> val_124
+LogicNotEq_123 -> Constant_125
+Constant_125 [label = Constant]
+int_125 [label = "24"]
+Constant_125 -> int_125
+IfStmt_122 -> Assign_126
+Assign_126 [label = Assign]
+Assign_126 -> Variable_127
+Variable_127 [label = Variable]
+err_127 [label = err]
+Variable_127 -> err_127
+Assign_126 -> Constant_128
+Constant_128 [label = Constant]
+int_128 [label = "1"]
+Constant_128 -> int_128
+FuncBody_14 -> PrefixInc_129
+PrefixInc_129 [label = PrefixInc]
+PrefixInc_129 -> Variable_130
+Variable_130 [label = Variable]
+p_130 [label = p]
+Variable_130 -> p_130
+FuncBody_14 -> Assign_131
+Assign_131 [label = Assign]
+Assign_131 -> Variable_132
+Variable_132 [label = Variable]
+id_132 [label = id]
+Variable_132 -> id_132
+Assign_131 -> StructDeref_133
+StructDeref_133 [label = StructDeref]
+StructDeref_133 -> Variable_134
+Variable_134 [label = Variable]
+p_134 [label = p]
+Variable_134 -> p_134
+id_133[ label = id]
+StructDeref_133 -> id_133
+FuncBody_14 -> IfStmt_135
+IfStmt_135 [label = IfStmt]
+IfStmt_135 -> LogicNotEq_136
+LogicNotEq_136 [label = LogicNotEq]
+LogicNotEq_136 -> Variable_137
+Variable_137 [label = Variable]
+id_137 [label = id]
+Variable_137 -> id_137
+LogicNotEq_136 -> Constant_138
+Constant_138 [label = Constant]
+int_138 [label = "30"]
+Constant_138 -> int_138
+IfStmt_135 -> Assign_139
+Assign_139 [label = Assign]
+Assign_139 -> Variable_140
+Variable_140 [label = Variable]
+err_140 [label = err]
+Variable_140 -> err_140
+Assign_139 -> Constant_141
+Constant_141 [label = Constant]
+int_141 [label = "1"]
+Constant_141 -> int_141
+FuncBody_14 -> PostfixInc_142
+PostfixInc_142 [label = PostfixInc]
+PostfixInc_142 -> Variable_143
+Variable_143 [label = Variable]
+p_143 [label = p]
+Variable_143 -> p_143
+FuncBody_14 -> Assign_144
+Assign_144 [label = Assign]
+Assign_144 -> Variable_145
+Variable_145 [label = Variable]
+id_145 [label = id]
+Variable_145 -> id_145
+Assign_144 -> StructDeref_146
+StructDeref_146 [label = StructDeref]
+StructDeref_146 -> Variable_147
+Variable_147 [label = Variable]
+p_147 [label = p]
+Variable_147 -> p_147
+id_146[ label = id]
+StructDeref_146 -> id_146
+FuncBody_14 -> Assign_148
+Assign_148 [label = Assign]
+Assign_148 -> Variable_149
+Variable_149 [label = Variable]
+val_149 [label = val]
+Variable_149 -> val_149
+Assign_148 -> StructRef_150
+StructRef_150 [label = StructRef]
+StructRef_150 -> PointerDeref_151
+PointerDeref_151 [label = PointerDeref]
+PointerDeref_151 -> Variable_152
+Variable_152 [label = Variable]
+p_152 [label = p]
+Variable_152 -> p_152
+data_150[ label = data]
+StructRef_150 -> data_150
+FuncBody_14 -> IfStmt_153
+IfStmt_153 [label = IfStmt]
+IfStmt_153 -> LogicNotEq_154
+LogicNotEq_154 [label = LogicNotEq]
+LogicNotEq_154 -> Variable_155
+Variable_155 [label = Variable]
+id_155 [label = id]
+Variable_155 -> id_155
+LogicNotEq_154 -> Constant_156
+Constant_156 [label = Constant]
+int_156 [label = "40"]
+Constant_156 -> int_156
+IfStmt_153 -> Assign_157
+Assign_157 [label = Assign]
+Assign_157 -> Variable_158
+Variable_158 [label = Variable]
+err_158 [label = err]
+Variable_158 -> err_158
+Assign_157 -> Constant_159
+Constant_159 [label = Constant]
+int_159 [label = "1"]
+Constant_159 -> int_159
+FuncBody_14 -> IfStmt_160
+IfStmt_160 [label = IfStmt]
+IfStmt_160 -> LogicNotEq_161
+LogicNotEq_161 [label = LogicNotEq]
+LogicNotEq_161 -> Variable_162
+Variable_162 [label = Variable]
+val_162 [label = val]
+Variable_162 -> val_162
+LogicNotEq_161 -> Constant_163
+Constant_163 [label = Constant]
+int_163 [label = "48"]
+Constant_163 -> int_163
+IfStmt_160 -> Assign_164
+Assign_164 [label = Assign]
+Assign_164 -> Variable_165
+Variable_165 [label = Variable]
+err_165 [label = err]
+Variable_165 -> err_165
+Assign_164 -> Constant_166
+Constant_166 [label = Constant]
+int_166 [label = "1"]
+Constant_166 -> int_166
+FuncBody_14 -> Assign_167
+Assign_167 [label = Assign]
+Assign_167 -> Variable_168
+Variable_168 [label = Variable]
+p_168 [label = p]
+Variable_168 -> p_168
+Assign_167 -> AddressOf_169
+AddressOf_169 [label = AddressOf]
+AddressOf_169 -> Subscript_170
+Subscript_170 [label = Subscript]
+Subscript_170 -> Variable_171
+Variable_171 [label = Variable]
+data_171 [label = data]
+Variable_171 -> data_171
+Subscript_170 -> Constant_172
+Constant_172 [label = Constant]
+int_172 [label = "3"]
+Constant_172 -> int_172
+FuncBody_14 -> SubAssign_173
+SubAssign_173 [label = SubAssign]
+SubAssign_173 -> Variable_174
+Variable_174 [label = Variable]
+p_174 [label = p]
+Variable_174 -> p_174
+SubAssign_173 -> Constant_175
+Constant_175 [label = Constant]
+int_175 [label = "1"]
+Constant_175 -> int_175
+FuncBody_14 -> Assign_176
+Assign_176 [label = Assign]
+Assign_176 -> Variable_177
+Variable_177 [label = Variable]
+id_177 [label = id]
+Variable_177 -> id_177
+Assign_176 -> StructDeref_178
+StructDeref_178 [label = StructDeref]
+StructDeref_178 -> Variable_179
+Variable_179 [label = Variable]
+p_179 [label = p]
+Variable_179 -> p_179
+id_178[ label = id]
+StructDeref_178 -> id_178
+FuncBody_14 -> IfStmt_180
+IfStmt_180 [label = IfStmt]
+IfStmt_180 -> LogicNotEq_181
+LogicNotEq_181 [label = LogicNotEq]
+LogicNotEq_181 -> Variable_182
+Variable_182 [label = Variable]
+id_182 [label = id]
+Variable_182 -> id_182
+LogicNotEq_181 -> Constant_183
+Constant_183 [label = Constant]
+int_183 [label = "30"]
+Constant_183 -> int_183
+IfStmt_180 -> Assign_184
+Assign_184 [label = Assign]
+Assign_184 -> Variable_185
+Variable_185 [label = Variable]
+err_185 [label = err]
+Variable_185 -> err_185
+Assign_184 -> Constant_186
+Constant_186 [label = Constant]
+int_186 [label = "1"]
+Constant_186 -> int_186
+FuncBody_14 -> PrefixDec_187
+PrefixDec_187 [label = PrefixDec]
+PrefixDec_187 -> Variable_188
+Variable_188 [label = Variable]
+p_188 [label = p]
+Variable_188 -> p_188
+FuncBody_14 -> Assign_189
+Assign_189 [label = Assign]
+Assign_189 -> Variable_190
+Variable_190 [label = Variable]
+id_190 [label = id]
+Variable_190 -> id_190
+Assign_189 -> StructDeref_191
+StructDeref_191 [label = StructDeref]
+StructDeref_191 -> Variable_192
+Variable_192 [label = Variable]
+p_192 [label = p]
+Variable_192 -> p_192
+id_191[ label = id]
+StructDeref_191 -> id_191
+FuncBody_14 -> IfStmt_193
+IfStmt_193 [label = IfStmt]
+IfStmt_193 -> LogicNotEq_194
+LogicNotEq_194 [label = LogicNotEq]
+LogicNotEq_194 -> Variable_195
+Variable_195 [label = Variable]
+id_195 [label = id]
+Variable_195 -> id_195
+LogicNotEq_194 -> Constant_196
+Constant_196 [label = Constant]
+int_196 [label = "20"]
+Constant_196 -> int_196
+IfStmt_193 -> Assign_197
+Assign_197 [label = Assign]
+Assign_197 -> Variable_198
+Variable_198 [label = Variable]
+err_198 [label = err]
+Variable_198 -> err_198
+Assign_197 -> Constant_199
+Constant_199 [label = Constant]
+int_199 [label = "1"]
+Constant_199 -> int_199
+FuncBody_14 -> PostfixDec_200
+PostfixDec_200 [label = PostfixDec]
+PostfixDec_200 -> Variable_201
+Variable_201 [label = Variable]
+p_201 [label = p]
+Variable_201 -> p_201
+FuncBody_14 -> Assign_202
+Assign_202 [label = Assign]
+Assign_202 -> Variable_203
+Variable_203 [label = Variable]
+id_203 [label = id]
+Variable_203 -> id_203
+Assign_202 -> StructDeref_204
+StructDeref_204 [label = StructDeref]
+StructDeref_204 -> Variable_205
+Variable_205 [label = Variable]
+p_205 [label = p]
+Variable_205 -> p_205
+id_204[ label = id]
+StructDeref_204 -> id_204
+FuncBody_14 -> IfStmt_206
+IfStmt_206 [label = IfStmt]
+IfStmt_206 -> LogicNotEq_207
+LogicNotEq_207 [label = LogicNotEq]
+LogicNotEq_207 -> Variable_208
+Variable_208 [label = Variable]
+id_208 [label = id]
+Variable_208 -> id_208
+LogicNotEq_207 -> Constant_209
+Constant_209 [label = Constant]
+int_209 [label = "10"]
+Constant_209 -> int_209
+IfStmt_206 -> Assign_210
+Assign_210 [label = Assign]
+Assign_210 -> Variable_211
+Variable_211 [label = Variable]
+err_211 [label = err]
+Variable_211 -> err_211
+Assign_210 -> Constant_212
+Constant_212 [label = Constant]
+int_212 [label = "1"]
+Constant_212 -> int_212
+FuncBody_14 -> IfStmt_213
+IfStmt_213 [label = IfStmt]
+IfStmt_213 -> LogicEq_214
+LogicEq_214 [label = LogicEq]
+LogicEq_214 -> Variable_215
+Variable_215 [label = Variable]
+err_215 [label = err]
+Variable_215 -> err_215
+LogicEq_214 -> Constant_216
+Constant_216 [label = Constant]
+int_216 [label = "0"]
+Constant_216 -> int_216
+IfStmt_213 -> Block_217
+Block_217 [label = Block]
+Block_217 -> FuncCall_218
+FuncCall_218 [label = FuncCall]
+printf_218[ label = printf]
+FuncCall_218 -> printf_218
+FuncCall_218 -> ConstStr_219
+ConstStr_219 [label = ConstStr]
+str_219 [label = "29.struct_pointer_move.c PASS"]
+ConstStr_219 -> str_219
+IfStmt_213 -> Block_220
+Block_220 [label = Block]
+Block_220 -> FuncCall_221
+FuncCall_221 [label = FuncCall]
+printf_221[ label = printf]
+FuncCall_221 -> printf_221
+FuncCall_221 -> ConstStr_222
+ConstStr_222 [label = ConstStr]
+str_222 [label = "29.struct_pointer_move.c FAIL"]
+ConstStr_222 -> str_222
+FuncBody_14 -> ReturnStmt_223
+ReturnStmt_223 [label = ReturnStmt]
+ReturnStmt_223 -> Variable_224
+Variable_224 [label = Variable]
+err_224 [label = err]
+Variable_224 -> err_224
+}

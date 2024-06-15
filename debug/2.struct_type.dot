@@ -1,0 +1,361 @@
+digraph {
+Program [label = Program]
+Program -> FuncDecl_0
+FuncDecl_0 [label = FuncDecl]
+FuncDecl_0 -> BuiltinType_1
+BuiltinType_1 [label = BuiltinType]
+"int_1" [label = "int"]
+BuiltinType_1 -> "int_1"
+printf_0[ label = printf]
+FuncDecl_0 -> printf_0
+FuncDecl_0 -> ParamList_2
+ParamList_2 [label = ParamList]
+ParamList_2 -> Param_3
+Param_3 [label = Param]
+Param_3 -> PointerType_4
+PointerType_4 [label = PointerType]
+"char*_4" [label = "char*"]
+PointerType_4 -> "char*_4"
+anonymous_3 [label = anonymous]
+Param_3 -> anonymous_3
+"..._2" [label = "..."]
+ParamList_2 -> "..._2"
+Program -> TypeDecl_5
+TypeDecl_5 [label = TypeDecl]
+TypeDecl_5 -> StructType_6
+StructType_6 [label = StructType]
+"Employee_6" [label = "Employee"]
+StructType_6 -> "Employee_6"
+StructType_6 -> FieldDecl_7
+FieldDecl_7 [label = FieldDecl]
+FieldDecl_7 -> PointerType_8
+PointerType_8 [label = PointerType]
+"char*_8" [label = "char*"]
+PointerType_8 -> "char*_8"
+name_7 [label = name]
+FieldDecl_7 -> name_7
+StructType_6 -> FieldDecl_9
+FieldDecl_9 [label = FieldDecl]
+FieldDecl_9 -> BuiltinType_10
+BuiltinType_10 [label = BuiltinType]
+"char_10" [label = "char"]
+BuiltinType_10 -> "char_10"
+sex_9 [label = sex]
+FieldDecl_9 -> sex_9
+StructType_6 -> FieldDecl_11
+FieldDecl_11 [label = FieldDecl]
+FieldDecl_11 -> BuiltinType_12
+BuiltinType_12 [label = BuiltinType]
+"int_12" [label = "int"]
+BuiltinType_12 -> "int_12"
+id_11 [label = id]
+FieldDecl_11 -> id_11
+StructType_6 -> FieldDecl_13
+FieldDecl_13 [label = FieldDecl]
+FieldDecl_13 -> BuiltinType_14
+BuiltinType_14 [label = BuiltinType]
+"uint_14" [label = "uint"]
+BuiltinType_14 -> "uint_14"
+age_13 [label = age]
+FieldDecl_13 -> age_13
+StructType_6 -> FieldDecl_15
+FieldDecl_15 [label = FieldDecl]
+FieldDecl_15 -> BuiltinType_16
+BuiltinType_16 [label = BuiltinType]
+"float_16" [label = "float"]
+BuiltinType_16 -> "float_16"
+salary_15 [label = salary]
+FieldDecl_15 -> salary_15
+Program -> FuncDecl_17
+FuncDecl_17 [label = FuncDecl]
+FuncDecl_17 -> BuiltinType_18
+BuiltinType_18 [label = BuiltinType]
+"int_18" [label = "int"]
+BuiltinType_18 -> "int_18"
+main_17[ label = main]
+FuncDecl_17 -> main_17
+FuncDecl_17 -> ParamList_19
+ParamList_19 [label = ParamList]
+FuncDecl_17 -> FuncBody_20
+FuncBody_20 [label = FuncBody]
+FuncBody_20 -> VarDecl_21
+VarDecl_21 [label = VarDecl]
+VarDecl_21 -> BuiltinType_22
+BuiltinType_22 [label = BuiltinType]
+"int_22" [label = "int"]
+BuiltinType_22 -> "int_22"
+VarDecl_21 -> VarInit_23
+VarInit_23 [label = VarInit]
+err_23 [label = err]
+VarInit_23 -> err_23
+VarInit_23 -> Constant_24
+Constant_24 [label = Constant]
+int_24 [label = "0"]
+Constant_24 -> int_24
+FuncBody_20 -> VarDecl_25
+VarDecl_25 [label = VarDecl]
+VarDecl_25 -> DefinedType_26
+DefinedType_26 [label = DefinedType]
+"Employee_26" [label = "Employee"]
+DefinedType_26 -> "Employee_26"
+VarDecl_25 -> VarInit_27
+VarInit_27 [label = VarInit]
+employee_27 [label = employee]
+VarInit_27 -> employee_27
+FuncBody_20 -> Assign_28
+Assign_28 [label = Assign]
+Assign_28 -> StructRef_29
+StructRef_29 [label = StructRef]
+StructRef_29 -> Variable_30
+Variable_30 [label = Variable]
+employee_30 [label = employee]
+Variable_30 -> employee_30
+name_29[ label = name]
+StructRef_29 -> name_29
+Assign_28 -> ConstStr_31
+ConstStr_31 [label = ConstStr]
+str_31 [label = "employee"]
+ConstStr_31 -> str_31
+FuncBody_20 -> Assign_32
+Assign_32 [label = Assign]
+Assign_32 -> StructRef_33
+StructRef_33 [label = StructRef]
+StructRef_33 -> Variable_34
+Variable_34 [label = Variable]
+employee_34 [label = employee]
+Variable_34 -> employee_34
+sex_33[ label = sex]
+StructRef_33 -> sex_33
+Assign_32 -> Constant_35
+Constant_35 [label = Constant]
+char_35 [label = "77"]
+Constant_35 -> char_35
+FuncBody_20 -> Assign_36
+Assign_36 [label = Assign]
+Assign_36 -> StructRef_37
+StructRef_37 [label = StructRef]
+StructRef_37 -> Variable_38
+Variable_38 [label = Variable]
+employee_38 [label = employee]
+Variable_38 -> employee_38
+id_37[ label = id]
+StructRef_37 -> id_37
+Assign_36 -> Constant_39
+Constant_39 [label = Constant]
+int_39 [label = "100"]
+Constant_39 -> int_39
+FuncBody_20 -> Assign_40
+Assign_40 [label = Assign]
+Assign_40 -> StructRef_41
+StructRef_41 [label = StructRef]
+StructRef_41 -> Variable_42
+Variable_42 [label = Variable]
+employee_42 [label = employee]
+Variable_42 -> employee_42
+age_41[ label = age]
+StructRef_41 -> age_41
+Assign_40 -> Constant_43
+Constant_43 [label = Constant]
+int_43 [label = "22"]
+Constant_43 -> int_43
+FuncBody_20 -> Assign_44
+Assign_44 [label = Assign]
+Assign_44 -> StructRef_45
+StructRef_45 [label = StructRef]
+StructRef_45 -> Variable_46
+Variable_46 [label = Variable]
+employee_46 [label = employee]
+Variable_46 -> employee_46
+salary_45[ label = salary]
+StructRef_45 -> salary_45
+Assign_44 -> Constant_47
+Constant_47 [label = Constant]
+double_47 [label = "3000.000000"]
+Constant_47 -> double_47
+FuncBody_20 -> VarDecl_48
+VarDecl_48 [label = VarDecl]
+VarDecl_48 -> BuiltinType_49
+BuiltinType_49 [label = BuiltinType]
+"int_49" [label = "int"]
+BuiltinType_49 -> "int_49"
+VarDecl_48 -> VarInit_50
+VarInit_50 [label = VarInit]
+id_50 [label = id]
+VarInit_50 -> id_50
+VarInit_50 -> StructRef_51
+StructRef_51 [label = StructRef]
+StructRef_51 -> Variable_52
+Variable_52 [label = Variable]
+employee_52 [label = employee]
+Variable_52 -> employee_52
+id_51[ label = id]
+StructRef_51 -> id_51
+FuncBody_20 -> VarDecl_53
+VarDecl_53 [label = VarDecl]
+VarDecl_53 -> BuiltinType_54
+BuiltinType_54 [label = BuiltinType]
+"int_54" [label = "int"]
+BuiltinType_54 -> "int_54"
+VarDecl_53 -> VarInit_55
+VarInit_55 [label = VarInit]
+sex_55 [label = sex]
+VarInit_55 -> sex_55
+VarInit_55 -> StructRef_56
+StructRef_56 [label = StructRef]
+StructRef_56 -> Variable_57
+Variable_57 [label = Variable]
+employee_57 [label = employee]
+Variable_57 -> employee_57
+sex_56[ label = sex]
+StructRef_56 -> sex_56
+FuncBody_20 -> VarDecl_58
+VarDecl_58 [label = VarDecl]
+VarDecl_58 -> BuiltinType_59
+BuiltinType_59 [label = BuiltinType]
+"int_59" [label = "int"]
+BuiltinType_59 -> "int_59"
+VarDecl_58 -> VarInit_60
+VarInit_60 [label = VarInit]
+age_60 [label = age]
+VarInit_60 -> age_60
+VarInit_60 -> StructRef_61
+StructRef_61 [label = StructRef]
+StructRef_61 -> Variable_62
+Variable_62 [label = Variable]
+employee_62 [label = employee]
+Variable_62 -> employee_62
+age_61[ label = age]
+StructRef_61 -> age_61
+FuncBody_20 -> IfStmt_63
+IfStmt_63 [label = IfStmt]
+IfStmt_63 -> LogicNotEq_64
+LogicNotEq_64 [label = LogicNotEq]
+LogicNotEq_64 -> Variable_65
+Variable_65 [label = Variable]
+id_65 [label = id]
+Variable_65 -> id_65
+LogicNotEq_64 -> Constant_66
+Constant_66 [label = Constant]
+int_66 [label = "100"]
+Constant_66 -> int_66
+IfStmt_63 -> Assign_67
+Assign_67 [label = Assign]
+Assign_67 -> Variable_68
+Variable_68 [label = Variable]
+err_68 [label = err]
+Variable_68 -> err_68
+Assign_67 -> Constant_69
+Constant_69 [label = Constant]
+int_69 [label = "1"]
+Constant_69 -> int_69
+FuncBody_20 -> IfStmt_70
+IfStmt_70 [label = IfStmt]
+IfStmt_70 -> LogicNotEq_71
+LogicNotEq_71 [label = LogicNotEq]
+LogicNotEq_71 -> Variable_72
+Variable_72 [label = Variable]
+age_72 [label = age]
+Variable_72 -> age_72
+LogicNotEq_71 -> Constant_73
+Constant_73 [label = Constant]
+int_73 [label = "22"]
+Constant_73 -> int_73
+IfStmt_70 -> Assign_74
+Assign_74 [label = Assign]
+Assign_74 -> Variable_75
+Variable_75 [label = Variable]
+err_75 [label = err]
+Variable_75 -> err_75
+Assign_74 -> Constant_76
+Constant_76 [label = Constant]
+int_76 [label = "1"]
+Constant_76 -> int_76
+FuncBody_20 -> Assign_77
+Assign_77 [label = Assign]
+Assign_77 -> StructRef_78
+StructRef_78 [label = StructRef]
+StructRef_78 -> Variable_79
+Variable_79 [label = Variable]
+employee_79 [label = employee]
+Variable_79 -> employee_79
+age_78[ label = age]
+StructRef_78 -> age_78
+Assign_77 -> Constant_80
+Constant_80 [label = Constant]
+int_80 [label = "0"]
+Constant_80 -> int_80
+FuncBody_20 -> Assign_81
+Assign_81 [label = Assign]
+Assign_81 -> Variable_82
+Variable_82 [label = Variable]
+age_82 [label = age]
+Variable_82 -> age_82
+Assign_81 -> StructRef_83
+StructRef_83 [label = StructRef]
+StructRef_83 -> Variable_84
+Variable_84 [label = Variable]
+employee_84 [label = employee]
+Variable_84 -> employee_84
+age_83[ label = age]
+StructRef_83 -> age_83
+FuncBody_20 -> IfStmt_85
+IfStmt_85 [label = IfStmt]
+IfStmt_85 -> LogicNotEq_86
+LogicNotEq_86 [label = LogicNotEq]
+LogicNotEq_86 -> Variable_87
+Variable_87 [label = Variable]
+age_87 [label = age]
+Variable_87 -> age_87
+LogicNotEq_86 -> Constant_88
+Constant_88 [label = Constant]
+int_88 [label = "0"]
+Constant_88 -> int_88
+IfStmt_85 -> Assign_89
+Assign_89 [label = Assign]
+Assign_89 -> Variable_90
+Variable_90 [label = Variable]
+err_90 [label = err]
+Variable_90 -> err_90
+Assign_89 -> Constant_91
+Constant_91 [label = Constant]
+int_91 [label = "1"]
+Constant_91 -> int_91
+FuncBody_20 -> IfStmt_92
+IfStmt_92 [label = IfStmt]
+IfStmt_92 -> LogicEq_93
+LogicEq_93 [label = LogicEq]
+LogicEq_93 -> Variable_94
+Variable_94 [label = Variable]
+err_94 [label = err]
+Variable_94 -> err_94
+LogicEq_93 -> Constant_95
+Constant_95 [label = Constant]
+int_95 [label = "0"]
+Constant_95 -> int_95
+IfStmt_92 -> Block_96
+Block_96 [label = Block]
+Block_96 -> FuncCall_97
+FuncCall_97 [label = FuncCall]
+printf_97[ label = printf]
+FuncCall_97 -> printf_97
+FuncCall_97 -> ConstStr_98
+ConstStr_98 [label = ConstStr]
+str_98 [label = "2.struct_type.c PASS"]
+ConstStr_98 -> str_98
+IfStmt_92 -> Block_99
+Block_99 [label = Block]
+Block_99 -> FuncCall_100
+FuncCall_100 [label = FuncCall]
+printf_100[ label = printf]
+FuncCall_100 -> printf_100
+FuncCall_100 -> ConstStr_101
+ConstStr_101 [label = ConstStr]
+str_101 [label = "2.struct_type.c FAIL"]
+ConstStr_101 -> str_101
+FuncBody_20 -> ReturnStmt_102
+ReturnStmt_102 [label = ReturnStmt]
+ReturnStmt_102 -> Variable_103
+Variable_103 [label = Variable]
+err_103 [label = err]
+Variable_103 -> err_103
+}

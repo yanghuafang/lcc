@@ -1,0 +1,16 @@
+BasedOnStyle: Google
+IndentWidth: 2
+ColumnLimit: 80
+
+# Include grouping. Priority 0 is clang-format's own slot for a .cpp's matching
+# header, so it always stays first. The rest encodes the convention already used
+# throughout src/: LLVM, then the standard library, then lcc's own headers —
+# widest dependency to narrowest, so a file's own layer reads last and closest.
+IncludeBlocks: Regroup
+IncludeCategories:
+  - Regex:    '^<llvm.*'
+    Priority: 1
+  - Regex:    '^<.*'
+    Priority: 2
+  - Regex:    '^".*'
+    Priority: 3
