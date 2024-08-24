@@ -162,206 +162,250 @@ Assign_44 -> Constant_46
 Constant_46 [label = Constant]
 int_46 [label = "1"]
 Constant_46 -> int_46
-FuncBody_14 -> Assign_47
-Assign_47 [label = Assign]
-Assign_47 -> StructRef_48
-StructRef_48 [label = StructRef]
-StructRef_48 -> Variable_49
+FuncBody_14 -> IfStmt_47
+IfStmt_47 [label = IfStmt]
+IfStmt_47 -> LogicNotEq_48
+LogicNotEq_48 [label = LogicNotEq]
+LogicNotEq_48 -> Variable_49
 Variable_49 [label = Variable]
-ipv4_49 [label = ipv4]
-Variable_49 -> ipv4_49
-c_48[ label = c]
-StructRef_48 -> c_48
-Assign_47 -> Constant_50
+byte_49 [label = byte]
+Variable_49 -> byte_49
+LogicNotEq_48 -> Constant_50
 Constant_50 [label = Constant]
-uint_50 [label = "86"]
+uint_50 [label = "52"]
 Constant_50 -> uint_50
-FuncBody_14 -> Assign_51
+IfStmt_47 -> Assign_51
 Assign_51 [label = Assign]
 Assign_51 -> Variable_52
 Variable_52 [label = Variable]
-ip_52 [label = ip]
-Variable_52 -> ip_52
-Assign_51 -> StructRef_53
-StructRef_53 [label = StructRef]
-StructRef_53 -> Variable_54
-Variable_54 [label = Variable]
-ipv4_54 [label = ipv4]
-Variable_54 -> ipv4_54
-ip_53[ label = ip]
-StructRef_53 -> ip_53
-FuncBody_14 -> Assign_55
-Assign_55 [label = Assign]
-Assign_55 -> Variable_56
+err_52 [label = err]
+Variable_52 -> err_52
+Assign_51 -> Constant_53
+Constant_53 [label = Constant]
+int_53 [label = "1"]
+Constant_53 -> int_53
+FuncBody_14 -> Assign_54
+Assign_54 [label = Assign]
+Assign_54 -> StructRef_55
+StructRef_55 [label = StructRef]
+StructRef_55 -> Variable_56
 Variable_56 [label = Variable]
-byte_56 [label = byte]
-Variable_56 -> byte_56
-Assign_55 -> StructRef_57
-StructRef_57 [label = StructRef]
-StructRef_57 -> Variable_58
-Variable_58 [label = Variable]
-ipv4_58 [label = ipv4]
-Variable_58 -> ipv4_58
-c_57[ label = c]
-StructRef_57 -> c_57
-FuncBody_14 -> IfStmt_59
-IfStmt_59 [label = IfStmt]
-IfStmt_59 -> LogicNotEq_60
-LogicNotEq_60 [label = LogicNotEq]
-LogicNotEq_60 -> Variable_61
+ipv4_56 [label = ipv4]
+Variable_56 -> ipv4_56
+c_55[ label = c]
+StructRef_55 -> c_55
+Assign_54 -> Constant_57
+Constant_57 [label = Constant]
+uint_57 [label = "86"]
+Constant_57 -> uint_57
+FuncBody_14 -> Assign_58
+Assign_58 [label = Assign]
+Assign_58 -> Variable_59
+Variable_59 [label = Variable]
+ip_59 [label = ip]
+Variable_59 -> ip_59
+Assign_58 -> StructRef_60
+StructRef_60 [label = StructRef]
+StructRef_60 -> Variable_61
 Variable_61 [label = Variable]
-ip_61 [label = ip]
-Variable_61 -> ip_61
-LogicNotEq_60 -> Constant_62
-Constant_62 [label = Constant]
-uint_62 [label = "313249110"]
-Constant_62 -> uint_62
-IfStmt_59 -> Assign_63
-Assign_63 [label = Assign]
-Assign_63 -> Variable_64
-Variable_64 [label = Variable]
-err_64 [label = err]
-Variable_64 -> err_64
-Assign_63 -> Constant_65
-Constant_65 [label = Constant]
-int_65 [label = "1"]
-Constant_65 -> int_65
-FuncBody_14 -> Assign_66
-Assign_66 [label = Assign]
-Assign_66 -> StructRef_67
-StructRef_67 [label = StructRef]
-StructRef_67 -> Variable_68
+ipv4_61 [label = ipv4]
+Variable_61 -> ipv4_61
+ip_60[ label = ip]
+StructRef_60 -> ip_60
+FuncBody_14 -> Assign_62
+Assign_62 [label = Assign]
+Assign_62 -> Variable_63
+Variable_63 [label = Variable]
+byte_63 [label = byte]
+Variable_63 -> byte_63
+Assign_62 -> StructRef_64
+StructRef_64 [label = StructRef]
+StructRef_64 -> Variable_65
+Variable_65 [label = Variable]
+ipv4_65 [label = ipv4]
+Variable_65 -> ipv4_65
+c_64[ label = c]
+StructRef_64 -> c_64
+FuncBody_14 -> IfStmt_66
+IfStmt_66 [label = IfStmt]
+IfStmt_66 -> LogicNotEq_67
+LogicNotEq_67 [label = LogicNotEq]
+LogicNotEq_67 -> Variable_68
 Variable_68 [label = Variable]
-ipv4_68 [label = ipv4]
-Variable_68 -> ipv4_68
-ip_67[ label = ip]
-StructRef_67 -> ip_67
-Assign_66 -> Constant_69
+ip_68 [label = ip]
+Variable_68 -> ip_68
+LogicNotEq_67 -> Constant_69
 Constant_69 [label = Constant]
-uint_69 [label = "4294967295"]
+uint_69 [label = "313249110"]
 Constant_69 -> uint_69
-FuncBody_14 -> Assign_70
+IfStmt_66 -> Assign_70
 Assign_70 [label = Assign]
 Assign_70 -> Variable_71
 Variable_71 [label = Variable]
-ip_71 [label = ip]
-Variable_71 -> ip_71
-Assign_70 -> StructRef_72
-StructRef_72 [label = StructRef]
-StructRef_72 -> Variable_73
-Variable_73 [label = Variable]
-ipv4_73 [label = ipv4]
-Variable_73 -> ipv4_73
-ip_72[ label = ip]
-StructRef_72 -> ip_72
-FuncBody_14 -> IfStmt_74
-IfStmt_74 [label = IfStmt]
-IfStmt_74 -> LogicNotEq_75
-LogicNotEq_75 [label = LogicNotEq]
-LogicNotEq_75 -> Variable_76
-Variable_76 [label = Variable]
-ip_76 [label = ip]
-Variable_76 -> ip_76
-LogicNotEq_75 -> Constant_77
-Constant_77 [label = Constant]
-uint_77 [label = "4294967295"]
-Constant_77 -> uint_77
-IfStmt_74 -> Assign_78
-Assign_78 [label = Assign]
-Assign_78 -> Variable_79
-Variable_79 [label = Variable]
-err_79 [label = err]
-Variable_79 -> err_79
-Assign_78 -> Constant_80
-Constant_80 [label = Constant]
-int_80 [label = "1"]
-Constant_80 -> int_80
-FuncBody_14 -> Assign_81
-Assign_81 [label = Assign]
-Assign_81 -> StructRef_82
-StructRef_82 [label = StructRef]
-StructRef_82 -> Variable_83
-Variable_83 [label = Variable]
-ipv4_83 [label = ipv4]
-Variable_83 -> ipv4_83
-c_82[ label = c]
-StructRef_82 -> c_82
-Assign_81 -> Constant_84
-Constant_84 [label = Constant]
-int_84 [label = "0"]
-Constant_84 -> int_84
-FuncBody_14 -> Assign_85
-Assign_85 [label = Assign]
-Assign_85 -> Variable_86
-Variable_86 [label = Variable]
-ip_86 [label = ip]
-Variable_86 -> ip_86
-Assign_85 -> StructRef_87
-StructRef_87 [label = StructRef]
-StructRef_87 -> Variable_88
-Variable_88 [label = Variable]
-ipv4_88 [label = ipv4]
-Variable_88 -> ipv4_88
-ip_87[ label = ip]
-StructRef_87 -> ip_87
-FuncBody_14 -> IfStmt_89
-IfStmt_89 [label = IfStmt]
-IfStmt_89 -> LogicNotEq_90
-LogicNotEq_90 [label = LogicNotEq]
-LogicNotEq_90 -> Variable_91
-Variable_91 [label = Variable]
-ip_91 [label = ip]
-Variable_91 -> ip_91
-LogicNotEq_90 -> Constant_92
-Constant_92 [label = Constant]
-uint_92 [label = "4294967040"]
-Constant_92 -> uint_92
-IfStmt_89 -> Assign_93
-Assign_93 [label = Assign]
-Assign_93 -> Variable_94
-Variable_94 [label = Variable]
-err_94 [label = err]
-Variable_94 -> err_94
-Assign_93 -> Constant_95
-Constant_95 [label = Constant]
-int_95 [label = "1"]
-Constant_95 -> int_95
-FuncBody_14 -> IfStmt_96
-IfStmt_96 [label = IfStmt]
-IfStmt_96 -> LogicEq_97
-LogicEq_97 [label = LogicEq]
-LogicEq_97 -> Variable_98
-Variable_98 [label = Variable]
-err_98 [label = err]
-Variable_98 -> err_98
-LogicEq_97 -> Constant_99
-Constant_99 [label = Constant]
-int_99 [label = "0"]
-Constant_99 -> int_99
-IfStmt_96 -> Block_100
-Block_100 [label = Block]
-Block_100 -> FuncCall_101
-FuncCall_101 [label = FuncCall]
-printf_101[ label = printf]
-FuncCall_101 -> printf_101
-FuncCall_101 -> ConstStr_102
-ConstStr_102 [label = ConstStr]
-str_102 [label = "3.union_type.c PASS"]
-ConstStr_102 -> str_102
-IfStmt_96 -> Block_103
-Block_103 [label = Block]
-Block_103 -> FuncCall_104
-FuncCall_104 [label = FuncCall]
-printf_104[ label = printf]
-FuncCall_104 -> printf_104
-FuncCall_104 -> ConstStr_105
-ConstStr_105 [label = ConstStr]
-str_105 [label = "3.union_type.c FAIL"]
-ConstStr_105 -> str_105
-FuncBody_14 -> ReturnStmt_106
-ReturnStmt_106 [label = ReturnStmt]
-ReturnStmt_106 -> Variable_107
-Variable_107 [label = Variable]
-err_107 [label = err]
-Variable_107 -> err_107
+err_71 [label = err]
+Variable_71 -> err_71
+Assign_70 -> Constant_72
+Constant_72 [label = Constant]
+int_72 [label = "1"]
+Constant_72 -> int_72
+FuncBody_14 -> IfStmt_73
+IfStmt_73 [label = IfStmt]
+IfStmt_73 -> LogicNotEq_74
+LogicNotEq_74 [label = LogicNotEq]
+LogicNotEq_74 -> Variable_75
+Variable_75 [label = Variable]
+byte_75 [label = byte]
+Variable_75 -> byte_75
+LogicNotEq_74 -> Constant_76
+Constant_76 [label = Constant]
+uint_76 [label = "86"]
+Constant_76 -> uint_76
+IfStmt_73 -> Assign_77
+Assign_77 [label = Assign]
+Assign_77 -> Variable_78
+Variable_78 [label = Variable]
+err_78 [label = err]
+Variable_78 -> err_78
+Assign_77 -> Constant_79
+Constant_79 [label = Constant]
+int_79 [label = "1"]
+Constant_79 -> int_79
+FuncBody_14 -> Assign_80
+Assign_80 [label = Assign]
+Assign_80 -> StructRef_81
+StructRef_81 [label = StructRef]
+StructRef_81 -> Variable_82
+Variable_82 [label = Variable]
+ipv4_82 [label = ipv4]
+Variable_82 -> ipv4_82
+ip_81[ label = ip]
+StructRef_81 -> ip_81
+Assign_80 -> Constant_83
+Constant_83 [label = Constant]
+uint_83 [label = "4294967295"]
+Constant_83 -> uint_83
+FuncBody_14 -> Assign_84
+Assign_84 [label = Assign]
+Assign_84 -> Variable_85
+Variable_85 [label = Variable]
+ip_85 [label = ip]
+Variable_85 -> ip_85
+Assign_84 -> StructRef_86
+StructRef_86 [label = StructRef]
+StructRef_86 -> Variable_87
+Variable_87 [label = Variable]
+ipv4_87 [label = ipv4]
+Variable_87 -> ipv4_87
+ip_86[ label = ip]
+StructRef_86 -> ip_86
+FuncBody_14 -> IfStmt_88
+IfStmt_88 [label = IfStmt]
+IfStmt_88 -> LogicNotEq_89
+LogicNotEq_89 [label = LogicNotEq]
+LogicNotEq_89 -> Variable_90
+Variable_90 [label = Variable]
+ip_90 [label = ip]
+Variable_90 -> ip_90
+LogicNotEq_89 -> Constant_91
+Constant_91 [label = Constant]
+uint_91 [label = "4294967295"]
+Constant_91 -> uint_91
+IfStmt_88 -> Assign_92
+Assign_92 [label = Assign]
+Assign_92 -> Variable_93
+Variable_93 [label = Variable]
+err_93 [label = err]
+Variable_93 -> err_93
+Assign_92 -> Constant_94
+Constant_94 [label = Constant]
+int_94 [label = "1"]
+Constant_94 -> int_94
+FuncBody_14 -> Assign_95
+Assign_95 [label = Assign]
+Assign_95 -> StructRef_96
+StructRef_96 [label = StructRef]
+StructRef_96 -> Variable_97
+Variable_97 [label = Variable]
+ipv4_97 [label = ipv4]
+Variable_97 -> ipv4_97
+c_96[ label = c]
+StructRef_96 -> c_96
+Assign_95 -> Constant_98
+Constant_98 [label = Constant]
+int_98 [label = "0"]
+Constant_98 -> int_98
+FuncBody_14 -> Assign_99
+Assign_99 [label = Assign]
+Assign_99 -> Variable_100
+Variable_100 [label = Variable]
+ip_100 [label = ip]
+Variable_100 -> ip_100
+Assign_99 -> StructRef_101
+StructRef_101 [label = StructRef]
+StructRef_101 -> Variable_102
+Variable_102 [label = Variable]
+ipv4_102 [label = ipv4]
+Variable_102 -> ipv4_102
+ip_101[ label = ip]
+StructRef_101 -> ip_101
+FuncBody_14 -> IfStmt_103
+IfStmt_103 [label = IfStmt]
+IfStmt_103 -> LogicNotEq_104
+LogicNotEq_104 [label = LogicNotEq]
+LogicNotEq_104 -> Variable_105
+Variable_105 [label = Variable]
+ip_105 [label = ip]
+Variable_105 -> ip_105
+LogicNotEq_104 -> Constant_106
+Constant_106 [label = Constant]
+uint_106 [label = "4294967040"]
+Constant_106 -> uint_106
+IfStmt_103 -> Assign_107
+Assign_107 [label = Assign]
+Assign_107 -> Variable_108
+Variable_108 [label = Variable]
+err_108 [label = err]
+Variable_108 -> err_108
+Assign_107 -> Constant_109
+Constant_109 [label = Constant]
+int_109 [label = "1"]
+Constant_109 -> int_109
+FuncBody_14 -> IfStmt_110
+IfStmt_110 [label = IfStmt]
+IfStmt_110 -> LogicEq_111
+LogicEq_111 [label = LogicEq]
+LogicEq_111 -> Variable_112
+Variable_112 [label = Variable]
+err_112 [label = err]
+Variable_112 -> err_112
+LogicEq_111 -> Constant_113
+Constant_113 [label = Constant]
+int_113 [label = "0"]
+Constant_113 -> int_113
+IfStmt_110 -> Block_114
+Block_114 [label = Block]
+Block_114 -> FuncCall_115
+FuncCall_115 [label = FuncCall]
+printf_115[ label = printf]
+FuncCall_115 -> printf_115
+FuncCall_115 -> ConstStr_116
+ConstStr_116 [label = ConstStr]
+str_116 [label = "3.union_type.c PASS"]
+ConstStr_116 -> str_116
+IfStmt_110 -> Block_117
+Block_117 [label = Block]
+Block_117 -> FuncCall_118
+FuncCall_118 [label = FuncCall]
+printf_118[ label = printf]
+FuncCall_118 -> printf_118
+FuncCall_118 -> ConstStr_119
+ConstStr_119 [label = ConstStr]
+str_119 [label = "3.union_type.c FAIL"]
+ConstStr_119 -> str_119
+FuncBody_14 -> ReturnStmt_120
+ReturnStmt_120 [label = ReturnStmt]
+ReturnStmt_120 -> Variable_121
+Variable_121 [label = Variable]
+err_121 [label = err]
+Variable_121 -> err_121
 }

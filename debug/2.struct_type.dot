@@ -254,12 +254,12 @@ IfStmt_70 -> LogicNotEq_71
 LogicNotEq_71 [label = LogicNotEq]
 LogicNotEq_71 -> Variable_72
 Variable_72 [label = Variable]
-age_72 [label = age]
-Variable_72 -> age_72
+sex_72 [label = sex]
+Variable_72 -> sex_72
 LogicNotEq_71 -> Constant_73
 Constant_73 [label = Constant]
-int_73 [label = "22"]
-Constant_73 -> int_73
+char_73 [label = "77"]
+Constant_73 -> char_73
 IfStmt_70 -> Assign_74
 Assign_74 [label = Assign]
 Assign_74 -> Variable_75
@@ -270,92 +270,114 @@ Assign_74 -> Constant_76
 Constant_76 [label = Constant]
 int_76 [label = "1"]
 Constant_76 -> int_76
-FuncBody_20 -> Assign_77
-Assign_77 [label = Assign]
-Assign_77 -> StructRef_78
-StructRef_78 [label = StructRef]
-StructRef_78 -> Variable_79
+FuncBody_20 -> IfStmt_77
+IfStmt_77 [label = IfStmt]
+IfStmt_77 -> LogicNotEq_78
+LogicNotEq_78 [label = LogicNotEq]
+LogicNotEq_78 -> Variable_79
 Variable_79 [label = Variable]
-employee_79 [label = employee]
-Variable_79 -> employee_79
-age_78[ label = age]
-StructRef_78 -> age_78
-Assign_77 -> Constant_80
+age_79 [label = age]
+Variable_79 -> age_79
+LogicNotEq_78 -> Constant_80
 Constant_80 [label = Constant]
-int_80 [label = "0"]
+int_80 [label = "22"]
 Constant_80 -> int_80
-FuncBody_20 -> Assign_81
+IfStmt_77 -> Assign_81
 Assign_81 [label = Assign]
 Assign_81 -> Variable_82
 Variable_82 [label = Variable]
-age_82 [label = age]
-Variable_82 -> age_82
-Assign_81 -> StructRef_83
-StructRef_83 [label = StructRef]
-StructRef_83 -> Variable_84
-Variable_84 [label = Variable]
-employee_84 [label = employee]
-Variable_84 -> employee_84
-age_83[ label = age]
-StructRef_83 -> age_83
-FuncBody_20 -> IfStmt_85
-IfStmt_85 [label = IfStmt]
-IfStmt_85 -> LogicNotEq_86
-LogicNotEq_86 [label = LogicNotEq]
-LogicNotEq_86 -> Variable_87
-Variable_87 [label = Variable]
-age_87 [label = age]
-Variable_87 -> age_87
-LogicNotEq_86 -> Constant_88
-Constant_88 [label = Constant]
-int_88 [label = "0"]
-Constant_88 -> int_88
-IfStmt_85 -> Assign_89
-Assign_89 [label = Assign]
-Assign_89 -> Variable_90
-Variable_90 [label = Variable]
-err_90 [label = err]
-Variable_90 -> err_90
-Assign_89 -> Constant_91
-Constant_91 [label = Constant]
-int_91 [label = "1"]
-Constant_91 -> int_91
+err_82 [label = err]
+Variable_82 -> err_82
+Assign_81 -> Constant_83
+Constant_83 [label = Constant]
+int_83 [label = "1"]
+Constant_83 -> int_83
+FuncBody_20 -> Assign_84
+Assign_84 [label = Assign]
+Assign_84 -> StructRef_85
+StructRef_85 [label = StructRef]
+StructRef_85 -> Variable_86
+Variable_86 [label = Variable]
+employee_86 [label = employee]
+Variable_86 -> employee_86
+age_85[ label = age]
+StructRef_85 -> age_85
+Assign_84 -> Constant_87
+Constant_87 [label = Constant]
+int_87 [label = "0"]
+Constant_87 -> int_87
+FuncBody_20 -> Assign_88
+Assign_88 [label = Assign]
+Assign_88 -> Variable_89
+Variable_89 [label = Variable]
+age_89 [label = age]
+Variable_89 -> age_89
+Assign_88 -> StructRef_90
+StructRef_90 [label = StructRef]
+StructRef_90 -> Variable_91
+Variable_91 [label = Variable]
+employee_91 [label = employee]
+Variable_91 -> employee_91
+age_90[ label = age]
+StructRef_90 -> age_90
 FuncBody_20 -> IfStmt_92
 IfStmt_92 [label = IfStmt]
-IfStmt_92 -> LogicEq_93
-LogicEq_93 [label = LogicEq]
-LogicEq_93 -> Variable_94
+IfStmt_92 -> LogicNotEq_93
+LogicNotEq_93 [label = LogicNotEq]
+LogicNotEq_93 -> Variable_94
 Variable_94 [label = Variable]
-err_94 [label = err]
-Variable_94 -> err_94
-LogicEq_93 -> Constant_95
+age_94 [label = age]
+Variable_94 -> age_94
+LogicNotEq_93 -> Constant_95
 Constant_95 [label = Constant]
 int_95 [label = "0"]
 Constant_95 -> int_95
-IfStmt_92 -> Block_96
-Block_96 [label = Block]
-Block_96 -> FuncCall_97
-FuncCall_97 [label = FuncCall]
-printf_97[ label = printf]
-FuncCall_97 -> printf_97
-FuncCall_97 -> ConstStr_98
-ConstStr_98 [label = ConstStr]
-str_98 [label = "2.struct_type.c PASS"]
-ConstStr_98 -> str_98
-IfStmt_92 -> Block_99
-Block_99 [label = Block]
-Block_99 -> FuncCall_100
-FuncCall_100 [label = FuncCall]
-printf_100[ label = printf]
-FuncCall_100 -> printf_100
-FuncCall_100 -> ConstStr_101
-ConstStr_101 [label = ConstStr]
-str_101 [label = "2.struct_type.c FAIL"]
-ConstStr_101 -> str_101
-FuncBody_20 -> ReturnStmt_102
-ReturnStmt_102 [label = ReturnStmt]
-ReturnStmt_102 -> Variable_103
-Variable_103 [label = Variable]
-err_103 [label = err]
-Variable_103 -> err_103
+IfStmt_92 -> Assign_96
+Assign_96 [label = Assign]
+Assign_96 -> Variable_97
+Variable_97 [label = Variable]
+err_97 [label = err]
+Variable_97 -> err_97
+Assign_96 -> Constant_98
+Constant_98 [label = Constant]
+int_98 [label = "1"]
+Constant_98 -> int_98
+FuncBody_20 -> IfStmt_99
+IfStmt_99 [label = IfStmt]
+IfStmt_99 -> LogicEq_100
+LogicEq_100 [label = LogicEq]
+LogicEq_100 -> Variable_101
+Variable_101 [label = Variable]
+err_101 [label = err]
+Variable_101 -> err_101
+LogicEq_100 -> Constant_102
+Constant_102 [label = Constant]
+int_102 [label = "0"]
+Constant_102 -> int_102
+IfStmt_99 -> Block_103
+Block_103 [label = Block]
+Block_103 -> FuncCall_104
+FuncCall_104 [label = FuncCall]
+printf_104[ label = printf]
+FuncCall_104 -> printf_104
+FuncCall_104 -> ConstStr_105
+ConstStr_105 [label = ConstStr]
+str_105 [label = "2.struct_type.c PASS"]
+ConstStr_105 -> str_105
+IfStmt_99 -> Block_106
+Block_106 [label = Block]
+Block_106 -> FuncCall_107
+FuncCall_107 [label = FuncCall]
+printf_107[ label = printf]
+FuncCall_107 -> printf_107
+FuncCall_107 -> ConstStr_108
+ConstStr_108 [label = ConstStr]
+str_108 [label = "2.struct_type.c FAIL"]
+ConstStr_108 -> str_108
+FuncBody_20 -> ReturnStmt_109
+ReturnStmt_109 [label = ReturnStmt]
+ReturnStmt_109 -> Variable_110
+Variable_110 [label = Variable]
+err_110 [label = err]
+Variable_110 -> err_110
 }

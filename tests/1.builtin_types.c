@@ -18,10 +18,14 @@ int main() {
   bool bf = false;
 
   if (ch != 'A') err = 1;
+  if (sh != -1024) err = 1;
   if (in != -12345678) err = 1;
   if (ln != -1234567890l) err = 1;
+  if (uch != 250) err = 1;
   if (uint != 0xabcdef0) err = 1;
   if (uln != 9876043210ul) err = 1;
+  if (bt != 1) err = 1;
+  if (bf != 0) err = 1;
 
   if (err == 0) {
     printf("1.builtin_types.c PASS\n");

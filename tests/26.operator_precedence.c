@@ -12,6 +12,8 @@ int main() {
   unsigned long b = 0x9abcdef09abcdef0;
   unsigned long c = (unsigned long)&a;
   unsigned long d = (unsigned long)&c & a & b;
+  if (a != 0x1234567812345678) err = 1;
+  if (b != 0x9abcdef09abcdef0) err = 1;
 
   int plusA = 13;
   if (3 + +plusA != 16) err = 1;

@@ -217,7 +217,7 @@ if.end33:                                         ; preds = %if.end30, %then31
   store i32 3, i32* %ub, align 4
   %80 = load i32, i32* %ua, align 4
   %81 = load i32, i32* %ub, align 4
-  %82 = sdiv i32 %80, %81
+  %82 = udiv i32 %80, %81
   %83 = icmp ne i32 %82, 3
   br i1 %83, label %then34, label %if.end36
 
@@ -229,7 +229,7 @@ then34:                                           ; preds = %if.end33
 if.end36:                                         ; preds = %if.end33, %then34
   %85 = load i32, i32* %ua, align 4
   %86 = load i32, i32* %ub, align 4
-  %87 = srem i32 %85, %86
+  %87 = urem i32 %85, %86
   %88 = icmp ne i32 %87, 1
   br i1 %88, label %then37, label %if.end39
 

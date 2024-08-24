@@ -11,6 +11,7 @@ int main() {
   int v;
 
   if (t == 0) err = 1;
+  if (f != 0) err = 1;
 
   v = t && f;
   if (v != 0) err = 1;
@@ -71,12 +72,16 @@ int main() {
   unsigned ua = 1;
   unsigned ub = 0xffffffff;
   v = ua < ub;
+  if (v == 0) err = 1;
   v = ub > ua;
+  if (v == 0) err = 1;
 
   int si = -1;
   unsigned ui = 1;
   v = si < ui;
+  if (v != 0) err = 1;
   v = si > ui;
+  if (v == 0) err = 1;
 
   // The logic operators yield int 0 or 1 — an exact value, not merely
   // "nonzero". Everything above tests against 0, which a one-bit result

@@ -496,98 +496,148 @@ Assign_148 -> Constant_150
 Constant_150 [label = Constant]
 int_150 [label = "1"]
 Constant_150 -> int_150
-FuncBody_8 -> VarDecl_151
-VarDecl_151 [label = VarDecl]
-VarDecl_151 -> BuiltinType_152
-BuiltinType_152 [label = BuiltinType]
-"uint_152" [label = "uint"]
-BuiltinType_152 -> "uint_152"
-VarDecl_151 -> VarInit_153
-VarInit_153 [label = VarInit]
-msbSet_153 [label = msbSet]
-VarInit_153 -> msbSet_153
-VarInit_153 -> Constant_154
+FuncBody_8 -> IfStmt_151
+IfStmt_151 [label = IfStmt]
+IfStmt_151 -> LogicNotEq_152
+LogicNotEq_152 [label = LogicNotEq]
+LogicNotEq_152 -> Variable_153
+Variable_153 [label = Variable]
+rightShiftVal_153 [label = rightShiftVal]
+Variable_153 -> rightShiftVal_153
+LogicNotEq_152 -> Constant_154
 Constant_154 [label = Constant]
-uint_154 [label = "2147483648"]
+uint_154 [label = "34661"]
 Constant_154 -> uint_154
-FuncBody_8 -> VarDecl_155
-VarDecl_155 [label = VarDecl]
-VarDecl_155 -> BuiltinType_156
-BuiltinType_156 [label = BuiltinType]
-"int_156" [label = "int"]
-BuiltinType_156 -> "int_156"
-VarDecl_155 -> VarInit_157
-VarInit_157 [label = VarInit]
-signedVal_157 [label = signedVal]
-VarInit_157 -> signedVal_157
-VarInit_157 -> Constant_158
-Constant_158 [label = Constant]
-int_158 [label = "-8"]
-Constant_158 -> int_158
-FuncBody_8 -> IfStmt_159
-IfStmt_159 [label = IfStmt]
-IfStmt_159 -> LogicNotEq_160
-LogicNotEq_160 [label = LogicNotEq]
-LogicNotEq_160 -> RightShift_161
-RightShift_161 [label = RightShift]
-RightShift_161 -> Variable_162
-Variable_162 [label = Variable]
-signedVal_162 [label = signedVal]
-Variable_162 -> signedVal_162
-RightShift_161 -> Constant_163
-Constant_163 [label = Constant]
-int_163 [label = "1"]
-Constant_163 -> int_163
-LogicNotEq_160 -> Constant_164
-Constant_164 [label = Constant]
-int_164 [label = "-4"]
-Constant_164 -> int_164
-IfStmt_159 -> Assign_165
-Assign_165 [label = Assign]
-Assign_165 -> Variable_166
-Variable_166 [label = Variable]
-err_166 [label = err]
-Variable_166 -> err_166
-Assign_165 -> Constant_167
+IfStmt_151 -> Assign_155
+Assign_155 [label = Assign]
+Assign_155 -> Variable_156
+Variable_156 [label = Variable]
+err_156 [label = err]
+Variable_156 -> err_156
+Assign_155 -> Constant_157
+Constant_157 [label = Constant]
+int_157 [label = "1"]
+Constant_157 -> int_157
+FuncBody_8 -> VarDecl_158
+VarDecl_158 [label = VarDecl]
+VarDecl_158 -> BuiltinType_159
+BuiltinType_159 [label = BuiltinType]
+"uint_159" [label = "uint"]
+BuiltinType_159 -> "uint_159"
+VarDecl_158 -> VarInit_160
+VarInit_160 [label = VarInit]
+msbSet_160 [label = msbSet]
+VarInit_160 -> msbSet_160
+VarInit_160 -> Constant_161
+Constant_161 [label = Constant]
+uint_161 [label = "2147483648"]
+Constant_161 -> uint_161
+FuncBody_8 -> IfStmt_162
+IfStmt_162 [label = IfStmt]
+IfStmt_162 -> LogicNotEq_163
+LogicNotEq_163 [label = LogicNotEq]
+LogicNotEq_163 -> RightShift_164
+RightShift_164 [label = RightShift]
+RightShift_164 -> Variable_165
+Variable_165 [label = Variable]
+msbSet_165 [label = msbSet]
+Variable_165 -> msbSet_165
+RightShift_164 -> Constant_166
+Constant_166 [label = Constant]
+int_166 [label = "1"]
+Constant_166 -> int_166
+LogicNotEq_163 -> Constant_167
 Constant_167 [label = Constant]
-int_167 [label = "1"]
-Constant_167 -> int_167
-FuncBody_8 -> IfStmt_168
-IfStmt_168 [label = IfStmt]
-IfStmt_168 -> LogicEq_169
-LogicEq_169 [label = LogicEq]
-LogicEq_169 -> Variable_170
-Variable_170 [label = Variable]
-err_170 [label = err]
-Variable_170 -> err_170
-LogicEq_169 -> Constant_171
-Constant_171 [label = Constant]
-int_171 [label = "0"]
-Constant_171 -> int_171
-IfStmt_168 -> Block_172
-Block_172 [label = Block]
-Block_172 -> FuncCall_173
-FuncCall_173 [label = FuncCall]
-printf_173[ label = printf]
-FuncCall_173 -> printf_173
-FuncCall_173 -> ConstStr_174
-ConstStr_174 [label = ConstStr]
-str_174 [label = "14.bitwise.c PASS"]
-ConstStr_174 -> str_174
-IfStmt_168 -> Block_175
-Block_175 [label = Block]
-Block_175 -> FuncCall_176
-FuncCall_176 [label = FuncCall]
-printf_176[ label = printf]
-FuncCall_176 -> printf_176
-FuncCall_176 -> ConstStr_177
-ConstStr_177 [label = ConstStr]
-str_177 [label = "14.bitwise.c FAIL"]
-ConstStr_177 -> str_177
-FuncBody_8 -> ReturnStmt_178
-ReturnStmt_178 [label = ReturnStmt]
-ReturnStmt_178 -> Variable_179
-Variable_179 [label = Variable]
-err_179 [label = err]
-Variable_179 -> err_179
+uint_167 [label = "1073741824"]
+Constant_167 -> uint_167
+IfStmt_162 -> Assign_168
+Assign_168 [label = Assign]
+Assign_168 -> Variable_169
+Variable_169 [label = Variable]
+err_169 [label = err]
+Variable_169 -> err_169
+Assign_168 -> Constant_170
+Constant_170 [label = Constant]
+int_170 [label = "1"]
+Constant_170 -> int_170
+FuncBody_8 -> VarDecl_171
+VarDecl_171 [label = VarDecl]
+VarDecl_171 -> BuiltinType_172
+BuiltinType_172 [label = BuiltinType]
+"int_172" [label = "int"]
+BuiltinType_172 -> "int_172"
+VarDecl_171 -> VarInit_173
+VarInit_173 [label = VarInit]
+signedVal_173 [label = signedVal]
+VarInit_173 -> signedVal_173
+VarInit_173 -> Constant_174
+Constant_174 [label = Constant]
+int_174 [label = "-8"]
+Constant_174 -> int_174
+FuncBody_8 -> IfStmt_175
+IfStmt_175 [label = IfStmt]
+IfStmt_175 -> LogicNotEq_176
+LogicNotEq_176 [label = LogicNotEq]
+LogicNotEq_176 -> RightShift_177
+RightShift_177 [label = RightShift]
+RightShift_177 -> Variable_178
+Variable_178 [label = Variable]
+signedVal_178 [label = signedVal]
+Variable_178 -> signedVal_178
+RightShift_177 -> Constant_179
+Constant_179 [label = Constant]
+int_179 [label = "1"]
+Constant_179 -> int_179
+LogicNotEq_176 -> Constant_180
+Constant_180 [label = Constant]
+int_180 [label = "-4"]
+Constant_180 -> int_180
+IfStmt_175 -> Assign_181
+Assign_181 [label = Assign]
+Assign_181 -> Variable_182
+Variable_182 [label = Variable]
+err_182 [label = err]
+Variable_182 -> err_182
+Assign_181 -> Constant_183
+Constant_183 [label = Constant]
+int_183 [label = "1"]
+Constant_183 -> int_183
+FuncBody_8 -> IfStmt_184
+IfStmt_184 [label = IfStmt]
+IfStmt_184 -> LogicEq_185
+LogicEq_185 [label = LogicEq]
+LogicEq_185 -> Variable_186
+Variable_186 [label = Variable]
+err_186 [label = err]
+Variable_186 -> err_186
+LogicEq_185 -> Constant_187
+Constant_187 [label = Constant]
+int_187 [label = "0"]
+Constant_187 -> int_187
+IfStmt_184 -> Block_188
+Block_188 [label = Block]
+Block_188 -> FuncCall_189
+FuncCall_189 [label = FuncCall]
+printf_189[ label = printf]
+FuncCall_189 -> printf_189
+FuncCall_189 -> ConstStr_190
+ConstStr_190 [label = ConstStr]
+str_190 [label = "14.bitwise.c PASS"]
+ConstStr_190 -> str_190
+IfStmt_184 -> Block_191
+Block_191 [label = Block]
+Block_191 -> FuncCall_192
+FuncCall_192 [label = FuncCall]
+printf_192[ label = printf]
+FuncCall_192 -> printf_192
+FuncCall_192 -> ConstStr_193
+ConstStr_193 [label = ConstStr]
+str_193 [label = "14.bitwise.c FAIL"]
+ConstStr_193 -> str_193
+FuncBody_8 -> ReturnStmt_194
+ReturnStmt_194 [label = ReturnStmt]
+ReturnStmt_194 -> Variable_195
+Variable_195 [label = Variable]
+err_195 [label = err]
+Variable_195 -> err_195
 }

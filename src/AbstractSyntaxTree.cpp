@@ -14,7 +14,261 @@
 
 namespace AST {
 
-// Grammar Root
+VarType* VarType::getMemberVarType(const std::string& memberName) {
+  (void)memberName;
+  return nullptr;
+}
+
+VarType* StructType::getMemberVarType(const std::string& memberName) {
+  for (FieldDecl* decl : *structBody_) {
+    for (const std::string& name : *decl->memberList_) {
+      if (memberName == name) {
+        return decl->varType_;
+      }
+    }
+  }
+
+  return nullptr;
+}
+
+VarType* UnionType::getMemberVarType(const std::string& memberName) {
+  for (FieldDecl* decl : *unionBody_) {
+    for (const std::string& name : *decl->memberList_) {
+      if (memberName == name) {
+        return decl->varType_;
+      }
+    }
+  }
+
+  return nullptr;
+}
+
+VarType* Expr::getExprVarType(CodeGenerator& generator) { return nullptr; }
+
+VarType* Expr::getLValueVarType(CodeGenerator& generator) { return nullptr; }
+
+BuiltinTypeId Expr::getExprTypeId(CodeGenerator& generator) {
+  VarType* varType = getExprVarType(generator);
+  if (varType != nullptr) {
+    return Utils::varTypeToTypeId(varType);
+  }
+
+  return BuiltinTypeId::UNKNOWN;
+}
+
+BuiltinTypeId Expr::getLValueTypeId(CodeGenerator& generator) {
+  VarType* varType = getLValueVarType(generator);
+  if (varType != nullptr) {
+    return Utils::varTypeToTypeId(varType);
+  }
+
+  return BuiltinTypeId::UNKNOWN;
+}
+
+BuiltinTypeId Expr::binaryExprTypeId(Expr* lhs, Expr* rhs,
+                                     CodeGenerator& generator) {
+  bool isUnsigned = false;
+  return Utils::usualArithmeticConversion(
+      lhs->getExprTypeId(generator), rhs->getExprTypeId(generator), isUnsigned);
+}
+
+bool Expr::binaryIsUnsigned(Expr* lhs, Expr* rhs, CodeGenerator& generator) {
+  bool isUnsigned = false;
+  Utils::usualArithmeticConversion(lhs->getExprTypeId(generator),
+                                   rhs->getExprTypeId(generator), isUnsigned);
+  return isUnsigned;
+}
+
+BuiltinTypeId BinaryExpr::getExprTypeId(CodeGenerator& generator) {
+  return binaryExprTypeId(lhs_, rhs_, generator);
+}
+
+VarType* Variable::getExprVarType(CodeGenerator& generator) {
+  return generator.findVariableType(varName_);
+}
+
+VarType* Variable::getLValueVarType(CodeGenerator& generator) {
+  return getExprVarType(generator);
+}
+
+BuiltinTypeId Constant::getExprTypeId(CodeGenerator& generator) {
+  (void)generator;
+  return typeId_;
+}
+
+BuiltinTypeId ConstStr::getExprTypeId(CodeGenerator& generator) {
+  (void)generator;
+  return BuiltinTypeId::UNKNOWN;
+}
+
+VarType* CommaExpr::getExprVarType(CodeGenerator& generator) {
+  return rhs_->getExprVarType(generator);
+}
+
+VarType* FuncCall::getExprVarType(CodeGenerator& generator) {
+  return generator.findFuncRetType(funcName_);
+}
+
+VarType* StructRef::getExprVarType(CodeGenerator& generator) {
+  return getLValueVarType(generator);
+}
+
+VarType* StructRef::getLValueVarType(CodeGenerator& generator) {
+  VarType* structVarType = struct_->getExprVarType(generator);
+  if (structVarType == nullptr) {
+    return nullptr;
+  }
+
+  return structVarType->getMemberVarType(memberName_);
+}
+
+VarType* StructDeref::getExprVarType(CodeGenerator& generator) {
+  return getLValueVarType(generator);
+}
+
+VarType* StructDeref::getLValueVarType(CodeGenerator& generator) {
+  VarType* pointerVarType = structPtr_->getExprVarType(generator);
+  if (pointerVarType == nullptr) {
+    return nullptr;
+  }
+
+  VarType* pointeeType = pointerVarType->getElementVarType();
+  if (pointeeType == nullptr) {
+    return nullptr;
+  }
+
+  return pointeeType->getMemberVarType(memberName_);
+}
+
+VarType* Subscript::getExprVarType(CodeGenerator& generator) {
+  return getLValueVarType(generator);
+}
+
+VarType* Subscript::getLValueVarType(CodeGenerator& generator) {
+  VarType* arrayVarType = array_->getExprVarType(generator);
+  if (arrayVarType == nullptr) {
+    return nullptr;
+  }
+
+  return arrayVarType->getElementVarType();
+}
+
+VarType* TypeCast::getExprVarType(CodeGenerator& generator) {
+  (void)generator;
+  return varType_;
+}
+
+BuiltinTypeId SizeOf::getExprTypeId(CodeGenerator& generator) {
+  (void)generator;
+  return BuiltinTypeId::LONG;
+}
+
+VarType* UnaryPlus::getExprVarType(CodeGenerator& generator) {
+  return operand_->getExprVarType(generator);
+}
+
+VarType* UnaryMinus::getExprVarType(CodeGenerator& generator) {
+  return operand_->getExprVarType(generator);
+}
+
+BuiltinTypeId UnaryMinus::getExprTypeId(CodeGenerator& generator) {
+  return operand_->getExprTypeId(generator);
+}
+
+VarType* PointerDeref::getExprVarType(CodeGenerator& generator) {
+  VarType* pointerVarType = operand_->getExprVarType(generator);
+  if (pointerVarType == nullptr) {
+    return nullptr;
+  }
+
+  return pointerVarType->getElementVarType();
+}
+
+VarType* PointerDeref::getLValueVarType(CodeGenerator& generator) {
+  return getExprVarType(generator);
+}
+
+VarType* Assign::getExprVarType(CodeGenerator& generator) {
+  return rhs_->getExprVarType(generator);
+}
+
+VarType* PostfixInc::getExprVarType(CodeGenerator& generator) {
+  return getLValueVarType(generator);
+}
+
+VarType* PostfixInc::getLValueVarType(CodeGenerator& generator) {
+  return operand_->getLValueVarType(generator);
+}
+
+VarType* PostfixDec::getExprVarType(CodeGenerator& generator) {
+  return getLValueVarType(generator);
+}
+
+VarType* PostfixDec::getLValueVarType(CodeGenerator& generator) {
+  return operand_->getLValueVarType(generator);
+}
+
+VarType* PrefixInc::getExprVarType(CodeGenerator& generator) {
+  return getLValueVarType(generator);
+}
+
+VarType* PrefixInc::getLValueVarType(CodeGenerator& generator) {
+  return operand_->getLValueVarType(generator);
+}
+
+VarType* PrefixDec::getExprVarType(CodeGenerator& generator) {
+  return getLValueVarType(generator);
+}
+
+VarType* PrefixDec::getLValueVarType(CodeGenerator& generator) {
+  return operand_->getLValueVarType(generator);
+}
+
+VarType* TernaryCondition::getExprVarType(CodeGenerator& generator) {
+  return trueExpr_->getExprVarType(generator);
+}
+
+namespace {
+
+llvm::Value* compareOrdered(Expr* lhsExpr, Expr* rhsExpr, llvm::Value* lhs,
+                            llvm::Value* rhs, Utils::IntCmpPred intPred,
+                            llvm::CmpInst::Predicate floatPred,
+                            CodeGenerator& generator) {
+  BuiltinTypeId lhsTypeId = lhsExpr->getExprTypeId(generator);
+  BuiltinTypeId rhsTypeId = rhsExpr->getExprTypeId(generator);
+  bool isUnsigned = false;
+  BuiltinTypeId resultTypeId = BuiltinTypeId::UNKNOWN;
+  if (Utils::typeUpgrade(lhs, rhs, lhsTypeId, rhsTypeId, resultTypeId,
+                         isUnsigned)) {
+    if (lhs->getType()->isIntegerTy()) {
+      return Utils::createIntegerCmp(intPred, lhs, rhs, isUnsigned);
+    } else {
+      return g_builder.CreateFCmp(floatPred, lhs, rhs);
+    }
+  }
+
+  if (lhs->getType()->isPointerTy() && lhs->getType() == rhs->getType()) {
+    llvm::Value* lhsInt = g_builder.CreatePtrToInt(lhs, g_builder.getInt64Ty());
+    llvm::Value* rhsInt = g_builder.CreatePtrToInt(rhs, g_builder.getInt64Ty());
+    return Utils::createIntegerCmp(intPred, lhsInt, rhsInt, true);
+  } else if (lhs->getType()->isPointerTy() && rhs->getType()->isIntegerTy()) {
+    return Utils::createIntegerCmp(
+        intPred, g_builder.CreatePtrToInt(lhs, g_builder.getInt64Ty()),
+        Utils::typeUpgrade(rhs, g_builder.getInt64Ty(), rhsTypeId,
+                           BuiltinTypeId::ULONG),
+        true);
+  } else if (lhs->getType()->isIntegerTy() && rhs->getType()->isPointerTy()) {
+    return Utils::createIntegerCmp(
+        intPred,
+        Utils::typeUpgrade(lhs, g_builder.getInt64Ty(), lhsTypeId,
+                           BuiltinTypeId::ULONG),
+        g_builder.CreatePtrToInt(rhs, g_builder.getInt64Ty()), true);
+  }
+
+  return nullptr;
+}
+
+}  // namespace
 llvm::Value* Program::genCode(CodeGenerator& generator) {
   for (Decl* decl : *decls_) {
     if (decl != nullptr) {
@@ -71,6 +325,12 @@ llvm::Value* FuncDecl::genCode(CodeGenerator& generator) {
   llvm::Function* func =
       llvm::Function::Create(funcType, llvm::GlobalValue::ExternalLinkage,
                              funcName_, generator.module_);
+
+  std::vector<VarType*> paramVarTypes;
+  for (Param* param : *paramList_) {
+    paramVarTypes.push_back(param->varType_);
+  }
+  generator.setFuncSignature(funcName_, retType_, paramVarTypes);
   generator.addFunction(funcName_, func);
 
   // If there is already a declaration with the same function name.
@@ -111,7 +371,8 @@ llvm::Value* FuncDecl::genCode(CodeGenerator& generator) {
           func, paramList_->at(index)->varName_, paramTypes[index]);
       g_builder.CreateStore(paramIter, allocaInst);
       // Add parameter to symbol table.
-      generator.addVariable(paramList_->at(index)->varName_, allocaInst);
+      generator.addVariable(paramList_->at(index)->varName_, allocaInst,
+                            paramList_->at(index)->varType_);
     }
 
     // Generate code of the function body.
@@ -167,7 +428,7 @@ llvm::Value* VarDecl::genCode(CodeGenerator& generator) {
       // The declaration is inside a function, create an alloca.
       llvm::AllocaInst* allocaInst = Utils::createEntryBlockAlloca(
           generator.getCurrentFunction(), var->varName_, varType);
-      if (!generator.addVariable(var->varName_, allocaInst)) {
+      if (!generator.addVariable(var->varName_, allocaInst, varType_)) {
         allocaInst->eraseFromParent();
         allocaInst = nullptr;
         throw std::logic_error(
@@ -179,7 +440,9 @@ llvm::Value* VarDecl::genCode(CodeGenerator& generator) {
       // value.
       if (var->initialExpr_ != nullptr) {
         llvm::Value* initializer =
-            Utils::typeCast(var->initialExpr_->genCode(generator), varType);
+            Utils::typeCast(var->initialExpr_->genCode(generator), varType,
+                            var->initialExpr_->getExprTypeId(generator),
+                            Utils::varTypeToTypeId(varType_));
         if (initializer == nullptr) {
           allocaInst->eraseFromParent();
           allocaInst = nullptr;
@@ -194,7 +457,9 @@ llvm::Value* VarDecl::genCode(CodeGenerator& generator) {
       if (var->initialExpr_ != nullptr) {
         generator.switchInsertPointToGlobalBlock();
         llvm::Value* initialExpr =
-            Utils::typeCast(var->initialExpr_->genCode(generator), varType);
+            Utils::typeCast(var->initialExpr_->genCode(generator), varType,
+                            var->initialExpr_->getExprTypeId(generator),
+                            Utils::varTypeToTypeId(varType_));
         if (initialExpr == nullptr) {
           throw std::logic_error("It failed to init variable " + var->varName_ +
                                  " with value of different type!");
@@ -212,7 +477,7 @@ llvm::Value* VarDecl::genCode(CodeGenerator& generator) {
       llvm::GlobalVariable* globalVar = new llvm::GlobalVariable(
           *generator.module_, varType, varType_->isConst_,
           llvm::Function::ExternalLinkage, initializer, var->varName_);
-      if (!generator.addVariable(var->varName_, globalVar)) {
+      if (!generator.addVariable(var->varName_, globalVar, varType_)) {
         throw std::logic_error(
             "It is not allowed to redefine global variable " + var->varName_);
       }
@@ -549,7 +814,9 @@ llvm::Value* SwitchStmt::genCode(CodeGenerator& generator) {
     if (caseStmtList_->at(i)->condition_ != nullptr) {
       g_builder.CreateCondBr(
           Utils::createCmpEq(
-              matcher, caseStmtList_->at(i)->condition_->genCode(generator)),
+              matcher, caseStmtList_->at(i)->condition_->genCode(generator),
+              matcher_->getExprTypeId(generator),
+              caseStmtList_->at(i)->condition_->getExprTypeId(generator)),
           caseBlocks[i], comparisionBlocks[i + 1]);
     } else {
       // Unconditional branch for default statement.
@@ -778,7 +1045,10 @@ llvm::Value* ReturnStmt::genCode(CodeGenerator& generator) {
 
   if (retVal_ != nullptr) {
     llvm::Value* retVal =
-        Utils::typeCast(retVal_->genCode(generator), func->getReturnType());
+        Utils::typeCast(retVal_->genCode(generator), func->getReturnType(),
+                        retVal_->getExprTypeId(generator),
+                        Utils::varTypeToTypeId(
+                            generator.findFuncRetType(func->getName().str())));
     if (retVal == nullptr) {
       throw std::logic_error(
           "The type of return value does not match, and can not be casted to "
@@ -915,7 +1185,10 @@ llvm::Value* FuncCall::genCode(CodeGenerator& generator) {
   for (auto argIter = func->arg_begin(); argIter < func->arg_end();
        ++argIter, ++index) {
     llvm::Value* arg = argList_->at(index)->genCode(generator);
-    arg = Utils::typeCast(arg, argIter->getType());
+    AST::VarType* paramVarType = generator.findFuncParamType(funcName_, index);
+    arg = Utils::typeCast(arg, argIter->getType(),
+                          argList_->at(index)->getExprTypeId(generator),
+                          Utils::varTypeToTypeId(paramVarType));
     if (arg == nullptr) {
       throw std::logic_error("Argument " + std::to_string(index) +
                              " does not match type to call function " +
@@ -933,9 +1206,13 @@ llvm::Value* FuncCall::genCode(CodeGenerator& generator) {
       // C default argument promotions for the variadic tail (required by the
       // calling convention): char/short/bool -> int, float -> double.
       if (arg->getType()->isIntegerTy()) {
-        arg = Utils::typeUpgrade(arg, g_builder.getInt32Ty());
+        arg = Utils::typeUpgrade(arg, g_builder.getInt32Ty(),
+                                 argList_->at(index)->getExprTypeId(generator),
+                                 BuiltinTypeId::INT);
       } else if (arg->getType()->isFloatingPointTy()) {
-        arg = Utils::typeUpgrade(arg, g_builder.getDoubleTy());
+        arg = Utils::typeUpgrade(arg, g_builder.getDoubleTy(),
+                                 argList_->at(index)->getExprTypeId(generator),
+                                 BuiltinTypeId::DOUBLE);
       }
 
       args.push_back(arg);
@@ -1064,12 +1341,14 @@ llvm::Value* Subscript::genCodePtr(CodeGenerator& generator) {
     throw std::logic_error("Subscription index should be integer!");
   }
 
-  return Utils::createAdd(arrayPtr, idx, generator);
+  return Utils::createAdd(arrayPtr, idx, array_->getExprTypeId(generator),
+                          index_->getExprTypeId(generator), generator);
 }
 
 llvm::Value* TypeCast::genCode(CodeGenerator& generator) {
-  llvm::Value* ret = Utils::typeCast(operand_->genCode(generator),
-                                     varType_->getType(generator));
+  llvm::Value* ret = Utils::typeCast(
+      operand_->genCode(generator), varType_->getType(generator),
+      operand_->getExprTypeId(generator), Utils::varTypeToTypeId(varType_));
   if (ret == nullptr) {
     throw std::logic_error("Unable to type cast!");
   }
@@ -1173,13 +1452,16 @@ llvm::Value* Assign::genCode(CodeGenerator& generator) {
 llvm::Value* Assign::genCodePtr(CodeGenerator& generator) {
   llvm::Value* lhs = lhs_->genCodePtr(generator);
   llvm::Value* rhs = rhs_->genCode(generator);
-  return Utils::createAssign(lhs, rhs, generator);
+  return Utils::createAssign(lhs, rhs, generator,
+                             rhs_->getExprTypeId(generator),
+                             lhs_->getLValueTypeId(generator));
 }
 
 llvm::Value* Add::genCode(CodeGenerator& generator) {
   llvm::Value* lhs = lhs_->genCode(generator);
   llvm::Value* rhs = rhs_->genCode(generator);
-  return Utils::createAdd(lhs, rhs, generator);
+  return Utils::createAdd(lhs, rhs, lhs_->getExprTypeId(generator),
+                          rhs_->getExprTypeId(generator), generator);
 }
 
 llvm::Value* Add::genCodePtr(CodeGenerator& generator) {
@@ -1189,7 +1471,8 @@ llvm::Value* Add::genCodePtr(CodeGenerator& generator) {
 llvm::Value* Sub::genCode(CodeGenerator& generator) {
   llvm::Value* lhs = lhs_->genCode(generator);
   llvm::Value* rhs = rhs_->genCode(generator);
-  return Utils::createSub(lhs, rhs, generator);
+  return Utils::createSub(lhs, rhs, lhs_->getExprTypeId(generator),
+                          rhs_->getExprTypeId(generator), generator);
 }
 
 llvm::Value* Sub::genCodePtr(CodeGenerator& generator) {
@@ -1199,7 +1482,8 @@ llvm::Value* Sub::genCodePtr(CodeGenerator& generator) {
 llvm::Value* Mul::genCode(CodeGenerator& generator) {
   llvm::Value* lhs = lhs_->genCode(generator);
   llvm::Value* rhs = rhs_->genCode(generator);
-  return Utils::createMul(lhs, rhs, generator);
+  return Utils::createMul(lhs, rhs, lhs_->getExprTypeId(generator),
+                          rhs_->getExprTypeId(generator), generator);
 }
 
 llvm::Value* Mul::genCodePtr(CodeGenerator& generator) {
@@ -1209,7 +1493,9 @@ llvm::Value* Mul::genCodePtr(CodeGenerator& generator) {
 llvm::Value* Div::genCode(CodeGenerator& generator) {
   llvm::Value* lhs = lhs_->genCode(generator);
   llvm::Value* rhs = rhs_->genCode(generator);
-  return Utils::createDiv(lhs, rhs, generator);
+  return Utils::createDiv(
+      lhs, rhs, lhs_->getExprTypeId(generator), rhs_->getExprTypeId(generator),
+      Expr::binaryIsUnsigned(lhs_, rhs_, generator), generator);
 }
 
 llvm::Value* Div::genCodePtr(CodeGenerator& generator) {
@@ -1219,7 +1505,9 @@ llvm::Value* Div::genCodePtr(CodeGenerator& generator) {
 llvm::Value* Mod::genCode(CodeGenerator& generator) {
   llvm::Value* lhs = lhs_->genCode(generator);
   llvm::Value* rhs = rhs_->genCode(generator);
-  return Utils::createMod(lhs, rhs, generator);
+  return Utils::createMod(
+      lhs, rhs, lhs_->getExprTypeId(generator), rhs_->getExprTypeId(generator),
+      Expr::binaryIsUnsigned(lhs_, rhs_, generator), generator);
 }
 
 llvm::Value* Mod::genCodePtr(CodeGenerator& generator) {
@@ -1239,7 +1527,9 @@ llvm::Value* PostfixInc::genCode(CodeGenerator& generator) {
     size_t valueBitWidth =
         ((llvm::IntegerType*)value->getType())->getBitWidth();
     llvm::Value* oneValue = Utils::getOneValue(valueBitWidth);
-    llvm::Value* valuePlus = Utils::createAdd(value, oneValue, generator);
+    llvm::Value* valuePlus =
+        Utils::createAdd(value, oneValue, operand_->getLValueTypeId(generator),
+                         BuiltinTypeId::INT, generator);
     g_builder.CreateStore(valuePlus, operand);
     return value;
   }
@@ -1264,7 +1554,9 @@ llvm::Value* PostfixDec::genCode(CodeGenerator& generator) {
     size_t valueBitWidth =
         ((llvm::IntegerType*)value->getType())->getBitWidth();
     llvm::Value* oneValue = Utils::getOneValue(valueBitWidth);
-    llvm::Value* valueMinus = Utils::createSub(value, oneValue, generator);
+    llvm::Value* valueMinus =
+        Utils::createSub(value, oneValue, operand_->getLValueTypeId(generator),
+                         BuiltinTypeId::INT, generator);
     g_builder.CreateStore(valueMinus, operand);
     return value;
   }
@@ -1293,7 +1585,9 @@ llvm::Value* PrefixInc::genCodePtr(CodeGenerator& generator) {
     size_t valueBitWidth =
         ((llvm::IntegerType*)value->getType())->getBitWidth();
     llvm::Value* oneValue = Utils::getOneValue(valueBitWidth);
-    llvm::Value* valuePlus = Utils::createAdd(value, oneValue, generator);
+    llvm::Value* valuePlus =
+        Utils::createAdd(value, oneValue, operand_->getLValueTypeId(generator),
+                         BuiltinTypeId::INT, generator);
     g_builder.CreateStore(valuePlus, operand);
     return operand;
   }
@@ -1317,7 +1611,9 @@ llvm::Value* PrefixDec::genCodePtr(CodeGenerator& generator) {
     size_t valueBitWidth =
         ((llvm::IntegerType*)value->getType())->getBitWidth();
     llvm::Value* oneValue = Utils::getOneValue(valueBitWidth);
-    llvm::Value* valueMinus = Utils::createSub(value, oneValue, generator);
+    llvm::Value* valueMinus =
+        Utils::createSub(value, oneValue, operand_->getLValueTypeId(generator),
+                         BuiltinTypeId::INT, generator);
     g_builder.CreateStore(valueMinus, operand);
     return operand;
   }
@@ -1339,8 +1635,10 @@ llvm::Value* AddAssign::genCodePtr(CodeGenerator& generator) {
       Utils::createAdd(
           g_builder.CreateLoad(lhs->getType()->getNonOpaquePointerElementType(),
                                lhs),
-          rhs, generator),
-      generator);
+          rhs, lhs_->getLValueTypeId(generator), rhs_->getExprTypeId(generator),
+          generator),
+      generator, rhs_->getExprTypeId(generator),
+      lhs_->getLValueTypeId(generator));
 }
 
 llvm::Value* SubAssign::genCode(CodeGenerator& generator) {
@@ -1355,8 +1653,10 @@ llvm::Value* SubAssign::genCodePtr(CodeGenerator& generator) {
       Utils::createSub(
           g_builder.CreateLoad(lhs->getType()->getNonOpaquePointerElementType(),
                                lhs),
-          rhs, generator),
-      generator);
+          rhs, lhs_->getLValueTypeId(generator), rhs_->getExprTypeId(generator),
+          generator),
+      generator, rhs_->getExprTypeId(generator),
+      lhs_->getLValueTypeId(generator));
 }
 
 llvm::Value* MulAssign::genCode(CodeGenerator& generator) {
@@ -1371,8 +1671,10 @@ llvm::Value* MulAssign::genCodePtr(CodeGenerator& generator) {
       Utils::createMul(
           g_builder.CreateLoad(lhs->getType()->getNonOpaquePointerElementType(),
                                lhs),
-          rhs, generator),
-      generator);
+          rhs, lhs_->getLValueTypeId(generator), rhs_->getExprTypeId(generator),
+          generator),
+      generator, rhs_->getExprTypeId(generator),
+      lhs_->getLValueTypeId(generator));
 }
 
 llvm::Value* DivAssign::genCode(CodeGenerator& generator) {
@@ -1387,8 +1689,10 @@ llvm::Value* DivAssign::genCodePtr(CodeGenerator& generator) {
       Utils::createDiv(
           g_builder.CreateLoad(lhs->getType()->getNonOpaquePointerElementType(),
                                lhs),
-          rhs, generator),
-      generator);
+          rhs, lhs_->getLValueTypeId(generator), rhs_->getExprTypeId(generator),
+          Expr::binaryIsUnsigned(lhs_, rhs_, generator), generator),
+      generator, rhs_->getExprTypeId(generator),
+      lhs_->getLValueTypeId(generator));
 }
 
 llvm::Value* ModAssign::genCode(CodeGenerator& generator) {
@@ -1403,14 +1707,17 @@ llvm::Value* ModAssign::genCodePtr(CodeGenerator& generator) {
       Utils::createMod(
           g_builder.CreateLoad(lhs->getType()->getNonOpaquePointerElementType(),
                                lhs),
-          rhs, generator),
-      generator);
+          rhs, lhs_->getLValueTypeId(generator), rhs_->getExprTypeId(generator),
+          Expr::binaryIsUnsigned(lhs_, rhs_, generator), generator),
+      generator, rhs_->getExprTypeId(generator),
+      lhs_->getLValueTypeId(generator));
 }
 
 llvm::Value* BitwiseAnd::genCode(CodeGenerator& generator) {
   llvm::Value* lhs = lhs_->genCode(generator);
   llvm::Value* rhs = rhs_->genCode(generator);
-  return Utils::createBitwiseAnd(lhs, rhs, generator);
+  return Utils::createBitwiseAnd(lhs, rhs, lhs_->getExprTypeId(generator),
+                                 rhs_->getExprTypeId(generator), generator);
 }
 
 llvm::Value* BitwiseAnd::genCodePtr(CodeGenerator& generator) {
@@ -1421,7 +1728,8 @@ llvm::Value* BitwiseAnd::genCodePtr(CodeGenerator& generator) {
 llvm::Value* BitwiseOr::genCode(CodeGenerator& generator) {
   llvm::Value* lhs = lhs_->genCode(generator);
   llvm::Value* rhs = rhs_->genCode(generator);
-  return Utils::createBitwiseOr(lhs, rhs, generator);
+  return Utils::createBitwiseOr(lhs, rhs, lhs_->getExprTypeId(generator),
+                                rhs_->getExprTypeId(generator), generator);
 }
 
 llvm::Value* BitwiseOr::genCodePtr(CodeGenerator& generator) {
@@ -1432,7 +1740,8 @@ llvm::Value* BitwiseOr::genCodePtr(CodeGenerator& generator) {
 llvm::Value* BitwiseXor::genCode(CodeGenerator& generator) {
   llvm::Value* lhs = lhs_->genCode(generator);
   llvm::Value* rhs = rhs_->genCode(generator);
-  return Utils::createBitwiseXor(lhs, rhs, generator);
+  return Utils::createBitwiseXor(lhs, rhs, lhs_->getExprTypeId(generator),
+                                 rhs_->getExprTypeId(generator), generator);
 }
 
 llvm::Value* BitwiseXor::genCodePtr(CodeGenerator& generator) {
@@ -1467,8 +1776,10 @@ llvm::Value* BitwiseAndAssign::genCodePtr(CodeGenerator& generator) {
       Utils::createBitwiseAnd(
           g_builder.CreateLoad(lhs->getType()->getNonOpaquePointerElementType(),
                                lhs),
-          rhs, generator),
-      generator);
+          rhs, lhs_->getLValueTypeId(generator), rhs_->getExprTypeId(generator),
+          generator),
+      generator, rhs_->getExprTypeId(generator),
+      lhs_->getLValueTypeId(generator));
 }
 
 llvm::Value* BitwiseOrAssign::genCode(CodeGenerator& generator) {
@@ -1483,8 +1794,10 @@ llvm::Value* BitwiseOrAssign::genCodePtr(CodeGenerator& generator) {
       Utils::createBitwiseOr(
           g_builder.CreateLoad(lhs->getType()->getNonOpaquePointerElementType(),
                                lhs),
-          rhs, generator),
-      generator);
+          rhs, lhs_->getLValueTypeId(generator), rhs_->getExprTypeId(generator),
+          generator),
+      generator, rhs_->getExprTypeId(generator),
+      lhs_->getLValueTypeId(generator));
 }
 
 llvm::Value* BitwiseXorAssign::genCode(CodeGenerator& generator) {
@@ -1499,14 +1812,17 @@ llvm::Value* BitwiseXorAssign::genCodePtr(CodeGenerator& generator) {
       Utils::createBitwiseXor(
           g_builder.CreateLoad(lhs->getType()->getNonOpaquePointerElementType(),
                                lhs),
-          rhs, generator),
-      generator);
+          rhs, lhs_->getLValueTypeId(generator), rhs_->getExprTypeId(generator),
+          generator),
+      generator, rhs_->getExprTypeId(generator),
+      lhs_->getLValueTypeId(generator));
 }
 
 llvm::Value* LeftShift::genCode(CodeGenerator& generator) {
   llvm::Value* lhs = lhs_->genCode(generator);
   llvm::Value* rhs = rhs_->genCode(generator);
-  return Utils::createShl(lhs, rhs, generator);
+  return Utils::createShl(lhs, rhs, lhs_->getExprTypeId(generator),
+                          rhs_->getExprTypeId(generator), generator);
 }
 
 llvm::Value* LeftShift::genCodePtr(CodeGenerator& generator) {
@@ -1517,7 +1833,9 @@ llvm::Value* LeftShift::genCodePtr(CodeGenerator& generator) {
 llvm::Value* RightShift::genCode(CodeGenerator& generator) {
   llvm::Value* lhs = lhs_->genCode(generator);
   llvm::Value* rhs = rhs_->genCode(generator);
-  return Utils::createShr(lhs, rhs, generator);
+  return Utils::createShr(
+      lhs, rhs, lhs_->getExprTypeId(generator), rhs_->getExprTypeId(generator),
+      Expr::binaryIsUnsigned(lhs_, rhs_, generator), generator);
 }
 
 llvm::Value* RightShift::genCodePtr(CodeGenerator& generator) {
@@ -1537,8 +1855,10 @@ llvm::Value* LeftShiftAssign::genCodePtr(CodeGenerator& generator) {
       Utils::createShl(
           g_builder.CreateLoad(lhs->getType()->getNonOpaquePointerElementType(),
                                lhs),
-          rhs, generator),
-      generator);
+          rhs, lhs_->getLValueTypeId(generator), rhs_->getExprTypeId(generator),
+          generator),
+      generator, rhs_->getExprTypeId(generator),
+      lhs_->getLValueTypeId(generator));
 }
 
 llvm::Value* RightShiftAssign::genCode(CodeGenerator& generator) {
@@ -1553,8 +1873,10 @@ llvm::Value* RightShiftAssign::genCodePtr(CodeGenerator& generator) {
       Utils::createShr(
           g_builder.CreateLoad(lhs->getType()->getNonOpaquePointerElementType(),
                                lhs),
-          rhs, generator),
-      generator);
+          rhs, lhs_->getLValueTypeId(generator), rhs_->getExprTypeId(generator),
+          Expr::binaryIsUnsigned(lhs_, rhs_, generator), generator),
+      generator, rhs_->getExprTypeId(generator),
+      lhs_->getLValueTypeId(generator));
 }
 
 llvm::Value* LogicAnd::genCode(CodeGenerator& generator) {
@@ -1614,7 +1936,8 @@ llvm::Value* LogicNot::genCodePtr(CodeGenerator& generator) {
 llvm::Value* LogicEq::genCode(CodeGenerator& generator) {
   llvm::Value* lhs = lhs_->genCode(generator);
   llvm::Value* rhs = rhs_->genCode(generator);
-  return Utils::createCmpEq(lhs, rhs);
+  return Utils::createCmpEq(lhs, rhs, lhs_->getExprTypeId(generator),
+                            rhs_->getExprTypeId(generator));
 }
 
 llvm::Value* LogicEq::genCodePtr(CodeGenerator& generator) {
@@ -1624,29 +1947,10 @@ llvm::Value* LogicEq::genCodePtr(CodeGenerator& generator) {
 llvm::Value* LogicNotEq::genCode(CodeGenerator& generator) {
   llvm::Value* lhs = lhs_->genCode(generator);
   llvm::Value* rhs = rhs_->genCode(generator);
-
-  // Arithmetic comparision
-  if (Utils::typeUpgrade(lhs, rhs)) {
-    if (lhs->getType()->isIntegerTy()) {
-      return g_builder.CreateICmpNE(lhs, rhs);
-    } else {
-      return g_builder.CreateFCmpONE(lhs, rhs);
-    }
-  }
-
-  // Pointer comparision
-  if (lhs->getType()->isPointerTy() && lhs->getType() == rhs->getType()) {
-    return g_builder.CreateICmpNE(
-        g_builder.CreatePtrToInt(lhs, g_builder.getInt64Ty()),
-        g_builder.CreatePtrToInt(rhs, g_builder.getInt64Ty()));
-  } else if (lhs->getType()->isPointerTy() && rhs->getType()->isIntegerTy()) {
-    return g_builder.CreateICmpNE(
-        g_builder.CreatePtrToInt(lhs, g_builder.getInt64Ty()),
-        Utils::typeUpgrade(rhs, g_builder.getInt64Ty()));
-  } else if (lhs->getType()->isIntegerTy() && rhs->getType()->isPointerTy()) {
-    return g_builder.CreateICmpNE(
-        Utils::typeUpgrade(lhs, g_builder.getInt64Ty()),
-        g_builder.CreatePtrToInt(rhs, g_builder.getInt64Ty()));
+  llvm::Value* cmp = compareOrdered(lhs_, rhs_, lhs, rhs, Utils::IntCmpPred::NE,
+                                    llvm::CmpInst::FCMP_ONE, generator);
+  if (cmp != nullptr) {
+    return cmp;
   }
 
   throw std::domain_error("Unsupported type for operator \"!=\"");
@@ -1659,29 +1963,10 @@ llvm::Value* LogicNotEq::genCodePtr(CodeGenerator& generator) {
 llvm::Value* LogicLessThan::genCode(CodeGenerator& generator) {
   llvm::Value* lhs = lhs_->genCode(generator);
   llvm::Value* rhs = rhs_->genCode(generator);
-
-  // Arithmetic comparision
-  if (Utils::typeUpgrade(lhs, rhs)) {
-    if (lhs->getType()->isIntegerTy()) {
-      return g_builder.CreateICmpSLT(lhs, rhs);
-    } else {
-      return g_builder.CreateFCmpOLT(lhs, rhs);
-    }
-  }
-
-  // Pointer comparision
-  if (lhs->getType()->isPointerTy() && lhs->getType() == rhs->getType()) {
-    return g_builder.CreateICmpULT(
-        g_builder.CreatePtrToInt(lhs, g_builder.getInt64Ty()),
-        g_builder.CreatePtrToInt(rhs, g_builder.getInt64Ty()));
-  } else if (lhs->getType()->isPointerTy() && rhs->getType()->isIntegerTy()) {
-    return g_builder.CreateICmpULT(
-        g_builder.CreatePtrToInt(lhs, g_builder.getInt64Ty()),
-        Utils::typeUpgrade(rhs, g_builder.getInt64Ty()));
-  } else if (lhs->getType()->isIntegerTy() && rhs->getType()->isPointerTy()) {
-    return g_builder.CreateICmpULT(
-        Utils::typeUpgrade(lhs, g_builder.getInt64Ty()),
-        g_builder.CreatePtrToInt(rhs, g_builder.getInt64Ty()));
+  llvm::Value* cmp = compareOrdered(lhs_, rhs_, lhs, rhs, Utils::IntCmpPred::LT,
+                                    llvm::CmpInst::FCMP_OLT, generator);
+  if (cmp != nullptr) {
+    return cmp;
   }
 
   throw std::domain_error("Unsupported type for operator \"<\"");
@@ -1694,29 +1979,10 @@ llvm::Value* LogicLessThan::genCodePtr(CodeGenerator& generator) {
 llvm::Value* LogicLessEq::genCode(CodeGenerator& generator) {
   llvm::Value* lhs = lhs_->genCode(generator);
   llvm::Value* rhs = rhs_->genCode(generator);
-
-  // Arithmetic comparision
-  if (Utils::typeUpgrade(lhs, rhs)) {
-    if (lhs->getType()->isIntegerTy()) {
-      return g_builder.CreateICmpSLE(lhs, rhs);
-    } else {
-      return g_builder.CreateFCmpOLE(lhs, rhs);
-    }
-  }
-
-  // Pointer comparision
-  if (lhs->getType()->isPointerTy() && lhs->getType() == rhs->getType()) {
-    return g_builder.CreateICmpULE(
-        g_builder.CreatePtrToInt(lhs, g_builder.getInt64Ty()),
-        g_builder.CreatePtrToInt(rhs, g_builder.getInt64Ty()));
-  } else if (lhs->getType()->isPointerTy() && rhs->getType()->isIntegerTy()) {
-    return g_builder.CreateICmpULE(
-        g_builder.CreatePtrToInt(lhs, g_builder.getInt64Ty()),
-        Utils::typeUpgrade(rhs, g_builder.getInt64Ty()));
-  } else if (lhs->getType()->isIntegerTy() && rhs->getType()->isPointerTy()) {
-    return g_builder.CreateICmpULE(
-        Utils::typeUpgrade(lhs, g_builder.getInt64Ty()),
-        g_builder.CreatePtrToInt(rhs, g_builder.getInt64Ty()));
+  llvm::Value* cmp = compareOrdered(lhs_, rhs_, lhs, rhs, Utils::IntCmpPred::LE,
+                                    llvm::CmpInst::FCMP_OLE, generator);
+  if (cmp != nullptr) {
+    return cmp;
   }
 
   throw std::domain_error("Unsupported type for operator \"<=\"");
@@ -1729,29 +1995,10 @@ llvm::Value* LogicLessEq::genCodePtr(CodeGenerator& generator) {
 llvm::Value* LogicGreaterThan::genCode(CodeGenerator& generator) {
   llvm::Value* lhs = lhs_->genCode(generator);
   llvm::Value* rhs = rhs_->genCode(generator);
-
-  // Arithmetic comparision
-  if (Utils::typeUpgrade(lhs, rhs)) {
-    if (lhs->getType()->isIntegerTy()) {
-      return g_builder.CreateICmpSGT(lhs, rhs);
-    } else {
-      return g_builder.CreateFCmpOGT(lhs, rhs);
-    }
-  }
-
-  // Pointer comparision
-  if (lhs->getType()->isPointerTy() && lhs->getType() == rhs->getType()) {
-    return g_builder.CreateICmpUGT(
-        g_builder.CreatePtrToInt(lhs, g_builder.getInt64Ty()),
-        g_builder.CreatePtrToInt(rhs, g_builder.getInt64Ty()));
-  } else if (lhs->getType()->isPointerTy() && rhs->getType()->isIntegerTy()) {
-    return g_builder.CreateICmpUGT(
-        g_builder.CreatePtrToInt(lhs, g_builder.getInt64Ty()),
-        Utils::typeUpgrade(rhs, g_builder.getInt64Ty()));
-  } else if (lhs->getType()->isIntegerTy() && rhs->getType()->isPointerTy()) {
-    return g_builder.CreateICmpUGT(
-        Utils::typeUpgrade(lhs, g_builder.getInt64Ty()),
-        g_builder.CreatePtrToInt(rhs, g_builder.getInt64Ty()));
+  llvm::Value* cmp = compareOrdered(lhs_, rhs_, lhs, rhs, Utils::IntCmpPred::GT,
+                                    llvm::CmpInst::FCMP_OGT, generator);
+  if (cmp != nullptr) {
+    return cmp;
   }
 
   throw std::domain_error("Unsupported type for operator \">\"");
@@ -1764,29 +2011,10 @@ llvm::Value* LogicGreaterThan::genCodePtr(CodeGenerator& generator) {
 llvm::Value* LogicGreaterEq::genCode(CodeGenerator& generator) {
   llvm::Value* lhs = lhs_->genCode(generator);
   llvm::Value* rhs = rhs_->genCode(generator);
-
-  // Arithmetic comparision
-  if (Utils::typeUpgrade(lhs, rhs)) {
-    if (lhs->getType()->isIntegerTy()) {
-      return g_builder.CreateICmpSGE(lhs, rhs);
-    } else {
-      return g_builder.CreateFCmpOGE(lhs, rhs);
-    }
-  }
-
-  // Pointer comparision
-  if (lhs->getType()->isPointerTy() && lhs->getType() == rhs->getType()) {
-    return g_builder.CreateICmpUGE(
-        g_builder.CreatePtrToInt(lhs, g_builder.getInt64Ty()),
-        g_builder.CreatePtrToInt(rhs, g_builder.getInt64Ty()));
-  } else if (lhs->getType()->isPointerTy() && rhs->getType()->isIntegerTy()) {
-    return g_builder.CreateICmpUGE(
-        g_builder.CreatePtrToInt(lhs, g_builder.getInt64Ty()),
-        Utils::typeUpgrade(rhs, g_builder.getInt64Ty()));
-  } else if (lhs->getType()->isIntegerTy() && rhs->getType()->isPointerTy()) {
-    return g_builder.CreateICmpUGE(
-        Utils::typeUpgrade(lhs, g_builder.getInt64Ty()),
-        g_builder.CreatePtrToInt(rhs, g_builder.getInt64Ty()));
+  llvm::Value* cmp = compareOrdered(lhs_, rhs_, lhs, rhs, Utils::IntCmpPred::GE,
+                                    llvm::CmpInst::FCMP_OGE, generator);
+  if (cmp != nullptr) {
+    return cmp;
   }
 
   throw std::domain_error("Unsupported type for operator \">=\"");
@@ -1805,8 +2033,12 @@ llvm::Value* TernaryCondition::genCode(CodeGenerator& generator) {
 
   llvm::Value* trueVal = trueExpr_->genCode(generator);
   llvm::Value* falseVal = falseExpr_->genCode(generator);
+  bool isUnsigned = false;
+  BuiltinTypeId resultTypeId = BuiltinTypeId::UNKNOWN;
   if (trueVal->getType() == falseVal->getType() ||
-      Utils::typeUpgrade(trueVal, falseVal)) {
+      Utils::typeUpgrade(trueVal, falseVal, trueExpr_->getExprTypeId(generator),
+                         falseExpr_->getExprTypeId(generator), resultTypeId,
+                         isUnsigned)) {
     return g_builder.CreateSelect(condition, trueVal, falseVal);
   }
 
@@ -1824,8 +2056,12 @@ llvm::Value* TernaryCondition::genCodePtr(CodeGenerator& generator) {
 
   llvm::Value* trueVal = trueExpr_->genCodePtr(generator);
   llvm::Value* falseVal = falseExpr_->genCodePtr(generator);
+  bool isUnsigned = false;
+  BuiltinTypeId resultTypeId = BuiltinTypeId::UNKNOWN;
   if (trueVal->getType() == falseVal->getType() ||
-      Utils::typeUpgrade(trueVal, falseVal)) {
+      Utils::typeUpgrade(trueVal, falseVal, trueExpr_->getExprTypeId(generator),
+                         falseExpr_->getExprTypeId(generator), resultTypeId,
+                         isUnsigned)) {
     return g_builder.CreateSelect(condition, trueVal, falseVal);
   }
 

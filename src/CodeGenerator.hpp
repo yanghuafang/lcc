@@ -12,6 +12,7 @@ namespace AST {
 class Program;
 class StructType;
 class UnionType;
+class VarType;
 
 }  // namespace AST
 
@@ -83,7 +84,19 @@ class CodeGenerator {
   // Add variable to the current symbol table.
   // Return false if the same variable already exists in the current symbol
   // table.
-  bool addVariable(const std::string& varName, llvm::Value* var);
+  bool addVariable(const std::string& varName, llvm::Value* var,
+                   AST::VarType* varType = nullptr);
+
+  // Find C type of a variable from stack of symbol tables.
+  AST::VarType* findVariableType(const std::string& varName);
+
+  // Record function parameter/return C types for call-site casts.
+  void setFuncSignature(const std::string& funcName, AST::VarType* retType,
+                        const std::vector<AST::VarType*>& paramTypes);
+
+  AST::VarType* findFuncRetType(const std::string& funcName);
+
+  AST::VarType* findFuncParamType(const std::string& funcName, size_t index);
 
   // Find constant from stack of symbol tables.
   llvm::Value* findConstant(const std::string& varName);
@@ -157,9 +170,10 @@ class CodeGenerator {
     Symbol(llvm::Function* func)
         : content_(func), type_(SymbolType::FUNCTION) {}
     Symbol(llvm::Type* type) : content_(type), type_(SymbolType::TYPE) {}
-    Symbol(llvm::Value* value, bool isConst)
+    Symbol(llvm::Value* value, bool isConst, AST::VarType* varType = nullptr)
         : content_(value),
-          type_(isConst ? SymbolType::CONSTANT : SymbolType::VARIABLE) {}
+          type_(isConst ? SymbolType::CONSTANT : SymbolType::VARIABLE),
+          varType_(varType) {}
 
     llvm::Function* getFunction() {
       return type_ == SymbolType::FUNCTION ? (llvm::Function*)content_
@@ -178,11 +192,14 @@ class CodeGenerator {
       return type_ == SymbolType::CONSTANT ? (llvm::Value*)content_ : nullptr;
     }
 
+    AST::VarType* getVarType() { return varType_; }
+
    private:
     enum SymbolType { UNDEFINED = 0, FUNCTION, TYPE, VARIABLE, CONSTANT };
 
     SymbolType type_;
     void* content_;
+    AST::VarType* varType_ = nullptr;
   };
 
   using SymbolTable = std::map<std::string, Symbol>;
@@ -210,4 +227,7 @@ class CodeGenerator {
   // Be used to switch insert point back to local current block.
   llvm::BasicBlock* currentBlock_;
   llvm::Function* currentFunc_;
+
+  std::map<std::string, AST::VarType*> funcRetTypes_;
+  std::map<std::string, std::vector<AST::VarType*>> funcParamTypes_;
 };

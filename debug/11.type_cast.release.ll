@@ -68,100 +68,133 @@ entry:
   %18 = fptrunc double %17 to float
   store float %18, float* %floatVal2, align 4
   %19 = load i8, i8* %charVal2, align 1
-  %20 = icmp ne i8 %19, 65
-  br i1 %20, label %then, label %if.end
+  %20 = sext i8 %19 to i32
+  %21 = icmp ne i32 %20, 65
+  br i1 %21, label %then, label %if.end
 
 then:                                             ; preds = %entry
   store i32 1, i32* %err, align 4
-  %21 = load i32, i32* %err, align 4
+  %22 = load i32, i32* %err, align 4
   br label %if.end
 
 if.end:                                           ; preds = %entry, %then
-  %22 = load i32, i32* %intVal, align 4
-  %23 = icmp ne i32 %22, 65
-  br i1 %23, label %then1, label %if.end3
+  %23 = load i8, i8* %ucharVal, align 1
+  %24 = zext i8 %23 to i32
+  %25 = icmp ne i32 %24, 65
+  br i1 %25, label %then1, label %if.end3
 
 then1:                                            ; preds = %if.end
   store i32 1, i32* %err, align 4
-  %24 = load i32, i32* %err, align 4
+  %26 = load i32, i32* %err, align 4
   br label %if.end3
 
 if.end3:                                          ; preds = %if.end, %then1
-  %25 = load i32, i32* %uintVal, align 4
-  %26 = icmp ne i32 %25, 65
-  br i1 %26, label %then4, label %if.end6
+  %27 = load i32, i32* %intVal, align 4
+  %28 = icmp ne i32 %27, 65
+  br i1 %28, label %then4, label %if.end6
 
 then4:                                            ; preds = %if.end3
   store i32 1, i32* %err, align 4
-  %27 = load i32, i32* %err, align 4
+  %29 = load i32, i32* %err, align 4
   br label %if.end6
 
 if.end6:                                          ; preds = %if.end3, %then4
-  %28 = load i32, i32* %intVal2, align 4
-  %29 = icmp ne i32 %28, 65
-  br i1 %29, label %then7, label %if.end9
+  %30 = load i32, i32* %uintVal, align 4
+  %31 = icmp ne i32 %30, 65
+  br i1 %31, label %then7, label %if.end9
 
 then7:                                            ; preds = %if.end6
   store i32 1, i32* %err, align 4
-  %30 = load i32, i32* %err, align 4
+  %32 = load i32, i32* %err, align 4
   br label %if.end9
 
 if.end9:                                          ; preds = %if.end6, %then7
-  %31 = load i64, i64* %longVal, align 4
-  %32 = trunc i64 %31 to i32
-  %33 = icmp ne i32 %32, 65
-  br i1 %33, label %then10, label %if.end12
+  %33 = load i32, i32* %intVal2, align 4
+  %34 = icmp ne i32 %33, 65
+  br i1 %34, label %then10, label %if.end12
 
 then10:                                           ; preds = %if.end9
   store i32 1, i32* %err, align 4
-  %34 = load i32, i32* %err, align 4
+  %35 = load i32, i32* %err, align 4
   br label %if.end12
 
 if.end12:                                         ; preds = %if.end9, %then10
-  %35 = load i64, i64* %ulongVal, align 4
-  %36 = trunc i64 %35 to i32
-  %37 = icmp ne i32 %36, 65
-  br i1 %37, label %then13, label %if.end15
+  %36 = load i64, i64* %longVal, align 4
+  %37 = trunc i64 %36 to i32
+  %38 = icmp ne i32 %37, 65
+  br i1 %38, label %then13, label %if.end15
 
 then13:                                           ; preds = %if.end12
   store i32 1, i32* %err, align 4
-  %38 = load i32, i32* %err, align 4
+  %39 = load i32, i32* %err, align 4
   br label %if.end15
 
 if.end15:                                         ; preds = %if.end12, %then13
-  %39 = load i64, i64* %longVal2, align 4
-  %40 = trunc i64 %39 to i32
-  %41 = icmp ne i32 %40, 65
-  br i1 %41, label %then16, label %if.end18
+  %40 = load i64, i64* %ulongVal, align 4
+  %41 = trunc i64 %40 to i32
+  %42 = icmp ne i32 %41, 65
+  br i1 %42, label %then16, label %if.end18
 
 then16:                                           ; preds = %if.end15
   store i32 1, i32* %err, align 4
-  %42 = load i32, i32* %err, align 4
+  %43 = load i32, i32* %err, align 4
   br label %if.end18
 
 if.end18:                                         ; preds = %if.end15, %then16
-  store i8 -6, i8* %ucharBoundary, align 1
-  %43 = load i8, i8* %ucharBoundary, align 1
-  %44 = sext i8 %43 to i32
-  store i32 %44, i32* %intFromUchar, align 4
-  %45 = load i32, i32* %intFromUchar, align 4
-  %46 = trunc i32 %45 to i8
-  store i8 %46, i8* %ucharFromInt, align 1
-  store i32 -1, i32* %negToUint, align 4
-  %47 = load i32, i32* %negToUint, align 4
-  %48 = icmp ne i32 %47, -1
-  br i1 %48, label %then19, label %if.end21
+  %44 = load i64, i64* %longVal2, align 4
+  %45 = trunc i64 %44 to i32
+  %46 = icmp ne i32 %45, 65
+  br i1 %46, label %then19, label %if.end21
 
 then19:                                           ; preds = %if.end18
   store i32 1, i32* %err, align 4
-  %49 = load i32, i32* %err, align 4
+  %47 = load i32, i32* %err, align 4
   br label %if.end21
 
 if.end21:                                         ; preds = %if.end18, %then19
-  %50 = load i32, i32* %err, align 4
-  %51 = icmp eq i32 %50, 0
-  %. = select i1 %51, i8* getelementptr inbounds ([21 x i8], [21 x i8]* @0, i32 0, i32 0), i8* getelementptr inbounds ([21 x i8], [21 x i8]* @1, i32 0, i32 0)
-  %52 = call i32 (i8*, ...) @printf(i8* %.)
-  %53 = load i32, i32* %err, align 4
-  ret i32 %53
+  store i8 -6, i8* %ucharBoundary, align 1
+  %48 = load i8, i8* %ucharBoundary, align 1
+  %49 = zext i8 %48 to i32
+  store i32 %49, i32* %intFromUchar, align 4
+  %50 = load i32, i32* %intFromUchar, align 4
+  %51 = icmp ne i32 %50, 250
+  br i1 %51, label %then22, label %if.end24
+
+then22:                                           ; preds = %if.end21
+  store i32 1, i32* %err, align 4
+  %52 = load i32, i32* %err, align 4
+  br label %if.end24
+
+if.end24:                                         ; preds = %if.end21, %then22
+  %53 = load i32, i32* %intFromUchar, align 4
+  %54 = trunc i32 %53 to i8
+  store i8 %54, i8* %ucharFromInt, align 1
+  %55 = load i8, i8* %ucharFromInt, align 1
+  %56 = zext i8 %55 to i32
+  %57 = icmp ne i32 %56, 250
+  br i1 %57, label %then25, label %if.end27
+
+then25:                                           ; preds = %if.end24
+  store i32 1, i32* %err, align 4
+  %58 = load i32, i32* %err, align 4
+  br label %if.end27
+
+if.end27:                                         ; preds = %if.end24, %then25
+  store i32 -1, i32* %negToUint, align 4
+  %59 = load i32, i32* %negToUint, align 4
+  %60 = icmp ne i32 %59, -1
+  br i1 %60, label %then28, label %if.end30
+
+then28:                                           ; preds = %if.end27
+  store i32 1, i32* %err, align 4
+  %61 = load i32, i32* %err, align 4
+  br label %if.end30
+
+if.end30:                                         ; preds = %if.end27, %then28
+  %62 = load i32, i32* %err, align 4
+  %63 = icmp eq i32 %62, 0
+  %. = select i1 %63, i8* getelementptr inbounds ([21 x i8], [21 x i8]* @0, i32 0, i32 0), i8* getelementptr inbounds ([21 x i8], [21 x i8]* @1, i32 0, i32 0)
+  %64 = call i32 (i8*, ...) @printf(i8* %.)
+  %65 = load i32, i32* %err, align 4
+  ret i32 %65
 }

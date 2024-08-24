@@ -54,8 +54,8 @@ then:                                             ; preds = %entry
   br label %if.end
 
 if.end:                                           ; preds = %entry, %then
-  %20 = load i32, i32* %age, align 4
-  %21 = icmp ne i32 %20, 22
+  %20 = load i32, i32* %sex, align 4
+  %21 = icmp ne i32 %20, 77
   br i1 %21, label %then1, label %if.end3
 
 then1:                                            ; preds = %if.end
@@ -64,27 +64,37 @@ then1:                                            ; preds = %if.end
   br label %if.end3
 
 if.end3:                                          ; preds = %if.end, %then1
-  %23 = getelementptr %struct.Employee, %struct.Employee* %employee, i32 0, i32 3
-  store i32 0, i32* %23, align 4
-  %24 = load i32, i32* %23, align 4
-  %25 = getelementptr %struct.Employee, %struct.Employee* %employee, i32 0, i32 3
-  %26 = load i32, i32* %25, align 4
-  store i32 %26, i32* %age, align 4
-  %27 = load i32, i32* %age, align 4
-  %28 = load i32, i32* %age, align 4
-  %29 = icmp ne i32 %28, 0
-  br i1 %29, label %then4, label %if.end6
+  %23 = load i32, i32* %age, align 4
+  %24 = icmp ne i32 %23, 22
+  br i1 %24, label %then4, label %if.end6
 
 then4:                                            ; preds = %if.end3
   store i32 1, i32* %err, align 4
-  %30 = load i32, i32* %err, align 4
+  %25 = load i32, i32* %err, align 4
   br label %if.end6
 
 if.end6:                                          ; preds = %if.end3, %then4
-  %31 = load i32, i32* %err, align 4
-  %32 = icmp eq i32 %31, 0
-  %. = select i1 %32, i8* getelementptr inbounds ([22 x i8], [22 x i8]* @1, i32 0, i32 0), i8* getelementptr inbounds ([22 x i8], [22 x i8]* @2, i32 0, i32 0)
-  %33 = call i32 (i8*, ...) @printf(i8* %.)
+  %26 = getelementptr %struct.Employee, %struct.Employee* %employee, i32 0, i32 3
+  store i32 0, i32* %26, align 4
+  %27 = load i32, i32* %26, align 4
+  %28 = getelementptr %struct.Employee, %struct.Employee* %employee, i32 0, i32 3
+  %29 = load i32, i32* %28, align 4
+  store i32 %29, i32* %age, align 4
+  %30 = load i32, i32* %age, align 4
+  %31 = load i32, i32* %age, align 4
+  %32 = icmp ne i32 %31, 0
+  br i1 %32, label %then7, label %if.end9
+
+then7:                                            ; preds = %if.end6
+  store i32 1, i32* %err, align 4
+  %33 = load i32, i32* %err, align 4
+  br label %if.end9
+
+if.end9:                                          ; preds = %if.end6, %then7
   %34 = load i32, i32* %err, align 4
-  ret i32 %34
+  %35 = icmp eq i32 %34, 0
+  %. = select i1 %35, i8* getelementptr inbounds ([22 x i8], [22 x i8]* @1, i32 0, i32 0), i8* getelementptr inbounds ([22 x i8], [22 x i8]* @2, i32 0, i32 0)
+  %36 = call i32 (i8*, ...) @printf(i8* %.)
+  %37 = load i32, i32* %err, align 4
+  ret i32 %37
 }

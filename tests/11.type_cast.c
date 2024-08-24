@@ -26,6 +26,7 @@ int main() {
   float floatVal2 = (float)doubleVal;
 
   if (charVal2 != 'A') err = 1;
+  if (ucharVal != 65) err = 1;
   if (intVal != 65) err = 1;
   if (uintVal != 65) err = 1;
   if (intVal2 != 65) err = 1;
@@ -35,8 +36,10 @@ int main() {
 
   unsigned char ucharBoundary = 250;
   int intFromUchar = (int)ucharBoundary;
+  if (intFromUchar != 250) err = 1;
 
   unsigned char ucharFromInt = (unsigned char)intFromUchar;
+  if (ucharFromInt != 250) err = 1;
 
   unsigned negToUint = (unsigned)(-1);
   if (negToUint != 0xffffffff) err = 1;

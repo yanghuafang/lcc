@@ -10,7 +10,7 @@ declare i32 @printf(i8*, ...)
 
 define i32 @main() {
 entry:
-  %const31 = bitcast i32 -2023406815 to i32
+  %const37 = bitcast i32 -2023406815 to i32
   %const = bitcast i32 35930656 to i32
   %signedVal = alloca i32, align 4
   %msbSet = alloca i32, align 4
@@ -29,7 +29,7 @@ entry:
   %err = alloca i32, align 4
   store i32 0, i32* %err, align 4
   store i32 305419896, i32* %a, align 4
-  store i32 %const31, i32* %b, align 4
+  store i32 %const37, i32* %b, align 4
   %0 = load i32, i32* %a, align 4
   %1 = load i32, i32* %b, align 4
   %2 = and i32 %0, %1
@@ -73,14 +73,14 @@ entry:
   %29 = shl i32 %28, 8
   store i32 %29, i32* %leftShiftVal, align 4
   %30 = load i32, i32* %b, align 4
-  %31 = ashr i32 %30, 8
+  %31 = lshr i32 %30, 8
   store i32 %31, i32* %rightShiftVal, align 4
   %32 = load i32, i32* %leftShiftVal, align 4
   %33 = shl i32 %32, 8
   store i32 %33, i32* %leftShiftVal, align 4
   %34 = load i32, i32* %leftShiftVal, align 4
   %35 = load i32, i32* %rightShiftVal, align 4
-  %36 = ashr i32 %35, 8
+  %36 = lshr i32 %35, 8
   store i32 %36, i32* %rightShiftVal, align 4
   %37 = load i32, i32* %rightShiftVal, align 4
   %38 = load i32, i32* %andVal, align 4
@@ -93,9 +93,9 @@ then:                                             ; preds = %entry
   br label %if.end
 
 if.end:                                           ; preds = %entry, %then
-  %const32 = bitcast i32 -1753917575 to i32
+  %const38 = bitcast i32 -1753917575 to i32
   %41 = load i32, i32* %orVal, align 4
-  %42 = icmp ne i32 %41, %const32
+  %42 = icmp ne i32 %41, %const38
   br i1 %42, label %then1, label %if.end3
 
 then1:                                            ; preds = %if.end
@@ -145,7 +145,7 @@ then13:                                           ; preds = %if.end12
 
 if.end15:                                         ; preds = %if.end12, %then13
   %56 = load i32, i32* %oreqVal, align 4
-  %57 = icmp ne i32 %56, %const32
+  %57 = icmp ne i32 %56, %const38
   br i1 %57, label %then16, label %if.end18
 
 then16:                                           ; preds = %if.end15
@@ -155,7 +155,7 @@ then16:                                           ; preds = %if.end15
 
 if.end18:                                         ; preds = %if.end15, %then16
   %59 = load i32, i32* %xoreqVal, align 4
-  %60 = icmp ne i32 %59, %const31
+  %60 = icmp ne i32 %59, %const37
   br i1 %60, label %then19, label %if.end21
 
 then19:                                           ; preds = %if.end18
@@ -174,23 +174,44 @@ then22:                                           ; preds = %if.end21
   br label %if.end24
 
 if.end24:                                         ; preds = %if.end21, %then22
-  store i32 -2147483648, i32* %msbSet, align 4
-  store i32 -8, i32* %signedVal, align 4
-  %65 = load i32, i32* %signedVal, align 4
-  %66 = ashr i32 %65, 1
-  %67 = icmp ne i32 %66, -4
-  br i1 %67, label %then25, label %if.end27
+  %65 = load i32, i32* %rightShiftVal, align 4
+  %66 = icmp ne i32 %65, 34661
+  br i1 %66, label %then25, label %if.end27
 
 then25:                                           ; preds = %if.end24
   store i32 1, i32* %err, align 4
-  %68 = load i32, i32* %err, align 4
+  %67 = load i32, i32* %err, align 4
   br label %if.end27
 
 if.end27:                                         ; preds = %if.end24, %then25
-  %69 = load i32, i32* %err, align 4
-  %70 = icmp eq i32 %69, 0
-  %. = select i1 %70, i8* getelementptr inbounds ([19 x i8], [19 x i8]* @0, i32 0, i32 0), i8* getelementptr inbounds ([19 x i8], [19 x i8]* @1, i32 0, i32 0)
-  %71 = call i32 (i8*, ...) @printf(i8* %.)
-  %72 = load i32, i32* %err, align 4
-  ret i32 %72
+  store i32 -2147483648, i32* %msbSet, align 4
+  %68 = load i32, i32* %msbSet, align 4
+  %69 = lshr i32 %68, 1
+  %70 = icmp ne i32 %69, 1073741824
+  br i1 %70, label %then28, label %if.end30
+
+then28:                                           ; preds = %if.end27
+  store i32 1, i32* %err, align 4
+  %71 = load i32, i32* %err, align 4
+  br label %if.end30
+
+if.end30:                                         ; preds = %if.end27, %then28
+  store i32 -8, i32* %signedVal, align 4
+  %72 = load i32, i32* %signedVal, align 4
+  %73 = ashr i32 %72, 1
+  %74 = icmp ne i32 %73, -4
+  br i1 %74, label %then31, label %if.end33
+
+then31:                                           ; preds = %if.end30
+  store i32 1, i32* %err, align 4
+  %75 = load i32, i32* %err, align 4
+  br label %if.end33
+
+if.end33:                                         ; preds = %if.end30, %then31
+  %76 = load i32, i32* %err, align 4
+  %77 = icmp eq i32 %76, 0
+  %. = select i1 %77, i8* getelementptr inbounds ([19 x i8], [19 x i8]* @0, i32 0, i32 0), i8* getelementptr inbounds ([19 x i8], [19 x i8]* @1, i32 0, i32 0)
+  %78 = call i32 (i8*, ...) @printf(i8* %.)
+  %79 = load i32, i32* %err, align 4
+  ret i32 %79
 }

@@ -23,6 +23,7 @@ int main() {
   int sex = employee.sex;
   int age = employee.age;
   if (id != 100) err = 1;
+  if (sex != 'M') err = 1;
   if (age != 22) err = 1;
 
   employee.age = 0;

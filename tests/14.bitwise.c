@@ -35,8 +35,10 @@ int main() {
   if (oreqVal != 0x97755779) err = 1;
   if (xoreqVal != 0x87654321) err = 1;
   if (leftShiftVal != 0x56780000) err = 1;
+  if (rightShiftVal != 0x8765) err = 1;
 
   unsigned int msbSet = 0x80000000;
+  if ((msbSet >> 1) != 0x40000000) err = 1;
 
   int signedVal = -8;
   if ((signedVal >> 1) != -4) err = 1;
