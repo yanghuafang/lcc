@@ -1,9 +1,11 @@
 #pragma once
 
+#include <llvm/IR/IRBuilder.h>
+
 #include <string>
 #include <vector>
 
-#include "AbstractSyntaxTree.hpp"
+#include "Types.hpp"
 
 namespace llvm {
 

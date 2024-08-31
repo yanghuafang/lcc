@@ -4,6 +4,8 @@
 #include <string>
 #include <vector>
 
+#include "Types.hpp"
+
 class CodeGenerator;
 
 namespace llvm {
@@ -42,22 +44,6 @@ class TypeDecl;
 
 // Variable Types
 class VarType;
-enum BuiltinTypeId {
-  UNKNOWN = 0,
-  CHAR,
-  SHORT,
-  INT,
-  LONG,
-  UCHAR,
-  USHORT,
-  UINT,
-  ULONG,
-  FLOAT,
-  DOUBLE,
-  BOOL,
-  VOID
-};
-
 class BuiltinType;
 class PointerType;
 class ArrayType;
@@ -339,6 +325,8 @@ class VarType : public Node {
 
 class BuiltinType : public VarType {
  public:
+  using BuiltinTypeId = BuiltinTypeId;
+
   BuiltinTypeId typeId_;
 
   BuiltinType(BuiltinTypeId typeId, const std::string& typeName)
