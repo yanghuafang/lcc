@@ -1,4 +1,8 @@
+#include "Visualizer.hpp"
+
 #include <algorithm>
+#include <fstream>
+#include <iostream>
 #include <stdio.h>
 #include <string>
 #include <utility>
@@ -8,6 +12,8 @@
 namespace AST {
 
 namespace {
+// Sequential IDs keep DOT output stable across runs, so a regenerated graph
+// diffs cleanly against the goldens in debug/graphs/.
 std::string getId() {
   static size_t nextId = 0;
   return std::to_string(nextId++);
@@ -1526,3 +1532,17 @@ std::pair<std::string, std::string> TernaryCondition::genGraph() {
 }
 
 }  // namespace AST
+
+void Visualizer::dumpAbstractSyntaxTree(const std::string& fileName,
+                                        const std::string& graph) {
+  if (fileName.empty()) {
+    return;
+  }
+
+  std::ofstream graphFile(fileName);
+  if (graphFile.is_open()) {
+    graphFile << graph;
+  } else {
+    std::cerr << "Failed to open file " << fileName << std::endl;
+  }
+}

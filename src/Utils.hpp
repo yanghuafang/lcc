@@ -150,10 +150,6 @@ class Utils {
                                 AST::BuiltinTypeId rhsTypeId, bool isUnsigned,
                                 CodeGenerator& generator);
 
-  // Dump AST graph to file.
-  static void dumpAbstractSyntaxTree(const std::string& fileName,
-                                     const std::string& graph);
-
   static llvm::Value* getOneValue(size_t valueBitWidth);
 
   static bool isUnsignedTypeId(AST::BuiltinTypeId typeId);

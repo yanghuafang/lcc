@@ -558,20 +558,6 @@ llvm::Value* Utils::createShr(llvm::Value* lhs, llvm::Value* rhs,
   throw std::domain_error("SHR should operate on 2 integers!");
 }
 
-void Utils::dumpAbstractSyntaxTree(const std::string& fileName,
-                                   const std::string& graph) {
-  if (fileName.empty()) {
-    return;
-  }
-
-  std::ofstream graphFile(fileName);
-  if (graphFile.is_open()) {
-    graphFile << graph;
-  } else {
-    std::cerr << "Failed to open file " << fileName << std::endl;
-  }
-}
-
 llvm::Value* Utils::getOneValue(size_t valueBitWidth) {
   switch (valueBitWidth) {
     case 1:
