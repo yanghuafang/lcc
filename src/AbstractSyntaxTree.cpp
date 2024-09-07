@@ -238,31 +238,41 @@ llvm::Value* compareOrdered(Expr* lhsExpr, Expr* rhsExpr, llvm::Value* lhs,
   BuiltinTypeId rhsTypeId = rhsExpr->getExprTypeId(generator);
   bool isUnsigned = false;
   BuiltinTypeId resultTypeId = BuiltinTypeId::UNKNOWN;
-  if (Utils::typeUpgrade(lhs, rhs, lhsTypeId, rhsTypeId, resultTypeId,
-                         isUnsigned)) {
+  if (Utils::typeUpgrade(generator.getBuilder(), lhs, rhs, lhsTypeId, rhsTypeId,
+                         resultTypeId, isUnsigned)) {
     if (lhs->getType()->isIntegerTy()) {
-      return Utils::createIntegerCmp(intPred, lhs, rhs, isUnsigned);
+      return Utils::createIntegerCmp(generator.getBuilder(), intPred, lhs, rhs,
+                                     isUnsigned);
     } else {
-      return g_builder.CreateFCmp(floatPred, lhs, rhs);
+      return generator.getBuilder().CreateFCmp(floatPred, lhs, rhs);
     }
   }
 
   if (lhs->getType()->isPointerTy() && lhs->getType() == rhs->getType()) {
-    llvm::Value* lhsInt = g_builder.CreatePtrToInt(lhs, g_builder.getInt64Ty());
-    llvm::Value* rhsInt = g_builder.CreatePtrToInt(rhs, g_builder.getInt64Ty());
-    return Utils::createIntegerCmp(intPred, lhsInt, rhsInt, true);
+    llvm::Value* lhsInt = generator.getBuilder().CreatePtrToInt(
+        lhs, generator.getBuilder().getInt64Ty());
+    llvm::Value* rhsInt = generator.getBuilder().CreatePtrToInt(
+        rhs, generator.getBuilder().getInt64Ty());
+    return Utils::createIntegerCmp(generator.getBuilder(), intPred, lhsInt,
+                                   rhsInt, true);
   } else if (lhs->getType()->isPointerTy() && rhs->getType()->isIntegerTy()) {
     return Utils::createIntegerCmp(
-        intPred, g_builder.CreatePtrToInt(lhs, g_builder.getInt64Ty()),
-        Utils::typeUpgrade(rhs, g_builder.getInt64Ty(), rhsTypeId,
+        generator.getBuilder(), intPred,
+        generator.getBuilder().CreatePtrToInt(
+            lhs, generator.getBuilder().getInt64Ty()),
+        Utils::typeUpgrade(generator.getBuilder(), rhs,
+                           generator.getBuilder().getInt64Ty(), rhsTypeId,
                            BuiltinTypeId::ULONG),
         true);
   } else if (lhs->getType()->isIntegerTy() && rhs->getType()->isPointerTy()) {
     return Utils::createIntegerCmp(
-        intPred,
-        Utils::typeUpgrade(lhs, g_builder.getInt64Ty(), lhsTypeId,
+        generator.getBuilder(), intPred,
+        Utils::typeUpgrade(generator.getBuilder(), lhs,
+                           generator.getBuilder().getInt64Ty(), lhsTypeId,
                            BuiltinTypeId::ULONG),
-        g_builder.CreatePtrToInt(rhs, g_builder.getInt64Ty()), true);
+        generator.getBuilder().CreatePtrToInt(
+            rhs, generator.getBuilder().getInt64Ty()),
+        true);
   }
 
   return nullptr;
@@ -324,7 +334,7 @@ llvm::Value* FuncDecl::genCode(CodeGenerator& generator) {
       llvm::FunctionType::get(retType, paramTypes, paramList_->isVariant_);
   llvm::Function* func =
       llvm::Function::Create(funcType, llvm::GlobalValue::ExternalLinkage,
-                             funcName_, generator.module_);
+                             funcName_, &generator.getModule());
 
   std::vector<VarType*> paramVarTypes;
   for (Param* param : *paramList_) {
@@ -337,7 +347,7 @@ llvm::Value* FuncDecl::genCode(CodeGenerator& generator) {
   if (func->getName() != funcName_) {
     // Remove the function just made, use the exiting function.
     func->eraseFromParent();
-    func = generator.module_->getFunction(funcName_);
+    func = generator.getModule().getFunction(funcName_);
 
     if (func->getFunctionType() != funcType) {
       throw std::logic_error("Redefine function " + funcName_ +
@@ -357,8 +367,8 @@ llvm::Value* FuncDecl::genCode(CodeGenerator& generator) {
   if (funcBody_ != nullptr) {
     // Create and insert the entry block.
     llvm::BasicBlock* funcBlock =
-        llvm::BasicBlock::Create(g_context, "entry", func);
-    g_builder.SetInsertPoint(funcBlock);
+        llvm::BasicBlock::Create(generator.getContext(), "entry", func);
+    generator.getBuilder().SetInsertPoint(funcBlock);
 
     // Allocate symbol table for function parameters.
     generator.pushSymbolTable();
@@ -369,7 +379,7 @@ llvm::Value* FuncDecl::genCode(CodeGenerator& generator) {
       // alloca on stack for parameter.
       llvm::AllocaInst* allocaInst = Utils::createEntryBlockAlloca(
           func, paramList_->at(index)->varName_, paramTypes[index]);
-      g_builder.CreateStore(paramIter, allocaInst);
+      generator.getBuilder().CreateStore(paramIter, allocaInst);
       // Add parameter to symbol table.
       generator.addVariable(paramList_->at(index)->varName_, allocaInst,
                             paramList_->at(index)->varType_);
@@ -392,7 +402,7 @@ llvm::Value* FuncBody::genCode(CodeGenerator& generator) {
   for (AST::Stmt* stmt : *content_) {
     // If current block already has a terminator instruction, such as "return",
     // stop generating.
-    if (g_builder.GetInsertBlock()->getTerminator() != nullptr) {
+    if (generator.getBuilder().GetInsertBlock()->getTerminator() != nullptr) {
       break;
     } else {
       stmt->genCode(generator);
@@ -401,12 +411,12 @@ llvm::Value* FuncBody::genCode(CodeGenerator& generator) {
 
   // If the function does not have a "return" at the end of its body, create a
   // default one.
-  if (g_builder.GetInsertBlock()->getTerminator() == nullptr) {
+  if (generator.getBuilder().GetInsertBlock()->getTerminator() == nullptr) {
     llvm::Type* retType = generator.getCurrentFunction()->getReturnType();
     if (retType->isVoidTy()) {
-      g_builder.CreateRetVoid();
+      generator.getBuilder().CreateRetVoid();
     } else {
-      g_builder.CreateRet(llvm::UndefValue::get(retType));
+      generator.getBuilder().CreateRet(llvm::UndefValue::get(retType));
     }
   }
 
@@ -439,27 +449,27 @@ llvm::Value* VarDecl::genCode(CodeGenerator& generator) {
       // Assign variable by "store" instruction if variable is with initial
       // value.
       if (var->initialExpr_ != nullptr) {
-        llvm::Value* initializer =
-            Utils::typeCast(var->initialExpr_->genCode(generator), varType,
-                            var->initialExpr_->getExprTypeId(generator),
-                            Utils::varTypeToTypeId(varType_));
+        llvm::Value* initializer = Utils::typeCast(
+            generator.getBuilder(), var->initialExpr_->genCode(generator),
+            varType, var->initialExpr_->getExprTypeId(generator),
+            Utils::varTypeToTypeId(varType_));
         if (initializer == nullptr) {
           allocaInst->eraseFromParent();
           allocaInst = nullptr;
           throw std::logic_error("It failed to init variable " + var->varName_ +
                                  " with value of different type!");
         }
-        g_builder.CreateStore(initializer, allocaInst);
+        generator.getBuilder().CreateStore(initializer, allocaInst);
       }
     } else {
       // The declaration is NOT inside a function, create a global variable.
       llvm::Constant* initializer = nullptr;
       if (var->initialExpr_ != nullptr) {
         generator.switchInsertPointToGlobalBlock();
-        llvm::Value* initialExpr =
-            Utils::typeCast(var->initialExpr_->genCode(generator), varType,
-                            var->initialExpr_->getExprTypeId(generator),
-                            Utils::varTypeToTypeId(varType_));
+        llvm::Value* initialExpr = Utils::typeCast(
+            generator.getBuilder(), var->initialExpr_->genCode(generator),
+            varType, var->initialExpr_->getExprTypeId(generator),
+            Utils::varTypeToTypeId(varType_));
         if (initialExpr == nullptr) {
           throw std::logic_error("It failed to init variable " + var->varName_ +
                                  " with value of different type!");
@@ -475,7 +485,7 @@ llvm::Value* VarDecl::genCode(CodeGenerator& generator) {
 
       // Create a global variable.
       llvm::GlobalVariable* globalVar = new llvm::GlobalVariable(
-          *generator.module_, varType, varType_->isConst_,
+          *&generator.getModule(), varType, varType_->isConst_,
           llvm::Function::ExternalLinkage, initializer, var->varName_);
       if (!generator.addVariable(var->varName_, globalVar, varType_)) {
         throw std::logic_error(
@@ -525,31 +535,31 @@ llvm::Type* BuiltinType::getType(CodeGenerator& generator) {
   switch (typeId_) {
     case BuiltinTypeId::CHAR:
     case BuiltinTypeId::UCHAR:
-      llvmType_ = g_builder.getInt8Ty();
+      llvmType_ = generator.getBuilder().getInt8Ty();
       break;
     case BuiltinTypeId::SHORT:
     case BuiltinTypeId::USHORT:
-      llvmType_ = g_builder.getInt16Ty();
+      llvmType_ = generator.getBuilder().getInt16Ty();
       break;
     case BuiltinTypeId::INT:
     case BuiltinTypeId::UINT:
-      llvmType_ = g_builder.getInt32Ty();
+      llvmType_ = generator.getBuilder().getInt32Ty();
       break;
     case BuiltinTypeId::LONG:
     case BuiltinTypeId::ULONG:
-      llvmType_ = g_builder.getInt64Ty();
+      llvmType_ = generator.getBuilder().getInt64Ty();
       break;
     case BuiltinTypeId::FLOAT:
-      llvmType_ = g_builder.getFloatTy();
+      llvmType_ = generator.getBuilder().getFloatTy();
       break;
     case BuiltinTypeId::DOUBLE:
-      llvmType_ = g_builder.getDoubleTy();
+      llvmType_ = generator.getBuilder().getDoubleTy();
       break;
     case BuiltinTypeId::BOOL:
-      llvmType_ = g_builder.getInt1Ty();
+      llvmType_ = generator.getBuilder().getInt1Ty();
       break;
     case BuiltinTypeId::VOID:
-      llvmType_ = g_builder.getVoidTy();
+      llvmType_ = generator.getBuilder().getVoidTy();
       break;
     default:
       llvmType_ = nullptr;
@@ -607,7 +617,7 @@ llvm::Type* StructType::getType(CodeGenerator& generator) {
 llvm::Type* StructType::genTypeHead(CodeGenerator& generator,
                                     const std::string& typeName) {
   llvm::StructType* type =
-      llvm::StructType::create(g_context, "struct." + typeName);
+      llvm::StructType::create(generator.getContext(), "struct." + typeName);
   // Add to struct type table, it is useful for struct ref/deref in future.
   generator.addStructType(type, this);
   llvmType_ = type;
@@ -657,7 +667,7 @@ llvm::Type* UnionType::getType(CodeGenerator& generator) {
 llvm::Type* UnionType::genTypeHead(CodeGenerator& generator,
                                    const std::string& typeName) {
   llvm::StructType* type =
-      llvm::StructType::create(g_context, "union." + typeName);
+      llvm::StructType::create(generator.getContext(), "union." + typeName);
   // Add to union type table, it is useful for union ref/deref in future.
   generator.addUnionType(type, this);
   llvmType_ = type;
@@ -718,56 +728,59 @@ llvm::Type* EnumType::getType(CodeGenerator& generator) {
   }
 
   for (Enum* member : *enumList_) {
-    if (!generator.addConstant(member->name_,
-                               g_builder.getInt32(member->value_))) {
+    if (!generator.addConstant(
+            member->name_, generator.getBuilder().getInt32(member->value_))) {
       throw std::logic_error("It is not allowed to redefine enum member " +
                              member->name_);
     }
   }
 
-  return llvm::IntegerType::getInt32Ty(g_context);
+  return llvm::IntegerType::getInt32Ty(generator.getContext());
 }
 
 // Statements
 
 llvm::Value* IfStmt::genCode(CodeGenerator& generator) {
   llvm::Value* condition = condition_->genCode(generator);
-  condition = Utils::castToBool(condition);
+  condition = Utils::castToBool(generator.getBuilder(), condition);
   if (condition == nullptr) {
     throw std::logic_error(
         "IfStmt condition must be either int, or float, or pointer.");
   }
 
   llvm::Function* func = generator.getCurrentFunction();
-  llvm::BasicBlock* thenBlock = llvm::BasicBlock::Create(g_context, "then");
-  llvm::BasicBlock* elseBlock = llvm::BasicBlock::Create(g_context, "else");
-  llvm::BasicBlock* endBlock = llvm::BasicBlock::Create(g_context, "if.end");
+  llvm::BasicBlock* thenBlock =
+      llvm::BasicBlock::Create(generator.getContext(), "then");
+  llvm::BasicBlock* elseBlock =
+      llvm::BasicBlock::Create(generator.getContext(), "else");
+  llvm::BasicBlock* endBlock =
+      llvm::BasicBlock::Create(generator.getContext(), "if.end");
 
   // Generate code in "then" block.
-  g_builder.CreateCondBr(condition, thenBlock, elseBlock);
+  generator.getBuilder().CreateCondBr(condition, thenBlock, elseBlock);
   func->getBasicBlockList().push_back(thenBlock);
-  g_builder.SetInsertPoint(thenBlock);
+  generator.getBuilder().SetInsertPoint(thenBlock);
   if (thenStmt_ != nullptr) {
     generator.pushSymbolTable();
     thenStmt_->genCode(generator);
     generator.popSymbolTable();
   }
-  Utils::terminateBlockByBr(endBlock);
+  Utils::terminateBlockByBr(generator.getBuilder(), endBlock);
 
   // Generate code in "else" block.
   func->getBasicBlockList().push_back(elseBlock);
-  g_builder.SetInsertPoint(elseBlock);
+  generator.getBuilder().SetInsertPoint(elseBlock);
   if (elseStmt_ != nullptr) {
     generator.pushSymbolTable();
     elseStmt_->genCode(generator);
     generator.popSymbolTable();
   }
-  Utils::terminateBlockByBr(endBlock);
+  Utils::terminateBlockByBr(generator.getBuilder(), endBlock);
 
   // Set point for end block.
   if (endBlock->hasNPredecessorsOrMore(1)) {
     func->getBasicBlockList().push_back(endBlock);
-    g_builder.SetInsertPoint(endBlock);
+    generator.getBuilder().SetInsertPoint(endBlock);
   }
 
   return nullptr;
@@ -780,21 +793,22 @@ llvm::Value* SwitchStmt::genCode(CodeGenerator& generator) {
   // Create one block for each case statement.
   std::vector<llvm::BasicBlock*> caseBlocks;
   for (size_t i = 0; i < caseStmtList_->size(); ++i) {
-    caseBlocks.push_back(
-        llvm::BasicBlock::Create(g_context, "case." + std::to_string(i)));
+    caseBlocks.push_back(llvm::BasicBlock::Create(generator.getContext(),
+                                                  "case." + std::to_string(i)));
   }
 
   // Create one block after switch statement.
-  caseBlocks.push_back(llvm::BasicBlock::Create(g_context, "switch.end"));
+  caseBlocks.push_back(
+      llvm::BasicBlock::Create(generator.getContext(), "switch.end"));
 
   // Create one block for each comparision.
   std::vector<llvm::BasicBlock*> comparisionBlocks;
   // The first comparision code should be in current insertion block.
-  comparisionBlocks.push_back(g_builder.GetInsertBlock());
+  comparisionBlocks.push_back(generator.getBuilder().GetInsertBlock());
   // Add block for switch expression evaluation.
   for (size_t i = 0; i < caseStmtList_->size(); ++i) {
     comparisionBlocks.push_back(llvm::BasicBlock::Create(
-        g_context, "switch.compare." + std::to_string(i)));
+        generator.getContext(), "switch.compare." + std::to_string(i)));
   }
 
   // comparisionBlocks and caseBlocks hold the same block after switch
@@ -808,19 +822,20 @@ llvm::Value* SwitchStmt::genCode(CodeGenerator& generator) {
       // So only set insertion block and insertion point since the second
       // comparision.
       func->getBasicBlockList().push_back(comparisionBlocks[i]);
-      g_builder.SetInsertPoint(comparisionBlocks[i]);
+      generator.getBuilder().SetInsertPoint(comparisionBlocks[i]);
     }
 
     if (caseStmtList_->at(i)->condition_ != nullptr) {
-      g_builder.CreateCondBr(
+      generator.getBuilder().CreateCondBr(
           Utils::createCmpEq(
-              matcher, caseStmtList_->at(i)->condition_->genCode(generator),
+              generator.getBuilder(), matcher,
+              caseStmtList_->at(i)->condition_->genCode(generator),
               matcher_->getExprTypeId(generator),
               caseStmtList_->at(i)->condition_->getExprTypeId(generator)),
           caseBlocks[i], comparisionBlocks[i + 1]);
     } else {
       // Unconditional branch for default statement.
-      g_builder.CreateBr(caseBlocks[i]);
+      generator.getBuilder().CreateBr(caseBlocks[i]);
     }
   }
 
@@ -828,7 +843,7 @@ llvm::Value* SwitchStmt::genCode(CodeGenerator& generator) {
   generator.pushSymbolTable();
   for (size_t i = 0; i < caseStmtList_->size(); ++i) {
     func->getBasicBlockList().push_back(caseBlocks[i]);
-    g_builder.SetInsertPoint(caseBlocks[i]);
+    generator.getBuilder().SetInsertPoint(caseBlocks[i]);
 
     // TODO: What behavior if continue in a case statement and the whole switch
     // statement is in an outer loop.
@@ -841,7 +856,7 @@ llvm::Value* SwitchStmt::genCode(CodeGenerator& generator) {
   // Handle the block after switch statement.
   if (caseBlocks.back()->hasNPredecessorsOrMore(1)) {
     func->getBasicBlockList().push_back(caseBlocks.back());
-    g_builder.SetInsertPoint(caseBlocks.back());
+    generator.getBuilder().SetInsertPoint(caseBlocks.back());
   }
 
   return nullptr;
@@ -850,7 +865,7 @@ llvm::Value* SwitchStmt::genCode(CodeGenerator& generator) {
 llvm::Value* CaseStmt::genCode(CodeGenerator& generator) {
   // Generate case statements one by one.
   for (Stmt* stmt : *content_) {
-    if (g_builder.GetInsertBlock()->getTerminator()) {
+    if (generator.getBuilder().GetInsertBlock()->getTerminator()) {
       // Stop code generation if encounter a terminator, such as "break".
       break;
     } else if (stmt != nullptr) {
@@ -859,18 +874,21 @@ llvm::Value* CaseStmt::genCode(CodeGenerator& generator) {
   }
 
   // No break, jump to the next case block.
-  Utils::terminateBlockByBr(generator.getContinueBlock());
+  Utils::terminateBlockByBr(generator.getBuilder(),
+                            generator.getContinueBlock());
   return nullptr;
 }
 
 llvm::Value* ForStmt::genCode(CodeGenerator& generator) {
   llvm::Function* func = generator.getCurrentFunction();
   llvm::BasicBlock* conditionBlock =
-      llvm::BasicBlock::Create(g_context, "for.cond");
+      llvm::BasicBlock::Create(generator.getContext(), "for.cond");
   llvm::BasicBlock* updateBlock =
-      llvm::BasicBlock::Create(g_context, "for.update");
-  llvm::BasicBlock* endBlock = llvm::BasicBlock::Create(g_context, "for.end");
-  llvm::BasicBlock* loopBlock = llvm::BasicBlock::Create(g_context, "for.loop");
+      llvm::BasicBlock::Create(generator.getContext(), "for.update");
+  llvm::BasicBlock* endBlock =
+      llvm::BasicBlock::Create(generator.getContext(), "for.end");
+  llvm::BasicBlock* loopBlock =
+      llvm::BasicBlock::Create(generator.getContext(), "for.loop");
 
   if (initial_ != nullptr) {
     generator.pushSymbolTable();
@@ -878,27 +896,27 @@ llvm::Value* ForStmt::genCode(CodeGenerator& generator) {
   }
 
   // Create unconditional branch to condition block.
-  Utils::terminateBlockByBr(conditionBlock);
+  Utils::terminateBlockByBr(generator.getBuilder(), conditionBlock);
 
   // Generate code for condition block.
   func->getBasicBlockList().push_back(conditionBlock);
-  g_builder.SetInsertPoint(conditionBlock);
+  generator.getBuilder().SetInsertPoint(conditionBlock);
   if (condition_ != nullptr) {
     llvm::Value* condition = condition_->genCode(generator);
-    condition = Utils::castToBool(condition);
+    condition = Utils::castToBool(generator.getBuilder(), condition);
     if (condition == nullptr) {
       throw std::logic_error(
           "ForStmt condition must be either int, or float, or pointer.");
     }
 
-    g_builder.CreateCondBr(condition, loopBlock, endBlock);
+    generator.getBuilder().CreateCondBr(condition, loopBlock, endBlock);
   } else {
-    g_builder.CreateBr(loopBlock);
+    generator.getBuilder().CreateBr(loopBlock);
   }
 
   // Generate code for the loop block.
   func->getBasicBlockList().push_back(loopBlock);
-  g_builder.SetInsertPoint(loopBlock);
+  generator.getBuilder().SetInsertPoint(loopBlock);
   if (loopBody_ != nullptr) {
     generator.enterLoop(updateBlock, endBlock);
     generator.pushSymbolTable();
@@ -908,21 +926,21 @@ llvm::Value* ForStmt::genCode(CodeGenerator& generator) {
   }
 
   // Jump to update block if no break.
-  Utils::terminateBlockByBr(updateBlock);
+  Utils::terminateBlockByBr(generator.getBuilder(), updateBlock);
 
   // Generate code for update block.
   func->getBasicBlockList().push_back(updateBlock);
-  g_builder.SetInsertPoint(updateBlock);
+  generator.getBuilder().SetInsertPoint(updateBlock);
   if (update_ != nullptr) {
     update_->genCode(generator);
   }
 
   // After update, jump to condition block.
-  g_builder.CreateBr(conditionBlock);
+  generator.getBuilder().CreateBr(conditionBlock);
 
   // Handle end block.
   func->getBasicBlockList().push_back(endBlock);
-  g_builder.SetInsertPoint(endBlock);
+  generator.getBuilder().SetInsertPoint(endBlock);
 
   if (initial_ != nullptr) {
     generator.popSymbolTable();
@@ -934,16 +952,18 @@ llvm::Value* ForStmt::genCode(CodeGenerator& generator) {
 llvm::Value* DoStmt::genCode(CodeGenerator& generator) {
   llvm::Function* func = generator.getCurrentFunction();
   llvm::BasicBlock* conditionBlock =
-      llvm::BasicBlock::Create(g_context, "do.cond");
-  llvm::BasicBlock* loopBlock = llvm::BasicBlock::Create(g_context, "do.loop");
-  llvm::BasicBlock* endBlock = llvm::BasicBlock::Create(g_context, "do.end");
+      llvm::BasicBlock::Create(generator.getContext(), "do.cond");
+  llvm::BasicBlock* loopBlock =
+      llvm::BasicBlock::Create(generator.getContext(), "do.loop");
+  llvm::BasicBlock* endBlock =
+      llvm::BasicBlock::Create(generator.getContext(), "do.end");
 
   // Unconditional branch to loop block.
-  g_builder.CreateBr(loopBlock);
+  generator.getBuilder().CreateBr(loopBlock);
 
   // Generate code for loop block.
   func->getBasicBlockList().push_back(loopBlock);
-  g_builder.SetInsertPoint(loopBlock);
+  generator.getBuilder().SetInsertPoint(loopBlock);
   if (loopBody_ != nullptr) {
     generator.enterLoop(conditionBlock, endBlock);
     generator.pushSymbolTable();
@@ -953,23 +973,23 @@ llvm::Value* DoStmt::genCode(CodeGenerator& generator) {
   }
 
   // Jump to condition block if no break.
-  Utils::terminateBlockByBr(conditionBlock);
+  Utils::terminateBlockByBr(generator.getBuilder(), conditionBlock);
 
   // Generate code for condition block.
   func->getBasicBlockList().push_back(conditionBlock);
-  g_builder.SetInsertPoint(conditionBlock);
+  generator.getBuilder().SetInsertPoint(conditionBlock);
   llvm::Value* condition = condition_->genCode(generator);
-  condition = Utils::castToBool(condition);
+  condition = Utils::castToBool(generator.getBuilder(), condition);
   if (condition == nullptr) {
     throw std::logic_error(
         "DoStmt condition must be either int, or float, or pointer.");
   }
 
-  g_builder.CreateCondBr(condition, loopBlock, endBlock);
+  generator.getBuilder().CreateCondBr(condition, loopBlock, endBlock);
 
   // Handle end block.
   func->getBasicBlockList().push_back(endBlock);
-  g_builder.SetInsertPoint(endBlock);
+  generator.getBuilder().SetInsertPoint(endBlock);
 
   return nullptr;
 }
@@ -977,28 +997,29 @@ llvm::Value* DoStmt::genCode(CodeGenerator& generator) {
 llvm::Value* WhileStmt::genCode(CodeGenerator& generator) {
   llvm::Function* func = generator.getCurrentFunction();
   llvm::BasicBlock* conditionBlock =
-      llvm::BasicBlock::Create(g_context, "while.cond");
+      llvm::BasicBlock::Create(generator.getContext(), "while.cond");
   llvm::BasicBlock* loopBlock =
-      llvm::BasicBlock::Create(g_context, "while.loop");
-  llvm::BasicBlock* endBlock = llvm::BasicBlock::Create(g_context, "while.end");
+      llvm::BasicBlock::Create(generator.getContext(), "while.loop");
+  llvm::BasicBlock* endBlock =
+      llvm::BasicBlock::Create(generator.getContext(), "while.end");
 
   // Unconditional branch to condition block.
-  g_builder.CreateBr(conditionBlock);
+  generator.getBuilder().CreateBr(conditionBlock);
 
   func->getBasicBlockList().push_back(conditionBlock);
-  g_builder.SetInsertPoint(conditionBlock);
+  generator.getBuilder().SetInsertPoint(conditionBlock);
   llvm::Value* condition = condition_->genCode(generator);
-  condition = Utils::castToBool(condition);
+  condition = Utils::castToBool(generator.getBuilder(), condition);
   if (condition == nullptr) {
     throw std::logic_error(
         "WhileStmt condition must be either int, or float, or pointer.");
   }
 
-  g_builder.CreateCondBr(condition, loopBlock, endBlock);
+  generator.getBuilder().CreateCondBr(condition, loopBlock, endBlock);
 
   // Generate code for loop block.
   func->getBasicBlockList().push_back(loopBlock);
-  g_builder.SetInsertPoint(loopBlock);
+  generator.getBuilder().SetInsertPoint(loopBlock);
   if (loopBody_ != nullptr) {
     generator.enterLoop(conditionBlock, endBlock);
     generator.pushSymbolTable();
@@ -1008,11 +1029,11 @@ llvm::Value* WhileStmt::genCode(CodeGenerator& generator) {
   }
 
   // Jump to condition block if no break
-  Utils::terminateBlockByBr(conditionBlock);
+  Utils::terminateBlockByBr(generator.getBuilder(), conditionBlock);
 
   // Handle end block.
   func->getBasicBlockList().push_back(endBlock);
-  g_builder.SetInsertPoint(endBlock);
+  generator.getBuilder().SetInsertPoint(endBlock);
 
   return nullptr;
 }
@@ -1023,7 +1044,7 @@ llvm::Value* ContinueStmt::genCode(CodeGenerator& generator) {
     throw std::logic_error("Continue must be in switch or loop!");
   }
 
-  g_builder.CreateBr(continueToBlock);
+  generator.getBuilder().CreateBr(continueToBlock);
   return nullptr;
 }
 
@@ -1033,7 +1054,7 @@ llvm::Value* BreakStmt::genCode(CodeGenerator& generator) {
     throw std::logic_error("Break must be in switch or loop!");
   }
 
-  g_builder.CreateBr(breakToBlock);
+  generator.getBuilder().CreateBr(breakToBlock);
   return nullptr;
 }
 
@@ -1044,20 +1065,20 @@ llvm::Value* ReturnStmt::genCode(CodeGenerator& generator) {
   }
 
   if (retVal_ != nullptr) {
-    llvm::Value* retVal =
-        Utils::typeCast(retVal_->genCode(generator), func->getReturnType(),
-                        retVal_->getExprTypeId(generator),
-                        Utils::varTypeToTypeId(
-                            generator.findFuncRetType(func->getName().str())));
+    llvm::Value* retVal = Utils::typeCast(
+        generator.getBuilder(), retVal_->genCode(generator),
+        func->getReturnType(), retVal_->getExprTypeId(generator),
+        Utils::varTypeToTypeId(
+            generator.findFuncRetType(func->getName().str())));
     if (retVal == nullptr) {
       throw std::logic_error(
           "The type of return value does not match, and can not be casted to "
           "return type!");
     }
-    g_builder.CreateRet(retVal);
+    generator.getBuilder().CreateRet(retVal);
   } else {
     if (func->getReturnType()->isVoidTy()) {
-      g_builder.CreateRetVoid();
+      generator.getBuilder().CreateRetVoid();
     } else {
       throw std::logic_error("Return value is expected, but not found!");
     }
@@ -1070,7 +1091,7 @@ llvm::Value* Block::genCode(CodeGenerator& generator) {
   generator.pushSymbolTable();
   // Generate code for statements one by one in block.
   for (Stmt* stmt : *content_) {
-    if (g_builder.GetInsertBlock()->getTerminator() != nullptr) {
+    if (generator.getBuilder().GetInsertBlock()->getTerminator() != nullptr) {
       // Stop code generation if encounter a terminator, such as "break".
       break;
     } else if (stmt != nullptr) {
@@ -1086,7 +1107,7 @@ llvm::Value* Block::genCode(CodeGenerator& generator) {
 llvm::Value* Variable::genCode(CodeGenerator& generator) {
   llvm::Value* var = generator.findVariable(varName_);
   if (var != nullptr) {
-    return Utils::createLoad(var, generator);
+    return Utils::createLoad(generator.getBuilder(), var);
   }
 
   var = generator.findConstant(varName_);
@@ -1116,29 +1137,33 @@ llvm::Value* Variable::genCodePtr(CodeGenerator& generator) {
 llvm::Value* Constant::genCode(CodeGenerator& generator) {
   switch (typeId_) {
     case BuiltinTypeId::CHAR:
-      return g_builder.getInt8(charValue_);
+      return generator.getBuilder().getInt8(charValue_);
     case BuiltinTypeId::INT:
-      return g_builder.getInt32(intValue_);
+      return generator.getBuilder().getInt32(intValue_);
     case BuiltinTypeId::UINT: {
-      llvm::IntegerType* int32Type = llvm::Type::getInt32Ty(g_context);
+      llvm::IntegerType* int32Type =
+          llvm::Type::getInt32Ty(generator.getContext());
       llvm::ConstantInt* constInt =
           llvm::ConstantInt::get(int32Type, uintValue_);
       return constInt;
     }
     case BuiltinTypeId::LONG:
-      return g_builder.getInt64(longValue_);
+      return generator.getBuilder().getInt64(longValue_);
     case BuiltinTypeId::ULONG: {
-      llvm::IntegerType* int64Type = llvm::Type::getInt64Ty(g_context);
+      llvm::IntegerType* int64Type =
+          llvm::Type::getInt64Ty(generator.getContext());
       llvm::ConstantInt* constInt =
           llvm::ConstantInt::get(int64Type, ulongValue_);
       return constInt;
     }
     case BuiltinTypeId::FLOAT:
-      return llvm::ConstantFP::get(g_builder.getFloatTy(), floatValue_);
+      return llvm::ConstantFP::get(generator.getBuilder().getFloatTy(),
+                                   floatValue_);
     case BuiltinTypeId::DOUBLE:
-      return llvm::ConstantFP::get(g_builder.getDoubleTy(), doubleValue_);
+      return llvm::ConstantFP::get(generator.getBuilder().getDoubleTy(),
+                                   doubleValue_);
     case BuiltinTypeId::BOOL:
-      return g_builder.getInt1(boolValue_);
+      return generator.getBuilder().getInt1(boolValue_);
     default:
       throw std::logic_error("const type " +
                              std::to_string(static_cast<int>(typeId_)) +
@@ -1151,7 +1176,7 @@ llvm::Value* Constant::genCodePtr(CodeGenerator& generator) {
 }
 
 llvm::Value* ConstStr::genCode(CodeGenerator& generator) {
-  return g_builder.CreateGlobalStringPtr(str_.c_str());
+  return generator.getBuilder().CreateGlobalStringPtr(str_.c_str());
 }
 
 llvm::Value* ConstStr::genCodePtr(CodeGenerator& generator) {
@@ -1187,7 +1212,7 @@ llvm::Value* FuncCall::genCode(CodeGenerator& generator) {
        ++argIter, ++index) {
     llvm::Value* arg = argList_->at(index)->genCode(generator);
     AST::VarType* paramVarType = generator.findFuncParamType(funcName_, index);
-    arg = Utils::typeCast(arg, argIter->getType(),
+    arg = Utils::typeCast(generator.getBuilder(), arg, argIter->getType(),
                           argList_->at(index)->getExprTypeId(generator),
                           Utils::varTypeToTypeId(paramVarType));
     if (arg == nullptr) {
@@ -1207,11 +1232,12 @@ llvm::Value* FuncCall::genCode(CodeGenerator& generator) {
       // C default argument promotions for the variadic tail (required by the
       // calling convention): char/short/bool -> int, float -> double.
       if (arg->getType()->isIntegerTy()) {
-        arg = Utils::typeUpgrade(arg, g_builder.getInt32Ty(),
-                                 argList_->at(index)->getExprTypeId(generator),
-                                 BuiltinTypeId::INT);
+        arg = Utils::typeUpgrade(
+            generator.getBuilder(), arg, generator.getBuilder().getInt32Ty(),
+            argList_->at(index)->getExprTypeId(generator), BuiltinTypeId::INT);
       } else if (arg->getType()->isFloatingPointTy()) {
-        arg = Utils::typeUpgrade(arg, g_builder.getDoubleTy(),
+        arg = Utils::typeUpgrade(generator.getBuilder(), arg,
+                                 generator.getBuilder().getDoubleTy(),
                                  argList_->at(index)->getExprTypeId(generator),
                                  BuiltinTypeId::DOUBLE);
       }
@@ -1221,7 +1247,7 @@ llvm::Value* FuncCall::genCode(CodeGenerator& generator) {
   }
 
   // Create a function call.
-  return g_builder.CreateCall(func, args);
+  return generator.getBuilder().CreateCall(func, args);
 }
 
 llvm::Value* FuncCall::genCodePtr(CodeGenerator& generator) {
@@ -1229,7 +1255,7 @@ llvm::Value* FuncCall::genCodePtr(CodeGenerator& generator) {
 }
 
 llvm::Value* StructRef::genCode(CodeGenerator& generator) {
-  return Utils::createLoad(genCodePtr(generator), generator);
+  return Utils::createLoad(generator.getBuilder(), genCodePtr(generator));
 }
 
 llvm::Value* StructRef::genCodePtr(CodeGenerator& generator) {
@@ -1252,9 +1278,9 @@ llvm::Value* StructRef::genCodePtr(CodeGenerator& generator) {
     }
 
     std::vector<llvm::Value*> indices;
-    indices.push_back(g_builder.getInt32(0));
-    indices.push_back(g_builder.getInt32(memberIndex));
-    return g_builder.CreateGEP(
+    indices.push_back(generator.getBuilder().getInt32(0));
+    indices.push_back(generator.getBuilder().getInt32(memberIndex));
+    return generator.getBuilder().CreateGEP(
         structPtr->getType()->getNonOpaquePointerElementType(), structPtr,
         indices);
   }
@@ -1270,7 +1296,8 @@ llvm::Value* StructRef::genCodePtr(CodeGenerator& generator) {
                              memberName_);
     }
 
-    return g_builder.CreatePointerCast(structPtr, memberType->getPointerTo());
+    return generator.getBuilder().CreatePointerCast(structPtr,
+                                                    memberType->getPointerTo());
   }
 
   throw std::logic_error(
@@ -1278,7 +1305,7 @@ llvm::Value* StructRef::genCodePtr(CodeGenerator& generator) {
 }
 
 llvm::Value* StructDeref::genCode(CodeGenerator& generator) {
-  return Utils::createLoad(genCodePtr(generator), generator);
+  return Utils::createLoad(generator.getBuilder(), genCodePtr(generator));
 }
 
 llvm::Value* StructDeref::genCodePtr(CodeGenerator& generator) {
@@ -1301,9 +1328,9 @@ llvm::Value* StructDeref::genCodePtr(CodeGenerator& generator) {
     }
 
     std::vector<llvm::Value*> indices;
-    indices.push_back(g_builder.getInt32(0));
-    indices.push_back(g_builder.getInt32(memberIndex));
-    return g_builder.CreateGEP(
+    indices.push_back(generator.getBuilder().getInt32(0));
+    indices.push_back(generator.getBuilder().getInt32(memberIndex));
+    return generator.getBuilder().CreateGEP(
         structPtr->getType()->getNonOpaquePointerElementType(), structPtr,
         indices);
   }
@@ -1319,7 +1346,8 @@ llvm::Value* StructDeref::genCodePtr(CodeGenerator& generator) {
                              memberName_);
     }
 
-    return g_builder.CreatePointerCast(structPtr, memberType->getPointerTo());
+    return generator.getBuilder().CreatePointerCast(structPtr,
+                                                    memberType->getPointerTo());
   }
 
   throw std::logic_error(
@@ -1327,7 +1355,7 @@ llvm::Value* StructDeref::genCodePtr(CodeGenerator& generator) {
 }
 
 llvm::Value* Subscript::genCode(CodeGenerator& generator) {
-  return Utils::createLoad(genCodePtr(generator), generator);
+  return Utils::createLoad(generator.getBuilder(), genCodePtr(generator));
 }
 
 llvm::Value* Subscript::genCodePtr(CodeGenerator& generator) {
@@ -1342,14 +1370,16 @@ llvm::Value* Subscript::genCodePtr(CodeGenerator& generator) {
     throw std::logic_error("Subscription index should be integer!");
   }
 
-  return Utils::createAdd(arrayPtr, idx, array_->getExprTypeId(generator),
-                          index_->getExprTypeId(generator), generator);
+  return Utils::createAdd(generator.getBuilder(), arrayPtr, idx,
+                          array_->getExprTypeId(generator),
+                          index_->getExprTypeId(generator));
 }
 
 llvm::Value* TypeCast::genCode(CodeGenerator& generator) {
   llvm::Value* ret = Utils::typeCast(
-      operand_->genCode(generator), varType_->getType(generator),
-      operand_->getExprTypeId(generator), Utils::varTypeToTypeId(varType_));
+      generator.getBuilder(), operand_->genCode(generator),
+      varType_->getType(generator), operand_->getExprTypeId(generator),
+      Utils::varTypeToTypeId(varType_));
   if (ret == nullptr) {
     throw std::logic_error("Unable to type cast!");
   }
@@ -1362,22 +1392,22 @@ llvm::Value* TypeCast::genCodePtr(CodeGenerator& generator) {
 
 llvm::Value* SizeOf::genCode(CodeGenerator& generator) {
   if (varType_ != nullptr) {
-    return g_builder.getInt64(
+    return generator.getBuilder().getInt64(
         generator.getTypeSize(varType_->getType(generator)));
   } else if (expr_ != nullptr) {
-    return g_builder.getInt64(
+    return generator.getBuilder().getInt64(
         generator.getTypeSize(expr_->genCode(generator)->getType()));
   } else if (!identifier_.empty()) {
     llvm::Type* type = generator.findType(identifier_);
     if (type != nullptr) {
       varType_ = new DefinedType(identifier_);
-      return g_builder.getInt64(generator.getTypeSize(type));
+      return generator.getBuilder().getInt64(generator.getTypeSize(type));
     }
 
     llvm::Value* var = generator.findVariable(identifier_);
     if (var != nullptr) {
       expr_ = new Variable(identifier_);
-      return g_builder.getInt64(generator.getTypeSize(
+      return generator.getBuilder().getInt64(generator.getTypeSize(
           var->getType()->getNonOpaquePointerElementType()));
     }
 
@@ -1409,9 +1439,9 @@ llvm::Value* UnaryPlus::genCodePtr(CodeGenerator& generator) {
 llvm::Value* UnaryMinus::genCode(CodeGenerator& generator) {
   llvm::Value* operand = operand_->genCode(generator);
   if (operand->getType()->isIntegerTy()) {
-    return g_builder.CreateNeg(operand);
+    return generator.getBuilder().CreateNeg(operand);
   } else if (operand->getType()->isFloatingPointTy()) {
-    return g_builder.CreateFNeg(operand);
+    return generator.getBuilder().CreateFNeg(operand);
   } else {
     throw std::logic_error(
         "Unary minus must be applied to variables of integer or floating "
@@ -1424,7 +1454,7 @@ llvm::Value* UnaryMinus::genCodePtr(CodeGenerator& generator) {
 }
 
 llvm::Value* PointerDeref::genCode(CodeGenerator& generator) {
-  return Utils::createLoad(genCodePtr(generator), generator);
+  return Utils::createLoad(generator.getBuilder(), genCodePtr(generator));
 }
 
 llvm::Value* PointerDeref::genCodePtr(CodeGenerator& generator) {
@@ -1447,13 +1477,13 @@ llvm::Value* AddressOf::genCodePtr(CodeGenerator& generator) {
 }
 
 llvm::Value* Assign::genCode(CodeGenerator& generator) {
-  return Utils::createLoad(genCodePtr(generator), generator);
+  return Utils::createLoad(generator.getBuilder(), genCodePtr(generator));
 }
 
 llvm::Value* Assign::genCodePtr(CodeGenerator& generator) {
   llvm::Value* lhs = lhs_->genCodePtr(generator);
   llvm::Value* rhs = rhs_->genCode(generator);
-  return Utils::createAssign(lhs, rhs, generator,
+  return Utils::createAssign(generator.getBuilder(), lhs, rhs,
                              rhs_->getExprTypeId(generator),
                              lhs_->getLValueTypeId(generator));
 }
@@ -1461,8 +1491,9 @@ llvm::Value* Assign::genCodePtr(CodeGenerator& generator) {
 llvm::Value* Add::genCode(CodeGenerator& generator) {
   llvm::Value* lhs = lhs_->genCode(generator);
   llvm::Value* rhs = rhs_->genCode(generator);
-  return Utils::createAdd(lhs, rhs, lhs_->getExprTypeId(generator),
-                          rhs_->getExprTypeId(generator), generator);
+  return Utils::createAdd(generator.getBuilder(), lhs, rhs,
+                          lhs_->getExprTypeId(generator),
+                          rhs_->getExprTypeId(generator));
 }
 
 llvm::Value* Add::genCodePtr(CodeGenerator& generator) {
@@ -1472,8 +1503,9 @@ llvm::Value* Add::genCodePtr(CodeGenerator& generator) {
 llvm::Value* Sub::genCode(CodeGenerator& generator) {
   llvm::Value* lhs = lhs_->genCode(generator);
   llvm::Value* rhs = rhs_->genCode(generator);
-  return Utils::createSub(lhs, rhs, lhs_->getExprTypeId(generator),
-                          rhs_->getExprTypeId(generator), generator);
+  return Utils::createSub(generator.getBuilder(), lhs, rhs,
+                          lhs_->getExprTypeId(generator),
+                          rhs_->getExprTypeId(generator));
 }
 
 llvm::Value* Sub::genCodePtr(CodeGenerator& generator) {
@@ -1483,8 +1515,9 @@ llvm::Value* Sub::genCodePtr(CodeGenerator& generator) {
 llvm::Value* Mul::genCode(CodeGenerator& generator) {
   llvm::Value* lhs = lhs_->genCode(generator);
   llvm::Value* rhs = rhs_->genCode(generator);
-  return Utils::createMul(lhs, rhs, lhs_->getExprTypeId(generator),
-                          rhs_->getExprTypeId(generator), generator);
+  return Utils::createMul(generator.getBuilder(), lhs, rhs,
+                          lhs_->getExprTypeId(generator),
+                          rhs_->getExprTypeId(generator));
 }
 
 llvm::Value* Mul::genCodePtr(CodeGenerator& generator) {
@@ -1494,9 +1527,10 @@ llvm::Value* Mul::genCodePtr(CodeGenerator& generator) {
 llvm::Value* Div::genCode(CodeGenerator& generator) {
   llvm::Value* lhs = lhs_->genCode(generator);
   llvm::Value* rhs = rhs_->genCode(generator);
-  return Utils::createDiv(
-      lhs, rhs, lhs_->getExprTypeId(generator), rhs_->getExprTypeId(generator),
-      Expr::binaryIsUnsigned(lhs_, rhs_, generator), generator);
+  return Utils::createDiv(generator.getBuilder(), lhs, rhs,
+                          lhs_->getExprTypeId(generator),
+                          rhs_->getExprTypeId(generator),
+                          Expr::binaryIsUnsigned(lhs_, rhs_, generator));
 }
 
 llvm::Value* Div::genCodePtr(CodeGenerator& generator) {
@@ -1506,9 +1540,10 @@ llvm::Value* Div::genCodePtr(CodeGenerator& generator) {
 llvm::Value* Mod::genCode(CodeGenerator& generator) {
   llvm::Value* lhs = lhs_->genCode(generator);
   llvm::Value* rhs = rhs_->genCode(generator);
-  return Utils::createMod(
-      lhs, rhs, lhs_->getExprTypeId(generator), rhs_->getExprTypeId(generator),
-      Expr::binaryIsUnsigned(lhs_, rhs_, generator), generator);
+  return Utils::createMod(generator.getBuilder(), lhs, rhs,
+                          lhs_->getExprTypeId(generator),
+                          rhs_->getExprTypeId(generator),
+                          Expr::binaryIsUnsigned(lhs_, rhs_, generator));
 }
 
 llvm::Value* Mod::genCodePtr(CodeGenerator& generator) {
@@ -1517,7 +1552,7 @@ llvm::Value* Mod::genCodePtr(CodeGenerator& generator) {
 
 llvm::Value* PostfixInc::genCode(CodeGenerator& generator) {
   llvm::Value* operand = operand_->genCodePtr(generator);
-  llvm::Value* value = g_builder.CreateLoad(
+  llvm::Value* value = generator.getBuilder().CreateLoad(
       operand->getType()->getNonOpaquePointerElementType(), operand);
   if (value != nullptr && (value->getType()->isIntegerTy() ||
                            value->getType()->isFloatingPointTy() ||
@@ -1527,11 +1562,12 @@ llvm::Value* PostfixInc::genCode(CodeGenerator& generator) {
     // step for pointers, or a promoted 1.0 for floats.
     size_t valueBitWidth =
         ((llvm::IntegerType*)value->getType())->getBitWidth();
-    llvm::Value* oneValue = Utils::getOneValue(valueBitWidth);
-    llvm::Value* valuePlus =
-        Utils::createAdd(value, oneValue, operand_->getLValueTypeId(generator),
-                         BuiltinTypeId::INT, generator);
-    g_builder.CreateStore(valuePlus, operand);
+    llvm::Value* oneValue =
+        Utils::getOneValue(generator.getBuilder(), valueBitWidth);
+    llvm::Value* valuePlus = Utils::createAdd(
+        generator.getBuilder(), value, oneValue,
+        operand_->getLValueTypeId(generator), BuiltinTypeId::INT);
+    generator.getBuilder().CreateStore(valuePlus, operand);
     return value;
   }
 
@@ -1547,18 +1583,19 @@ llvm::Value* PostfixInc::genCodePtr(CodeGenerator& generator) {
 
 llvm::Value* PostfixDec::genCode(CodeGenerator& generator) {
   llvm::Value* operand = operand_->genCodePtr(generator);
-  llvm::Value* value = g_builder.CreateLoad(
+  llvm::Value* value = generator.getBuilder().CreateLoad(
       operand->getType()->getNonOpaquePointerElementType(), operand);
   if (value != nullptr && (value->getType()->isIntegerTy() ||
                            value->getType()->isFloatingPointTy() ||
                            value->getType()->isPointerTy())) {
     size_t valueBitWidth =
         ((llvm::IntegerType*)value->getType())->getBitWidth();
-    llvm::Value* oneValue = Utils::getOneValue(valueBitWidth);
-    llvm::Value* valueMinus =
-        Utils::createSub(value, oneValue, operand_->getLValueTypeId(generator),
-                         BuiltinTypeId::INT, generator);
-    g_builder.CreateStore(valueMinus, operand);
+    llvm::Value* oneValue =
+        Utils::getOneValue(generator.getBuilder(), valueBitWidth);
+    llvm::Value* valueMinus = Utils::createSub(
+        generator.getBuilder(), value, oneValue,
+        operand_->getLValueTypeId(generator), BuiltinTypeId::INT);
+    generator.getBuilder().CreateStore(valueMinus, operand);
     return value;
   }
 
@@ -1573,23 +1610,24 @@ llvm::Value* PostfixDec::genCodePtr(CodeGenerator& generator) {
 }
 
 llvm::Value* PrefixInc::genCode(CodeGenerator& generator) {
-  return Utils::createLoad(genCodePtr(generator), generator);
+  return Utils::createLoad(generator.getBuilder(), genCodePtr(generator));
 }
 
 llvm::Value* PrefixInc::genCodePtr(CodeGenerator& generator) {
   llvm::Value* operand = operand_->genCodePtr(generator);
-  llvm::Value* value = g_builder.CreateLoad(
+  llvm::Value* value = generator.getBuilder().CreateLoad(
       operand->getType()->getNonOpaquePointerElementType(), operand);
   if (value != nullptr && (value->getType()->isIntegerTy() ||
                            value->getType()->isFloatingPointTy() ||
                            value->getType()->isPointerTy())) {
     size_t valueBitWidth =
         ((llvm::IntegerType*)value->getType())->getBitWidth();
-    llvm::Value* oneValue = Utils::getOneValue(valueBitWidth);
-    llvm::Value* valuePlus =
-        Utils::createAdd(value, oneValue, operand_->getLValueTypeId(generator),
-                         BuiltinTypeId::INT, generator);
-    g_builder.CreateStore(valuePlus, operand);
+    llvm::Value* oneValue =
+        Utils::getOneValue(generator.getBuilder(), valueBitWidth);
+    llvm::Value* valuePlus = Utils::createAdd(
+        generator.getBuilder(), value, oneValue,
+        operand_->getLValueTypeId(generator), BuiltinTypeId::INT);
+    generator.getBuilder().CreateStore(valuePlus, operand);
     return operand;
   }
 
@@ -1599,23 +1637,24 @@ llvm::Value* PrefixInc::genCodePtr(CodeGenerator& generator) {
 }
 
 llvm::Value* PrefixDec::genCode(CodeGenerator& generator) {
-  return Utils::createLoad(genCodePtr(generator), generator);
+  return Utils::createLoad(generator.getBuilder(), genCodePtr(generator));
 }
 
 llvm::Value* PrefixDec::genCodePtr(CodeGenerator& generator) {
   llvm::Value* operand = operand_->genCodePtr(generator);
-  llvm::Value* value = g_builder.CreateLoad(
+  llvm::Value* value = generator.getBuilder().CreateLoad(
       operand->getType()->getNonOpaquePointerElementType(), operand);
   if (value != nullptr && (value->getType()->isIntegerTy() ||
                            value->getType()->isFloatingPointTy() ||
                            value->getType()->isPointerTy())) {
     size_t valueBitWidth =
         ((llvm::IntegerType*)value->getType())->getBitWidth();
-    llvm::Value* oneValue = Utils::getOneValue(valueBitWidth);
-    llvm::Value* valueMinus =
-        Utils::createSub(value, oneValue, operand_->getLValueTypeId(generator),
-                         BuiltinTypeId::INT, generator);
-    g_builder.CreateStore(valueMinus, operand);
+    llvm::Value* oneValue =
+        Utils::getOneValue(generator.getBuilder(), valueBitWidth);
+    llvm::Value* valueMinus = Utils::createSub(
+        generator.getBuilder(), value, oneValue,
+        operand_->getLValueTypeId(generator), BuiltinTypeId::INT);
+    generator.getBuilder().CreateStore(valueMinus, operand);
     return operand;
   }
 
@@ -1625,100 +1664,101 @@ llvm::Value* PrefixDec::genCodePtr(CodeGenerator& generator) {
 }
 
 llvm::Value* AddAssign::genCode(CodeGenerator& generator) {
-  return Utils::createLoad(genCodePtr(generator), generator);
+  return Utils::createLoad(generator.getBuilder(), genCodePtr(generator));
 }
 
 llvm::Value* AddAssign::genCodePtr(CodeGenerator& generator) {
   llvm::Value* lhs = lhs_->genCodePtr(generator);
   llvm::Value* rhs = rhs_->genCode(generator);
   return Utils::createAssign(
-      lhs,
+      generator.getBuilder(), lhs,
       Utils::createAdd(
-          g_builder.CreateLoad(lhs->getType()->getNonOpaquePointerElementType(),
-                               lhs),
-          rhs, lhs_->getLValueTypeId(generator), rhs_->getExprTypeId(generator),
-          generator),
-      generator, rhs_->getExprTypeId(generator),
-      lhs_->getLValueTypeId(generator));
+          generator.getBuilder(),
+          generator.getBuilder().CreateLoad(
+              lhs->getType()->getNonOpaquePointerElementType(), lhs),
+          rhs, lhs_->getLValueTypeId(generator),
+          rhs_->getExprTypeId(generator)),
+      rhs_->getExprTypeId(generator), lhs_->getLValueTypeId(generator));
 }
 
 llvm::Value* SubAssign::genCode(CodeGenerator& generator) {
-  return Utils::createLoad(genCodePtr(generator), generator);
+  return Utils::createLoad(generator.getBuilder(), genCodePtr(generator));
 }
 
 llvm::Value* SubAssign::genCodePtr(CodeGenerator& generator) {
   llvm::Value* lhs = lhs_->genCodePtr(generator);
   llvm::Value* rhs = rhs_->genCode(generator);
   return Utils::createAssign(
-      lhs,
+      generator.getBuilder(), lhs,
       Utils::createSub(
-          g_builder.CreateLoad(lhs->getType()->getNonOpaquePointerElementType(),
-                               lhs),
-          rhs, lhs_->getLValueTypeId(generator), rhs_->getExprTypeId(generator),
-          generator),
-      generator, rhs_->getExprTypeId(generator),
-      lhs_->getLValueTypeId(generator));
+          generator.getBuilder(),
+          generator.getBuilder().CreateLoad(
+              lhs->getType()->getNonOpaquePointerElementType(), lhs),
+          rhs, lhs_->getLValueTypeId(generator),
+          rhs_->getExprTypeId(generator)),
+      rhs_->getExprTypeId(generator), lhs_->getLValueTypeId(generator));
 }
 
 llvm::Value* MulAssign::genCode(CodeGenerator& generator) {
-  return Utils::createLoad(genCodePtr(generator), generator);
+  return Utils::createLoad(generator.getBuilder(), genCodePtr(generator));
 }
 
 llvm::Value* MulAssign::genCodePtr(CodeGenerator& generator) {
   llvm::Value* lhs = lhs_->genCodePtr(generator);
   llvm::Value* rhs = rhs_->genCode(generator);
   return Utils::createAssign(
-      lhs,
+      generator.getBuilder(), lhs,
       Utils::createMul(
-          g_builder.CreateLoad(lhs->getType()->getNonOpaquePointerElementType(),
-                               lhs),
-          rhs, lhs_->getLValueTypeId(generator), rhs_->getExprTypeId(generator),
-          generator),
-      generator, rhs_->getExprTypeId(generator),
-      lhs_->getLValueTypeId(generator));
+          generator.getBuilder(),
+          generator.getBuilder().CreateLoad(
+              lhs->getType()->getNonOpaquePointerElementType(), lhs),
+          rhs, lhs_->getLValueTypeId(generator),
+          rhs_->getExprTypeId(generator)),
+      rhs_->getExprTypeId(generator), lhs_->getLValueTypeId(generator));
 }
 
 llvm::Value* DivAssign::genCode(CodeGenerator& generator) {
-  return Utils::createLoad(genCodePtr(generator), generator);
+  return Utils::createLoad(generator.getBuilder(), genCodePtr(generator));
 }
 
 llvm::Value* DivAssign::genCodePtr(CodeGenerator& generator) {
   llvm::Value* lhs = lhs_->genCodePtr(generator);
   llvm::Value* rhs = rhs_->genCode(generator);
   return Utils::createAssign(
-      lhs,
+      generator.getBuilder(), lhs,
       Utils::createDiv(
-          g_builder.CreateLoad(lhs->getType()->getNonOpaquePointerElementType(),
-                               lhs),
+          generator.getBuilder(),
+          generator.getBuilder().CreateLoad(
+              lhs->getType()->getNonOpaquePointerElementType(), lhs),
           rhs, lhs_->getLValueTypeId(generator), rhs_->getExprTypeId(generator),
-          Expr::binaryIsUnsigned(lhs_, rhs_, generator), generator),
-      generator, rhs_->getExprTypeId(generator),
-      lhs_->getLValueTypeId(generator));
+          Expr::binaryIsUnsigned(lhs_, rhs_, generator)),
+      rhs_->getExprTypeId(generator), lhs_->getLValueTypeId(generator));
 }
 
 llvm::Value* ModAssign::genCode(CodeGenerator& generator) {
-  return Utils::createLoad(genCodePtr(generator), generator);
+  return Utils::createLoad(generator.getBuilder(), genCodePtr(generator));
 }
 
 llvm::Value* ModAssign::genCodePtr(CodeGenerator& generator) {
   llvm::Value* lhs = lhs_->genCodePtr(generator);
   llvm::Value* rhs = rhs_->genCode(generator);
   return Utils::createAssign(
-      lhs,
+      generator.getBuilder(), lhs,
       Utils::createMod(
-          g_builder.CreateLoad(lhs->getType()->getNonOpaquePointerElementType(),
-                               lhs),
+          generator.getBuilder(),
+          generator.getBuilder().CreateLoad(
+              lhs->getType()->getNonOpaquePointerElementType(), lhs),
           rhs, lhs_->getLValueTypeId(generator), rhs_->getExprTypeId(generator),
-          Expr::binaryIsUnsigned(lhs_, rhs_, generator), generator),
-      generator, rhs_->getExprTypeId(generator),
-      lhs_->getLValueTypeId(generator));
+          Expr::binaryIsUnsigned(lhs_, rhs_, generator)),
+      rhs_->getExprTypeId(generator), lhs_->getLValueTypeId(generator));
 }
 
 llvm::Value* BitwiseAnd::genCode(CodeGenerator& generator) {
   llvm::Value* lhs = lhs_->genCode(generator);
   llvm::Value* rhs = rhs_->genCode(generator);
-  return Utils::createBitwiseAnd(lhs, rhs, lhs_->getExprTypeId(generator),
-                                 rhs_->getExprTypeId(generator), generator);
+  return Utils::createBitwiseAnd(generator.getBuilder(), lhs, rhs,
+                                 lhs_->getExprTypeId(generator),
+                                 rhs_->getExprTypeId(generator));
 }
 
 llvm::Value* BitwiseAnd::genCodePtr(CodeGenerator& generator) {
@@ -1729,8 +1769,9 @@ llvm::Value* BitwiseAnd::genCodePtr(CodeGenerator& generator) {
 llvm::Value* BitwiseOr::genCode(CodeGenerator& generator) {
   llvm::Value* lhs = lhs_->genCode(generator);
   llvm::Value* rhs = rhs_->genCode(generator);
-  return Utils::createBitwiseOr(lhs, rhs, lhs_->getExprTypeId(generator),
-                                rhs_->getExprTypeId(generator), generator);
+  return Utils::createBitwiseOr(generator.getBuilder(), lhs, rhs,
+                                lhs_->getExprTypeId(generator),
+                                rhs_->getExprTypeId(generator));
 }
 
 llvm::Value* BitwiseOr::genCodePtr(CodeGenerator& generator) {
@@ -1741,8 +1782,9 @@ llvm::Value* BitwiseOr::genCodePtr(CodeGenerator& generator) {
 llvm::Value* BitwiseXor::genCode(CodeGenerator& generator) {
   llvm::Value* lhs = lhs_->genCode(generator);
   llvm::Value* rhs = rhs_->genCode(generator);
-  return Utils::createBitwiseXor(lhs, rhs, lhs_->getExprTypeId(generator),
-                                 rhs_->getExprTypeId(generator), generator);
+  return Utils::createBitwiseXor(generator.getBuilder(), lhs, rhs,
+                                 lhs_->getExprTypeId(generator),
+                                 rhs_->getExprTypeId(generator));
 }
 
 llvm::Value* BitwiseXor::genCodePtr(CodeGenerator& generator) {
@@ -1753,7 +1795,7 @@ llvm::Value* BitwiseXor::genCodePtr(CodeGenerator& generator) {
 llvm::Value* BitwiseNot::genCode(CodeGenerator& generator) {
   llvm::Value* operand = operand_->genCode(generator);
   if (operand->getType()->isIntegerTy()) {
-    return g_builder.CreateNot(operand);
+    return generator.getBuilder().CreateNot(operand);
   }
 
   throw std::logic_error(
@@ -1766,64 +1808,65 @@ llvm::Value* BitwiseNot::genCodePtr(CodeGenerator& generator) {
 }
 
 llvm::Value* BitwiseAndAssign::genCode(CodeGenerator& generator) {
-  return Utils::createLoad(genCodePtr(generator), generator);
+  return Utils::createLoad(generator.getBuilder(), genCodePtr(generator));
 }
 
 llvm::Value* BitwiseAndAssign::genCodePtr(CodeGenerator& generator) {
   llvm::Value* lhs = lhs_->genCodePtr(generator);
   llvm::Value* rhs = rhs_->genCode(generator);
   return Utils::createAssign(
-      lhs,
+      generator.getBuilder(), lhs,
       Utils::createBitwiseAnd(
-          g_builder.CreateLoad(lhs->getType()->getNonOpaquePointerElementType(),
-                               lhs),
-          rhs, lhs_->getLValueTypeId(generator), rhs_->getExprTypeId(generator),
-          generator),
-      generator, rhs_->getExprTypeId(generator),
-      lhs_->getLValueTypeId(generator));
+          generator.getBuilder(),
+          generator.getBuilder().CreateLoad(
+              lhs->getType()->getNonOpaquePointerElementType(), lhs),
+          rhs, lhs_->getLValueTypeId(generator),
+          rhs_->getExprTypeId(generator)),
+      rhs_->getExprTypeId(generator), lhs_->getLValueTypeId(generator));
 }
 
 llvm::Value* BitwiseOrAssign::genCode(CodeGenerator& generator) {
-  return Utils::createLoad(genCodePtr(generator), generator);
+  return Utils::createLoad(generator.getBuilder(), genCodePtr(generator));
 }
 
 llvm::Value* BitwiseOrAssign::genCodePtr(CodeGenerator& generator) {
   llvm::Value* lhs = lhs_->genCodePtr(generator);
   llvm::Value* rhs = rhs_->genCode(generator);
   return Utils::createAssign(
-      lhs,
+      generator.getBuilder(), lhs,
       Utils::createBitwiseOr(
-          g_builder.CreateLoad(lhs->getType()->getNonOpaquePointerElementType(),
-                               lhs),
-          rhs, lhs_->getLValueTypeId(generator), rhs_->getExprTypeId(generator),
-          generator),
-      generator, rhs_->getExprTypeId(generator),
-      lhs_->getLValueTypeId(generator));
+          generator.getBuilder(),
+          generator.getBuilder().CreateLoad(
+              lhs->getType()->getNonOpaquePointerElementType(), lhs),
+          rhs, lhs_->getLValueTypeId(generator),
+          rhs_->getExprTypeId(generator)),
+      rhs_->getExprTypeId(generator), lhs_->getLValueTypeId(generator));
 }
 
 llvm::Value* BitwiseXorAssign::genCode(CodeGenerator& generator) {
-  return Utils::createLoad(genCodePtr(generator), generator);
+  return Utils::createLoad(generator.getBuilder(), genCodePtr(generator));
 }
 
 llvm::Value* BitwiseXorAssign::genCodePtr(CodeGenerator& generator) {
   llvm::Value* lhs = lhs_->genCodePtr(generator);
   llvm::Value* rhs = rhs_->genCode(generator);
   return Utils::createAssign(
-      lhs,
+      generator.getBuilder(), lhs,
       Utils::createBitwiseXor(
-          g_builder.CreateLoad(lhs->getType()->getNonOpaquePointerElementType(),
-                               lhs),
-          rhs, lhs_->getLValueTypeId(generator), rhs_->getExprTypeId(generator),
-          generator),
-      generator, rhs_->getExprTypeId(generator),
-      lhs_->getLValueTypeId(generator));
+          generator.getBuilder(),
+          generator.getBuilder().CreateLoad(
+              lhs->getType()->getNonOpaquePointerElementType(), lhs),
+          rhs, lhs_->getLValueTypeId(generator),
+          rhs_->getExprTypeId(generator)),
+      rhs_->getExprTypeId(generator), lhs_->getLValueTypeId(generator));
 }
 
 llvm::Value* LeftShift::genCode(CodeGenerator& generator) {
   llvm::Value* lhs = lhs_->genCode(generator);
   llvm::Value* rhs = rhs_->genCode(generator);
-  return Utils::createShl(lhs, rhs, lhs_->getExprTypeId(generator),
-                          rhs_->getExprTypeId(generator), generator);
+  return Utils::createShl(generator.getBuilder(), lhs, rhs,
+                          lhs_->getExprTypeId(generator),
+                          rhs_->getExprTypeId(generator));
 }
 
 llvm::Value* LeftShift::genCodePtr(CodeGenerator& generator) {
@@ -1834,9 +1877,10 @@ llvm::Value* LeftShift::genCodePtr(CodeGenerator& generator) {
 llvm::Value* RightShift::genCode(CodeGenerator& generator) {
   llvm::Value* lhs = lhs_->genCode(generator);
   llvm::Value* rhs = rhs_->genCode(generator);
-  return Utils::createShr(
-      lhs, rhs, lhs_->getExprTypeId(generator), rhs_->getExprTypeId(generator),
-      Expr::binaryIsUnsigned(lhs_, rhs_, generator), generator);
+  return Utils::createShr(generator.getBuilder(), lhs, rhs,
+                          lhs_->getExprTypeId(generator),
+                          rhs_->getExprTypeId(generator),
+                          Expr::binaryIsUnsigned(lhs_, rhs_, generator));
 }
 
 llvm::Value* RightShift::genCodePtr(CodeGenerator& generator) {
@@ -1845,57 +1889,57 @@ llvm::Value* RightShift::genCodePtr(CodeGenerator& generator) {
 }
 
 llvm::Value* LeftShiftAssign::genCode(CodeGenerator& generator) {
-  return Utils::createLoad(genCodePtr(generator), generator);
+  return Utils::createLoad(generator.getBuilder(), genCodePtr(generator));
 }
 
 llvm::Value* LeftShiftAssign::genCodePtr(CodeGenerator& generator) {
   llvm::Value* lhs = lhs_->genCodePtr(generator);
   llvm::Value* rhs = rhs_->genCode(generator);
   return Utils::createAssign(
-      lhs,
+      generator.getBuilder(), lhs,
       Utils::createShl(
-          g_builder.CreateLoad(lhs->getType()->getNonOpaquePointerElementType(),
-                               lhs),
-          rhs, lhs_->getLValueTypeId(generator), rhs_->getExprTypeId(generator),
-          generator),
-      generator, rhs_->getExprTypeId(generator),
-      lhs_->getLValueTypeId(generator));
+          generator.getBuilder(),
+          generator.getBuilder().CreateLoad(
+              lhs->getType()->getNonOpaquePointerElementType(), lhs),
+          rhs, lhs_->getLValueTypeId(generator),
+          rhs_->getExprTypeId(generator)),
+      rhs_->getExprTypeId(generator), lhs_->getLValueTypeId(generator));
 }
 
 llvm::Value* RightShiftAssign::genCode(CodeGenerator& generator) {
-  return Utils::createLoad(genCodePtr(generator), generator);
+  return Utils::createLoad(generator.getBuilder(), genCodePtr(generator));
 }
 
 llvm::Value* RightShiftAssign::genCodePtr(CodeGenerator& generator) {
   llvm::Value* lhs = lhs_->genCodePtr(generator);
   llvm::Value* rhs = rhs_->genCode(generator);
   return Utils::createAssign(
-      lhs,
+      generator.getBuilder(), lhs,
       Utils::createShr(
-          g_builder.CreateLoad(lhs->getType()->getNonOpaquePointerElementType(),
-                               lhs),
+          generator.getBuilder(),
+          generator.getBuilder().CreateLoad(
+              lhs->getType()->getNonOpaquePointerElementType(), lhs),
           rhs, lhs_->getLValueTypeId(generator), rhs_->getExprTypeId(generator),
-          Expr::binaryIsUnsigned(lhs_, rhs_, generator), generator),
-      generator, rhs_->getExprTypeId(generator),
-      lhs_->getLValueTypeId(generator));
+          Expr::binaryIsUnsigned(lhs_, rhs_, generator)),
+      rhs_->getExprTypeId(generator), lhs_->getLValueTypeId(generator));
 }
 
 llvm::Value* LogicAnd::genCode(CodeGenerator& generator) {
   llvm::Value* lhs = lhs_->genCode(generator);
-  lhs = Utils::castToBool(lhs);
+  lhs = Utils::castToBool(generator.getBuilder(), lhs);
   if (lhs == nullptr) {
     throw std::domain_error(
         "lhs of logic operator \"&&\" can not be cast to bool!");
   }
 
   llvm::Value* rhs = rhs_->genCode(generator);
-  rhs = Utils::castToBool(rhs);
+  rhs = Utils::castToBool(generator.getBuilder(), rhs);
   if (rhs == nullptr) {
     throw std::domain_error(
         "rhs of logic operator \"&&\" can not be cast to bool!");
   }
 
-  return g_builder.CreateLogicalAnd(lhs, rhs);
+  return generator.getBuilder().CreateLogicalAnd(lhs, rhs);
 }
 
 llvm::Value* LogicAnd::genCodePtr(CodeGenerator& generator) {
@@ -1905,20 +1949,20 @@ llvm::Value* LogicAnd::genCodePtr(CodeGenerator& generator) {
 
 llvm::Value* LogicOr::genCode(CodeGenerator& generator) {
   llvm::Value* lhs = lhs_->genCode(generator);
-  lhs = Utils::castToBool(lhs);
+  lhs = Utils::castToBool(generator.getBuilder(), lhs);
   if (lhs == nullptr) {
     throw std::domain_error(
         "lhs of logic operator \"||\" can not be cast to bool!");
   }
 
   llvm::Value* rhs = rhs_->genCode(generator);
-  rhs = Utils::castToBool(rhs);
+  rhs = Utils::castToBool(generator.getBuilder(), rhs);
   if (rhs == nullptr) {
     throw std::domain_error(
         "rhs of logic operator \"||\" can not be cast to bool!");
   }
 
-  return g_builder.CreateLogicalOr(lhs, rhs);
+  return generator.getBuilder().CreateLogicalOr(lhs, rhs);
 }
 
 llvm::Value* LogicOr::genCodePtr(CodeGenerator& generator) {
@@ -1926,8 +1970,9 @@ llvm::Value* LogicOr::genCodePtr(CodeGenerator& generator) {
 }
 
 llvm::Value* LogicNot::genCode(CodeGenerator& generator) {
-  return g_builder.CreateICmpEQ(Utils::castToBool(operand_->genCode(generator)),
-                                g_builder.getInt1(false));
+  return generator.getBuilder().CreateICmpEQ(
+      Utils::castToBool(generator.getBuilder(), operand_->genCode(generator)),
+      generator.getBuilder().getInt1(false));
 }
 
 llvm::Value* LogicNot::genCodePtr(CodeGenerator& generator) {
@@ -1937,7 +1982,8 @@ llvm::Value* LogicNot::genCodePtr(CodeGenerator& generator) {
 llvm::Value* LogicEq::genCode(CodeGenerator& generator) {
   llvm::Value* lhs = lhs_->genCode(generator);
   llvm::Value* rhs = rhs_->genCode(generator);
-  return Utils::createCmpEq(lhs, rhs, lhs_->getExprTypeId(generator),
+  return Utils::createCmpEq(generator.getBuilder(), lhs, rhs,
+                            lhs_->getExprTypeId(generator),
                             rhs_->getExprTypeId(generator));
 }
 
@@ -2026,7 +2072,8 @@ llvm::Value* LogicGreaterEq::genCodePtr(CodeGenerator& generator) {
 }
 
 llvm::Value* TernaryCondition::genCode(CodeGenerator& generator) {
-  llvm::Value* condition = Utils::castToBool(condition_->genCode(generator));
+  llvm::Value* condition =
+      Utils::castToBool(generator.getBuilder(), condition_->genCode(generator));
   if (condition == nullptr) {
     std::logic_error(
         "Condition is not a bool expression in ternary condition expression!");
@@ -2037,10 +2084,11 @@ llvm::Value* TernaryCondition::genCode(CodeGenerator& generator) {
   bool isUnsigned = false;
   BuiltinTypeId resultTypeId = BuiltinTypeId::UNKNOWN;
   if (trueVal->getType() == falseVal->getType() ||
-      Utils::typeUpgrade(trueVal, falseVal, trueExpr_->getExprTypeId(generator),
+      Utils::typeUpgrade(generator.getBuilder(), trueVal, falseVal,
+                         trueExpr_->getExprTypeId(generator),
                          falseExpr_->getExprTypeId(generator), resultTypeId,
                          isUnsigned)) {
-    return g_builder.CreateSelect(condition, trueVal, falseVal);
+    return generator.getBuilder().CreateSelect(condition, trueVal, falseVal);
   }
 
   throw std::domain_error(
@@ -2049,7 +2097,8 @@ llvm::Value* TernaryCondition::genCode(CodeGenerator& generator) {
 }
 
 llvm::Value* TernaryCondition::genCodePtr(CodeGenerator& generator) {
-  llvm::Value* condition = Utils::castToBool(condition_->genCode(generator));
+  llvm::Value* condition =
+      Utils::castToBool(generator.getBuilder(), condition_->genCode(generator));
   if (condition == nullptr) {
     std::logic_error(
         "Condition is not a bool expression in ternary condition expression!");
@@ -2060,10 +2109,11 @@ llvm::Value* TernaryCondition::genCodePtr(CodeGenerator& generator) {
   bool isUnsigned = false;
   BuiltinTypeId resultTypeId = BuiltinTypeId::UNKNOWN;
   if (trueVal->getType() == falseVal->getType() ||
-      Utils::typeUpgrade(trueVal, falseVal, trueExpr_->getExprTypeId(generator),
+      Utils::typeUpgrade(generator.getBuilder(), trueVal, falseVal,
+                         trueExpr_->getExprTypeId(generator),
                          falseExpr_->getExprTypeId(generator), resultTypeId,
                          isUnsigned)) {
-    return g_builder.CreateSelect(condition, trueVal, falseVal);
+    return generator.getBuilder().CreateSelect(condition, trueVal, falseVal);
   }
 
   throw std::domain_error(

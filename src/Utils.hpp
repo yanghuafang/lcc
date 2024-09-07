@@ -18,145 +18,111 @@ class BasicBlock;
 
 }  // namespace llvm
 
-class CodeGenerator;
-
+// LLVM integer types (i8, i32, ...) carry no signed/unsigned flag. lcc keeps C
+// signedness in AST::BuiltinTypeId and passes TypeId into these helpers to
+// choose sdiv/udiv, sext/zext, icmp slt/ult, SIToFP/UIToFP, etc.
 class Utils {
  public:
+  // Relation for icmp only (EQ/LT/… plus signed vs unsigned). Float/double
+  // comparisons use fcmp and llvm::CmpInst::Predicate instead — see createCmpEq
+  // and compareOrdered in AbstractSyntaxTree.cpp, which pick icmp vs fcmp after
+  // usual arithmetic conversion.
   enum class IntCmpPred { EQ, NE, LT, LE, GT, GE };
 
-  // int -> int, float/double, pointer
-  // float/double -> int, pointer
-  // pointer -> int, pointer
   static llvm::Value* typeCast(
-      llvm::Value* value, llvm::Type* type,
+      llvm::IRBuilder<>& builder, llvm::Value* value, llvm::Type* type,
       AST::BuiltinTypeId srcTypeId = AST::BuiltinTypeId::UNKNOWN,
       AST::BuiltinTypeId dstTypeId = AST::BuiltinTypeId::UNKNOWN);
 
-  // int, float/double, pointer -> bool
-  static llvm::Value* castToBool(llvm::Value* value);
+  static llvm::Value* castToBool(llvm::IRBuilder<>& builder,
+                                 llvm::Value* value);
 
-  // int1(bool) -> int8 -> int16 -> int32 -> int64 ->float ->double
-  static llvm::Value* typeUpgrade(llvm::Value* value, llvm::Type* type,
+  static llvm::Value* typeUpgrade(llvm::IRBuilder<>& builder,
+                                  llvm::Value* value, llvm::Type* type,
                                   AST::BuiltinTypeId srcTypeId,
                                   AST::BuiltinTypeId dstTypeId);
 
-  // Upgrade lhs and/or rhs to type of higher precedence.
-  // char/short -> int ->unsigned ->long ->double
-  // float -> double
-  static bool typeUpgrade(llvm::Value*& lhs, llvm::Value*& rhs,
-                          AST::BuiltinTypeId lhsTypeId,
+  static bool typeUpgrade(llvm::IRBuilder<>& builder, llvm::Value*& lhs,
+                          llvm::Value*& rhs, AST::BuiltinTypeId lhsTypeId,
                           AST::BuiltinTypeId rhsTypeId,
                           AST::BuiltinTypeId& resultTypeId, bool& isUnsigned);
 
-  // Create an alloca instruction in the entry block of the current function.
   static llvm::AllocaInst* createEntryBlockAlloca(llvm::Function* func,
                                                   const std::string& varName,
                                                   llvm::Type* varType);
 
-  // Create an unconditional branch if the current block does not have a
-  // terminator. It does nothing if current block already has a terminator.
-  // Take IfStmt for example, there are 3 blocks: thenBlock, elseBlock and
-  // endBlock. At the end of thenBlock and elseBlock, there should be an
-  // unconditional branch to endBlock should be created respectively.
-  static llvm::BranchInst* terminateBlockByBr(llvm::BasicBlock* basicBlock);
+  static llvm::BranchInst* terminateBlockByBr(llvm::IRBuilder<>& builder,
+                                              llvm::BasicBlock* basicBlock);
 
-  // Create an equal comparision instruction. Automatic type casting will be
-  // done if two input values are of different types.
-  static llvm::Value* createCmpEq(llvm::Value* lhs, llvm::Value* rhs,
+  static llvm::Value* createCmpEq(llvm::IRBuilder<>& builder, llvm::Value* lhs,
+                                  llvm::Value* rhs,
                                   AST::BuiltinTypeId lhsTypeId,
                                   AST::BuiltinTypeId rhsTypeId);
 
-  static llvm::Value* createIntegerCmp(IntCmpPred pred, llvm::Value* lhs,
+  static llvm::Value* createIntegerCmp(llvm::IRBuilder<>& builder,
+                                       IntCmpPred pred, llvm::Value* lhs,
                                        llvm::Value* rhs, bool isUnsigned);
 
-  // Create a load instruction.
-  // When lhs is type of array, only return a pointer to the first element.
-  static llvm::Value* createLoad(llvm::Value* lhs, CodeGenerator& generator);
+  static llvm::Value* createLoad(llvm::IRBuilder<>& builder, llvm::Value* lhs);
 
-  // Create an assignment instruction. Automatic type casting/upgrading will be
-  // done if the input values are of different types.
   static llvm::Value* createAssign(
-      llvm::Value* lhs, llvm::Value* rhs, CodeGenerator& generator,
+      llvm::IRBuilder<>& builder, llvm::Value* lhs, llvm::Value* rhs,
       AST::BuiltinTypeId srcTypeId = AST::BuiltinTypeId::UNKNOWN,
       AST::BuiltinTypeId dstTypeId = AST::BuiltinTypeId::UNKNOWN);
 
-  // Create an addition instruction. Automatic type casting/upgrading will be
-  // done if the input values are of different types.
-  static llvm::Value* createAdd(llvm::Value* lhs, llvm::Value* rhs,
-                                AST::BuiltinTypeId lhsTypeId,
-                                AST::BuiltinTypeId rhsTypeId,
-                                CodeGenerator& generator);
+  static llvm::Value* createAdd(llvm::IRBuilder<>& builder, llvm::Value* lhs,
+                                llvm::Value* rhs, AST::BuiltinTypeId lhsTypeId,
+                                AST::BuiltinTypeId rhsTypeId);
 
-  // Create a substraction instruction. Automatic type casting/upgrading will
-  // be done if the input values are of different types.
-  static llvm::Value* createSub(llvm::Value* lhs, llvm::Value* rhs,
-                                AST::BuiltinTypeId lhsTypeId,
-                                AST::BuiltinTypeId rhsTypeId,
-                                CodeGenerator& generator);
+  static llvm::Value* createSub(llvm::IRBuilder<>& builder, llvm::Value* lhs,
+                                llvm::Value* rhs, AST::BuiltinTypeId lhsTypeId,
+                                AST::BuiltinTypeId rhsTypeId);
 
-  // Create a multiplication instruction. Automatic type casting/upgrading will
-  // be done if the input values are of different types.
-  static llvm::Value* createMul(llvm::Value* lhs, llvm::Value* rhs,
-                                AST::BuiltinTypeId lhsTypeId,
-                                AST::BuiltinTypeId rhsTypeId,
-                                CodeGenerator& generator);
+  static llvm::Value* createMul(llvm::IRBuilder<>& builder, llvm::Value* lhs,
+                                llvm::Value* rhs, AST::BuiltinTypeId lhsTypeId,
+                                AST::BuiltinTypeId rhsTypeId);
 
-  // Create a division instruction. Automatic type casting/upgrading will
-  // be done if the input values are of different types.
-  static llvm::Value* createDiv(llvm::Value* lhs, llvm::Value* rhs,
-                                AST::BuiltinTypeId lhsTypeId,
-                                AST::BuiltinTypeId rhsTypeId, bool isUnsigned,
-                                CodeGenerator& generator);
+  static llvm::Value* createDiv(llvm::IRBuilder<>& builder, llvm::Value* lhs,
+                                llvm::Value* rhs, AST::BuiltinTypeId lhsTypeId,
+                                AST::BuiltinTypeId rhsTypeId, bool isUnsigned);
 
-  // Create a modulo instruction. Automatic type casting/upgrading will
-  // be done if the input values are of different types.
-  static llvm::Value* createMod(llvm::Value* lhs, llvm::Value* rhs,
-                                AST::BuiltinTypeId lhsTypeId,
-                                AST::BuiltinTypeId rhsTypeId, bool isUnsigned,
-                                CodeGenerator& generator);
+  static llvm::Value* createMod(llvm::IRBuilder<>& builder, llvm::Value* lhs,
+                                llvm::Value* rhs, AST::BuiltinTypeId lhsTypeId,
+                                AST::BuiltinTypeId rhsTypeId, bool isUnsigned);
 
-  // Create a bitwise AND instruction. Automatic type casting/upgrading will
-  // be done if the input values are of different types.
-  static llvm::Value* createBitwiseAnd(llvm::Value* lhs, llvm::Value* rhs,
+  static llvm::Value* createBitwiseAnd(llvm::IRBuilder<>& builder,
+                                       llvm::Value* lhs, llvm::Value* rhs,
                                        AST::BuiltinTypeId lhsTypeId,
-                                       AST::BuiltinTypeId rhsTypeId,
-                                       CodeGenerator& generator);
+                                       AST::BuiltinTypeId rhsTypeId);
 
-  // Create a bitwise OR instruction. Automatic type casting/upgrading will
-  // be done if the input values are of different types.
-  static llvm::Value* createBitwiseOr(llvm::Value* lhs, llvm::Value* rhs,
+  static llvm::Value* createBitwiseOr(llvm::IRBuilder<>& builder,
+                                      llvm::Value* lhs, llvm::Value* rhs,
                                       AST::BuiltinTypeId lhsTypeId,
-                                      AST::BuiltinTypeId rhsTypeId,
-                                      CodeGenerator& generator);
+                                      AST::BuiltinTypeId rhsTypeId);
 
-  // Create a bitwise XOR instruction. Automatic type casting/upgrading will
-  // be done if the input values are of different types.
-  static llvm::Value* createBitwiseXor(llvm::Value* lhs, llvm::Value* rhs,
+  static llvm::Value* createBitwiseXor(llvm::IRBuilder<>& builder,
+                                       llvm::Value* lhs, llvm::Value* rhs,
                                        AST::BuiltinTypeId lhsTypeId,
-                                       AST::BuiltinTypeId rhsTypeId,
-                                       CodeGenerator& generator);
+                                       AST::BuiltinTypeId rhsTypeId);
 
-  // Create a SHL instruction. Automatic type casting/upgrading will
-  // be done if the input values are of different types.
-  static llvm::Value* createShl(llvm::Value* lhs, llvm::Value* rhs,
-                                AST::BuiltinTypeId lhsTypeId,
-                                AST::BuiltinTypeId rhsTypeId,
-                                CodeGenerator& generator);
+  static llvm::Value* createShl(llvm::IRBuilder<>& builder, llvm::Value* lhs,
+                                llvm::Value* rhs, AST::BuiltinTypeId lhsTypeId,
+                                AST::BuiltinTypeId rhsTypeId);
 
-  // Create a SHR instruction. Automatic type casting/upgrading will
-  // be done if the input values are of different types.
-  static llvm::Value* createShr(llvm::Value* lhs, llvm::Value* rhs,
-                                AST::BuiltinTypeId lhsTypeId,
-                                AST::BuiltinTypeId rhsTypeId, bool isUnsigned,
-                                CodeGenerator& generator);
+  static llvm::Value* createShr(llvm::IRBuilder<>& builder, llvm::Value* lhs,
+                                llvm::Value* rhs, AST::BuiltinTypeId lhsTypeId,
+                                AST::BuiltinTypeId rhsTypeId, bool isUnsigned);
 
-  static llvm::Value* getOneValue(size_t valueBitWidth);
+  static llvm::Value* getOneValue(llvm::IRBuilder<>& builder,
+                                  size_t valueBitWidth);
 
   static bool isUnsignedTypeId(AST::BuiltinTypeId typeId);
+
   static AST::BuiltinTypeId integerPromotion(AST::BuiltinTypeId typeId);
+
   static AST::BuiltinTypeId usualArithmeticConversion(
       AST::BuiltinTypeId lhsTypeId, AST::BuiltinTypeId rhsTypeId,
       bool& isUnsigned);
-  static llvm::Type* llvmTypeForTypeId(AST::BuiltinTypeId typeId);
+
   static AST::BuiltinTypeId varTypeToTypeId(AST::VarType* varType);
 };
