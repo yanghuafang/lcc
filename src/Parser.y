@@ -422,8 +422,15 @@ Block:      LBRACE Stmts RBRACE { $$ = new AST::Block($2); }
 
  /* Expr */
 
- /* An argument is actual value or expression that is passed to the function */
- /* when it is invoked. */
+ /* %prec below borrows a level rather than declaring one, for the reason the
+   dangling-else note above gives: a rule takes the precedence of its last
+   terminal, which for every prefix and postfix form here is the wrong one or
+   none at all. `SUB Expr` would take the binary additive level, and
+   `Expr LBRACKET Expr RBRACKET` ends in a token the precedence table never
+   mentions. %prec ARROW gives the postfix forms C's tightest level; %prec NOT
+   gives the prefix forms the unary level above the binaries, which is what
+   makes `-a * b` parse as `(-a) * b`. See docs/ParserConflicts.md. */
+
 Expr:       IDENTIFIER          { $$ = new AST::Variable(*$1); }
             | Constant          { $$ = $1; }
             | LPARENTHESES Expr RPARENTHESES

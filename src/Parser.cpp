@@ -637,13 +637,13 @@ static const yytype_int16 yyrline[] =
      350,   353,   354,   355,   356,   357,   358,   359,   360,   361,
      362,   363,   364,   365,   368,   370,   376,   381,   383,   386,
      388,   392,   394,   396,   400,   404,   409,   412,   415,   416,
-     420,   427,   428,   429,   431,   432,   434,   436,   438,   440,
-     442,   444,   446,   448,   450,   452,   454,   456,   457,   459,
-     461,   463,   464,   465,   467,   469,   471,   473,   474,   475,
-     476,   477,   478,   480,   481,   482,   483,   484,   485,   486,
-     487,   488,   489,   490,   491,   492,   493,   494,   495,   496,
-     497,   498,   499,   503,   505,   506,   509,   510,   511,   512,
-     513,   514,   515,   516,   517,   518
+     420,   434,   435,   436,   438,   439,   441,   443,   445,   447,
+     449,   451,   453,   455,   457,   459,   461,   463,   464,   466,
+     468,   470,   471,   472,   474,   476,   478,   480,   481,   482,
+     483,   484,   485,   487,   488,   489,   490,   491,   492,   493,
+     494,   495,   496,   497,   498,   499,   500,   501,   502,   503,
+     504,   505,   506,   510,   512,   513,   516,   517,   518,   519,
+     520,   521,   522,   523,   524,   525
 };
 #endif
 
@@ -2665,391 +2665,391 @@ yyreduce:
     break;
 
   case 91: /* Expr: IDENTIFIER  */
-#line 427 "Parser.y"
+#line 434 "Parser.y"
                                 { (yyval.expr) = new AST::Variable(*(yyvsp[0].idVal)); }
 #line 2671 "Parser.cpp"
     break;
 
   case 92: /* Expr: Constant  */
-#line 428 "Parser.y"
+#line 435 "Parser.y"
                                 { (yyval.expr) = (yyvsp[0].constant); }
 #line 2677 "Parser.cpp"
     break;
 
   case 93: /* Expr: LPARENTHESES Expr RPARENTHESES  */
-#line 430 "Parser.y"
+#line 437 "Parser.y"
                                 { (yyval.expr) = (yyvsp[-1].expr); }
 #line 2683 "Parser.cpp"
     break;
 
   case 94: /* Expr: Expr COMMA Expr  */
-#line 431 "Parser.y"
+#line 438 "Parser.y"
                                 { (yyval.expr) = new AST::CommaExpr((yyvsp[-2].expr), (yyvsp[0].expr)); }
 #line 2689 "Parser.cpp"
     break;
 
   case 95: /* Expr: IDENTIFIER LPARENTHESES ExprList RPARENTHESES  */
-#line 433 "Parser.y"
+#line 440 "Parser.y"
                                 { (yyval.expr) = new AST::FuncCall(*(yyvsp[-3].idVal), (yyvsp[-1].exprList)); }
 #line 2695 "Parser.cpp"
     break;
 
   case 96: /* Expr: Expr DOT IDENTIFIER  */
-#line 435 "Parser.y"
+#line 442 "Parser.y"
                                 { (yyval.expr) = new AST::StructRef((yyvsp[-2].expr), *(yyvsp[0].idVal)); }
 #line 2701 "Parser.cpp"
     break;
 
   case 97: /* Expr: Expr ARROW IDENTIFIER  */
-#line 437 "Parser.y"
+#line 444 "Parser.y"
                                 { (yyval.expr) = new AST::StructDeref((yyvsp[-2].expr), *(yyvsp[0].idVal)); }
 #line 2707 "Parser.cpp"
     break;
 
   case 98: /* Expr: Expr LBRACKET Expr RBRACKET  */
-#line 439 "Parser.y"
+#line 446 "Parser.y"
                                 { (yyval.expr) = new AST::Subscript((yyvsp[-3].expr), (yyvsp[-1].expr)); }
 #line 2713 "Parser.cpp"
     break;
 
   case 99: /* Expr: LPARENTHESES VarType RPARENTHESES Expr  */
-#line 441 "Parser.y"
+#line 448 "Parser.y"
                                 { (yyval.expr) = new AST::TypeCast((yyvsp[-2].varType), (yyvsp[0].expr)); }
 #line 2719 "Parser.cpp"
     break;
 
   case 100: /* Expr: SIZEOF LPARENTHESES VarType RPARENTHESES  */
-#line 443 "Parser.y"
+#line 450 "Parser.y"
                                 { (yyval.expr) = new AST::SizeOf((yyvsp[-1].varType)); }
 #line 2725 "Parser.cpp"
     break;
 
   case 101: /* Expr: SIZEOF LPARENTHESES Expr RPARENTHESES  */
-#line 445 "Parser.y"
+#line 452 "Parser.y"
                                 { (yyval.expr) = new AST::SizeOf((yyvsp[-1].expr)); }
 #line 2731 "Parser.cpp"
     break;
 
   case 102: /* Expr: SIZEOF LPARENTHESES IDENTIFIER RPARENTHESES  */
-#line 447 "Parser.y"
+#line 454 "Parser.y"
                                 { (yyval.expr) = new AST::SizeOf(*(yyvsp[-1].idVal)); }
 #line 2737 "Parser.cpp"
     break;
 
   case 103: /* Expr: ADD Expr  */
-#line 449 "Parser.y"
+#line 456 "Parser.y"
                                 { (yyval.expr) = new AST::UnaryPlus((yyvsp[0].expr)); }
 #line 2743 "Parser.cpp"
     break;
 
   case 104: /* Expr: SUB Expr  */
-#line 451 "Parser.y"
+#line 458 "Parser.y"
                                 { (yyval.expr) = new AST::UnaryMinus((yyvsp[0].expr)); }
 #line 2749 "Parser.cpp"
     break;
 
   case 105: /* Expr: ASTERISK Expr  */
-#line 453 "Parser.y"
+#line 460 "Parser.y"
                                 { (yyval.expr) = new AST::PointerDeref((yyvsp[0].expr)); }
 #line 2755 "Parser.cpp"
     break;
 
   case 106: /* Expr: AMPERSAND Expr  */
-#line 455 "Parser.y"
+#line 462 "Parser.y"
                                 { (yyval.expr) = new AST::AddressOf((yyvsp[0].expr)); }
 #line 2761 "Parser.cpp"
     break;
 
   case 107: /* Expr: Expr ASSIGN Expr  */
-#line 456 "Parser.y"
+#line 463 "Parser.y"
                                 { (yyval.expr) = new AST::Assign((yyvsp[-2].expr), (yyvsp[0].expr)); }
 #line 2767 "Parser.cpp"
     break;
 
   case 108: /* Expr: Expr ADD Expr  */
-#line 458 "Parser.y"
+#line 465 "Parser.y"
                                 { (yyval.expr) = new AST::Add((yyvsp[-2].expr), (yyvsp[0].expr)); }
 #line 2773 "Parser.cpp"
     break;
 
   case 109: /* Expr: Expr SUB Expr  */
-#line 460 "Parser.y"
+#line 467 "Parser.y"
                                 { (yyval.expr) = new AST::Sub((yyvsp[-2].expr), (yyvsp[0].expr)); }
 #line 2779 "Parser.cpp"
     break;
 
   case 110: /* Expr: Expr ASTERISK Expr  */
-#line 462 "Parser.y"
+#line 469 "Parser.y"
                                 { (yyval.expr) = new AST::Mul((yyvsp[-2].expr), (yyvsp[0].expr)); }
 #line 2785 "Parser.cpp"
     break;
 
   case 111: /* Expr: Expr DIV Expr  */
-#line 463 "Parser.y"
+#line 470 "Parser.y"
                                 { (yyval.expr) = new AST::Div((yyvsp[-2].expr), (yyvsp[0].expr)); }
 #line 2791 "Parser.cpp"
     break;
 
   case 112: /* Expr: Expr MOD Expr  */
-#line 464 "Parser.y"
+#line 471 "Parser.y"
                                 { (yyval.expr) = new AST::Mod((yyvsp[-2].expr), (yyvsp[0].expr)); }
 #line 2797 "Parser.cpp"
     break;
 
   case 113: /* Expr: Expr DADD  */
-#line 466 "Parser.y"
+#line 473 "Parser.y"
                                 { (yyval.expr) = new AST::PostfixInc((yyvsp[-1].expr)); }
 #line 2803 "Parser.cpp"
     break;
 
   case 114: /* Expr: Expr DSUB  */
-#line 468 "Parser.y"
+#line 475 "Parser.y"
                                 { (yyval.expr) = new AST::PostfixDec((yyvsp[-1].expr)); }
 #line 2809 "Parser.cpp"
     break;
 
   case 115: /* Expr: DADD Expr  */
-#line 470 "Parser.y"
+#line 477 "Parser.y"
                                 { (yyval.expr) = new AST::PrefixInc((yyvsp[0].expr)); }
 #line 2815 "Parser.cpp"
     break;
 
   case 116: /* Expr: DSUB Expr  */
-#line 472 "Parser.y"
+#line 479 "Parser.y"
                                 { (yyval.expr) = new AST::PrefixDec((yyvsp[0].expr)); }
 #line 2821 "Parser.cpp"
     break;
 
   case 117: /* Expr: Expr ADDEQ Expr  */
-#line 473 "Parser.y"
+#line 480 "Parser.y"
                                 { (yyval.expr) = new AST::AddAssign((yyvsp[-2].expr), (yyvsp[0].expr)); }
 #line 2827 "Parser.cpp"
     break;
 
   case 118: /* Expr: Expr SUBEQ Expr  */
-#line 474 "Parser.y"
+#line 481 "Parser.y"
                                 { (yyval.expr) = new AST::SubAssign((yyvsp[-2].expr), (yyvsp[0].expr)); }
 #line 2833 "Parser.cpp"
     break;
 
   case 119: /* Expr: Expr MULEQ Expr  */
-#line 475 "Parser.y"
+#line 482 "Parser.y"
                                 { (yyval.expr) = new AST::MulAssign((yyvsp[-2].expr), (yyvsp[0].expr)); }
 #line 2839 "Parser.cpp"
     break;
 
   case 120: /* Expr: Expr DIVEQ Expr  */
-#line 476 "Parser.y"
+#line 483 "Parser.y"
                                 { (yyval.expr) = new AST::DivAssign((yyvsp[-2].expr), (yyvsp[0].expr)); }
 #line 2845 "Parser.cpp"
     break;
 
   case 121: /* Expr: Expr MODEQ Expr  */
-#line 477 "Parser.y"
+#line 484 "Parser.y"
                                 { (yyval.expr) = new AST::ModAssign((yyvsp[-2].expr), (yyvsp[0].expr)); }
 #line 2851 "Parser.cpp"
     break;
 
   case 122: /* Expr: Expr AMPERSAND Expr  */
-#line 479 "Parser.y"
+#line 486 "Parser.y"
                                 { (yyval.expr) = new AST::BitwiseAnd((yyvsp[-2].expr), (yyvsp[0].expr)); }
 #line 2857 "Parser.cpp"
     break;
 
   case 123: /* Expr: Expr BOR Expr  */
-#line 480 "Parser.y"
+#line 487 "Parser.y"
                                 { (yyval.expr) = new AST::BitwiseOr((yyvsp[-2].expr), (yyvsp[0].expr)); }
 #line 2863 "Parser.cpp"
     break;
 
   case 124: /* Expr: Expr BXOR Expr  */
-#line 481 "Parser.y"
+#line 488 "Parser.y"
                                 { (yyval.expr) = new AST::BitwiseXor((yyvsp[-2].expr), (yyvsp[0].expr)); }
 #line 2869 "Parser.cpp"
     break;
 
   case 125: /* Expr: BNOT Expr  */
-#line 482 "Parser.y"
+#line 489 "Parser.y"
                                 { (yyval.expr) = new AST::BitwiseNot((yyvsp[0].expr)); }
 #line 2875 "Parser.cpp"
     break;
 
   case 126: /* Expr: Expr BANDEQ Expr  */
-#line 483 "Parser.y"
+#line 490 "Parser.y"
                                 { (yyval.expr) = new AST::BitwiseAndAssign((yyvsp[-2].expr), (yyvsp[0].expr)); }
 #line 2881 "Parser.cpp"
     break;
 
   case 127: /* Expr: Expr BOREQ Expr  */
-#line 484 "Parser.y"
+#line 491 "Parser.y"
                                 { (yyval.expr) = new AST::BitwiseOrAssign((yyvsp[-2].expr), (yyvsp[0].expr)); }
 #line 2887 "Parser.cpp"
     break;
 
   case 128: /* Expr: Expr BXOREQ Expr  */
-#line 485 "Parser.y"
+#line 492 "Parser.y"
                                 { (yyval.expr) = new AST::BitwiseXorAssign((yyvsp[-2].expr), (yyvsp[0].expr)); }
 #line 2893 "Parser.cpp"
     break;
 
   case 129: /* Expr: Expr SHL Expr  */
-#line 486 "Parser.y"
+#line 493 "Parser.y"
                                 { (yyval.expr) = new AST::LeftShift((yyvsp[-2].expr), (yyvsp[0].expr)); }
 #line 2899 "Parser.cpp"
     break;
 
   case 130: /* Expr: Expr SHR Expr  */
-#line 487 "Parser.y"
+#line 494 "Parser.y"
                                 { (yyval.expr) = new AST::RightShift((yyvsp[-2].expr), (yyvsp[0].expr)); }
 #line 2905 "Parser.cpp"
     break;
 
   case 131: /* Expr: Expr SHLEQ Expr  */
-#line 488 "Parser.y"
+#line 495 "Parser.y"
                                 { (yyval.expr) = new AST::LeftShiftAssign((yyvsp[-2].expr), (yyvsp[0].expr)); }
 #line 2911 "Parser.cpp"
     break;
 
   case 132: /* Expr: Expr SHREQ Expr  */
-#line 489 "Parser.y"
+#line 496 "Parser.y"
                                 { (yyval.expr) = new AST::RightShiftAssign((yyvsp[-2].expr), (yyvsp[0].expr)); }
 #line 2917 "Parser.cpp"
     break;
 
   case 133: /* Expr: Expr AND Expr  */
-#line 490 "Parser.y"
+#line 497 "Parser.y"
                                 { (yyval.expr) = new AST::LogicAnd((yyvsp[-2].expr), (yyvsp[0].expr)); }
 #line 2923 "Parser.cpp"
     break;
 
   case 134: /* Expr: Expr OR Expr  */
-#line 491 "Parser.y"
+#line 498 "Parser.y"
                                 { (yyval.expr) = new AST::LogicOr((yyvsp[-2].expr), (yyvsp[0].expr)); }
 #line 2929 "Parser.cpp"
     break;
 
   case 135: /* Expr: NOT Expr  */
-#line 492 "Parser.y"
+#line 499 "Parser.y"
                                 { (yyval.expr) = new AST::LogicNot((yyvsp[0].expr)); }
 #line 2935 "Parser.cpp"
     break;
 
   case 136: /* Expr: Expr EQ Expr  */
-#line 493 "Parser.y"
+#line 500 "Parser.y"
                                 { (yyval.expr) = new AST::LogicEq((yyvsp[-2].expr), (yyvsp[0].expr)); }
 #line 2941 "Parser.cpp"
     break;
 
   case 137: /* Expr: Expr NEQ Expr  */
-#line 494 "Parser.y"
+#line 501 "Parser.y"
                                 { (yyval.expr) = new AST::LogicNotEq((yyvsp[-2].expr), (yyvsp[0].expr)); }
 #line 2947 "Parser.cpp"
     break;
 
   case 138: /* Expr: Expr LT Expr  */
-#line 495 "Parser.y"
+#line 502 "Parser.y"
                                 { (yyval.expr) = new AST::LogicLessThan((yyvsp[-2].expr), (yyvsp[0].expr)); }
 #line 2953 "Parser.cpp"
     break;
 
   case 139: /* Expr: Expr LE Expr  */
-#line 496 "Parser.y"
+#line 503 "Parser.y"
                                 { (yyval.expr) = new AST::LogicLessEq((yyvsp[-2].expr), (yyvsp[0].expr)); }
 #line 2959 "Parser.cpp"
     break;
 
   case 140: /* Expr: Expr GT Expr  */
-#line 497 "Parser.y"
+#line 504 "Parser.y"
                                 { (yyval.expr) = new AST::LogicGreaterThan((yyvsp[-2].expr), (yyvsp[0].expr)); }
 #line 2965 "Parser.cpp"
     break;
 
   case 141: /* Expr: Expr GE Expr  */
-#line 498 "Parser.y"
+#line 505 "Parser.y"
                                 { (yyval.expr) = new AST::LogicGreaterEq((yyvsp[-2].expr), (yyvsp[0].expr)); }
 #line 2971 "Parser.cpp"
     break;
 
   case 142: /* Expr: Expr QUESTION Expr COLON Expr  */
-#line 500 "Parser.y"
+#line 507 "Parser.y"
                                 { (yyval.expr) = new AST::TernaryCondition((yyvsp[-4].expr), (yyvsp[-2].expr), (yyvsp[0].expr)); }
 #line 2977 "Parser.cpp"
     break;
 
   case 143: /* ExprList: ExprList COMMA Expr  */
-#line 504 "Parser.y"
+#line 511 "Parser.y"
                                 { (yyval.exprList) = (yyvsp[-2].exprList); (yyval.exprList)->push_back((yyvsp[0].expr)); }
 #line 2983 "Parser.cpp"
     break;
 
   case 144: /* ExprList: Expr  */
-#line 505 "Parser.y"
+#line 512 "Parser.y"
                                 { (yyval.exprList) = new AST::ExprList(); (yyval.exprList)->push_back((yyvsp[0].expr)); }
 #line 2989 "Parser.cpp"
     break;
 
   case 145: /* ExprList: %empty  */
-#line 506 "Parser.y"
+#line 513 "Parser.y"
                                 { (yyval.exprList) = new AST::ExprList(); }
 #line 2995 "Parser.cpp"
     break;
 
   case 146: /* Constant: CHARACTER  */
-#line 509 "Parser.y"
+#line 516 "Parser.y"
                                 { (yyval.constant) = new AST::Constant((yyvsp[0].charVal)); }
 #line 3001 "Parser.cpp"
     break;
 
   case 147: /* Constant: INTEGER  */
-#line 510 "Parser.y"
+#line 517 "Parser.y"
                                 { (yyval.constant) = new AST::Constant((yyvsp[0].intVal)); }
 #line 3007 "Parser.cpp"
     break;
 
   case 148: /* Constant: UINTEGER  */
-#line 511 "Parser.y"
+#line 518 "Parser.y"
                                 { (yyval.constant) = new AST::Constant((yyvsp[0].uintVal)); }
 #line 3013 "Parser.cpp"
     break;
 
   case 149: /* Constant: LONGVAL  */
-#line 512 "Parser.y"
+#line 519 "Parser.y"
                                 { (yyval.constant) = new AST::Constant((yyvsp[0].longVal)); }
 #line 3019 "Parser.cpp"
     break;
 
   case 150: /* Constant: ULONGVAL  */
-#line 513 "Parser.y"
+#line 520 "Parser.y"
                                 { (yyval.constant) = new AST::Constant((yyvsp[0].ulongVal)); }
 #line 3025 "Parser.cpp"
     break;
 
   case 151: /* Constant: FLOATVAL  */
-#line 514 "Parser.y"
+#line 521 "Parser.y"
                                 { (yyval.constant) = new AST::Constant((yyvsp[0].floatVal)); }
 #line 3031 "Parser.cpp"
     break;
 
   case 152: /* Constant: DOUBLEVAL  */
-#line 515 "Parser.y"
+#line 522 "Parser.y"
                                 { (yyval.constant) = new AST::Constant((yyvsp[0].doubleVal)); }
 #line 3037 "Parser.cpp"
     break;
 
   case 153: /* Constant: STRING  */
-#line 516 "Parser.y"
+#line 523 "Parser.y"
                                 { (yyval.constant) = new AST::ConstStr(*(yyvsp[0].strVal)); }
 #line 3043 "Parser.cpp"
     break;
 
   case 154: /* Constant: TRUE  */
-#line 517 "Parser.y"
+#line 524 "Parser.y"
                                 { (yyval.constant) = new AST::Constant(true); }
 #line 3049 "Parser.cpp"
     break;
 
   case 155: /* Constant: FALSE  */
-#line 518 "Parser.y"
+#line 525 "Parser.y"
                                 { (yyval.constant) = new AST::Constant(false); }
 #line 3055 "Parser.cpp"
     break;
@@ -3284,7 +3284,7 @@ yyreturnlab:
   return yyresult;
 }
 
-#line 521 "Parser.y"
+#line 528 "Parser.y"
 
 
  /* Subroutines Section */

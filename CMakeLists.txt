@@ -20,7 +20,7 @@ execute_process(WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/src
 # Generate syntax parser
 
 execute_process(WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/src
-    COMMAND bison -d Parser.y)
+    COMMAND bison -d Parser.y -v)
 
 # Config argparse
 
