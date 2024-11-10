@@ -10,6 +10,11 @@ Not like the most popular industrial C compilers, such as clang and gcc which ad
 - Pointer and address of: `Type* objectPtr`, `objectPtr = &object`; dereference: `*objectPtr`.
 - Pointer move on array of builtin types and user defined types by using operators `++`, `--`, `+=` and `-=`.
 - One dimensional array: `Type arrayName[INTEGER];`, including mixed lists such as `int a[4], b;` (bounds on each name via `VarInit`)
+- One dimensional array brace initialization: `int a[4] = {1, 2, 3};` and empty `{}` (zero-fill), global and local
+- Inferred 1D array size: `int arr[] = {10, 7, 8, 9, 1, 5};`
+- Char array string initialization: `char s[] = "hello";`, `char s[6] = "hello";` (length includes `'\0'`)
+- Two dimensional array: `int matrix[8][5];`, subscript `matrix[i][j]`, including mixed lists such as `int a[2][3], b;`
+- Two dimensional array brace initialization: `int a[8][5] = {{0,1,2},{3,4,5}};`, flat `{0,1,2,3,4,5}`, and `int a[][5] = {{1},{2,3}};`
 - Variable list: such as `a = 1, b, c = 3`
 - Variant parameters: `...`
 - Function declaration, definition and call.
@@ -38,8 +43,8 @@ Not like the most popular industrial C compilers, such as clang and gcc which ad
 Except the following features:
 - Preprocessing: such as `#include`
 - Macro definition `#define` and expansion
-- Complicated initialization: such as `int a[] = {1, 2, 3}`;
-- Multiple dimensional array: such as `int a[8][8];`
+- Multidimensional array initialization beyond 2D: such as `int a[2][8][5] = {…};`
+- Three dimensional array declaration: such as `int a[2][8][5];`
 - `typedef`: not crucial, `struct`, `union` and `enum` is enough for user defined type.
 - `extern`: `lcc` requires function declaration for linkage, extern variable is not allowed.
 - `static`: not supported by `lcc`, use global variable.
@@ -152,10 +157,8 @@ Such as `settings set target.source-map /Users/yanghuafang/study-projects/lcc-bu
 
 ## TODO
 
-For step-by-step detail (dependencies, tests, and legal/illegal forms), see [`docs/FrontendNotes.md`](docs/FrontendNotes.md).
+For step-by-step detail (dependencies, tests, and legal/illegal forms), see [`docs/FrontendNotes.md`](docs/FrontendNotes.md). Array declarators, 1D initialization, 2D declaration, and 2D brace initialization are already in place.
 
-- **1D array initialization:** brace init such as `int a[4] = {1, 2, 3};`; inferred size `int arr[] = {10, 7, 8, 9, 1, 5};`; string literals `char s[] = "hello";`
-- **2D arrays:** declaration `int a[8][5];` and initialization `int a[][5] = {{1}, {2, 3}};`
 - **3D arrays:** declaration and initialization, up to three dimensions (e.g. `int b[][8][5] = {…};`)
 - Support `typedef` and `size_t`.
 - Support `static`.

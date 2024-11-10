@@ -244,24 +244,28 @@ padded_68 [label = padded]
 VarInit_68 -> padded_68
 FuncBody_34 -> VarDecl_69
 VarDecl_69 [label = VarDecl]
-VarDecl_69 -> ArrayType_70
-ArrayType_70 [label = ArrayType]
-"Student[3]_70" [label = "Student[3]"]
-ArrayType_70 -> "Student[3]_70"
+VarDecl_69 -> DefinedType_70
+DefinedType_70 [label = DefinedType]
+"Student_70" [label = "Student"]
+DefinedType_70 -> "Student_70"
 VarDecl_69 -> VarInit_71
 VarInit_71 [label = VarInit]
 students_71 [label = students]
 VarInit_71 -> students_71
+bounds_71 [label = "[3]"]
+VarInit_71 -> bounds_71
 FuncBody_34 -> VarDecl_72
 VarDecl_72 [label = VarDecl]
-VarDecl_72 -> ArrayType_73
-ArrayType_73 [label = ArrayType]
-"long[4]_73" [label = "long[4]"]
-ArrayType_73 -> "long[4]_73"
+VarDecl_72 -> BuiltinType_73
+BuiltinType_73 [label = BuiltinType]
+"long_73" [label = "long"]
+BuiltinType_73 -> "long_73"
 VarDecl_72 -> VarInit_74
 VarInit_74 [label = VarInit]
 longs_74 [label = longs]
 VarInit_74 -> longs_74
+bounds_74 [label = "[4]"]
+VarInit_74 -> bounds_74
 FuncBody_34 -> IfStmt_75
 IfStmt_75 [label = IfStmt]
 IfStmt_75 -> LogicNotEq_76

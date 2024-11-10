@@ -154,11 +154,59 @@ std::pair<std::string, std::string> VarInit::genGraph() {
   tree += varNameNode + " [label = " + varName_ + "]\n";
   tree += root + " -> " + varNameNode + "\n";
 
+  if (!arrayBounds_.empty()) {
+    std::string boundsLabel = "[";
+    for (size_t i = 0; i < arrayBounds_.size(); ++i) {
+      if (i > 0) {
+        boundsLabel += "][";
+      }
+      boundsLabel += std::to_string(arrayBounds_[i]);
+    }
+    boundsLabel += "]";
+    std::string boundsNode = "bounds_" + id;
+    tree += boundsNode + " [label = \"" + boundsLabel + "\"]\n";
+    tree += root + " -> " + boundsNode + "\n";
+  }
+
   if (initialExpr_ != nullptr) {
     std::pair<std::string, std::string> initialExprGraph =
         initialExpr_->genGraph();
     tree += root + " -> " + initialExprGraph.first + "\n";
     tree += initialExprGraph.second;
+  }
+
+  if (initList_ != nullptr) {
+    for (InitElement* element : *initList_) {
+      if (element != nullptr) {
+        std::pair<std::string, std::string> elementGraph = element->genGraph();
+        tree += root + " -> " + elementGraph.first + "\n";
+        tree += elementGraph.second;
+      }
+    }
+  }
+
+  return std::make_pair(root, tree);
+}
+
+std::pair<std::string, std::string> InitElement::genGraph() {
+  std::string id = getId();
+  std::string root = "InitElement_" + id;
+  std::string tree = root + " [label = InitElement]\n";
+
+  if (expr_ != nullptr) {
+    std::pair<std::string, std::string> exprGraph = expr_->genGraph();
+    tree += root + " -> " + exprGraph.first + "\n";
+    tree += exprGraph.second;
+  }
+
+  if (nested_ != nullptr) {
+    for (InitElement* element : *nested_) {
+      if (element != nullptr) {
+        std::pair<std::string, std::string> elementGraph = element->genGraph();
+        tree += root + " -> " + elementGraph.first + "\n";
+        tree += elementGraph.second;
+      }
+    }
   }
 
   return std::make_pair(root, tree);

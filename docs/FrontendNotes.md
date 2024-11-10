@@ -10,11 +10,14 @@ Before extending, it helps to know what the current codebase already supports:
 
 | Area | Status |
 |------|--------|
-| 1D array declaration | `int a[10];` through its own `VarDecl` production — one name, a literal bound, no list |
-| Mixed array/scalar lists | **Not yet** — `int a[4], b;` needs a bound on each `VarInit`, which the single-declarator array production cannot express |
+| 1D array declaration | `int a[10];` through `VarType` + `VarList`; bounds on each `VarInit` (`ArrayBoundList`) |
+| Mixed array/scalar lists | `int a[4], b;` in one declaration (`tests/30.array_mixed_decl.c`) |
 | Array indexing | `arr[i]` via `Subscript` and `ArrayType` |
 | Scalar initialization | `int x = 1;` in `VarDecl::genCode` (local `store`, global `Constant`) |
-| Array brace initialization | **Not yet** — `int a[4] = {1,2,3}` and `int a[] = {…}` are planned |
+| 1D fixed-size brace initialization | `int a[4] = {1,2,3};`, `{}` zero-fill, global/local (`tests/31.array_1d_brace_init.c`) |
+| Inferred `[]` and string literal init | `int a[] = {…}`, `char s[] = "hello"`, `char s[N] = "…"` (`tests/32.array_1d_inferred_string_init.c`) |
+| 2D array declaration | `int m[8][5];`, `m[i][j]`, struct grids, mixed lists (`tests/33.array_2d_decl.c`) |
+| 2D array brace initialization | nested/flat init, `int a[][5] = {…}` (`tests/34.array_2d_brace_init.c`) |
 | User-defined types | `struct`, `union`, `enum` with tag names (`DefinedType` lookup) |
 | Type names in expressions | `_VarType: IDENTIFIER` for registered tags — **not** general `typedef` |
 | `-g` CLI flag | Parsed in `main.cpp` — **not** passed to `CodeGenerator` yet |
@@ -28,7 +31,7 @@ See [ParserConflicts.md](ParserConflicts.md) for parser ambiguities that some ro
 | Priority | Feature | Effort | Why this order |
 |----------|---------|--------|----------------|
 | **—** | [Array declarators](#array-extension-plan) (done) | Small | Unified `VarInit` + `ArrayBoundList`; foundation for init and multidim |
-| **1** | [1D array initialization](#1d-array-initialization) | Medium | Brace init, inferred `[]`, string literals |
+| **1** | [1D array initialization](#1d-array-initialization) (done) | Medium | Brace init, inferred `[]`, string literals |
 | **2** | [`typedef` and `size_t`](#2-typedef-and-size_t) | Medium–large | Idiomatic C types; identifier disambiguation |
 | **3** | [2D and 3D arrays](#2d-and-3d-arrays) | Medium–large | Decl then init per dimension; cap at three dimensions |
 | **4** | [`static`](#4-static) | Medium | Storage class / linkage |
@@ -43,11 +46,11 @@ See [ParserConflicts.md](ParserConflicts.md) for parser ambiguities that some ro
 ```mermaid
 flowchart TD
   done[1D declarators via VarInit - done]
-  init1a[1a. 1D brace init fixed size]
-  init1b[1b. inferred size and strings]
+  init1a[1a. 1D brace init fixed size - done]
+  init1b[1b. inferred size and strings - done]
   typedef[2. typedef]
-  md2a[2a. 2D declaration]
-  md2b[2b. 2D initialization]
+  md2a[2a. 2D declaration - done]
+  md2b[2b. 2D initialization - done]
   md3a[3a. 3D declaration]
   md3b[3b. 3D initialization]
   stat[4. static]
@@ -72,29 +75,41 @@ C array initialization is intentionally split into small merges. **At most three
 
 | Step | Delivers | Tests (examples) |
 |------|----------|------------------|
-| **Declarators** (planned) | `ArrayBound` / `ArrayBoundList` on `VarInit`; one `VarDecl` path; `int a[4], b;` | planned |
-| **1a** | `int a[4] = {1,2,3};` — zero-fill, global/local | fixed-size brace init |
-| **1b** | `int a[] = {…};`, `char s[] = "hello";`, `char s[6] = "hello";` | reject `char s[5] = "hello"` |
-| **2a** | `int a[8][5];`, subscript `a[i][j]` | declare only |
-| **2b** | nested/flat init, `int a[][5] = {…}`, partial rows | reject `int a[][]`, `int b[8][]` |
+| **Declarators** (done) | `ArrayBound` / `ArrayBoundList` on `VarInit`; one `VarDecl` path; `int a[4], b;` | `tests/30.array_mixed_decl.c` |
+| **1a** (done) | `int a[4] = {1,2,3};` — zero-fill, global/local | `tests/31.array_1d_brace_init.c` |
+| **1b** (done) | `int a[] = {…};`, `char s[] = "hello";`, `char s[6] = "hello";` | `tests/32.array_1d_inferred_string_init.c`; reject `char s[5] = "hello"` |
+| **2a** (done) | `int a[8][5];`, subscript `a[i][j]` | `tests/33.array_2d_decl.c` |
+| **2b** (done) | nested/flat init, `int a[][5] = {…}`, partial rows | `tests/34.array_2d_brace_init.c`; reject `int a[][]`, `int b[8][]` |
 | **3a** | `int a[2][8][5];` | declare only |
 | **3b** | `int b[][8][5] = {…}` | first dimension inferred from init |
 
-Grammar symbols: `VarInit`, `ArrayBound`, `ArrayBoundList` (see `Parser.y`). `VarInit::buildVarType()` nests `ArrayType` for each bound.
+Grammar symbols: `VarInit`, `ArrayBound`, `ArrayBoundList` (see `Parser.y`). `VarInit::buildVarType()` nests `ArrayType` for each bound (innermost bound last in the declarator list).
+
+### Status: 2D declaration (done)
+
+- `buildVarType` applies `ArrayBoundList` outside-in so `int m[2][3]` becomes LLVM `[2 x [3 x T]]`.
+- Nested `Subscript` and `CreateGEP` in `Utils::createAdd` / `createLoad` handle `a[i][j]` on locals, globals, and struct element grids.
+- `tests/33.array_2d_decl.c`.
 
 ### Status: declarator unification (done)
 
 - Removed the special-case `VarDecl` production that parsed `VarType IDENTIFIER [ INTEGER ] ;` alone.
 - Array bounds live on each `VarInit`; `VarDecl::genCode` builds the effective type per variable.
-- Scalar `= Expr` on arrays is rejected until brace initialization exists.
+- Scalar `= Expr` on arrays is rejected; use brace initialization for arrays.
+
+### Status: fixed-size brace initialization (done)
+
+- `InitList` on `VarInit`; `= { … }` and `= {}` in `Parser.y` (`%prec COMMA` so commas are not parsed as the comma operator).
+- `buildGlobalArrayInitializer` / `storeLocalArrayInitializer` in `VarDecl::genCode`; zero-fill; reject too many elements and multidimensional brace init.
+- `tests/31.array_1d_brace_init.c`.
 
 ---
 
 ## 1D array initialization
 
-Covers steps **1a** and **1b** below.
+Steps **1a** and **1b** are done. See [Array extension plan](#array-extension-plan).
 
-### 1a — fixed-size brace initialization
+### 1a — fixed-size brace initialization (done)
 
 **Goal:**
 
@@ -103,15 +118,9 @@ int arr[4] = {10, 7, 8, 9};   /* unspecified elements are zero */
 int buf[3] = {1, 2, 3};
 ```
 
-| Layer | Changes |
-|-------|---------|
-| **Parser** | `InitList` / `Initializer`; `VarInit` accepts `= { … }` |
-| **AST** | Initializer list on `VarInit` |
-| **Codegen** | `ConstantArray` or per-element `store`; zero-fill; size checks |
+Delivered as described in [Array extension plan](#array-extension-plan) step 1a.
 
-**Errors:** `int a[2] = {1, 2, 3};` (too many elements).
-
-### 1b — inferred size and string literals
+### 1b — inferred size and string literals (done)
 
 **Goal:**
 
@@ -121,10 +130,8 @@ char s1[] = "hello";
 char s2[6] = "hello";
 ```
 
-| Layer | Changes |
-|-------|---------|
-| **Parser** | `LBRACKET RBRACKET` on declarator when an initializer is present |
-| **Codegen** | Infer length from brace list; string length includes `'\0'` |
+- `ArrayBound`: `LBRACKET RBRACKET` stores `kInferredArrayBound`; `resolveArrayBounds` infers length from brace list or string (`strlen + 1`).
+- String init copies bytes plus `'\0'` into the char array; rejects initializer longer than the declared bound.
 
 **Errors:** `char s3[5] = "hello";` (initializer too long).
 
@@ -173,18 +180,15 @@ Many real C APIs use typedef’d names. Doing this before multidimensional array
 
 Covers steps **2a**, **2b**, **3a**, and **3b**. Nested bounds already parse via `ArrayBoundList`; remaining work is validation, codegen for multi-subscript, and initialization.
 
-### 2a — 2D declaration
+### 2a — 2D declaration (done)
 
 ```c
 int matrix[8][5];
 ```
 
-| Layer | Changes |
-|-------|---------|
-| **Codegen** | Verify nested `ArrayType` + double `Subscript` / GEP |
-| **Tests** | `a[i][j]` assign and read |
+Nested `ArrayType` layout and double subscript codegen were verified; `buildVarType` now maps declarator bounds to LLVM dimensions in outside-in order.
 
-### 2b — 2D initialization
+### 2b — 2D initialization (done)
 
 ```c
 int a[8][5] = { {0,1,2}, {3,4,5} };
@@ -192,7 +196,8 @@ int a[8][5] = {0, 1, 2, 3, 4, 5 };
 int a[][5] = { {1}, {2,3} };
 ```
 
-**Errors:** `int a[][] = {…};`, `int b[8][] = {…};`
+- `InitElement` supports nested `InitList` in the parser; flatten row-major with zero-fill.
+- Only the first dimension may be inferred (`int a[][5]`); reject `int a[][]` and `int b[8][]`.
 
 ### 3a / 3b — 3D (maximum depth)
 

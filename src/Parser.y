@@ -20,6 +20,8 @@ AST::Program* g_root;
 
 %code requires {
     #include "AbstractSyntaxTree.hpp"
+
+    #include <vector>
 }
 
  /* Define union yylval */
@@ -57,6 +59,9 @@ AST::Program* g_root;
     AST::VarInit* varInit;
     AST::VarList* varList;
 
+    std::vector<size_t>* arrayBoundList;
+    size_t sizeVal;
+
     AST::BuiltinType* builtinType;
 
     AST::FieldDecl* fieldDecl;
@@ -68,6 +73,8 @@ AST::Program* g_root;
 
     AST::Expr* expr;
     AST::ExprList* exprList;
+    AST::InitList* initList;
+    AST::InitElement* initElement;
 
     AST::Stmt* stmt;
     AST::Stmts* stmts;
@@ -140,6 +147,10 @@ AST::Program* g_root;
 
 %type<varInit>                  VarInit
 %type<varList>                  VarList
+%type<arrayBoundList>           ArrayBoundList
+%type<sizeVal>                  ArrayBound
+%type<initList>                 InitList
+%type<initElement>              InitItem
 
 %type<builtinType>              BuiltinType
 
@@ -232,12 +243,6 @@ FuncBody:   LBRACE Stmts RBRACE { $$ = new AST::FuncBody($2); }
 
 VarDecl:    VarType VarList SEMICOLON
                                 { $$ = new AST::VarDecl($1, $2); }
-            | VarType IDENTIFIER LBRACKET INTEGER RBRACKET SEMICOLON
-                                { AST::ArrayType* arrayType = new AST::ArrayType($1, $4);
-                                  AST::VarList* varList = new AST::VarList();
-                                  AST::VarInit* varInit = new AST::VarInit(*$2);
-                                  varList->push_back(varInit);
-                                  $$ = new AST::VarDecl(arrayType, varList); }
             ;
 
 TypeDecl:   _VarType SEMICOLON  { $$ = new AST::TypeDecl($1); }
@@ -269,11 +274,50 @@ VarList:    VarList COMMA VarInit
             |                   { $$ = new AST::VarList(); }
             ;
 
- /* e.g. a; */
- /* e.g. b = 2; */
-VarInit:    IDENTIFIER          { $$ = new AST::VarInit(*$1); }
-            | IDENTIFIER ASSIGN Expr
-                                { $$ = new AST::VarInit(*$1, $3); }
+ /* VarInit — one declared variable: name, optional array bounds, optional initializer */
+ /* e.g. a;  e.g. a[4];  e.g. b = 2;  e.g. a[4] = {1, 2, 3}; */
+VarInit:    IDENTIFIER ArrayBoundList
+                                { $$ = new AST::VarInit(*$1, *$2); delete $2; }
+            | IDENTIFIER ArrayBoundList ASSIGN Expr
+                                { $$ = new AST::VarInit(*$1, *$2, $4); delete $2; }
+            | IDENTIFIER ArrayBoundList ASSIGN LBRACE InitList RBRACE
+                                { $$ = new AST::VarInit(*$1, *$2, nullptr, $5);
+                                  delete $2; }
+            | IDENTIFIER ArrayBoundList ASSIGN LBRACE RBRACE
+                                { $$ = new AST::VarInit(*$1, *$2, nullptr,
+                                                        new AST::InitList());
+                                  delete $2; }
+            ;
+
+ /* InitList — comma-separated initializer elements inside brace initialization */
+
+InitList:   InitList COMMA InitItem
+                                { $$ = $1; $$->push_back($3); }
+            | InitItem %prec COMMA
+                                { $$ = new AST::InitList(); $$->push_back($1); }
+            ;
+
+InitItem:   Expr %prec COMMA
+                                { $$ = new AST::InitElement($1); }
+            | LBRACE InitList RBRACE
+                                { $$ = new AST::InitElement($2); }
+            ;
+
+ /* ArrayBoundList — declarator suffix [INTEGER]; empty for a scalar in int a[4], b; */
+ /* e.g. [4]  e.g. [8][5] */
+
+ArrayBoundList:
+            ArrayBoundList ArrayBound
+                                { $$ = $1; $$->push_back($2); }
+            | ArrayBound
+                                { $$ = new std::vector<size_t>(); $$->push_back($1); }
+            |                   { $$ = new std::vector<size_t>(); }
+            ;
+
+ArrayBound: LBRACKET INTEGER RBRACKET
+                                { $$ = static_cast<size_t>($2); }
+            | LBRACKET RBRACKET
+                                { $$ = AST::kInferredArrayBound; }
             ;
 
  /* ParamList */

@@ -454,14 +454,16 @@ int_136 [label = "0"]
 Constant_136 -> int_136
 FuncBody_132 -> VarDecl_137
 VarDecl_137 [label = VarDecl]
-VarDecl_137 -> ArrayType_138
-ArrayType_138 [label = ArrayType]
-"int[6]_138" [label = "int[6]"]
-ArrayType_138 -> "int[6]_138"
+VarDecl_137 -> BuiltinType_138
+BuiltinType_138 [label = BuiltinType]
+"int_138" [label = "int"]
+BuiltinType_138 -> "int_138"
 VarDecl_137 -> VarInit_139
 VarInit_139 [label = VarInit]
 arr_139 [label = arr]
 VarInit_139 -> arr_139
+bounds_139 [label = "[6]"]
+VarInit_139 -> bounds_139
 FuncBody_132 -> Assign_140
 Assign_140 [label = Assign]
 Assign_140 -> Subscript_141
@@ -778,14 +780,16 @@ int_238 [label = "1"]
 Constant_238 -> int_238
 FuncBody_132 -> VarDecl_239
 VarDecl_239 [label = VarDecl]
-VarDecl_239 -> ArrayType_240
-ArrayType_240 [label = ArrayType]
-"int[1]_240" [label = "int[1]"]
-ArrayType_240 -> "int[1]_240"
+VarDecl_239 -> BuiltinType_240
+BuiltinType_240 [label = BuiltinType]
+"int_240" [label = "int"]
+BuiltinType_240 -> "int_240"
 VarDecl_239 -> VarInit_241
 VarInit_241 [label = VarInit]
 single_241 [label = single]
 VarInit_241 -> single_241
+bounds_241 [label = "[1]"]
+VarInit_241 -> bounds_241
 FuncBody_132 -> Assign_242
 Assign_242 [label = Assign]
 Assign_242 -> Subscript_243

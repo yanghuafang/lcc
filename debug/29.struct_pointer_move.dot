@@ -70,14 +70,16 @@ int_18 [label = "0"]
 Constant_18 -> int_18
 FuncBody_14 -> VarDecl_19
 VarDecl_19 [label = VarDecl]
-VarDecl_19 -> ArrayType_20
-ArrayType_20 [label = ArrayType]
-"Data[4]_20" [label = "Data[4]"]
-ArrayType_20 -> "Data[4]_20"
+VarDecl_19 -> DefinedType_20
+DefinedType_20 [label = DefinedType]
+"Data_20" [label = "Data"]
+DefinedType_20 -> "Data_20"
 VarDecl_19 -> VarInit_21
 VarInit_21 [label = VarInit]
 data_21 [label = data]
 VarInit_21 -> data_21
+bounds_21 [label = "[4]"]
+VarInit_21 -> bounds_21
 FuncBody_14 -> VarDecl_22
 VarDecl_22 [label = VarDecl]
 VarDecl_22 -> BuiltinType_23

@@ -97,6 +97,12 @@ class CommaExpr;
 
 class FuncCall;
 using ExprList = std::vector<Expr*>;
+class InitElement;
+using InitList = std::vector<InitElement*>;
+
+// Sentinel bound from declarator `[]`; resolved from the initializer in
+// codegen.
+constexpr size_t kInferredArrayBound = static_cast<size_t>(-1);
 
 class StructRef;
 class StructDeref;
@@ -282,17 +288,43 @@ class VarDecl : public Decl {
   std::pair<std::string, std::string> genGraph() override;
 };
 
+class InitElement : public Node {
+ public:
+  Expr* expr_;
+  InitList* nested_;
+
+  explicit InitElement(Expr* expr) : expr_(expr), nested_(nullptr) {}
+  explicit InitElement(InitList* nested) : expr_(nullptr), nested_(nested) {}
+  ~InitElement() {}
+
+  bool isNested() const { return nested_ != nullptr; }
+
+  llvm::Value* genCode(CodeGenerator& generator) override;
+  std::pair<std::string, std::string> genGraph() override;
+};
+
 class VarInit : public Node {
  public:
   std::string varName_;
+  std::vector<size_t> arrayBounds_;
   Expr* initialExpr_;
+  InitList* initList_;
 
-  VarInit(const std::string& varName, Expr* initialExpr = nullptr)
-      : varName_(varName), initialExpr_(initialExpr) {}
+  VarInit(const std::string& varName, const std::vector<size_t>& arrayBounds,
+          Expr* initialExpr = nullptr, InitList* initList = nullptr)
+      : varName_(varName),
+        arrayBounds_(arrayBounds),
+        initialExpr_(initialExpr),
+        initList_(initList) {}
   ~VarInit() {}
 
   llvm::Value* genCode(CodeGenerator& generator) override { return nullptr; }
   std::pair<std::string, std::string> genGraph() override;
+
+  VarType* buildVarType(VarType* baseType) const;
+  VarType* buildVarType(VarType* baseType,
+                        const std::vector<size_t>& bounds) const;
+  bool hasBraceInit() const { return initList_ != nullptr; }
 };
 
 class TypeDecl : public Decl {

@@ -20,3 +20,7 @@ fi
 
 echo "Building lcc with ${build_jobs} parallel jobs..."
 cmake --build "${LCC_BUILD_DIR}" --parallel "${build_jobs}"
+
+# cd ../src
+# bison -d Parser.y -v -Wcounterexamples &> Parser.counterexamples
+# cd ../scripts

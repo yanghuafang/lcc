@@ -22,14 +22,16 @@ Param_3 -> anonymous_3
 ParamList_2 -> "..._2"
 Program -> VarDecl_5
 VarDecl_5 [label = VarDecl]
-VarDecl_5 -> ArrayType_6
-ArrayType_6 [label = ArrayType]
-"char[16]_6" [label = "char[16]"]
-ArrayType_6 -> "char[16]_6"
+VarDecl_5 -> BuiltinType_6
+BuiltinType_6 [label = BuiltinType]
+"char_6" [label = "char"]
+BuiltinType_6 -> "char_6"
 VarDecl_5 -> VarInit_7
 VarInit_7 [label = VarInit]
 gs_7 [label = gs]
 VarInit_7 -> gs_7
+bounds_7 [label = "[16]"]
+VarInit_7 -> bounds_7
 Program -> VarDecl_8
 VarDecl_8 [label = VarDecl]
 VarDecl_8 -> PointerType_9
@@ -46,14 +48,16 @@ str_11 [label = "hello world!"]
 ConstStr_11 -> str_11
 Program -> VarDecl_12
 VarDecl_12 [label = VarDecl]
-VarDecl_12 -> ArrayType_13
-ArrayType_13 [label = ArrayType]
-"int[4]_13" [label = "int[4]"]
-ArrayType_13 -> "int[4]_13"
+VarDecl_12 -> BuiltinType_13
+BuiltinType_13 [label = BuiltinType]
+"int_13" [label = "int"]
+BuiltinType_13 -> "int_13"
 VarDecl_12 -> VarInit_14
 VarInit_14 [label = VarInit]
 gi_14 [label = gi]
 VarInit_14 -> gi_14
+bounds_14 [label = "[4]"]
+VarInit_14 -> bounds_14
 Program -> FuncDecl_15
 FuncDecl_15 [label = FuncDecl]
 FuncDecl_15 -> BuiltinType_16
@@ -82,24 +86,28 @@ int_22 [label = "0"]
 Constant_22 -> int_22
 FuncBody_18 -> VarDecl_23
 VarDecl_23 [label = VarDecl]
-VarDecl_23 -> ArrayType_24
-ArrayType_24 [label = ArrayType]
-"char[16]_24" [label = "char[16]"]
-ArrayType_24 -> "char[16]_24"
+VarDecl_23 -> BuiltinType_24
+BuiltinType_24 [label = BuiltinType]
+"char_24" [label = "char"]
+BuiltinType_24 -> "char_24"
 VarDecl_23 -> VarInit_25
 VarInit_25 [label = VarInit]
 s_25 [label = s]
 VarInit_25 -> s_25
+bounds_25 [label = "[16]"]
+VarInit_25 -> bounds_25
 FuncBody_18 -> VarDecl_26
 VarDecl_26 [label = VarDecl]
-VarDecl_26 -> ArrayType_27
-ArrayType_27 [label = ArrayType]
-"int[4]_27" [label = "int[4]"]
-ArrayType_27 -> "int[4]_27"
+VarDecl_26 -> BuiltinType_27
+BuiltinType_27 [label = BuiltinType]
+"int_27" [label = "int"]
+BuiltinType_27 -> "int_27"
 VarDecl_26 -> VarInit_28
 VarInit_28 [label = VarInit]
 i_28 [label = i]
 VarInit_28 -> i_28
+bounds_28 [label = "[4]"]
+VarInit_28 -> bounds_28
 FuncBody_18 -> Assign_29
 Assign_29 [label = Assign]
 Assign_29 -> Subscript_30

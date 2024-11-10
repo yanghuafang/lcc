@@ -48,14 +48,16 @@ int_12 [label = "0"]
 Constant_12 -> int_12
 FuncBody_8 -> VarDecl_13
 VarDecl_13 [label = VarDecl]
-VarDecl_13 -> ArrayType_14
-ArrayType_14 [label = ArrayType]
-"char[4]_14" [label = "char[4]"]
-ArrayType_14 -> "char[4]_14"
+VarDecl_13 -> BuiltinType_14
+BuiltinType_14 [label = BuiltinType]
+"char_14" [label = "char"]
+BuiltinType_14 -> "char_14"
 VarDecl_13 -> VarInit_15
 VarInit_15 [label = VarInit]
 c_15 [label = c]
 VarInit_15 -> c_15
+bounds_15 [label = "[4]"]
+VarInit_15 -> bounds_15
 FuncBody_8 -> Assign_16
 Assign_16 [label = Assign]
 Assign_16 -> Subscript_17
