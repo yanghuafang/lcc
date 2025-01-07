@@ -1,0 +1,729 @@
+digraph {
+Program [label = Program]
+Program -> FuncDecl_5635528944
+FuncDecl_5635528944 [label = FuncDecl]
+FuncDecl_5635528944 -> BuiltinType_5635528656
+BuiltinType_5635528656 [label = BuiltinType]
+"int_5635528656" [label = "int"]
+BuiltinType_5635528656 -> "int_5635528656"
+printf_5635528944[ label = printf]
+FuncDecl_5635528944 -> printf_5635528944
+FuncDecl_5635528944 -> ParamList_5635528896
+ParamList_5635528896 [label = ParamList]
+ParamList_5635528896 -> Param_5635528848
+Param_5635528848 [label = Param]
+Param_5635528848 -> PointerType_5635528784
+PointerType_5635528784 [label = PointerType]
+"char*_5635528784" [label = "char*"]
+PointerType_5635528784 -> "char*_5635528784"
+anonymous_5635528848 [label = anonymous]
+Param_5635528848 -> anonymous_5635528848
+"..._5635528896" [label = "..."]
+ParamList_5635528896 -> "..._5635528896"
+Program -> FuncDecl_5635531376
+FuncDecl_5635531376 [label = FuncDecl]
+FuncDecl_5635531376 -> BuiltinType_5635529008
+BuiltinType_5635529008 [label = BuiltinType]
+"int_5635529008" [label = "int"]
+BuiltinType_5635529008 -> "int_5635529008"
+checkAge1_5635531376[ label = checkAge1]
+FuncDecl_5635531376 -> checkAge1_5635531376
+FuncDecl_5635531376 -> ParamList_5635529296
+ParamList_5635529296 [label = ParamList]
+ParamList_5635529296 -> Param_5635529248
+Param_5635529248 [label = Param]
+Param_5635529248 -> BuiltinType_5635529104
+BuiltinType_5635529104 [label = BuiltinType]
+"int_5635529104" [label = "int"]
+BuiltinType_5635529104 -> "int_5635529104"
+age_5635529248 [label = age]
+Param_5635529248 -> age_5635529248
+FuncDecl_5635531376 -> FuncBody_5635530688
+FuncBody_5635530688 [label = FuncBody]
+FuncBody_5635530688 -> IfStmt_5635528288
+IfStmt_5635528288 [label = IfStmt]
+IfStmt_5635528288 -> LogicLessThan_5635529504
+LogicLessThan_5635529504 [label = LogicLessThan]
+LogicLessThan_5635529504 -> Variable_5635529408
+Variable_5635529408 [label = Variable]
+age_5635529408 [label = age]
+Variable_5635529408 -> age_5635529408
+LogicLessThan_5635529504 -> Constant_5635529440
+Constant_5635529440 [label = Constant]
+int_5635529440 [label = "18"]
+Constant_5635529440 -> int_5635529440
+IfStmt_5635528288 -> Block_5635293600
+Block_5635293600 [label = Block]
+Block_5635293600 -> FuncCall_5635528176
+FuncCall_5635528176 [label = FuncCall]
+printf_5635528176[ label = printf]
+FuncCall_5635528176 -> printf_5635528176
+FuncCall_5635528176 -> ConstStr_5635529632
+ConstStr_5635529632 [label = ConstStr]
+str_5635529632 [label = "age < 18: %d"]
+ConstStr_5635529632 -> str_5635529632
+FuncCall_5635528176 -> Variable_5635529792
+Variable_5635529792 [label = Variable]
+age_5635529792 [label = age]
+Variable_5635529792 -> age_5635529792
+Block_5635293600 -> ReturnStmt_5635301552
+ReturnStmt_5635301552 [label = ReturnStmt]
+ReturnStmt_5635301552 -> Variable_5635528256
+Variable_5635528256 [label = Variable]
+age_5635528256 [label = age]
+Variable_5635528256 -> age_5635528256
+FuncBody_5635530688 -> IfStmt_5635530656
+IfStmt_5635530656 [label = IfStmt]
+IfStmt_5635530656 -> LogicEq_5635529888
+LogicEq_5635529888 [label = LogicEq]
+LogicEq_5635529888 -> Variable_5635528352
+Variable_5635528352 [label = Variable]
+age_5635528352 [label = age]
+Variable_5635528352 -> age_5635528352
+LogicEq_5635529888 -> Constant_5635529824
+Constant_5635529824 [label = Constant]
+int_5635529824 [label = "18"]
+Constant_5635529824 -> int_5635529824
+IfStmt_5635530656 -> Block_5635528384
+Block_5635528384 [label = Block]
+Block_5635528384 -> FuncCall_5635530208
+FuncCall_5635530208 [label = FuncCall]
+printf_5635530208[ label = printf]
+FuncCall_5635530208 -> printf_5635530208
+FuncCall_5635530208 -> ConstStr_5635530016
+ConstStr_5635530016 [label = ConstStr]
+str_5635530016 [label = "age == 18: %d"]
+ConstStr_5635530016 -> str_5635530016
+FuncCall_5635530208 -> Variable_5635530176
+Variable_5635530176 [label = Variable]
+age_5635530176 [label = age]
+Variable_5635530176 -> age_5635530176
+Block_5635528384 -> ReturnStmt_5635140832
+ReturnStmt_5635140832 [label = ReturnStmt]
+ReturnStmt_5635140832 -> Variable_5635530288
+Variable_5635530288 [label = Variable]
+age_5635530288 [label = age]
+Variable_5635530288 -> age_5635530288
+IfStmt_5635530656 -> Block_5635071728
+Block_5635071728 [label = Block]
+Block_5635071728 -> FuncCall_5635530608
+FuncCall_5635530608 [label = FuncCall]
+printf_5635530608[ label = printf]
+FuncCall_5635530608 -> printf_5635530608
+FuncCall_5635530608 -> ConstStr_5635530416
+ConstStr_5635530416 [label = ConstStr]
+str_5635530416 [label = "age != 18"]
+ConstStr_5635530416 -> str_5635530416
+FuncCall_5635530608 -> Variable_5635530576
+Variable_5635530576 [label = Variable]
+age_5635530576 [label = age]
+Variable_5635530576 -> age_5635530576
+FuncBody_5635530688 -> IfStmt_5635531312
+IfStmt_5635531312 [label = IfStmt]
+IfStmt_5635531312 -> LogicGreaterThan_5635530832
+LogicGreaterThan_5635530832 [label = LogicGreaterThan]
+LogicGreaterThan_5635530832 -> Variable_5635530736
+Variable_5635530736 [label = Variable]
+age_5635530736 [label = age]
+Variable_5635530736 -> age_5635530736
+LogicGreaterThan_5635530832 -> Constant_5635530768
+Constant_5635530768 [label = Constant]
+int_5635530768 [label = "18"]
+Constant_5635530768 -> int_5635530768
+IfStmt_5635531312 -> Block_5635293248
+Block_5635293248 [label = Block]
+Block_5635293248 -> FuncCall_5635531168
+FuncCall_5635531168 [label = FuncCall]
+printf_5635531168[ label = printf]
+FuncCall_5635531168 -> printf_5635531168
+FuncCall_5635531168 -> ConstStr_5635530960
+ConstStr_5635530960 [label = ConstStr]
+str_5635530960 [label = "age > 18: %d"]
+ConstStr_5635530960 -> str_5635530960
+FuncCall_5635531168 -> Variable_5635531120
+Variable_5635531120 [label = Variable]
+age_5635531120 [label = age]
+Variable_5635531120 -> age_5635531120
+Block_5635293248 -> ReturnStmt_5635531280
+ReturnStmt_5635531280 [label = ReturnStmt]
+ReturnStmt_5635531280 -> Variable_5635531248
+Variable_5635531248 [label = Variable]
+age_5635531248 [label = age]
+Variable_5635531248 -> age_5635531248
+Program -> FuncDecl_5635533584
+FuncDecl_5635533584 [label = FuncDecl]
+FuncDecl_5635533584 -> BuiltinType_5635531456
+BuiltinType_5635531456 [label = BuiltinType]
+"int_5635531456" [label = "int"]
+BuiltinType_5635531456 -> "int_5635531456"
+checkAge2_5635533584[ label = checkAge2]
+FuncDecl_5635533584 -> checkAge2_5635533584
+FuncDecl_5635533584 -> ParamList_5635531696
+ParamList_5635531696 [label = ParamList]
+ParamList_5635531696 -> Param_5635531648
+Param_5635531648 [label = Param]
+Param_5635531648 -> BuiltinType_5635531552
+BuiltinType_5635531552 [label = BuiltinType]
+"int_5635531552" [label = "int"]
+BuiltinType_5635531552 -> "int_5635531552"
+age_5635531648 [label = age]
+Param_5635531648 -> age_5635531648
+FuncDecl_5635533584 -> FuncBody_5635533568
+FuncBody_5635533568 [label = FuncBody]
+FuncBody_5635533568 -> IfStmt_5635533520
+IfStmt_5635533520 [label = IfStmt]
+IfStmt_5635533520 -> LogicLessThan_5635531904
+LogicLessThan_5635531904 [label = LogicLessThan]
+LogicLessThan_5635531904 -> Variable_5635531808
+Variable_5635531808 [label = Variable]
+age_5635531808 [label = age]
+Variable_5635531808 -> age_5635531808
+LogicLessThan_5635531904 -> Constant_5635531840
+Constant_5635531840 [label = Constant]
+int_5635531840 [label = "18"]
+Constant_5635531840 -> int_5635531840
+IfStmt_5635533520 -> Block_5635532160
+Block_5635532160 [label = Block]
+Block_5635532160 -> FuncCall_5635532256
+FuncCall_5635532256 [label = FuncCall]
+printf_5635532256[ label = printf]
+FuncCall_5635532256 -> printf_5635532256
+FuncCall_5635532256 -> ConstStr_5635532032
+ConstStr_5635532032 [label = ConstStr]
+str_5635532032 [label = "age < 18: %d"]
+ConstStr_5635532032 -> str_5635532032
+FuncCall_5635532256 -> Variable_5635532208
+Variable_5635532208 [label = Variable]
+age_5635532208 [label = age]
+Variable_5635532208 -> age_5635532208
+Block_5635532160 -> ReturnStmt_5635532368
+ReturnStmt_5635532368 [label = ReturnStmt]
+ReturnStmt_5635532368 -> Variable_5635532336
+Variable_5635532336 [label = Variable]
+age_5635532336 [label = age]
+Variable_5635532336 -> age_5635532336
+IfStmt_5635533520 -> IfStmt_5635533488
+IfStmt_5635533488 [label = IfStmt]
+IfStmt_5635533488 -> LogicEq_5635532528
+LogicEq_5635532528 [label = LogicEq]
+LogicEq_5635532528 -> Variable_5635532432
+Variable_5635532432 [label = Variable]
+age_5635532432 [label = age]
+Variable_5635532432 -> age_5635532432
+LogicEq_5635532528 -> Constant_5635532464
+Constant_5635532464 [label = Constant]
+int_5635532464 [label = "18"]
+Constant_5635532464 -> int_5635532464
+IfStmt_5635533488 -> Block_5635532784
+Block_5635532784 [label = Block]
+Block_5635532784 -> FuncCall_5635532880
+FuncCall_5635532880 [label = FuncCall]
+printf_5635532880[ label = printf]
+FuncCall_5635532880 -> printf_5635532880
+FuncCall_5635532880 -> ConstStr_5635532656
+ConstStr_5635532656 [label = ConstStr]
+str_5635532656 [label = "age == 18: %d"]
+ConstStr_5635532656 -> str_5635532656
+FuncCall_5635532880 -> Variable_5635532832
+Variable_5635532832 [label = Variable]
+age_5635532832 [label = age]
+Variable_5635532832 -> age_5635532832
+Block_5635532784 -> ReturnStmt_5635532992
+ReturnStmt_5635532992 [label = ReturnStmt]
+ReturnStmt_5635532992 -> Variable_5635532960
+Variable_5635532960 [label = Variable]
+age_5635532960 [label = age]
+Variable_5635532960 -> age_5635532960
+IfStmt_5635533488 -> Block_5635533248
+Block_5635533248 [label = Block]
+Block_5635533248 -> FuncCall_5635533344
+FuncCall_5635533344 [label = FuncCall]
+printf_5635533344[ label = printf]
+FuncCall_5635533344 -> printf_5635533344
+FuncCall_5635533344 -> ConstStr_5635533120
+ConstStr_5635533120 [label = ConstStr]
+str_5635533120 [label = "age > 18: %d"]
+ConstStr_5635533120 -> str_5635533120
+FuncCall_5635533344 -> Variable_5635533296
+Variable_5635533296 [label = Variable]
+age_5635533296 [label = age]
+Variable_5635533296 -> age_5635533296
+Block_5635533248 -> ReturnStmt_5635533456
+ReturnStmt_5635533456 [label = ReturnStmt]
+ReturnStmt_5635533456 -> Variable_5635533424
+Variable_5635533424 [label = Variable]
+age_5635533424 [label = age]
+Variable_5635533424 -> age_5635533424
+Program -> FuncDecl_5635537312
+FuncDecl_5635537312 [label = FuncDecl]
+FuncDecl_5635537312 -> BuiltinType_5635533680
+BuiltinType_5635533680 [label = BuiltinType]
+"int_5635533680" [label = "int"]
+BuiltinType_5635533680 -> "int_5635533680"
+checkAge3_5635537312[ label = checkAge3]
+FuncDecl_5635537312 -> checkAge3_5635537312
+FuncDecl_5635537312 -> ParamList_5635533920
+ParamList_5635533920 [label = ParamList]
+ParamList_5635533920 -> Param_5635533872
+Param_5635533872 [label = Param]
+Param_5635533872 -> BuiltinType_5635533776
+BuiltinType_5635533776 [label = BuiltinType]
+"int_5635533776" [label = "int"]
+BuiltinType_5635533776 -> "int_5635533776"
+age_5635533872 [label = age]
+Param_5635533872 -> age_5635533872
+FuncDecl_5635537312 -> FuncBody_5635537200
+FuncBody_5635537200 [label = FuncBody]
+FuncBody_5635537200 -> IfStmt_5635537168
+IfStmt_5635537168 [label = IfStmt]
+IfStmt_5635537168 -> LogicLessEq_5635534128
+LogicLessEq_5635534128 [label = LogicLessEq]
+LogicLessEq_5635534128 -> Variable_5635534032
+Variable_5635534032 [label = Variable]
+age_5635534032 [label = age]
+Variable_5635534032 -> age_5635534032
+LogicLessEq_5635534128 -> Constant_5635534064
+Constant_5635534064 [label = Constant]
+int_5635534064 [label = "6"]
+Constant_5635534064 -> int_5635534064
+IfStmt_5635537168 -> Block_5635534384
+Block_5635534384 [label = Block]
+Block_5635534384 -> FuncCall_5635534480
+FuncCall_5635534480 [label = FuncCall]
+printf_5635534480[ label = printf]
+FuncCall_5635534480 -> printf_5635534480
+FuncCall_5635534480 -> ConstStr_5635534256
+ConstStr_5635534256 [label = ConstStr]
+str_5635534256 [label = "baby: %d"]
+ConstStr_5635534256 -> str_5635534256
+FuncCall_5635534480 -> Variable_5635534432
+Variable_5635534432 [label = Variable]
+age_5635534432 [label = age]
+Variable_5635534432 -> age_5635534432
+Block_5635534384 -> ReturnStmt_5635534592
+ReturnStmt_5635534592 [label = ReturnStmt]
+ReturnStmt_5635534592 -> Variable_5635534560
+Variable_5635534560 [label = Variable]
+age_5635534560 [label = age]
+Variable_5635534560 -> age_5635534560
+IfStmt_5635537168 -> IfStmt_5635537136
+IfStmt_5635537136 [label = IfStmt]
+IfStmt_5635537136 -> LogicAnd_5635534944
+LogicAnd_5635534944 [label = LogicAnd]
+LogicAnd_5635534944 -> LogicGreaterThan_5635534752
+LogicGreaterThan_5635534752 [label = LogicGreaterThan]
+LogicGreaterThan_5635534752 -> Variable_5635534656
+Variable_5635534656 [label = Variable]
+age_5635534656 [label = age]
+Variable_5635534656 -> age_5635534656
+LogicGreaterThan_5635534752 -> Constant_5635534688
+Constant_5635534688 [label = Constant]
+int_5635534688 [label = "6"]
+Constant_5635534688 -> int_5635534688
+LogicAnd_5635534944 -> LogicLessEq_5635534912
+LogicLessEq_5635534912 [label = LogicLessEq]
+LogicLessEq_5635534912 -> Variable_5635534816
+Variable_5635534816 [label = Variable]
+age_5635534816 [label = age]
+Variable_5635534816 -> age_5635534816
+LogicLessEq_5635534912 -> Constant_5635534848
+Constant_5635534848 [label = Constant]
+int_5635534848 [label = "14"]
+Constant_5635534848 -> int_5635534848
+IfStmt_5635537136 -> Block_5635535200
+Block_5635535200 [label = Block]
+Block_5635535200 -> FuncCall_5635535296
+FuncCall_5635535296 [label = FuncCall]
+printf_5635535296[ label = printf]
+FuncCall_5635535296 -> printf_5635535296
+FuncCall_5635535296 -> ConstStr_5635535072
+ConstStr_5635535072 [label = ConstStr]
+str_5635535072 [label = "chld: %d"]
+ConstStr_5635535072 -> str_5635535072
+FuncCall_5635535296 -> Variable_5635535248
+Variable_5635535248 [label = Variable]
+age_5635535248 [label = age]
+Variable_5635535248 -> age_5635535248
+Block_5635535200 -> ReturnStmt_5635535408
+ReturnStmt_5635535408 [label = ReturnStmt]
+ReturnStmt_5635535408 -> Variable_5635535376
+Variable_5635535376 [label = Variable]
+age_5635535376 [label = age]
+Variable_5635535376 -> age_5635535376
+IfStmt_5635537136 -> IfStmt_5635537104
+IfStmt_5635537104 [label = IfStmt]
+IfStmt_5635537104 -> LogicAnd_5635535760
+LogicAnd_5635535760 [label = LogicAnd]
+LogicAnd_5635535760 -> LogicGreaterThan_5635535568
+LogicGreaterThan_5635535568 [label = LogicGreaterThan]
+LogicGreaterThan_5635535568 -> Variable_5635535472
+Variable_5635535472 [label = Variable]
+age_5635535472 [label = age]
+Variable_5635535472 -> age_5635535472
+LogicGreaterThan_5635535568 -> Constant_5635535504
+Constant_5635535504 [label = Constant]
+int_5635535504 [label = "14"]
+Constant_5635535504 -> int_5635535504
+LogicAnd_5635535760 -> LogicLessEq_5635535728
+LogicLessEq_5635535728 [label = LogicLessEq]
+LogicLessEq_5635535728 -> Variable_5635535632
+Variable_5635535632 [label = Variable]
+age_5635535632 [label = age]
+Variable_5635535632 -> age_5635535632
+LogicLessEq_5635535728 -> Constant_5635535664
+Constant_5635535664 [label = Constant]
+int_5635535664 [label = "18"]
+Constant_5635535664 -> int_5635535664
+IfStmt_5635537104 -> Block_5635536016
+Block_5635536016 [label = Block]
+Block_5635536016 -> FuncCall_5635536112
+FuncCall_5635536112 [label = FuncCall]
+printf_5635536112[ label = printf]
+FuncCall_5635536112 -> printf_5635536112
+FuncCall_5635536112 -> ConstStr_5635535888
+ConstStr_5635535888 [label = ConstStr]
+str_5635535888 [label = "teenager: %d"]
+ConstStr_5635535888 -> str_5635535888
+FuncCall_5635536112 -> Variable_5635536064
+Variable_5635536064 [label = Variable]
+age_5635536064 [label = age]
+Variable_5635536064 -> age_5635536064
+Block_5635536016 -> ReturnStmt_5635536224
+ReturnStmt_5635536224 [label = ReturnStmt]
+ReturnStmt_5635536224 -> Variable_5635536192
+Variable_5635536192 [label = Variable]
+age_5635536192 [label = age]
+Variable_5635536192 -> age_5635536192
+IfStmt_5635537104 -> IfStmt_5635537072
+IfStmt_5635537072 [label = IfStmt]
+IfStmt_5635537072 -> LogicAnd_5635536576
+LogicAnd_5635536576 [label = LogicAnd]
+LogicAnd_5635536576 -> LogicGreaterThan_5635536384
+LogicGreaterThan_5635536384 [label = LogicGreaterThan]
+LogicGreaterThan_5635536384 -> Variable_5635536288
+Variable_5635536288 [label = Variable]
+age_5635536288 [label = age]
+Variable_5635536288 -> age_5635536288
+LogicGreaterThan_5635536384 -> Constant_5635536320
+Constant_5635536320 [label = Constant]
+int_5635536320 [label = "18"]
+Constant_5635536320 -> int_5635536320
+LogicAnd_5635536576 -> LogicLessEq_5635536544
+LogicLessEq_5635536544 [label = LogicLessEq]
+LogicLessEq_5635536544 -> Variable_5635536448
+Variable_5635536448 [label = Variable]
+age_5635536448 [label = age]
+Variable_5635536448 -> age_5635536448
+LogicLessEq_5635536544 -> Constant_5635536480
+Constant_5635536480 [label = Constant]
+int_5635536480 [label = "35"]
+Constant_5635536480 -> int_5635536480
+IfStmt_5635537072 -> Block_5635536832
+Block_5635536832 [label = Block]
+Block_5635536832 -> FuncCall_5635536928
+FuncCall_5635536928 [label = FuncCall]
+printf_5635536928[ label = printf]
+FuncCall_5635536928 -> printf_5635536928
+FuncCall_5635536928 -> ConstStr_5635536704
+ConstStr_5635536704 [label = ConstStr]
+str_5635536704 [label = "young: %d"]
+ConstStr_5635536704 -> str_5635536704
+FuncCall_5635536928 -> Variable_5635536880
+Variable_5635536880 [label = Variable]
+age_5635536880 [label = age]
+Variable_5635536880 -> age_5635536880
+Block_5635536832 -> ReturnStmt_5635537040
+ReturnStmt_5635537040 [label = ReturnStmt]
+ReturnStmt_5635537040 -> Variable_5635537008
+Variable_5635537008 [label = Variable]
+age_5635537008 [label = age]
+Variable_5635537008 -> age_5635537008
+FuncBody_5635537200 -> ReturnStmt_5635537280
+ReturnStmt_5635537280 [label = ReturnStmt]
+ReturnStmt_5635537280 -> Variable_5635537248
+Variable_5635537248 [label = Variable]
+age_5635537248 [label = age]
+Variable_5635537248 -> age_5635537248
+Program -> FuncDecl_5635544112
+FuncDecl_5635544112 [label = FuncDecl]
+FuncDecl_5635544112 -> BuiltinType_5635537376
+BuiltinType_5635537376 [label = BuiltinType]
+"int_5635537376" [label = "int"]
+BuiltinType_5635537376 -> "int_5635537376"
+main_5635544112[ label = main]
+FuncDecl_5635544112 -> main_5635544112
+FuncDecl_5635544112 -> ParamList_5635537472
+ParamList_5635537472 [label = ParamList]
+FuncDecl_5635544112 -> FuncBody_5635544096
+FuncBody_5635544096 [label = FuncBody]
+FuncBody_5635544096 -> VarDecl_5635537936
+VarDecl_5635537936 [label = VarDecl]
+VarDecl_5635537936 -> BuiltinType_5635537552
+BuiltinType_5635537552 [label = BuiltinType]
+"int_5635537552" [label = "int"]
+BuiltinType_5635537552 -> "int_5635537552"
+VarDecl_5635537936 -> VarInit_5635537840
+VarInit_5635537840 [label = VarInit]
+age_5635537840 [label = age]
+VarInit_5635537840 -> age_5635537840
+VarInit_5635537840 -> FuncCall_5635537792
+FuncCall_5635537792 [label = FuncCall]
+checkAge1_5635537792[ label = checkAge1]
+FuncCall_5635537792 -> checkAge1_5635537792
+FuncCall_5635537792 -> Constant_5635537680
+Constant_5635537680 [label = Constant]
+int_5635537680 [label = "16"]
+Constant_5635537680 -> int_5635537680
+FuncBody_5635544096 -> FuncCall_5635538272
+FuncCall_5635538272 [label = FuncCall]
+printf_5635538272[ label = printf]
+FuncCall_5635538272 -> printf_5635538272
+FuncCall_5635538272 -> ConstStr_5635538048
+ConstStr_5635538048 [label = ConstStr]
+str_5635538048 [label = "age:%d"]
+ConstStr_5635538048 -> str_5635538048
+FuncCall_5635538272 -> Variable_5635538224
+Variable_5635538224 [label = Variable]
+age_5635538224 [label = age]
+Variable_5635538224 -> age_5635538224
+FuncBody_5635544096 -> Assign_5635538560
+Assign_5635538560 [label = Assign]
+Assign_5635538560 -> Variable_5635538352
+Variable_5635538352 [label = Variable]
+age_5635538352 [label = age]
+Variable_5635538352 -> age_5635538352
+Assign_5635538560 -> FuncCall_5635538512
+FuncCall_5635538512 [label = FuncCall]
+checkAge1_5635538512[ label = checkAge1]
+FuncCall_5635538512 -> checkAge1_5635538512
+FuncCall_5635538512 -> Constant_5635538416
+Constant_5635538416 [label = Constant]
+int_5635538416 [label = "18"]
+Constant_5635538416 -> int_5635538416
+FuncBody_5635544096 -> FuncCall_5635538896
+FuncCall_5635538896 [label = FuncCall]
+printf_5635538896[ label = printf]
+FuncCall_5635538896 -> printf_5635538896
+FuncCall_5635538896 -> ConstStr_5635538688
+ConstStr_5635538688 [label = ConstStr]
+str_5635538688 [label = "age:%d"]
+ConstStr_5635538688 -> str_5635538688
+FuncCall_5635538896 -> Variable_5635538848
+Variable_5635538848 [label = Variable]
+age_5635538848 [label = age]
+Variable_5635538848 -> age_5635538848
+FuncBody_5635544096 -> Assign_5635539184
+Assign_5635539184 [label = Assign]
+Assign_5635539184 -> Variable_5635538976
+Variable_5635538976 [label = Variable]
+age_5635538976 [label = age]
+Variable_5635538976 -> age_5635538976
+Assign_5635539184 -> FuncCall_5635539136
+FuncCall_5635539136 [label = FuncCall]
+checkAge1_5635539136[ label = checkAge1]
+FuncCall_5635539136 -> checkAge1_5635539136
+FuncCall_5635539136 -> Constant_5635539040
+Constant_5635539040 [label = Constant]
+int_5635539040 [label = "20"]
+Constant_5635539040 -> int_5635539040
+FuncBody_5635544096 -> FuncCall_5635539536
+FuncCall_5635539536 [label = FuncCall]
+printf_5635539536[ label = printf]
+FuncCall_5635539536 -> printf_5635539536
+FuncCall_5635539536 -> ConstStr_5635539312
+ConstStr_5635539312 [label = ConstStr]
+str_5635539312 [label = "age:%d"]
+ConstStr_5635539312 -> str_5635539312
+FuncCall_5635539536 -> Variable_5635539488
+Variable_5635539488 [label = Variable]
+age_5635539488 [label = age]
+Variable_5635539488 -> age_5635539488
+FuncBody_5635544096 -> Assign_5635539824
+Assign_5635539824 [label = Assign]
+Assign_5635539824 -> Variable_5635539616
+Variable_5635539616 [label = Variable]
+age_5635539616 [label = age]
+Variable_5635539616 -> age_5635539616
+Assign_5635539824 -> FuncCall_5635539776
+FuncCall_5635539776 [label = FuncCall]
+checkAge2_5635539776[ label = checkAge2]
+FuncCall_5635539776 -> checkAge2_5635539776
+FuncCall_5635539776 -> Constant_5635539680
+Constant_5635539680 [label = Constant]
+int_5635539680 [label = "16"]
+Constant_5635539680 -> int_5635539680
+FuncBody_5635544096 -> FuncCall_5635540144
+FuncCall_5635540144 [label = FuncCall]
+printf_5635540144[ label = printf]
+FuncCall_5635540144 -> printf_5635540144
+FuncCall_5635540144 -> ConstStr_5635539920
+ConstStr_5635539920 [label = ConstStr]
+str_5635539920 [label = "age2:%d"]
+ConstStr_5635539920 -> str_5635539920
+FuncCall_5635540144 -> Variable_5635540096
+Variable_5635540096 [label = Variable]
+age_5635540096 [label = age]
+Variable_5635540096 -> age_5635540096
+FuncBody_5635544096 -> Assign_5635540432
+Assign_5635540432 [label = Assign]
+Assign_5635540432 -> Variable_5635540224
+Variable_5635540224 [label = Variable]
+age_5635540224 [label = age]
+Variable_5635540224 -> age_5635540224
+Assign_5635540432 -> FuncCall_5635540384
+FuncCall_5635540384 [label = FuncCall]
+checkAge2_5635540384[ label = checkAge2]
+FuncCall_5635540384 -> checkAge2_5635540384
+FuncCall_5635540384 -> Constant_5635540288
+Constant_5635540288 [label = Constant]
+int_5635540288 [label = "18"]
+Constant_5635540288 -> int_5635540288
+FuncBody_5635544096 -> FuncCall_5635539216
+FuncCall_5635539216 [label = FuncCall]
+printf_5635539216[ label = printf]
+FuncCall_5635539216 -> printf_5635539216
+FuncCall_5635539216 -> ConstStr_5635540656
+ConstStr_5635540656 [label = ConstStr]
+str_5635540656 [label = "age2:%d"]
+ConstStr_5635540656 -> str_5635540656
+FuncCall_5635539216 -> Variable_5635540832
+Variable_5635540832 [label = Variable]
+age_5635540832 [label = age]
+Variable_5635540832 -> age_5635540832
+FuncBody_5635544096 -> Assign_5635541120
+Assign_5635541120 [label = Assign]
+Assign_5635541120 -> Variable_5635540912
+Variable_5635540912 [label = Variable]
+age_5635540912 [label = age]
+Variable_5635540912 -> age_5635540912
+Assign_5635541120 -> FuncCall_5635541072
+FuncCall_5635541072 [label = FuncCall]
+checkAge2_5635541072[ label = checkAge2]
+FuncCall_5635541072 -> checkAge2_5635541072
+FuncCall_5635541072 -> Constant_5635540976
+Constant_5635540976 [label = Constant]
+int_5635540976 [label = "20"]
+Constant_5635540976 -> int_5635540976
+FuncBody_5635544096 -> FuncCall_5635541424
+FuncCall_5635541424 [label = FuncCall]
+printf_5635541424[ label = printf]
+FuncCall_5635541424 -> printf_5635541424
+FuncCall_5635541424 -> ConstStr_5635541216
+ConstStr_5635541216 [label = ConstStr]
+str_5635541216 [label = "age2:%d"]
+ConstStr_5635541216 -> str_5635541216
+FuncCall_5635541424 -> Variable_5635541376
+Variable_5635541376 [label = Variable]
+age_5635541376 [label = age]
+Variable_5635541376 -> age_5635541376
+FuncBody_5635544096 -> Assign_5635541712
+Assign_5635541712 [label = Assign]
+Assign_5635541712 -> Variable_5635541504
+Variable_5635541504 [label = Variable]
+age_5635541504 [label = age]
+Variable_5635541504 -> age_5635541504
+Assign_5635541712 -> FuncCall_5635541664
+FuncCall_5635541664 [label = FuncCall]
+checkAge3_5635541664[ label = checkAge3]
+FuncCall_5635541664 -> checkAge3_5635541664
+FuncCall_5635541664 -> Constant_5635541568
+Constant_5635541568 [label = Constant]
+int_5635541568 [label = "6"]
+Constant_5635541568 -> int_5635541568
+FuncBody_5635544096 -> FuncCall_5635542032
+FuncCall_5635542032 [label = FuncCall]
+printf_5635542032[ label = printf]
+FuncCall_5635542032 -> printf_5635542032
+FuncCall_5635542032 -> ConstStr_5635541808
+ConstStr_5635541808 [label = ConstStr]
+str_5635541808 [label = "age3:%d"]
+ConstStr_5635541808 -> str_5635541808
+FuncCall_5635542032 -> Variable_5635541984
+Variable_5635541984 [label = Variable]
+age_5635541984 [label = age]
+Variable_5635541984 -> age_5635541984
+FuncBody_5635544096 -> Assign_5635542320
+Assign_5635542320 [label = Assign]
+Assign_5635542320 -> Variable_5635542112
+Variable_5635542112 [label = Variable]
+age_5635542112 [label = age]
+Variable_5635542112 -> age_5635542112
+Assign_5635542320 -> FuncCall_5635542272
+FuncCall_5635542272 [label = FuncCall]
+checkAge3_5635542272[ label = checkAge3]
+FuncCall_5635542272 -> checkAge3_5635542272
+FuncCall_5635542272 -> Constant_5635542176
+Constant_5635542176 [label = Constant]
+int_5635542176 [label = "14"]
+Constant_5635542176 -> int_5635542176
+FuncBody_5635544096 -> FuncCall_5635542640
+FuncCall_5635542640 [label = FuncCall]
+printf_5635542640[ label = printf]
+FuncCall_5635542640 -> printf_5635542640
+FuncCall_5635542640 -> ConstStr_5635542416
+ConstStr_5635542416 [label = ConstStr]
+str_5635542416 [label = "age3:%d"]
+ConstStr_5635542416 -> str_5635542416
+FuncCall_5635542640 -> Variable_5635542592
+Variable_5635542592 [label = Variable]
+age_5635542592 [label = age]
+Variable_5635542592 -> age_5635542592
+FuncBody_5635544096 -> Assign_5635542928
+Assign_5635542928 [label = Assign]
+Assign_5635542928 -> Variable_5635542720
+Variable_5635542720 [label = Variable]
+age_5635542720 [label = age]
+Variable_5635542720 -> age_5635542720
+Assign_5635542928 -> FuncCall_5635542880
+FuncCall_5635542880 [label = FuncCall]
+checkAge3_5635542880[ label = checkAge3]
+FuncCall_5635542880 -> checkAge3_5635542880
+FuncCall_5635542880 -> Constant_5635542784
+Constant_5635542784 [label = Constant]
+int_5635542784 [label = "18"]
+Constant_5635542784 -> int_5635542784
+FuncBody_5635544096 -> FuncCall_5635540464
+FuncCall_5635540464 [label = FuncCall]
+printf_5635540464[ label = printf]
+FuncCall_5635540464 -> printf_5635540464
+FuncCall_5635540464 -> ConstStr_5635543280
+ConstStr_5635543280 [label = ConstStr]
+str_5635543280 [label = "age3:%d"]
+ConstStr_5635543280 -> str_5635543280
+FuncCall_5635540464 -> Variable_5635543456
+Variable_5635543456 [label = Variable]
+age_5635543456 [label = age]
+Variable_5635543456 -> age_5635543456
+FuncBody_5635544096 -> Assign_5635543680
+Assign_5635543680 [label = Assign]
+Assign_5635543680 -> Variable_5635540544
+Variable_5635540544 [label = Variable]
+age_5635540544 [label = age]
+Variable_5635540544 -> age_5635540544
+Assign_5635543680 -> FuncCall_5635543632
+FuncCall_5635543632 [label = FuncCall]
+checkAge3_5635543632[ label = checkAge3]
+FuncCall_5635543632 -> checkAge3_5635543632
+FuncCall_5635543632 -> Constant_5635543536
+Constant_5635543536 [label = Constant]
+int_5635543536 [label = "35"]
+Constant_5635543536 -> int_5635543536
+FuncBody_5635544096 -> FuncCall_5635543984
+FuncCall_5635543984 [label = FuncCall]
+printf_5635543984[ label = printf]
+FuncCall_5635543984 -> printf_5635543984
+FuncCall_5635543984 -> ConstStr_5635543776
+ConstStr_5635543776 [label = ConstStr]
+str_5635543776 [label = "age3:%d"]
+ConstStr_5635543776 -> str_5635543776
+FuncCall_5635543984 -> Variable_5635543936
+Variable_5635543936 [label = Variable]
+age_5635543936 [label = age]
+Variable_5635543936 -> age_5635543936
+FuncBody_5635544096 -> ReturnStmt_5635540576
+ReturnStmt_5635540576 [label = ReturnStmt]
+ReturnStmt_5635540576 -> Constant_5635544032
+Constant_5635544032 [label = Constant]
+int_5635544032 [label = "0"]
+Constant_5635544032 -> int_5635544032
+}

@@ -1,0 +1,353 @@
+digraph {
+Program [label = Program]
+Program -> FuncDecl_5299984400
+FuncDecl_5299984400 [label = FuncDecl]
+FuncDecl_5299984400 -> BuiltinType_5299984176
+BuiltinType_5299984176 [label = BuiltinType]
+"int_5299984176" [label = "int"]
+BuiltinType_5299984176 -> "int_5299984176"
+printf_5299984400[ label = printf]
+FuncDecl_5299984400 -> printf_5299984400
+FuncDecl_5299984400 -> ParamList_5299984032
+ParamList_5299984032 [label = ParamList]
+ParamList_5299984032 -> Param_5299983984
+Param_5299983984 [label = Param]
+Param_5299983984 -> PointerType_5299983920
+PointerType_5299983920 [label = PointerType]
+"char*_5299983920" [label = "char*"]
+PointerType_5299983920 -> "char*_5299983920"
+anonymous_5299983984 [label = anonymous]
+Param_5299983984 -> anonymous_5299983984
+"..._5299984032" [label = "..."]
+ParamList_5299984032 -> "..._5299984032"
+Program -> VarDecl_5299984672
+VarDecl_5299984672 [label = VarDecl]
+VarDecl_5299984672 -> BuiltinType_5299984464
+BuiltinType_5299984464 [label = BuiltinType]
+"char_5299984464" [label = "char"]
+BuiltinType_5299984464 -> "char_5299984464"
+VarDecl_5299984672 -> VarInit_5299984592
+VarInit_5299984592 [label = VarInit]
+gc_5299984592 [label = gc]
+VarInit_5299984592 -> gc_5299984592
+VarInit_5299984592 -> Constant_5299984528
+Constant_5299984528 [label = Constant]
+char_5299984528 [label = "97"]
+Constant_5299984528 -> char_5299984528
+Program -> VarDecl_5299984944
+VarDecl_5299984944 [label = VarDecl]
+VarDecl_5299984944 -> BuiltinType_5299984704
+BuiltinType_5299984704 [label = BuiltinType]
+"int_5299984704" [label = "int"]
+BuiltinType_5299984704 -> "int_5299984704"
+VarDecl_5299984944 -> VarInit_5299984864
+VarInit_5299984864 [label = VarInit]
+gi_5299984864 [label = gi]
+VarInit_5299984864 -> gi_5299984864
+VarInit_5299984864 -> Constant_5299984800
+Constant_5299984800 [label = Constant]
+int_5299984800 [label = "1024"]
+Constant_5299984800 -> int_5299984800
+Program -> FuncDecl_5299991648
+FuncDecl_5299991648 [label = FuncDecl]
+FuncDecl_5299991648 -> BuiltinType_5299985216
+BuiltinType_5299985216 [label = BuiltinType]
+"int_5299985216" [label = "int"]
+BuiltinType_5299985216 -> "int_5299985216"
+main_5299991648[ label = main]
+FuncDecl_5299991648 -> main_5299991648
+FuncDecl_5299991648 -> ParamList_5299985280
+ParamList_5299985280 [label = ParamList]
+FuncDecl_5299991648 -> FuncBody_5299988288
+FuncBody_5299988288 [label = FuncBody]
+FuncBody_5299988288 -> VarDecl_5299985600
+VarDecl_5299985600 [label = VarDecl]
+VarDecl_5299985600 -> BuiltinType_5299985360
+BuiltinType_5299985360 [label = BuiltinType]
+"char_5299985360" [label = "char"]
+BuiltinType_5299985360 -> "char_5299985360"
+VarDecl_5299985600 -> VarInit_5299985520
+VarInit_5299985520 [label = VarInit]
+c_5299985520 [label = c]
+VarInit_5299985520 -> c_5299985520
+VarInit_5299985520 -> Constant_5299985456
+Constant_5299985456 [label = Constant]
+char_5299985456 [label = "65"]
+Constant_5299985456 -> char_5299985456
+FuncBody_5299988288 -> VarDecl_5299985872
+VarDecl_5299985872 [label = VarDecl]
+VarDecl_5299985872 -> BuiltinType_5299985632
+BuiltinType_5299985632 [label = BuiltinType]
+"int_5299985632" [label = "int"]
+BuiltinType_5299985632 -> "int_5299985632"
+VarDecl_5299985872 -> VarInit_5299985792
+VarInit_5299985792 [label = VarInit]
+i_5299985792 [label = i]
+VarInit_5299985792 -> i_5299985792
+VarInit_5299985792 -> Constant_5299985728
+Constant_5299985728 [label = Constant]
+int_5299985728 [label = "128"]
+Constant_5299985728 -> int_5299985728
+FuncBody_5299988288 -> VarDecl_5299986208
+VarDecl_5299986208 [label = VarDecl]
+VarDecl_5299986208 -> PointerType_5299985968
+PointerType_5299985968 [label = PointerType]
+"char*_5299985968" [label = "char*"]
+PointerType_5299985968 -> "char*_5299985968"
+VarDecl_5299986208 -> VarInit_5299986128
+VarInit_5299986128 [label = VarInit]
+pc_5299986128 [label = pc]
+VarInit_5299986128 -> pc_5299986128
+VarInit_5299986128 -> AddressOf_5299757232
+AddressOf_5299757232 [label = AddressOf]
+AddressOf_5299757232 -> Variable_5299986096
+Variable_5299986096 [label = Variable]
+c_5299986096 [label = c]
+Variable_5299986096 -> c_5299986096
+FuncBody_5299988288 -> VarDecl_5299986576
+VarDecl_5299986576 [label = VarDecl]
+VarDecl_5299986576 -> PointerType_5299986336
+PointerType_5299986336 [label = PointerType]
+"int*_5299986336" [label = "int*"]
+PointerType_5299986336 -> "int*_5299986336"
+VarDecl_5299986576 -> VarInit_5299986496
+VarInit_5299986496 [label = VarInit]
+pi_5299986496 [label = pi]
+VarInit_5299986496 -> pi_5299986496
+VarInit_5299986496 -> AddressOf_5299748928
+AddressOf_5299748928 [label = AddressOf]
+AddressOf_5299748928 -> Variable_5299986464
+Variable_5299986464 [label = Variable]
+i_5299986464 [label = i]
+Variable_5299986464 -> i_5299986464
+FuncBody_5299988288 -> FuncCall_5299986960
+FuncCall_5299986960 [label = FuncCall]
+printf_5299986960[ label = printf]
+FuncCall_5299986960 -> printf_5299986960
+FuncCall_5299986960 -> ConstStr_5299986672
+ConstStr_5299986672 [label = ConstStr]
+str_5299986672 [label = "c: %c %c"]
+ConstStr_5299986672 -> str_5299986672
+FuncCall_5299986960 -> Variable_5299986832
+Variable_5299986832 [label = Variable]
+c_5299986832 [label = c]
+Variable_5299986832 -> c_5299986832
+FuncCall_5299986960 -> PointerDeref_5299743328
+PointerDeref_5299743328 [label = PointerDeref]
+PointerDeref_5299743328 -> Variable_5299986896
+Variable_5299986896 [label = Variable]
+pc_5299986896 [label = pc]
+Variable_5299986896 -> pc_5299986896
+FuncBody_5299988288 -> FuncCall_5299987392
+FuncCall_5299987392 [label = FuncCall]
+printf_5299987392[ label = printf]
+FuncCall_5299987392 -> printf_5299987392
+FuncCall_5299987392 -> ConstStr_5299987104
+ConstStr_5299987104 [label = ConstStr]
+str_5299987104 [label = "i: %i %i"]
+ConstStr_5299987104 -> str_5299987104
+FuncCall_5299987392 -> Variable_5299987264
+Variable_5299987264 [label = Variable]
+i_5299987264 [label = i]
+Variable_5299987264 -> i_5299987264
+FuncCall_5299987392 -> PointerDeref_5299569872
+PointerDeref_5299569872 [label = PointerDeref]
+PointerDeref_5299569872 -> Variable_5299987328
+Variable_5299987328 [label = Variable]
+pi_5299987328 [label = pi]
+Variable_5299987328 -> pi_5299987328
+FuncBody_5299988288 -> Assign_5299987568
+Assign_5299987568 [label = Assign]
+Assign_5299987568 -> PointerDeref_5299527312
+PointerDeref_5299527312 [label = PointerDeref]
+PointerDeref_5299527312 -> Variable_5299987472
+Variable_5299987472 [label = Variable]
+pc_5299987472 [label = pc]
+Variable_5299987472 -> pc_5299987472
+Assign_5299987568 -> Constant_5299987504
+Constant_5299987504 [label = Constant]
+char_5299987504 [label = "66"]
+Constant_5299987504 -> char_5299987504
+FuncBody_5299988288 -> Assign_5299987728
+Assign_5299987728 [label = Assign]
+Assign_5299987728 -> PointerDeref_5299527408
+PointerDeref_5299527408 [label = PointerDeref]
+PointerDeref_5299527408 -> Variable_5299987632
+Variable_5299987632 [label = Variable]
+pi_5299987632 [label = pi]
+Variable_5299987632 -> pi_5299987632
+Assign_5299987728 -> Constant_5299987664
+Constant_5299987664 [label = Constant]
+int_5299987664 [label = "256"]
+Constant_5299987664 -> int_5299987664
+FuncBody_5299988288 -> FuncCall_5299988144
+FuncCall_5299988144 [label = FuncCall]
+printf_5299988144[ label = printf]
+FuncCall_5299988144 -> printf_5299988144
+FuncCall_5299988144 -> ConstStr_5299987824
+ConstStr_5299987824 [label = ConstStr]
+str_5299987824 [label = "new c: %c %c"]
+ConstStr_5299987824 -> str_5299987824
+FuncCall_5299988144 -> Variable_5299988000
+Variable_5299988000 [label = Variable]
+c_5299988000 [label = c]
+Variable_5299988000 -> c_5299988000
+FuncCall_5299988144 -> PointerDeref_5299987952
+PointerDeref_5299987952 [label = PointerDeref]
+PointerDeref_5299987952 -> Variable_5299988080
+Variable_5299988080 [label = Variable]
+pc_5299988080 [label = pc]
+Variable_5299988080 -> pc_5299988080
+FuncBody_5299988288 -> FuncCall_5299988624
+FuncCall_5299988624 [label = FuncCall]
+printf_5299988624[ label = printf]
+FuncCall_5299988624 -> printf_5299988624
+FuncCall_5299988624 -> ConstStr_5299988384
+ConstStr_5299988384 [label = ConstStr]
+str_5299988384 [label = "new i: %i %i"]
+ConstStr_5299988384 -> str_5299988384
+FuncCall_5299988624 -> Variable_5299988544
+Variable_5299988544 [label = Variable]
+i_5299988544 [label = i]
+Variable_5299988544 -> i_5299988544
+FuncCall_5299988624 -> PointerDeref_5299988032
+PointerDeref_5299988032 [label = PointerDeref]
+PointerDeref_5299988032 -> Variable_5299987040
+Variable_5299987040 [label = Variable]
+pi_5299987040 [label = pi]
+Variable_5299987040 -> pi_5299987040
+FuncBody_5299988288 -> VarDecl_5299988992
+VarDecl_5299988992 [label = VarDecl]
+VarDecl_5299988992 -> PointerType_5299988736
+PointerType_5299988736 [label = PointerType]
+"char*_5299988736" [label = "char*"]
+PointerType_5299988736 -> "char*_5299988736"
+VarDecl_5299988992 -> VarInit_5299988896
+VarInit_5299988896 [label = VarInit]
+pgc_5299988896 [label = pgc]
+VarInit_5299988896 -> pgc_5299988896
+VarInit_5299988896 -> AddressOf_5299988576
+AddressOf_5299988576 [label = AddressOf]
+AddressOf_5299988576 -> Variable_5299988864
+Variable_5299988864 [label = Variable]
+gc_5299988864 [label = gc]
+Variable_5299988864 -> gc_5299988864
+FuncBody_5299988288 -> VarDecl_5299989360
+VarDecl_5299989360 [label = VarDecl]
+VarDecl_5299989360 -> PointerType_5299989088
+PointerType_5299989088 [label = PointerType]
+"int*_5299989088" [label = "int*"]
+PointerType_5299989088 -> "int*_5299989088"
+VarDecl_5299989360 -> VarInit_5299989264
+VarInit_5299989264 [label = VarInit]
+pgi_5299989264 [label = pgi]
+VarInit_5299989264 -> pgi_5299989264
+VarInit_5299989264 -> AddressOf_5299989248
+AddressOf_5299989248 [label = AddressOf]
+AddressOf_5299989248 -> Variable_5299989216
+Variable_5299989216 [label = Variable]
+gi_5299989216 [label = gi]
+Variable_5299989216 -> gi_5299989216
+FuncBody_5299988288 -> FuncCall_5299989776
+FuncCall_5299989776 [label = FuncCall]
+printf_5299989776[ label = printf]
+FuncCall_5299989776 -> printf_5299989776
+FuncCall_5299989776 -> ConstStr_5299989456
+ConstStr_5299989456 [label = ConstStr]
+str_5299989456 [label = "gc: %c %c"]
+ConstStr_5299989456 -> str_5299989456
+FuncCall_5299989776 -> Variable_5299989632
+Variable_5299989632 [label = Variable]
+gc_5299989632 [label = gc]
+Variable_5299989632 -> gc_5299989632
+FuncCall_5299989776 -> PointerDeref_5299989584
+PointerDeref_5299989584 [label = PointerDeref]
+PointerDeref_5299989584 -> Variable_5299989712
+Variable_5299989712 [label = Variable]
+pgc_5299989712 [label = pgc]
+Variable_5299989712 -> pgc_5299989712
+FuncBody_5299988288 -> FuncCall_5299990192
+FuncCall_5299990192 [label = FuncCall]
+printf_5299990192[ label = printf]
+FuncCall_5299990192 -> printf_5299990192
+FuncCall_5299990192 -> ConstStr_5299989888
+ConstStr_5299989888 [label = ConstStr]
+str_5299989888 [label = "gi: %i %i"]
+ConstStr_5299989888 -> str_5299989888
+FuncCall_5299990192 -> Variable_5299990048
+Variable_5299990048 [label = Variable]
+gi_5299990048 [label = gi]
+Variable_5299990048 -> gi_5299990048
+FuncCall_5299990192 -> PointerDeref_5299989664
+PointerDeref_5299989664 [label = PointerDeref]
+PointerDeref_5299989664 -> Variable_5299990128
+Variable_5299990128 [label = Variable]
+pgi_5299990128 [label = pgi]
+Variable_5299990128 -> pgi_5299990128
+FuncBody_5299988288 -> Assign_5299990368
+Assign_5299990368 [label = Assign]
+Assign_5299990368 -> PointerDeref_5299990080
+PointerDeref_5299990080 [label = PointerDeref]
+PointerDeref_5299990080 -> Variable_5299990272
+Variable_5299990272 [label = Variable]
+pgc_5299990272 [label = pgc]
+Variable_5299990272 -> pgc_5299990272
+Assign_5299990368 -> Constant_5299990304
+Constant_5299990304 [label = Constant]
+char_5299990304 [label = "98"]
+Constant_5299990304 -> char_5299990304
+FuncBody_5299988288 -> Assign_5299990544
+Assign_5299990544 [label = Assign]
+Assign_5299990544 -> PointerDeref_5299990464
+PointerDeref_5299990464 [label = PointerDeref]
+PointerDeref_5299990464 -> Variable_5299990432
+Variable_5299990432 [label = Variable]
+pgi_5299990432 [label = pgi]
+Variable_5299990432 -> pgi_5299990432
+Assign_5299990544 -> Constant_5299990480
+Constant_5299990480 [label = Constant]
+int_5299990480 [label = "2048"]
+Constant_5299990480 -> int_5299990480
+FuncBody_5299988288 -> FuncCall_5299990960
+FuncCall_5299990960 [label = FuncCall]
+printf_5299990960[ label = printf]
+FuncCall_5299990960 -> printf_5299990960
+FuncCall_5299990960 -> ConstStr_5299990640
+ConstStr_5299990640 [label = ConstStr]
+str_5299990640 [label = "new gc: %c %c"]
+ConstStr_5299990640 -> str_5299990640
+FuncCall_5299990960 -> Variable_5299990816
+Variable_5299990816 [label = Variable]
+gc_5299990816 [label = gc]
+Variable_5299990816 -> gc_5299990816
+FuncCall_5299990960 -> PointerDeref_5299990768
+PointerDeref_5299990768 [label = PointerDeref]
+PointerDeref_5299990768 -> Variable_5299990896
+Variable_5299990896 [label = Variable]
+pgc_5299990896 [label = pgc]
+Variable_5299990896 -> pgc_5299990896
+FuncBody_5299988288 -> FuncCall_5299991536
+FuncCall_5299991536 [label = FuncCall]
+printf_5299991536[ label = printf]
+FuncCall_5299991536 -> printf_5299991536
+FuncCall_5299991536 -> ConstStr_5299991328
+ConstStr_5299991328 [label = ConstStr]
+str_5299991328 [label = "new gi: %i %i"]
+ConstStr_5299991328 -> str_5299991328
+FuncCall_5299991536 -> Variable_5299991488
+Variable_5299991488 [label = Variable]
+gi_5299991488 [label = gi]
+Variable_5299991488 -> gi_5299991488
+FuncCall_5299991536 -> PointerDeref_5299990848
+PointerDeref_5299990848 [label = PointerDeref]
+PointerDeref_5299990848 -> Variable_5299988224
+Variable_5299988224 [label = Variable]
+pgi_5299988224 [label = pgi]
+Variable_5299988224 -> pgi_5299988224
+FuncBody_5299988288 -> ReturnStmt_5299991520
+ReturnStmt_5299991520 [label = ReturnStmt]
+ReturnStmt_5299991520 -> Constant_5299991584
+Constant_5299991584 [label = Constant]
+int_5299991584 [label = "0"]
+Constant_5299991584 -> int_5299991584
+}

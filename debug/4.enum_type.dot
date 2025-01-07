@@ -1,0 +1,201 @@
+digraph {
+Program [label = Program]
+Program -> FuncDecl_4888942800
+FuncDecl_4888942800 [label = FuncDecl]
+FuncDecl_4888942800 -> BuiltinType_4888942384
+BuiltinType_4888942384 [label = BuiltinType]
+"int_4888942384" [label = "int"]
+BuiltinType_4888942384 -> "int_4888942384"
+printf_4888942800[ label = printf]
+FuncDecl_4888942800 -> printf_4888942800
+FuncDecl_4888942800 -> ParamList_4888942752
+ParamList_4888942752 [label = ParamList]
+ParamList_4888942752 -> Param_4888942704
+Param_4888942704 [label = Param]
+Param_4888942704 -> PointerType_4888942640
+PointerType_4888942640 [label = PointerType]
+"char*_4888942640" [label = "char*"]
+PointerType_4888942640 -> "char*_4888942640"
+anonymous_4888942704 [label = anonymous]
+Param_4888942704 -> anonymous_4888942704
+"..._4888942752" [label = "..."]
+ParamList_4888942752 -> "..._4888942752"
+Program -> TypeDecl_4888715856
+TypeDecl_4888715856 [label = TypeDecl]
+TypeDecl_4888715856 -> EnumType_4888943456
+EnumType_4888943456 [label = EnumType]
+"WEEKDAY_4888943456" [label = "WEEKDAY"]
+EnumType_4888943456 -> "WEEKDAY_4888943456"
+EnumType_4888943456 -> Enum_4888942928
+Enum_4888942928 [label = Enum]
+SUNDAY_4888942928 [label = SUNDAY]
+Enum_4888942928 -> SUNDAY_4888942928
+"0_4888942928" [label = "0"]
+Enum_4888942928 -> "0_4888942928"
+EnumType_4888943456 -> Enum_4888943040
+Enum_4888943040 [label = Enum]
+MONDAY_4888943040 [label = MONDAY]
+Enum_4888943040 -> MONDAY_4888943040
+EnumType_4888943456 -> Enum_4888943120
+Enum_4888943120 [label = Enum]
+TUESDAY_4888943120 [label = TUESDAY]
+Enum_4888943120 -> TUESDAY_4888943120
+EnumType_4888943456 -> Enum_4888942128
+Enum_4888942128 [label = Enum]
+WEDNESDAY_4888942128 [label = WEDNESDAY]
+Enum_4888942128 -> WEDNESDAY_4888942128
+EnumType_4888943456 -> Enum_4888942208
+Enum_4888942208 [label = Enum]
+THURSDAY_4888942208 [label = THURSDAY]
+Enum_4888942208 -> THURSDAY_4888942208
+EnumType_4888943456 -> Enum_4888943360
+Enum_4888943360 [label = Enum]
+FRIDAY_4888943360 [label = FRIDAY]
+Enum_4888943360 -> FRIDAY_4888943360
+EnumType_4888943456 -> Enum_4888943408
+Enum_4888943408 [label = Enum]
+SATURDAY_4888943408 [label = SATURDAY]
+Enum_4888943408 -> SATURDAY_4888943408
+Program -> TypeDecl_4888765344
+TypeDecl_4888765344 [label = TypeDecl]
+TypeDecl_4888765344 -> EnumType_4888943744
+EnumType_4888943744 [label = EnumType]
+"SEX_4888943744" [label = "SEX"]
+EnumType_4888943744 -> "SEX_4888943744"
+EnumType_4888943744 -> Enum_4888943584
+Enum_4888943584 [label = Enum]
+MALE_4888943584 [label = MALE]
+Enum_4888943584 -> MALE_4888943584
+EnumType_4888943744 -> Enum_4888943696
+Enum_4888943696 [label = Enum]
+FEMALE_4888943696 [label = FEMALE]
+Enum_4888943696 -> FEMALE_4888943696
+Program -> FuncDecl_4888946672
+FuncDecl_4888946672 [label = FuncDecl]
+FuncDecl_4888946672 -> BuiltinType_4888943840
+BuiltinType_4888943840 [label = BuiltinType]
+"int_4888943840" [label = "int"]
+BuiltinType_4888943840 -> "int_4888943840"
+main_4888946672[ label = main]
+FuncDecl_4888946672 -> main_4888946672
+FuncDecl_4888946672 -> ParamList_4888943936
+ParamList_4888943936 [label = ParamList]
+FuncDecl_4888946672 -> FuncBody_4888701536
+FuncBody_4888701536 [label = FuncBody]
+FuncBody_4888701536 -> FuncCall_4888944816
+FuncCall_4888944816 [label = FuncCall]
+printf_4888944816[ label = printf]
+FuncCall_4888944816 -> printf_4888944816
+FuncCall_4888944816 -> ConstStr_4888944128
+ConstStr_4888944128 [label = ConstStr]
+str_4888944128 [label = "WEEK: %d, %d, %d, %d, %d, %d, %d"]
+ConstStr_4888944128 -> str_4888944128
+FuncCall_4888944816 -> Variable_4888944336
+Variable_4888944336 [label = Variable]
+SUNDAY_4888944336 [label = SUNDAY]
+Variable_4888944336 -> SUNDAY_4888944336
+FuncCall_4888944816 -> Variable_4888944400
+Variable_4888944400 [label = Variable]
+MONDAY_4888944400 [label = MONDAY]
+Variable_4888944400 -> MONDAY_4888944400
+FuncCall_4888944816 -> Variable_4888944496
+Variable_4888944496 [label = Variable]
+TUESDAY_4888944496 [label = TUESDAY]
+Variable_4888944496 -> TUESDAY_4888944496
+FuncCall_4888944816 -> Variable_4888944560
+Variable_4888944560 [label = Variable]
+WEDNESDAY_4888944560 [label = WEDNESDAY]
+Variable_4888944560 -> WEDNESDAY_4888944560
+FuncCall_4888944816 -> Variable_4888944656
+Variable_4888944656 [label = Variable]
+THURSDAY_4888944656 [label = THURSDAY]
+Variable_4888944656 -> THURSDAY_4888944656
+FuncCall_4888944816 -> Variable_4888944720
+Variable_4888944720 [label = Variable]
+FRIDAY_4888944720 [label = FRIDAY]
+Variable_4888944720 -> FRIDAY_4888944720
+FuncCall_4888944816 -> Variable_4888944784
+Variable_4888944784 [label = Variable]
+SATURDAY_4888944784 [label = SATURDAY]
+Variable_4888944784 -> SATURDAY_4888944784
+FuncBody_4888701536 -> VarDecl_4888945056
+VarDecl_4888945056 [label = VarDecl]
+VarDecl_4888945056 -> DefinedType_4888944928
+DefinedType_4888944928 [label = DefinedType]
+"WEEKDAY_4888944928" [label = "WEEKDAY"]
+DefinedType_4888944928 -> "WEEKDAY_4888944928"
+VarDecl_4888945056 -> VarInit_4888944976
+VarInit_4888944976 [label = VarInit]
+day_4888944976 [label = day]
+VarInit_4888944976 -> day_4888944976
+FuncBody_4888701536 -> Assign_4888945216
+Assign_4888945216 [label = Assign]
+Assign_4888945216 -> Variable_4888945120
+Variable_4888945120 [label = Variable]
+day_4888945120 [label = day]
+Variable_4888945120 -> day_4888945120
+Assign_4888945216 -> Variable_4888945184
+Variable_4888945184 [label = Variable]
+FRIDAY_4888945184 [label = FRIDAY]
+Variable_4888945184 -> FRIDAY_4888945184
+FuncBody_4888701536 -> FuncCall_4888945536
+FuncCall_4888945536 [label = FuncCall]
+printf_4888945536[ label = printf]
+FuncCall_4888945536 -> printf_4888945536
+FuncCall_4888945536 -> ConstStr_4888945344
+ConstStr_4888945344 [label = ConstStr]
+str_4888945344 [label = "day: %d"]
+ConstStr_4888945344 -> str_4888945344
+FuncCall_4888945536 -> Variable_4888945504
+Variable_4888945504 [label = Variable]
+day_4888945504 [label = day]
+Variable_4888945504 -> day_4888945504
+FuncBody_4888701536 -> FuncCall_4888945936
+FuncCall_4888945936 [label = FuncCall]
+printf_4888945936[ label = printf]
+FuncCall_4888945936 -> printf_4888945936
+FuncCall_4888945936 -> ConstStr_4888945648
+ConstStr_4888945648 [label = ConstStr]
+str_4888945648 [label = "all sexes: %d, %d"]
+ConstStr_4888945648 -> str_4888945648
+FuncCall_4888945936 -> Variable_4888945808
+Variable_4888945808 [label = Variable]
+MALE_4888945808 [label = MALE]
+Variable_4888945808 -> MALE_4888945808
+FuncCall_4888945936 -> Variable_4888945872
+Variable_4888945872 [label = Variable]
+FEMALE_4888945872 [label = FEMALE]
+Variable_4888945872 -> FEMALE_4888945872
+FuncBody_4888701536 -> VarDecl_4888946272
+VarDecl_4888946272 [label = VarDecl]
+VarDecl_4888946272 -> DefinedType_4888946080
+DefinedType_4888946080 [label = DefinedType]
+"SEX_4888946080" [label = "SEX"]
+DefinedType_4888946080 -> "SEX_4888946080"
+VarDecl_4888946272 -> VarInit_4888946192
+VarInit_4888946192 [label = VarInit]
+sex_4888946192 [label = sex]
+VarInit_4888946192 -> sex_4888946192
+VarInit_4888946192 -> Variable_4888946160
+Variable_4888946160 [label = Variable]
+FEMALE_4888946160 [label = FEMALE]
+Variable_4888946160 -> FEMALE_4888946160
+FuncBody_4888701536 -> FuncCall_4888946560
+FuncCall_4888946560 [label = FuncCall]
+printf_4888946560[ label = printf]
+FuncCall_4888946560 -> printf_4888946560
+FuncCall_4888946560 -> ConstStr_4888946368
+ConstStr_4888946368 [label = ConstStr]
+str_4888946368 [label = "sex: %d"]
+ConstStr_4888946368 -> str_4888946368
+FuncCall_4888946560 -> Variable_4888946528
+Variable_4888946528 [label = Variable]
+sex_4888946528 [label = sex]
+Variable_4888946528 -> sex_4888946528
+FuncBody_4888701536 -> ReturnStmt_4888707136
+ReturnStmt_4888707136 [label = ReturnStmt]
+ReturnStmt_4888707136 -> Constant_4888946608
+Constant_4888946608 [label = Constant]
+int_4888946608 [label = "0"]
+Constant_4888946608 -> int_4888946608
+}

@@ -1,0 +1,167 @@
+digraph {
+Program [label = Program]
+Program -> FuncDecl_5561072768
+FuncDecl_5561072768 [label = FuncDecl]
+FuncDecl_5561072768 -> BuiltinType_5561072480
+BuiltinType_5561072480 [label = BuiltinType]
+"int_5561072480" [label = "int"]
+BuiltinType_5561072480 -> "int_5561072480"
+printf_5561072768[ label = printf]
+FuncDecl_5561072768 -> printf_5561072768
+FuncDecl_5561072768 -> ParamList_5561072720
+ParamList_5561072720 [label = ParamList]
+ParamList_5561072720 -> Param_5561072672
+Param_5561072672 [label = Param]
+Param_5561072672 -> PointerType_5561072608
+PointerType_5561072608 [label = PointerType]
+"char*_5561072608" [label = "char*"]
+PointerType_5561072608 -> "char*_5561072608"
+anonymous_5561072672 [label = anonymous]
+Param_5561072672 -> anonymous_5561072672
+"..._5561072720" [label = "..."]
+ParamList_5561072720 -> "..._5561072720"
+Program -> FuncDecl_5561075504
+FuncDecl_5561075504 [label = FuncDecl]
+FuncDecl_5561075504 -> BuiltinType_5561072832
+BuiltinType_5561072832 [label = BuiltinType]
+"int_5561072832" [label = "int"]
+BuiltinType_5561072832 -> "int_5561072832"
+main_5561075504[ label = main]
+FuncDecl_5561075504 -> main_5561075504
+FuncDecl_5561075504 -> ParamList_5561072928
+ParamList_5561072928 [label = ParamList]
+FuncDecl_5561075504 -> FuncBody_5560831504
+FuncBody_5560831504 [label = FuncBody]
+FuncBody_5560831504 -> VarDecl_5561073344
+VarDecl_5561073344 [label = VarDecl]
+VarDecl_5561073344 -> BuiltinType_5561073008
+BuiltinType_5561073008 [label = BuiltinType]
+"int_5561073008" [label = "int"]
+BuiltinType_5561073008 -> "int_5561073008"
+VarDecl_5561073344 -> VarInit_5561073264
+VarInit_5561073264 [label = VarInit]
+a_5561073264 [label = a]
+VarInit_5561073264 -> a_5561073264
+VarInit_5561073264 -> Constant_5561073200
+Constant_5561073200 [label = Constant]
+int_5561073200 [label = "3"]
+Constant_5561073200 -> int_5561073200
+FuncBody_5560831504 -> VarDecl_5561073616
+VarDecl_5561073616 [label = VarDecl]
+VarDecl_5561073616 -> BuiltinType_5561073376
+BuiltinType_5561073376 [label = BuiltinType]
+"int_5561073376" [label = "int"]
+BuiltinType_5561073376 -> "int_5561073376"
+VarDecl_5561073616 -> VarInit_5561073536
+VarInit_5561073536 [label = VarInit]
+b_5561073536 [label = b]
+VarInit_5561073536 -> b_5561073536
+VarInit_5561073536 -> Constant_5561073472
+Constant_5561073472 [label = Constant]
+int_5561073472 [label = "3"]
+Constant_5561073472 -> int_5561073472
+FuncBody_5560831504 -> VarDecl_5561073680
+VarDecl_5561073680 [label = VarDecl]
+VarDecl_5561073680 -> BuiltinType_5561072032
+BuiltinType_5561072032 [label = BuiltinType]
+"int_5561072032" [label = "int"]
+BuiltinType_5561072032 -> "int_5561072032"
+VarDecl_5561073680 -> VarInit_5561072192
+VarInit_5561072192 [label = VarInit]
+c_5561072192 [label = c]
+VarInit_5561072192 -> c_5561072192
+VarInit_5561072192 -> Constant_5561072128
+Constant_5561072128 [label = Constant]
+int_5561072128 [label = "7"]
+Constant_5561072128 -> int_5561072128
+FuncBody_5560831504 -> VarDecl_5561074240
+VarDecl_5561074240 [label = VarDecl]
+VarDecl_5561074240 -> BuiltinType_5561073744
+BuiltinType_5561073744 [label = BuiltinType]
+"int_5561073744" [label = "int"]
+BuiltinType_5561073744 -> "int_5561073744"
+VarDecl_5561074240 -> VarInit_5561074160
+VarInit_5561074160 [label = VarInit]
+minVal_5561074160 [label = minVal]
+VarInit_5561074160 -> minVal_5561074160
+VarInit_5561074160 -> TernaryCondition_5561074128
+TernaryCondition_5561074128 [label = TernaryCondition]
+TernaryCondition_5561074128 -> LogicLessThan_5561073968
+LogicLessThan_5561073968 [label = LogicLessThan]
+LogicLessThan_5561073968 -> Variable_5561073872
+Variable_5561073872 [label = Variable]
+a_5561073872 [label = a]
+Variable_5561073872 -> a_5561073872
+LogicLessThan_5561073968 -> Variable_5561073936
+Variable_5561073936 [label = Variable]
+c_5561073936 [label = c]
+Variable_5561073936 -> c_5561073936
+TernaryCondition_5561074128 -> Variable_5561074032
+Variable_5561074032 [label = Variable]
+a_5561074032 [label = a]
+Variable_5561074032 -> a_5561074032
+TernaryCondition_5561074128 -> Variable_5561074096
+Variable_5561074096 [label = Variable]
+c_5561074096 [label = c]
+Variable_5561074096 -> c_5561074096
+FuncBody_5560831504 -> VarDecl_5561074768
+VarDecl_5561074768 [label = VarDecl]
+VarDecl_5561074768 -> BuiltinType_5561074272
+BuiltinType_5561074272 [label = BuiltinType]
+"int_5561074272" [label = "int"]
+BuiltinType_5561074272 -> "int_5561074272"
+VarDecl_5561074768 -> VarInit_5561074688
+VarInit_5561074688 [label = VarInit]
+maxVal_5561074688 [label = maxVal]
+VarInit_5561074688 -> maxVal_5561074688
+VarInit_5561074688 -> TernaryCondition_5561074656
+TernaryCondition_5561074656 [label = TernaryCondition]
+TernaryCondition_5561074656 -> LogicLessThan_5561074496
+LogicLessThan_5561074496 [label = LogicLessThan]
+LogicLessThan_5561074496 -> Variable_5561074400
+Variable_5561074400 [label = Variable]
+a_5561074400 [label = a]
+Variable_5561074400 -> a_5561074400
+LogicLessThan_5561074496 -> Variable_5561074464
+Variable_5561074464 [label = Variable]
+c_5561074464 [label = c]
+Variable_5561074464 -> c_5561074464
+TernaryCondition_5561074656 -> Variable_5561074560
+Variable_5561074560 [label = Variable]
+c_5561074560 [label = c]
+Variable_5561074560 -> c_5561074560
+TernaryCondition_5561074656 -> Variable_5561074624
+Variable_5561074624 [label = Variable]
+a_5561074624 [label = a]
+Variable_5561074624 -> a_5561074624
+FuncBody_5560831504 -> FuncCall_5561075088
+FuncCall_5561075088 [label = FuncCall]
+printf_5561075088[ label = printf]
+FuncCall_5561075088 -> printf_5561075088
+FuncCall_5561075088 -> ConstStr_5561074896
+ConstStr_5561074896 [label = ConstStr]
+str_5561074896 [label = "minVal:%d"]
+ConstStr_5561074896 -> str_5561074896
+FuncCall_5561075088 -> Variable_5561075056
+Variable_5561075056 [label = Variable]
+minVal_5561075056 [label = minVal]
+Variable_5561075056 -> minVal_5561075056
+FuncBody_5560831504 -> FuncCall_5561075392
+FuncCall_5561075392 [label = FuncCall]
+printf_5561075392[ label = printf]
+FuncCall_5561075392 -> printf_5561075392
+FuncCall_5561075392 -> ConstStr_5561075200
+ConstStr_5561075200 [label = ConstStr]
+str_5561075200 [label = "maxVal:%d"]
+ConstStr_5561075200 -> str_5561075200
+FuncCall_5561075392 -> Variable_5561075360
+Variable_5561075360 [label = Variable]
+maxVal_5561075360 [label = maxVal]
+Variable_5561075360 -> maxVal_5561075360
+FuncBody_5560831504 -> ReturnStmt_5560837104
+ReturnStmt_5560837104 [label = ReturnStmt]
+ReturnStmt_5560837104 -> Constant_5561075440
+Constant_5561075440 [label = Constant]
+int_5561075440 [label = "0"]
+Constant_5561075440 -> int_5561075440
+}

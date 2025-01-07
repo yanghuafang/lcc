@@ -1,0 +1,223 @@
+digraph {
+Program [label = Program]
+Program -> FuncDecl_4788279536
+FuncDecl_4788279536 [label = FuncDecl]
+FuncDecl_4788279536 -> BuiltinType_4788279248
+BuiltinType_4788279248 [label = BuiltinType]
+"int_4788279248" [label = "int"]
+BuiltinType_4788279248 -> "int_4788279248"
+printf_4788279536[ label = printf]
+FuncDecl_4788279536 -> printf_4788279536
+FuncDecl_4788279536 -> ParamList_4788279488
+ParamList_4788279488 [label = ParamList]
+ParamList_4788279488 -> Param_4788279440
+Param_4788279440 [label = Param]
+Param_4788279440 -> PointerType_4788279376
+PointerType_4788279376 [label = PointerType]
+"char*_4788279376" [label = "char*"]
+PointerType_4788279376 -> "char*_4788279376"
+anonymous_4788279440 [label = anonymous]
+Param_4788279440 -> anonymous_4788279440
+"..._4788279488" [label = "..."]
+ParamList_4788279488 -> "..._4788279488"
+Program -> FuncDecl_4788282112
+FuncDecl_4788282112 [label = FuncDecl]
+FuncDecl_4788282112 -> BuiltinType_4788279600
+BuiltinType_4788279600 [label = BuiltinType]
+"int_4788279600" [label = "int"]
+BuiltinType_4788279600 -> "int_4788279600"
+countNumber_4788282112[ label = countNumber]
+FuncDecl_4788282112 -> countNumber_4788282112
+FuncDecl_4788282112 -> ParamList_4788279888
+ParamList_4788279888 [label = ParamList]
+ParamList_4788279888 -> Param_4788279840
+Param_4788279840 [label = Param]
+Param_4788279840 -> BuiltinType_4788279696
+BuiltinType_4788279696 [label = BuiltinType]
+"int_4788279696" [label = "int"]
+BuiltinType_4788279696 -> "int_4788279696"
+maxRange_4788279840 [label = maxRange]
+Param_4788279840 -> maxRange_4788279840
+ParamList_4788279888 -> Param_4788280032
+Param_4788280032 [label = Param]
+Param_4788280032 -> BuiltinType_4788279936
+BuiltinType_4788279936 [label = BuiltinType]
+"int_4788279936" [label = "int"]
+BuiltinType_4788279936 -> "int_4788279936"
+smallRange_4788280032 [label = smallRange]
+Param_4788280032 -> smallRange_4788280032
+FuncDecl_4788282112 -> FuncBody_4787822320
+FuncBody_4787822320 [label = FuncBody]
+FuncBody_4787822320 -> VarDecl_4788280128
+VarDecl_4788280128 [label = VarDecl]
+VarDecl_4788280128 -> BuiltinType_4788278800
+BuiltinType_4788278800 [label = BuiltinType]
+"int_4788278800" [label = "int"]
+BuiltinType_4788278800 -> "int_4788278800"
+VarDecl_4788280128 -> VarInit_4788280080
+VarInit_4788280080 [label = VarInit]
+count_4788280080 [label = count]
+VarInit_4788280080 -> count_4788280080
+VarInit_4788280080 -> Constant_4788278896
+Constant_4788278896 [label = Constant]
+int_4788278896 [label = "0"]
+Constant_4788278896 -> int_4788278896
+FuncBody_4787822320 -> VarDecl_4788280400
+VarDecl_4788280400 [label = VarDecl]
+VarDecl_4788280400 -> BuiltinType_4788280160
+BuiltinType_4788280160 [label = BuiltinType]
+"int_4788280160" [label = "int"]
+BuiltinType_4788280160 -> "int_4788280160"
+VarDecl_4788280400 -> VarInit_4788280320
+VarInit_4788280320 [label = VarInit]
+recordi_4788280320 [label = recordi]
+VarInit_4788280320 -> recordi_4788280320
+VarInit_4788280320 -> Constant_4788280256
+Constant_4788280256 [label = Constant]
+int_4788280256 [label = "0"]
+Constant_4788280256 -> int_4788280256
+FuncBody_4787822320 -> ForStmt_4788281600
+ForStmt_4788281600 [label = ForStmt]
+ForStmt_4788281600 -> VarDecl_4788280672
+VarDecl_4788280672 [label = VarDecl]
+VarDecl_4788280672 -> BuiltinType_4788280432
+BuiltinType_4788280432 [label = BuiltinType]
+"int_4788280432" [label = "int"]
+BuiltinType_4788280432 -> "int_4788280432"
+VarDecl_4788280672 -> VarInit_4788280592
+VarInit_4788280592 [label = VarInit]
+i_4788280592 [label = i]
+VarInit_4788280592 -> i_4788280592
+VarInit_4788280592 -> Constant_4788280528
+Constant_4788280528 [label = Constant]
+int_4788280528 [label = "1"]
+Constant_4788280528 -> int_4788280528
+ForStmt_4788281600 -> LogicLessEq_4788280832
+LogicLessEq_4788280832 [label = LogicLessEq]
+LogicLessEq_4788280832 -> Variable_4788280736
+Variable_4788280736 [label = Variable]
+i_4788280736 [label = i]
+Variable_4788280736 -> i_4788280736
+LogicLessEq_4788280832 -> Variable_4788280800
+Variable_4788280800 [label = Variable]
+maxRange_4788280800 [label = maxRange]
+Variable_4788280800 -> maxRange_4788280800
+ForStmt_4788281600 -> AddAssign_4788280992
+AddAssign_4788280992 [label = AddAssign]
+AddAssign_4788280992 -> Variable_4788280896
+Variable_4788280896 [label = Variable]
+i_4788280896 [label = i]
+Variable_4788280896 -> i_4788280896
+AddAssign_4788280992 -> Constant_4788280928
+Constant_4788280928 [label = Constant]
+int_4788280928 [label = "1"]
+Constant_4788280928 -> int_4788280928
+ForStmt_4788281600 -> Block_4788038240
+Block_4788038240 [label = Block]
+Block_4788038240 -> IfStmt_4788281440
+IfStmt_4788281440 [label = IfStmt]
+IfStmt_4788281440 -> LogicGreaterThan_4788281184
+LogicGreaterThan_4788281184 [label = LogicGreaterThan]
+LogicGreaterThan_4788281184 -> Variable_4788281088
+Variable_4788281088 [label = Variable]
+i_4788281088 [label = i]
+Variable_4788281088 -> i_4788281088
+LogicGreaterThan_4788281184 -> Variable_4788281152
+Variable_4788281152 [label = Variable]
+smallRange_4788281152 [label = smallRange]
+Variable_4788281152 -> smallRange_4788281152
+IfStmt_4788281440 -> Block_4788043840
+Block_4788043840 [label = Block]
+Block_4788043840 -> Assign_4788281376
+Assign_4788281376 [label = Assign]
+Assign_4788281376 -> Variable_4788281280
+Variable_4788281280 [label = Variable]
+recordi_4788281280 [label = recordi]
+Variable_4788281280 -> recordi_4788281280
+Assign_4788281376 -> Variable_4788281344
+Variable_4788281344 [label = Variable]
+i_4788281344 [label = i]
+Variable_4788281344 -> i_4788281344
+Block_4788043840 -> BreakStmt_4787843232
+BreakStmt_4787843232 [label = BreakStmt]
+Block_4788038240 -> AddAssign_4788281568
+AddAssign_4788281568 [label = AddAssign]
+AddAssign_4788281568 -> Variable_4788281472
+Variable_4788281472 [label = Variable]
+count_4788281472 [label = count]
+Variable_4788281472 -> count_4788281472
+AddAssign_4788281568 -> Constant_4788281504
+Constant_4788281504 [label = Constant]
+int_4788281504 [label = "1"]
+Constant_4788281504 -> int_4788281504
+FuncBody_4787822320 -> FuncCall_4788281936
+FuncCall_4788281936 [label = FuncCall]
+printf_4788281936[ label = printf]
+FuncCall_4788281936 -> printf_4788281936
+FuncCall_4788281936 -> ConstStr_4788281744
+ConstStr_4788281744 [label = ConstStr]
+str_4788281744 [label = "i:%d"]
+ConstStr_4788281744 -> str_4788281744
+FuncCall_4788281936 -> Variable_4788281904
+Variable_4788281904 [label = Variable]
+recordi_4788281904 [label = recordi]
+Variable_4788281904 -> recordi_4788281904
+FuncBody_4787822320 -> ReturnStmt_4788043632
+ReturnStmt_4788043632 [label = ReturnStmt]
+ReturnStmt_4788043632 -> Variable_4788282016
+Variable_4788282016 [label = Variable]
+count_4788282016 [label = count]
+Variable_4788282016 -> count_4788282016
+Program -> FuncDecl_4788283248
+FuncDecl_4788283248 [label = FuncDecl]
+FuncDecl_4788283248 -> BuiltinType_4788282192
+BuiltinType_4788282192 [label = BuiltinType]
+"int_4788282192" [label = "int"]
+BuiltinType_4788282192 -> "int_4788282192"
+main_4788283248[ label = main]
+FuncDecl_4788283248 -> main_4788283248
+FuncDecl_4788283248 -> ParamList_4788282256
+ParamList_4788282256 [label = ParamList]
+FuncDecl_4788283248 -> FuncBody_4788283008
+FuncBody_4788283008 [label = FuncBody]
+FuncBody_4788283008 -> VarDecl_4788282768
+VarDecl_4788282768 [label = VarDecl]
+VarDecl_4788282768 -> BuiltinType_4788282336
+BuiltinType_4788282336 [label = BuiltinType]
+"int_4788282336" [label = "int"]
+BuiltinType_4788282336 -> "int_4788282336"
+VarDecl_4788282768 -> VarInit_4788282688
+VarInit_4788282688 [label = VarInit]
+count_4788282688 [label = count]
+VarInit_4788282688 -> count_4788282688
+VarInit_4788282688 -> FuncCall_4788282640
+FuncCall_4788282640 [label = FuncCall]
+countNumber_4788282640[ label = countNumber]
+FuncCall_4788282640 -> countNumber_4788282640
+FuncCall_4788282640 -> Constant_4788282464
+Constant_4788282464 [label = Constant]
+int_4788282464 [label = "100"]
+Constant_4788282464 -> int_4788282464
+FuncCall_4788282640 -> Constant_4788282560
+Constant_4788282560 [label = Constant]
+int_4788282560 [label = "37"]
+Constant_4788282560 -> int_4788282560
+FuncBody_4788283008 -> FuncCall_4788283104
+FuncCall_4788283104 [label = FuncCall]
+printf_4788283104[ label = printf]
+FuncCall_4788283104 -> printf_4788283104
+FuncCall_4788283104 -> ConstStr_4788282880
+ConstStr_4788282880 [label = ConstStr]
+str_4788282880 [label = "count 1 to 37: %d"]
+ConstStr_4788282880 -> str_4788282880
+FuncCall_4788283104 -> Variable_4788283056
+Variable_4788283056 [label = Variable]
+count_4788283056 [label = count]
+Variable_4788283056 -> count_4788283056
+FuncBody_4788283008 -> ReturnStmt_4788282800
+ReturnStmt_4788282800 [label = ReturnStmt]
+ReturnStmt_4788282800 -> Constant_4788283152
+Constant_4788283152 [label = Constant]
+int_4788283152 [label = "0"]
+Constant_4788283152 -> int_4788283152
+}

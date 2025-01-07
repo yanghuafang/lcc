@@ -1,0 +1,49 @@
+digraph {
+Program [label = Program]
+Program -> FuncDecl_4939274224
+FuncDecl_4939274224 [label = FuncDecl]
+FuncDecl_4939274224 -> BuiltinType_4939274032
+BuiltinType_4939274032 [label = BuiltinType]
+"int_4939274032" [label = "int"]
+BuiltinType_4939274032 -> "int_4939274032"
+printf_4939274224[ label = printf]
+FuncDecl_4939274224 -> printf_4939274224
+FuncDecl_4939274224 -> ParamList_4939273888
+ParamList_4939273888 [label = ParamList]
+ParamList_4939273888 -> Param_4939273840
+Param_4939273840 [label = Param]
+Param_4939273840 -> PointerType_4939273776
+PointerType_4939273776 [label = PointerType]
+"char*_4939273776" [label = "char*"]
+PointerType_4939273776 -> "char*_4939273776"
+anonymous_4939273840 [label = anonymous]
+Param_4939273840 -> anonymous_4939273840
+"..._4939273888" [label = "..."]
+ParamList_4939273888 -> "..._4939273888"
+Program -> FuncDecl_4939274768
+FuncDecl_4939274768 [label = FuncDecl]
+FuncDecl_4939274768 -> BuiltinType_4939274288
+BuiltinType_4939274288 [label = BuiltinType]
+"int_4939274288" [label = "int"]
+BuiltinType_4939274288 -> "int_4939274288"
+main_4939274768[ label = main]
+FuncDecl_4939274768 -> main_4939274768
+FuncDecl_4939274768 -> ParamList_4939274384
+ParamList_4939274384 [label = ParamList]
+FuncDecl_4939274768 -> FuncBody_4939047504
+FuncBody_4939047504 [label = FuncBody]
+FuncBody_4939047504 -> FuncCall_4939274656
+FuncCall_4939274656 [label = FuncCall]
+printf_4939274656[ label = printf]
+FuncCall_4939274656 -> printf_4939274656
+FuncCall_4939274656 -> ConstStr_4939274528
+ConstStr_4939274528 [label = ConstStr]
+str_4939274528 [label = "Hello World!"]
+ConstStr_4939274528 -> str_4939274528
+FuncBody_4939047504 -> ReturnStmt_4939047088
+ReturnStmt_4939047088 [label = ReturnStmt]
+ReturnStmt_4939047088 -> Constant_4939274704
+Constant_4939274704 [label = Constant]
+int_4939274704 [label = "0"]
+Constant_4939274704 -> int_4939274704
+}

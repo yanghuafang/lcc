@@ -1,0 +1,273 @@
+digraph {
+Program [label = Program]
+Program -> FuncDecl_5023160384
+FuncDecl_5023160384 [label = FuncDecl]
+FuncDecl_5023160384 -> BuiltinType_5023160160
+BuiltinType_5023160160 [label = BuiltinType]
+"int_5023160160" [label = "int"]
+BuiltinType_5023160160 -> "int_5023160160"
+printf_5023160384[ label = printf]
+FuncDecl_5023160384 -> printf_5023160384
+FuncDecl_5023160384 -> ParamList_5023159920
+ParamList_5023159920 [label = ParamList]
+ParamList_5023159920 -> Param_5023160016
+Param_5023160016 [label = Param]
+Param_5023160016 -> PointerType_5023159856
+PointerType_5023159856 [label = PointerType]
+"char*_5023159856" [label = "char*"]
+PointerType_5023159856 -> "char*_5023159856"
+anonymous_5023160016 [label = anonymous]
+Param_5023160016 -> anonymous_5023160016
+"..._5023159920" [label = "..."]
+ParamList_5023159920 -> "..._5023159920"
+Program -> FuncDecl_5023165168
+FuncDecl_5023165168 [label = FuncDecl]
+FuncDecl_5023165168 -> BuiltinType_5023160448
+BuiltinType_5023160448 [label = BuiltinType]
+"void_5023160448" [label = "void"]
+BuiltinType_5023160448 -> "void_5023160448"
+checkArithmetic_5023165168[ label = checkArithmetic]
+FuncDecl_5023165168 -> checkArithmetic_5023165168
+FuncDecl_5023165168 -> ParamList_5023160512
+ParamList_5023160512 [label = ParamList]
+FuncDecl_5023165168 -> FuncBody_5022933168
+FuncBody_5022933168 [label = FuncBody]
+FuncBody_5022933168 -> VarDecl_5023160832
+VarDecl_5023160832 [label = VarDecl]
+VarDecl_5023160832 -> BuiltinType_5023160592
+BuiltinType_5023160592 [label = BuiltinType]
+"int_5023160592" [label = "int"]
+BuiltinType_5023160592 -> "int_5023160592"
+VarDecl_5023160832 -> VarInit_5023160752
+VarInit_5023160752 [label = VarInit]
+a_5023160752 [label = a]
+VarInit_5023160752 -> a_5023160752
+VarInit_5023160752 -> Constant_5023160688
+Constant_5023160688 [label = Constant]
+int_5023160688 [label = "2"]
+Constant_5023160688 -> int_5023160688
+FuncBody_5022933168 -> VarDecl_5023161104
+VarDecl_5023161104 [label = VarDecl]
+VarDecl_5023161104 -> BuiltinType_5023160864
+BuiltinType_5023160864 [label = BuiltinType]
+"int_5023160864" [label = "int"]
+BuiltinType_5023160864 -> "int_5023160864"
+VarDecl_5023161104 -> VarInit_5023161024
+VarInit_5023161024 [label = VarInit]
+b_5023161024 [label = b]
+VarInit_5023161024 -> b_5023161024
+VarInit_5023161024 -> Constant_5023160960
+Constant_5023160960 [label = Constant]
+int_5023160960 [label = "4"]
+Constant_5023160960 -> int_5023160960
+FuncBody_5022933168 -> VarDecl_5023161600
+VarDecl_5023161600 [label = VarDecl]
+VarDecl_5023161600 -> BuiltinType_5023161360
+BuiltinType_5023161360 [label = BuiltinType]
+"int_5023161360" [label = "int"]
+BuiltinType_5023161360 -> "int_5023161360"
+VarDecl_5023161600 -> VarInit_5023161520
+VarInit_5023161520 [label = VarInit]
+c_5023161520 [label = c]
+VarInit_5023161520 -> c_5023161520
+VarInit_5023161520 -> Constant_5023161456
+Constant_5023161456 [label = Constant]
+int_5023161456 [label = "5"]
+Constant_5023161456 -> int_5023161456
+FuncBody_5022933168 -> VarDecl_5023162096
+VarDecl_5023162096 [label = VarDecl]
+VarDecl_5023162096 -> BuiltinType_5023161664
+BuiltinType_5023161664 [label = BuiltinType]
+"int_5023161664" [label = "int"]
+BuiltinType_5023161664 -> "int_5023161664"
+VarDecl_5023162096 -> VarInit_5023162016
+VarInit_5023162016 [label = VarInit]
+d_5023162016 [label = d]
+VarInit_5023162016 -> d_5023162016
+VarInit_5023162016 -> Add_5023161984
+Add_5023161984 [label = Add]
+Add_5023161984 -> Variable_5023161792
+Variable_5023161792 [label = Variable]
+a_5023161792 [label = a]
+Variable_5023161792 -> a_5023161792
+Add_5023161984 -> Mul_5023161952
+Mul_5023161952 [label = Mul]
+Mul_5023161952 -> Variable_5023161856
+Variable_5023161856 [label = Variable]
+b_5023161856 [label = b]
+Variable_5023161856 -> b_5023161856
+Mul_5023161952 -> Variable_5023161920
+Variable_5023161920 [label = Variable]
+c_5023161920 [label = c]
+Variable_5023161920 -> c_5023161920
+FuncBody_5022933168 -> FuncCall_5023162384
+FuncCall_5023162384 [label = FuncCall]
+printf_5023162384[ label = printf]
+FuncCall_5023162384 -> printf_5023162384
+FuncCall_5023162384 -> ConstStr_5023162192
+ConstStr_5023162192 [label = ConstStr]
+str_5023162192 [label = "2 + 4 * 5 = %d"]
+ConstStr_5023162192 -> str_5023162192
+FuncCall_5023162384 -> Variable_5023162352
+Variable_5023162352 [label = Variable]
+d_5023162352 [label = d]
+Variable_5023162352 -> d_5023162352
+FuncBody_5022933168 -> Assign_5023162784
+Assign_5023162784 [label = Assign]
+Assign_5023162784 -> Variable_5023162496
+Variable_5023162496 [label = Variable]
+d_5023162496 [label = d]
+Variable_5023162496 -> d_5023162496
+Assign_5023162784 -> Mul_5023162752
+Mul_5023162752 [label = Mul]
+Mul_5023162752 -> Add_5023162656
+Add_5023162656 [label = Add]
+Add_5023162656 -> Variable_5023162560
+Variable_5023162560 [label = Variable]
+a_5023162560 [label = a]
+Variable_5023162560 -> a_5023162560
+Add_5023162656 -> Variable_5023162624
+Variable_5023162624 [label = Variable]
+b_5023162624 [label = b]
+Variable_5023162624 -> b_5023162624
+Mul_5023162752 -> Variable_5023162720
+Variable_5023162720 [label = Variable]
+c_5023162720 [label = c]
+Variable_5023162720 -> c_5023162720
+FuncBody_5022933168 -> FuncCall_5023163072
+FuncCall_5023163072 [label = FuncCall]
+printf_5023163072[ label = printf]
+FuncCall_5023163072 -> printf_5023163072
+FuncCall_5023163072 -> ConstStr_5023162880
+ConstStr_5023162880 [label = ConstStr]
+str_5023162880 [label = "(2 + 4) * 5 = %d"]
+ConstStr_5023162880 -> str_5023162880
+FuncCall_5023163072 -> Variable_5023163040
+Variable_5023163040 [label = Variable]
+d_5023163040 [label = d]
+Variable_5023163040 -> d_5023163040
+FuncBody_5022933168 -> Assign_5023163440
+Assign_5023163440 [label = Assign]
+Assign_5023163440 -> Variable_5023163152
+Variable_5023163152 [label = Variable]
+d_5023163152 [label = d]
+Variable_5023163152 -> d_5023163152
+Assign_5023163440 -> Mul_5023163408
+Mul_5023163408 [label = Mul]
+Mul_5023163408 -> Variable_5023163216
+Variable_5023163216 [label = Variable]
+c_5023163216 [label = c]
+Variable_5023163216 -> c_5023163216
+Mul_5023163408 -> Sub_5023163376
+Sub_5023163376 [label = Sub]
+Sub_5023163376 -> Variable_5023163280
+Variable_5023163280 [label = Variable]
+a_5023163280 [label = a]
+Variable_5023163280 -> a_5023163280
+Sub_5023163376 -> Variable_5023163344
+Variable_5023163344 [label = Variable]
+b_5023163344 [label = b]
+Variable_5023163344 -> b_5023163344
+FuncBody_5022933168 -> FuncCall_5023163728
+FuncCall_5023163728 [label = FuncCall]
+printf_5023163728[ label = printf]
+FuncCall_5023163728 -> printf_5023163728
+FuncCall_5023163728 -> ConstStr_5023163536
+ConstStr_5023163536 [label = ConstStr]
+str_5023163536 [label = "5 * (2 - 4) = %d"]
+ConstStr_5023163536 -> str_5023163536
+FuncCall_5023163728 -> Variable_5023163696
+Variable_5023163696 [label = Variable]
+d_5023163696 [label = d]
+Variable_5023163696 -> d_5023163696
+FuncBody_5022933168 -> Assign_5023164224
+Assign_5023164224 [label = Assign]
+Assign_5023164224 -> Variable_5023163936
+Variable_5023163936 [label = Variable]
+d_5023163936 [label = d]
+Variable_5023163936 -> d_5023163936
+Assign_5023164224 -> Sub_5023164192
+Sub_5023164192 [label = Sub]
+Sub_5023164192 -> Variable_5023164000
+Variable_5023164000 [label = Variable]
+a_5023164000 [label = a]
+Variable_5023164000 -> a_5023164000
+Sub_5023164192 -> Mod_5023164160
+Mod_5023164160 [label = Mod]
+Mod_5023164160 -> Variable_5023164064
+Variable_5023164064 [label = Variable]
+b_5023164064 [label = b]
+Variable_5023164064 -> b_5023164064
+Mod_5023164160 -> Variable_5023164128
+Variable_5023164128 [label = Variable]
+c_5023164128 [label = c]
+Variable_5023164128 -> c_5023164128
+FuncBody_5022933168 -> FuncCall_5023162432
+FuncCall_5023162432 [label = FuncCall]
+printf_5023162432[ label = printf]
+FuncCall_5023162432 -> printf_5023162432
+FuncCall_5023162432 -> ConstStr_5023164320
+ConstStr_5023164320 [label = ConstStr]
+str_5023164320 [label = "2 - 4 mod 5 = %d"]
+ConstStr_5023164320 -> str_5023164320
+FuncCall_5023162432 -> Variable_5023164480
+Variable_5023164480 [label = Variable]
+d_5023164480 [label = d]
+Variable_5023164480 -> d_5023164480
+FuncBody_5022933168 -> Assign_5023164832
+Assign_5023164832 [label = Assign]
+Assign_5023164832 -> Variable_5023164544
+Variable_5023164544 [label = Variable]
+d_5023164544 [label = d]
+Variable_5023164544 -> d_5023164544
+Assign_5023164832 -> Div_5023164800
+Div_5023164800 [label = Div]
+Div_5023164800 -> Add_5023164704
+Add_5023164704 [label = Add]
+Add_5023164704 -> Variable_5023164608
+Variable_5023164608 [label = Variable]
+a_5023164608 [label = a]
+Variable_5023164608 -> a_5023164608
+Add_5023164704 -> Variable_5023164672
+Variable_5023164672 [label = Variable]
+b_5023164672 [label = b]
+Variable_5023164672 -> b_5023164672
+Div_5023164800 -> Variable_5023164768
+Variable_5023164768 [label = Variable]
+c_5023164768 [label = c]
+Variable_5023164768 -> c_5023164768
+FuncBody_5022933168 -> FuncCall_5023165120
+FuncCall_5023165120 [label = FuncCall]
+printf_5023165120[ label = printf]
+FuncCall_5023165120 -> printf_5023165120
+FuncCall_5023165120 -> ConstStr_5023164928
+ConstStr_5023164928 [label = ConstStr]
+str_5023164928 [label = "(2 + 4) / 5 = %d"]
+ConstStr_5023164928 -> str_5023164928
+FuncCall_5023165120 -> Variable_5023165088
+Variable_5023165088 [label = Variable]
+d_5023165088 [label = d]
+Variable_5023165088 -> d_5023165088
+Program -> FuncDecl_5023165584
+FuncDecl_5023165584 [label = FuncDecl]
+FuncDecl_5023165584 -> BuiltinType_5023165232
+BuiltinType_5023165232 [label = BuiltinType]
+"int_5023165232" [label = "int"]
+BuiltinType_5023165232 -> "int_5023165232"
+main_5023165584[ label = main]
+FuncDecl_5023165584 -> main_5023165584
+FuncDecl_5023165584 -> ParamList_5023165328
+ParamList_5023165328 [label = ParamList]
+FuncDecl_5023165584 -> FuncBody_5023129920
+FuncBody_5023129920 [label = FuncBody]
+FuncBody_5023129920 -> FuncCall_5023165472
+FuncCall_5023165472 [label = FuncCall]
+checkArithmetic_5023165472[ label = checkArithmetic]
+FuncCall_5023165472 -> checkArithmetic_5023165472
+FuncBody_5023129920 -> ReturnStmt_5022745808
+ReturnStmt_5022745808 [label = ReturnStmt]
+ReturnStmt_5022745808 -> Constant_5023165520
+Constant_5023165520 [label = Constant]
+int_5023165520 [label = "0"]
+Constant_5023165520 -> int_5023165520
+}

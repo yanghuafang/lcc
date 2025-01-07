@@ -1,0 +1,653 @@
+digraph {
+Program [label = Program]
+Program -> FuncDecl_5090269424
+FuncDecl_5090269424 [label = FuncDecl]
+FuncDecl_5090269424 -> BuiltinType_5090269136
+BuiltinType_5090269136 [label = BuiltinType]
+"int_5090269136" [label = "int"]
+BuiltinType_5090269136 -> "int_5090269136"
+printf_5090269424[ label = printf]
+FuncDecl_5090269424 -> printf_5090269424
+FuncDecl_5090269424 -> ParamList_5090269376
+ParamList_5090269376 [label = ParamList]
+ParamList_5090269376 -> Param_5090269328
+Param_5090269328 [label = Param]
+Param_5090269328 -> PointerType_5090269264
+PointerType_5090269264 [label = PointerType]
+"char*_5090269264" [label = "char*"]
+PointerType_5090269264 -> "char*_5090269264"
+anonymous_5090269328 [label = anonymous]
+Param_5090269328 -> anonymous_5090269328
+"..._5090269376" [label = "..."]
+ParamList_5090269376 -> "..._5090269376"
+Program -> TypeDecl_5090034080
+TypeDecl_5090034080 [label = TypeDecl]
+TypeDecl_5090034080 -> StructType_5090270240
+StructType_5090270240 [label = StructType]
+"Student_5090270240" [label = "Student"]
+StructType_5090270240 -> "Student_5090270240"
+StructType_5090270240 -> FieldDecl_5090269760
+FieldDecl_5090269760 [label = FieldDecl]
+FieldDecl_5090269760 -> BuiltinType_5090269552
+BuiltinType_5090269552 [label = BuiltinType]
+"int_5090269552" [label = "int"]
+BuiltinType_5090269552 -> "int_5090269552"
+id_5090269760 [label = id]
+FieldDecl_5090269760 -> id_5090269760
+StructType_5090270240 -> FieldDecl_5090270016
+FieldDecl_5090270016 [label = FieldDecl]
+FieldDecl_5090270016 -> PointerType_5090269856
+PointerType_5090269856 [label = PointerType]
+"char*_5090269856" [label = "char*"]
+PointerType_5090269856 -> "char*_5090269856"
+name_5090270016 [label = name]
+FieldDecl_5090270016 -> name_5090270016
+StructType_5090270240 -> FieldDecl_5090268816
+FieldDecl_5090268816 [label = FieldDecl]
+FieldDecl_5090268816 -> BuiltinType_5090268656
+BuiltinType_5090268656 [label = BuiltinType]
+"char_5090268656" [label = "char"]
+BuiltinType_5090268656 -> "char_5090268656"
+sex_5090268816 [label = sex]
+FieldDecl_5090268816 -> sex_5090268816
+StructType_5090270240 -> FieldDecl_5090270208
+FieldDecl_5090270208 [label = FieldDecl]
+FieldDecl_5090270208 -> BuiltinType_5090270048
+BuiltinType_5090270048 [label = BuiltinType]
+"float_5090270048" [label = "float"]
+BuiltinType_5090270048 -> "float_5090270048"
+score_5090270208 [label = score]
+FieldDecl_5090270208 -> score_5090270208
+Program -> TypeDecl_5090091936
+TypeDecl_5090091936 [label = TypeDecl]
+TypeDecl_5090091936 -> UnionType_5090270816
+UnionType_5090270816 [label = UnionType]
+"ID_5090270816" [label = "ID"]
+UnionType_5090270816 -> "ID_5090270816"
+UnionType_5090270816 -> FieldDecl_5090270528
+FieldDecl_5090270528 [label = FieldDecl]
+FieldDecl_5090270528 -> BuiltinType_5090270368
+BuiltinType_5090270368 [label = BuiltinType]
+"int_5090270368" [label = "int"]
+BuiltinType_5090270368 -> "int_5090270368"
+id_5090270528 [label = id]
+FieldDecl_5090270528 -> id_5090270528
+UnionType_5090270816 -> FieldDecl_5090270784
+FieldDecl_5090270784 [label = FieldDecl]
+FieldDecl_5090270784 -> PointerType_5090270624
+PointerType_5090270624 [label = PointerType]
+"char*_5090270624" [label = "char*"]
+PointerType_5090270624 -> "char*_5090270624"
+name_5090270784 [label = name]
+FieldDecl_5090270784 -> name_5090270784
+Program -> TypeDecl_5090269648
+TypeDecl_5090269648 [label = TypeDecl]
+TypeDecl_5090269648 -> EnumType_5090271136
+EnumType_5090271136 [label = EnumType]
+"SEX_5090271136" [label = "SEX"]
+EnumType_5090271136 -> "SEX_5090271136"
+EnumType_5090271136 -> Enum_5090270976
+Enum_5090270976 [label = Enum]
+MALE_5090270976 [label = MALE]
+Enum_5090270976 -> MALE_5090270976
+EnumType_5090271136 -> Enum_5090271088
+Enum_5090271088 [label = Enum]
+FEMALE_5090271088 [label = FEMALE]
+Enum_5090271088 -> FEMALE_5090271088
+Program -> FuncDecl_5090286368
+FuncDecl_5090286368 [label = FuncDecl]
+FuncDecl_5090286368 -> BuiltinType_5090271200
+BuiltinType_5090271200 [label = BuiltinType]
+"int_5090271200" [label = "int"]
+BuiltinType_5090271200 -> "int_5090271200"
+main_5090286368[ label = main]
+FuncDecl_5090286368 -> main_5090286368
+FuncDecl_5090286368 -> ParamList_5090271296
+ParamList_5090271296 [label = ParamList]
+FuncDecl_5090286368 -> FuncBody_5090286352
+FuncBody_5090286352 [label = FuncBody]
+FuncBody_5090286352 -> VarDecl_5090271616
+VarDecl_5090271616 [label = VarDecl]
+VarDecl_5090271616 -> BuiltinType_5090271376
+BuiltinType_5090271376 [label = BuiltinType]
+"char_5090271376" [label = "char"]
+BuiltinType_5090271376 -> "char_5090271376"
+VarDecl_5090271616 -> VarInit_5090271536
+VarInit_5090271536 [label = VarInit]
+charVal_5090271536 [label = charVal]
+VarInit_5090271536 -> charVal_5090271536
+VarInit_5090271536 -> Constant_5090271472
+Constant_5090271472 [label = Constant]
+char_5090271472 [label = "65"]
+Constant_5090271472 -> char_5090271472
+FuncBody_5090286352 -> VarDecl_5090271824
+VarDecl_5090271824 [label = VarDecl]
+VarDecl_5090271824 -> BuiltinType_5090271648
+BuiltinType_5090271648 [label = BuiltinType]
+"uchar_5090271648" [label = "uchar"]
+BuiltinType_5090271648 -> "uchar_5090271648"
+VarDecl_5090271824 -> VarInit_5090271744
+VarInit_5090271744 [label = VarInit]
+ucharVal_5090271744 [label = ucharVal]
+VarInit_5090271744 -> ucharVal_5090271744
+FuncBody_5090286352 -> VarDecl_5090272032
+VarDecl_5090272032 [label = VarDecl]
+VarDecl_5090272032 -> BuiltinType_5090271856
+BuiltinType_5090271856 [label = BuiltinType]
+"short_5090271856" [label = "short"]
+BuiltinType_5090271856 -> "short_5090271856"
+VarDecl_5090272032 -> VarInit_5090271952
+VarInit_5090271952 [label = VarInit]
+shortVal_5090271952 [label = shortVal]
+VarInit_5090271952 -> shortVal_5090271952
+FuncBody_5090286352 -> VarDecl_5090272272
+VarDecl_5090272272 [label = VarDecl]
+VarDecl_5090272272 -> BuiltinType_5090272096
+BuiltinType_5090272096 [label = BuiltinType]
+"ushort_5090272096" [label = "ushort"]
+BuiltinType_5090272096 -> "ushort_5090272096"
+VarDecl_5090272272 -> VarInit_5090272192
+VarInit_5090272192 [label = VarInit]
+ushortVal_5090272192 [label = ushortVal]
+VarInit_5090272192 -> ushortVal_5090272192
+FuncBody_5090286352 -> VarDecl_5090272480
+VarDecl_5090272480 [label = VarDecl]
+VarDecl_5090272480 -> BuiltinType_5090272304
+BuiltinType_5090272304 [label = BuiltinType]
+"int_5090272304" [label = "int"]
+BuiltinType_5090272304 -> "int_5090272304"
+VarDecl_5090272480 -> VarInit_5090272400
+VarInit_5090272400 [label = VarInit]
+intVal_5090272400 [label = intVal]
+VarInit_5090272400 -> intVal_5090272400
+FuncBody_5090286352 -> VarDecl_5090272720
+VarDecl_5090272720 [label = VarDecl]
+VarDecl_5090272720 -> BuiltinType_5090272576
+BuiltinType_5090272576 [label = BuiltinType]
+"uint_5090272576" [label = "uint"]
+BuiltinType_5090272576 -> "uint_5090272576"
+VarDecl_5090272720 -> VarInit_5090272640
+VarInit_5090272640 [label = VarInit]
+uintVal_5090272640 [label = uintVal]
+VarInit_5090272640 -> uintVal_5090272640
+FuncBody_5090286352 -> VarDecl_5090272928
+VarDecl_5090272928 [label = VarDecl]
+VarDecl_5090272928 -> BuiltinType_5090272752
+BuiltinType_5090272752 [label = BuiltinType]
+"long_5090272752" [label = "long"]
+BuiltinType_5090272752 -> "long_5090272752"
+VarDecl_5090272928 -> VarInit_5090272848
+VarInit_5090272848 [label = VarInit]
+longVal_5090272848 [label = longVal]
+VarInit_5090272848 -> longVal_5090272848
+FuncBody_5090286352 -> VarDecl_5090273136
+VarDecl_5090273136 [label = VarDecl]
+VarDecl_5090273136 -> BuiltinType_5090272960
+BuiltinType_5090272960 [label = BuiltinType]
+"ulong_5090272960" [label = "ulong"]
+BuiltinType_5090272960 -> "ulong_5090272960"
+VarDecl_5090273136 -> VarInit_5090273056
+VarInit_5090273056 [label = VarInit]
+ulongVal_5090273056 [label = ulongVal]
+VarInit_5090273056 -> ulongVal_5090273056
+FuncBody_5090286352 -> VarDecl_5090273360
+VarDecl_5090273360 [label = VarDecl]
+VarDecl_5090273360 -> BuiltinType_5090273168
+BuiltinType_5090273168 [label = BuiltinType]
+"float_5090273168" [label = "float"]
+BuiltinType_5090273168 -> "float_5090273168"
+VarDecl_5090273360 -> VarInit_5090273264
+VarInit_5090273264 [label = VarInit]
+floatVal_5090273264 [label = floatVal]
+VarInit_5090273264 -> floatVal_5090273264
+FuncBody_5090286352 -> VarDecl_5090273648
+VarDecl_5090273648 [label = VarDecl]
+VarDecl_5090273648 -> BuiltinType_5090272512
+BuiltinType_5090272512 [label = BuiltinType]
+"double_5090272512" [label = "double"]
+BuiltinType_5090272512 -> "double_5090272512"
+VarDecl_5090273648 -> VarInit_5090273552
+VarInit_5090273552 [label = VarInit]
+doubleVal_5090273552 [label = doubleVal]
+VarInit_5090273552 -> doubleVal_5090273552
+FuncBody_5090286352 -> VarDecl_5090273936
+VarDecl_5090273936 [label = VarDecl]
+VarDecl_5090273936 -> PointerType_5090273744
+PointerType_5090273744 [label = PointerType]
+"char*_5090273744" [label = "char*"]
+PointerType_5090273744 -> "char*_5090273744"
+VarDecl_5090273936 -> VarInit_5090273840
+VarInit_5090273840 [label = VarInit]
+pchar_5090273840 [label = pchar]
+VarInit_5090273840 -> pchar_5090273840
+FuncBody_5090286352 -> VarDecl_5090274224
+VarDecl_5090274224 [label = VarDecl]
+VarDecl_5090274224 -> PointerType_5090274032
+PointerType_5090274032 [label = PointerType]
+"int*_5090274032" [label = "int*"]
+PointerType_5090274032 -> "int*_5090274032"
+VarDecl_5090274224 -> VarInit_5090274128
+VarInit_5090274128 [label = VarInit]
+pint_5090274128 [label = pint]
+VarInit_5090274128 -> pint_5090274128
+FuncBody_5090286352 -> VarDecl_5090274464
+VarDecl_5090274464 [label = VarDecl]
+VarDecl_5090274464 -> DefinedType_5090274320
+DefinedType_5090274320 [label = DefinedType]
+"Student_5090274320" [label = "Student"]
+DefinedType_5090274320 -> "Student_5090274320"
+VarDecl_5090274464 -> VarInit_5090274368
+VarInit_5090274368 [label = VarInit]
+student_5090274368 [label = student]
+VarInit_5090274368 -> student_5090274368
+FuncBody_5090286352 -> VarDecl_5090274704
+VarDecl_5090274704 [label = VarDecl]
+VarDecl_5090274704 -> DefinedType_5090274560
+DefinedType_5090274560 [label = DefinedType]
+"ID_5090274560" [label = "ID"]
+DefinedType_5090274560 -> "ID_5090274560"
+VarDecl_5090274704 -> VarInit_5090274608
+VarInit_5090274608 [label = VarInit]
+id_5090274608 [label = id]
+VarInit_5090274608 -> id_5090274608
+FuncBody_5090286352 -> VarDecl_5090274944
+VarDecl_5090274944 [label = VarDecl]
+VarDecl_5090274944 -> DefinedType_5090274800
+DefinedType_5090274800 [label = DefinedType]
+"SEX_5090274800" [label = "SEX"]
+DefinedType_5090274800 -> "SEX_5090274800"
+VarDecl_5090274944 -> VarInit_5090274848
+VarInit_5090274848 [label = VarInit]
+sex_5090274848 [label = sex]
+VarInit_5090274848 -> sex_5090274848
+FuncBody_5090286352 -> FuncCall_5090275312
+FuncCall_5090275312 [label = FuncCall]
+printf_5090275312[ label = printf]
+FuncCall_5090275312 -> printf_5090275312
+FuncCall_5090275312 -> ConstStr_5090275040
+ConstStr_5090275040 [label = ConstStr]
+str_5090275040 [label = "sizeof(char):%d"]
+ConstStr_5090275040 -> str_5090275040
+FuncCall_5090275312 -> SizeOf_5090275248
+SizeOf_5090275248 [label = SizeOf]
+SizeOf_5090275248 -> BuiltinType_5090275184
+BuiltinType_5090275184 [label = BuiltinType]
+"char_5090275184" [label = "char"]
+BuiltinType_5090275184 -> "char_5090275184"
+FuncBody_5090286352 -> FuncCall_5090275648
+FuncCall_5090275648 [label = FuncCall]
+printf_5090275648[ label = printf]
+FuncCall_5090275648 -> printf_5090275648
+FuncCall_5090275648 -> ConstStr_5090275424
+ConstStr_5090275424 [label = ConstStr]
+str_5090275424 [label = "sizeof(charVal):%d"]
+ConstStr_5090275424 -> str_5090275424
+FuncCall_5090275648 -> SizeOf_5090275584
+SizeOf_5090275584 [label = SizeOf]
+charVal_5090275584 [label = charVal]
+SizeOf_5090275584 -> charVal_5090275584
+FuncBody_5090286352 -> FuncCall_5090273392
+FuncCall_5090273392 [label = FuncCall]
+printf_5090273392[ label = printf]
+FuncCall_5090273392 -> printf_5090273392
+FuncCall_5090273392 -> ConstStr_5090276064
+ConstStr_5090276064 [label = ConstStr]
+str_5090276064 [label = "sizeof(unsigned char):%d"]
+ConstStr_5090276064 -> str_5090276064
+FuncCall_5090273392 -> SizeOf_5090276288
+SizeOf_5090276288 [label = SizeOf]
+SizeOf_5090276288 -> BuiltinType_5090276224
+BuiltinType_5090276224 [label = BuiltinType]
+"uchar_5090276224" [label = "uchar"]
+BuiltinType_5090276224 -> "uchar_5090276224"
+FuncBody_5090286352 -> FuncCall_5090276560
+FuncCall_5090276560 [label = FuncCall]
+printf_5090276560[ label = printf]
+FuncCall_5090276560 -> printf_5090276560
+FuncCall_5090276560 -> ConstStr_5090276352
+ConstStr_5090276352 [label = ConstStr]
+str_5090276352 [label = "sizeof(ucharVal):%d"]
+ConstStr_5090276352 -> str_5090276352
+FuncCall_5090276560 -> SizeOf_5090276512
+SizeOf_5090276512 [label = SizeOf]
+ucharVal_5090276512 [label = ucharVal]
+SizeOf_5090276512 -> ucharVal_5090276512
+FuncBody_5090286352 -> FuncCall_5090276928
+FuncCall_5090276928 [label = FuncCall]
+printf_5090276928[ label = printf]
+FuncCall_5090276928 -> printf_5090276928
+FuncCall_5090276928 -> ConstStr_5090276672
+ConstStr_5090276672 [label = ConstStr]
+str_5090276672 [label = "sizeof(short):%d"]
+ConstStr_5090276672 -> str_5090276672
+FuncCall_5090276928 -> SizeOf_5090276864
+SizeOf_5090276864 [label = SizeOf]
+SizeOf_5090276864 -> BuiltinType_5090276800
+BuiltinType_5090276800 [label = BuiltinType]
+"short_5090276800" [label = "short"]
+BuiltinType_5090276800 -> "short_5090276800"
+FuncBody_5090286352 -> FuncCall_5090277264
+FuncCall_5090277264 [label = FuncCall]
+printf_5090277264[ label = printf]
+FuncCall_5090277264 -> printf_5090277264
+FuncCall_5090277264 -> ConstStr_5090277040
+ConstStr_5090277040 [label = ConstStr]
+str_5090277040 [label = "sizeof(shortVal):%d"]
+ConstStr_5090277040 -> str_5090277040
+FuncCall_5090277264 -> SizeOf_5090277200
+SizeOf_5090277200 [label = SizeOf]
+shortVal_5090277200 [label = shortVal]
+SizeOf_5090277200 -> shortVal_5090277200
+FuncBody_5090286352 -> FuncCall_5090277712
+FuncCall_5090277712 [label = FuncCall]
+printf_5090277712[ label = printf]
+FuncCall_5090277712 -> printf_5090277712
+FuncCall_5090277712 -> ConstStr_5090277424
+ConstStr_5090277424 [label = ConstStr]
+str_5090277424 [label = "sizeof(unsigned short):%d"]
+ConstStr_5090277424 -> str_5090277424
+FuncCall_5090277712 -> SizeOf_5090277648
+SizeOf_5090277648 [label = SizeOf]
+SizeOf_5090277648 -> BuiltinType_5090277584
+BuiltinType_5090277584 [label = BuiltinType]
+"ushort_5090277584" [label = "ushort"]
+BuiltinType_5090277584 -> "ushort_5090277584"
+FuncBody_5090286352 -> FuncCall_5090278048
+FuncCall_5090278048 [label = FuncCall]
+printf_5090278048[ label = printf]
+FuncCall_5090278048 -> printf_5090278048
+FuncCall_5090278048 -> ConstStr_5090277824
+ConstStr_5090277824 [label = ConstStr]
+str_5090277824 [label = "sizeof(ushortVal):%d"]
+ConstStr_5090277824 -> str_5090277824
+FuncCall_5090278048 -> SizeOf_5090277984
+SizeOf_5090277984 [label = SizeOf]
+ushortVal_5090277984 [label = ushortVal]
+SizeOf_5090277984 -> ushortVal_5090277984
+FuncBody_5090286352 -> FuncCall_5090278416
+FuncCall_5090278416 [label = FuncCall]
+printf_5090278416[ label = printf]
+FuncCall_5090278416 -> printf_5090278416
+FuncCall_5090278416 -> ConstStr_5090278160
+ConstStr_5090278160 [label = ConstStr]
+str_5090278160 [label = "sizeof(int):%d"]
+ConstStr_5090278160 -> str_5090278160
+FuncCall_5090278416 -> SizeOf_5090278352
+SizeOf_5090278352 [label = SizeOf]
+SizeOf_5090278352 -> BuiltinType_5090278288
+BuiltinType_5090278288 [label = BuiltinType]
+"int_5090278288" [label = "int"]
+BuiltinType_5090278288 -> "int_5090278288"
+FuncBody_5090286352 -> FuncCall_5090278752
+FuncCall_5090278752 [label = FuncCall]
+printf_5090278752[ label = printf]
+FuncCall_5090278752 -> printf_5090278752
+FuncCall_5090278752 -> ConstStr_5090278528
+ConstStr_5090278528 [label = ConstStr]
+str_5090278528 [label = "sizeof(intVal):%d"]
+ConstStr_5090278528 -> str_5090278528
+FuncCall_5090278752 -> SizeOf_5090278688
+SizeOf_5090278688 [label = SizeOf]
+intVal_5090278688 [label = intVal]
+SizeOf_5090278688 -> intVal_5090278688
+FuncBody_5090286352 -> FuncCall_5090279200
+FuncCall_5090279200 [label = FuncCall]
+printf_5090279200[ label = printf]
+FuncCall_5090279200 -> printf_5090279200
+FuncCall_5090279200 -> ConstStr_5090278912
+ConstStr_5090278912 [label = ConstStr]
+str_5090278912 [label = "sizeof(unsigned int):%d"]
+ConstStr_5090278912 -> str_5090278912
+FuncCall_5090279200 -> SizeOf_5090279136
+SizeOf_5090279136 [label = SizeOf]
+SizeOf_5090279136 -> BuiltinType_5090279072
+BuiltinType_5090279072 [label = BuiltinType]
+"uint_5090279072" [label = "uint"]
+BuiltinType_5090279072 -> "uint_5090279072"
+FuncBody_5090286352 -> FuncCall_5090279536
+FuncCall_5090279536 [label = FuncCall]
+printf_5090279536[ label = printf]
+FuncCall_5090279536 -> printf_5090279536
+FuncCall_5090279536 -> ConstStr_5090279312
+ConstStr_5090279312 [label = ConstStr]
+str_5090279312 [label = "sizeof(uintVal):%d"]
+ConstStr_5090279312 -> str_5090279312
+FuncCall_5090279536 -> SizeOf_5090279472
+SizeOf_5090279472 [label = SizeOf]
+uintVal_5090279472 [label = uintVal]
+SizeOf_5090279472 -> uintVal_5090279472
+FuncBody_5090286352 -> FuncCall_5090279904
+FuncCall_5090279904 [label = FuncCall]
+printf_5090279904[ label = printf]
+FuncCall_5090279904 -> printf_5090279904
+FuncCall_5090279904 -> ConstStr_5090279648
+ConstStr_5090279648 [label = ConstStr]
+str_5090279648 [label = "sizeof(long):%d"]
+ConstStr_5090279648 -> str_5090279648
+FuncCall_5090279904 -> SizeOf_5090279840
+SizeOf_5090279840 [label = SizeOf]
+SizeOf_5090279840 -> BuiltinType_5090279776
+BuiltinType_5090279776 [label = BuiltinType]
+"long_5090279776" [label = "long"]
+BuiltinType_5090279776 -> "long_5090279776"
+FuncBody_5090286352 -> FuncCall_5090280240
+FuncCall_5090280240 [label = FuncCall]
+printf_5090280240[ label = printf]
+FuncCall_5090280240 -> printf_5090280240
+FuncCall_5090280240 -> ConstStr_5090280016
+ConstStr_5090280016 [label = ConstStr]
+str_5090280016 [label = "sizeof(longVal):%d"]
+ConstStr_5090280016 -> str_5090280016
+FuncCall_5090280240 -> SizeOf_5090280176
+SizeOf_5090280176 [label = SizeOf]
+longVal_5090280176 [label = longVal]
+SizeOf_5090280176 -> longVal_5090280176
+FuncBody_5090286352 -> FuncCall_5090280688
+FuncCall_5090280688 [label = FuncCall]
+printf_5090280688[ label = printf]
+FuncCall_5090280688 -> printf_5090280688
+FuncCall_5090280688 -> ConstStr_5090280400
+ConstStr_5090280400 [label = ConstStr]
+str_5090280400 [label = "sizeof(unsigned long):%d"]
+ConstStr_5090280400 -> str_5090280400
+FuncCall_5090280688 -> SizeOf_5090280624
+SizeOf_5090280624 [label = SizeOf]
+SizeOf_5090280624 -> BuiltinType_5090280560
+BuiltinType_5090280560 [label = BuiltinType]
+"ulong_5090280560" [label = "ulong"]
+BuiltinType_5090280560 -> "ulong_5090280560"
+FuncBody_5090286352 -> FuncCall_5090281024
+FuncCall_5090281024 [label = FuncCall]
+printf_5090281024[ label = printf]
+FuncCall_5090281024 -> printf_5090281024
+FuncCall_5090281024 -> ConstStr_5090280800
+ConstStr_5090280800 [label = ConstStr]
+str_5090280800 [label = "sizeof(ulongVal):%d"]
+ConstStr_5090280800 -> str_5090280800
+FuncCall_5090281024 -> SizeOf_5090280960
+SizeOf_5090280960 [label = SizeOf]
+ulongVal_5090280960 [label = ulongVal]
+SizeOf_5090280960 -> ulongVal_5090280960
+FuncBody_5090286352 -> FuncCall_5090281392
+FuncCall_5090281392 [label = FuncCall]
+printf_5090281392[ label = printf]
+FuncCall_5090281392 -> printf_5090281392
+FuncCall_5090281392 -> ConstStr_5090281136
+ConstStr_5090281136 [label = ConstStr]
+str_5090281136 [label = "sizeof(float):%d"]
+ConstStr_5090281136 -> str_5090281136
+FuncCall_5090281392 -> SizeOf_5090281328
+SizeOf_5090281328 [label = SizeOf]
+SizeOf_5090281328 -> BuiltinType_5090281264
+BuiltinType_5090281264 [label = BuiltinType]
+"float_5090281264" [label = "float"]
+BuiltinType_5090281264 -> "float_5090281264"
+FuncBody_5090286352 -> FuncCall_5090281728
+FuncCall_5090281728 [label = FuncCall]
+printf_5090281728[ label = printf]
+FuncCall_5090281728 -> printf_5090281728
+FuncCall_5090281728 -> ConstStr_5090281504
+ConstStr_5090281504 [label = ConstStr]
+str_5090281504 [label = "sizeof(floatVal):%d"]
+ConstStr_5090281504 -> str_5090281504
+FuncCall_5090281728 -> SizeOf_5090281664
+SizeOf_5090281664 [label = SizeOf]
+floatVal_5090281664 [label = floatVal]
+SizeOf_5090281664 -> floatVal_5090281664
+FuncBody_5090286352 -> FuncCall_5090282352
+FuncCall_5090282352 [label = FuncCall]
+printf_5090282352[ label = printf]
+FuncCall_5090282352 -> printf_5090282352
+FuncCall_5090282352 -> ConstStr_5090275760
+ConstStr_5090275760 [label = ConstStr]
+str_5090275760 [label = "sizeof(double):%d"]
+ConstStr_5090275760 -> str_5090275760
+FuncCall_5090282352 -> SizeOf_5090282288
+SizeOf_5090282288 [label = SizeOf]
+SizeOf_5090282288 -> BuiltinType_5090275888
+BuiltinType_5090275888 [label = BuiltinType]
+"double_5090275888" [label = "double"]
+BuiltinType_5090275888 -> "double_5090275888"
+FuncBody_5090286352 -> FuncCall_5090282688
+FuncCall_5090282688 [label = FuncCall]
+printf_5090282688[ label = printf]
+FuncCall_5090282688 -> printf_5090282688
+FuncCall_5090282688 -> ConstStr_5090282464
+ConstStr_5090282464 [label = ConstStr]
+str_5090282464 [label = "sizeof(doubleVal):%d"]
+ConstStr_5090282464 -> str_5090282464
+FuncCall_5090282688 -> SizeOf_5090282624
+SizeOf_5090282624 [label = SizeOf]
+doubleVal_5090282624 [label = doubleVal]
+SizeOf_5090282624 -> doubleVal_5090282624
+FuncBody_5090286352 -> FuncCall_5090283120
+FuncCall_5090283120 [label = FuncCall]
+printf_5090283120[ label = printf]
+FuncCall_5090283120 -> printf_5090283120
+FuncCall_5090283120 -> ConstStr_5090282800
+ConstStr_5090282800 [label = ConstStr]
+str_5090282800 [label = "sizeof(char*):%d"]
+ConstStr_5090282800 -> str_5090282800
+FuncCall_5090283120 -> SizeOf_5090283056
+SizeOf_5090283056 [label = SizeOf]
+SizeOf_5090283056 -> PointerType_5090282992
+PointerType_5090282992 [label = PointerType]
+"char*_5090282992" [label = "char*"]
+PointerType_5090282992 -> "char*_5090282992"
+FuncBody_5090286352 -> FuncCall_5090283456
+FuncCall_5090283456 [label = FuncCall]
+printf_5090283456[ label = printf]
+FuncCall_5090283456 -> printf_5090283456
+FuncCall_5090283456 -> ConstStr_5090283232
+ConstStr_5090283232 [label = ConstStr]
+str_5090283232 [label = "sizeof(pchar):%d"]
+ConstStr_5090283232 -> str_5090283232
+FuncCall_5090283456 -> SizeOf_5090283392
+SizeOf_5090283392 [label = SizeOf]
+pchar_5090283392 [label = pchar]
+SizeOf_5090283392 -> pchar_5090283392
+FuncBody_5090286352 -> FuncCall_5090283888
+FuncCall_5090283888 [label = FuncCall]
+printf_5090283888[ label = printf]
+FuncCall_5090283888 -> printf_5090283888
+FuncCall_5090283888 -> ConstStr_5090283568
+ConstStr_5090283568 [label = ConstStr]
+str_5090283568 [label = "sizeof(int*):%d"]
+ConstStr_5090283568 -> str_5090283568
+FuncCall_5090283888 -> SizeOf_5090283824
+SizeOf_5090283824 [label = SizeOf]
+SizeOf_5090283824 -> PointerType_5090283760
+PointerType_5090283760 [label = PointerType]
+"int*_5090283760" [label = "int*"]
+PointerType_5090283760 -> "int*_5090283760"
+FuncBody_5090286352 -> FuncCall_5090284224
+FuncCall_5090284224 [label = FuncCall]
+printf_5090284224[ label = printf]
+FuncCall_5090284224 -> printf_5090284224
+FuncCall_5090284224 -> ConstStr_5090284000
+ConstStr_5090284000 [label = ConstStr]
+str_5090284000 [label = "sizeof(pint):%d"]
+ConstStr_5090284000 -> str_5090284000
+FuncCall_5090284224 -> SizeOf_5090284160
+SizeOf_5090284160 [label = SizeOf]
+pint_5090284160 [label = pint]
+SizeOf_5090284160 -> pint_5090284160
+FuncBody_5090286352 -> FuncCall_5090284560
+FuncCall_5090284560 [label = FuncCall]
+printf_5090284560[ label = printf]
+FuncCall_5090284560 -> printf_5090284560
+FuncCall_5090284560 -> ConstStr_5090284336
+ConstStr_5090284336 [label = ConstStr]
+str_5090284336 [label = "sizeof(Student):%d"]
+ConstStr_5090284336 -> str_5090284336
+FuncCall_5090284560 -> SizeOf_5090284496
+SizeOf_5090284496 [label = SizeOf]
+Student_5090284496 [label = Student]
+SizeOf_5090284496 -> Student_5090284496
+FuncBody_5090286352 -> FuncCall_5090284896
+FuncCall_5090284896 [label = FuncCall]
+printf_5090284896[ label = printf]
+FuncCall_5090284896 -> printf_5090284896
+FuncCall_5090284896 -> ConstStr_5090284672
+ConstStr_5090284672 [label = ConstStr]
+str_5090284672 [label = "sizeof(student):%d"]
+ConstStr_5090284672 -> str_5090284672
+FuncCall_5090284896 -> SizeOf_5090284832
+SizeOf_5090284832 [label = SizeOf]
+student_5090284832 [label = student]
+SizeOf_5090284832 -> student_5090284832
+FuncBody_5090286352 -> FuncCall_5090285232
+FuncCall_5090285232 [label = FuncCall]
+printf_5090285232[ label = printf]
+FuncCall_5090285232 -> printf_5090285232
+FuncCall_5090285232 -> ConstStr_5090285008
+ConstStr_5090285008 [label = ConstStr]
+str_5090285008 [label = "sizeof(ID):%d"]
+ConstStr_5090285008 -> str_5090285008
+FuncCall_5090285232 -> SizeOf_5090285168
+SizeOf_5090285168 [label = SizeOf]
+ID_5090285168 [label = ID]
+SizeOf_5090285168 -> ID_5090285168
+FuncBody_5090286352 -> FuncCall_5090285568
+FuncCall_5090285568 [label = FuncCall]
+printf_5090285568[ label = printf]
+FuncCall_5090285568 -> printf_5090285568
+FuncCall_5090285568 -> ConstStr_5090285344
+ConstStr_5090285344 [label = ConstStr]
+str_5090285344 [label = "sizeof(id):%d"]
+ConstStr_5090285344 -> str_5090285344
+FuncCall_5090285568 -> SizeOf_5090285504
+SizeOf_5090285504 [label = SizeOf]
+id_5090285504 [label = id]
+SizeOf_5090285504 -> id_5090285504
+FuncBody_5090286352 -> FuncCall_5090285904
+FuncCall_5090285904 [label = FuncCall]
+printf_5090285904[ label = printf]
+FuncCall_5090285904 -> printf_5090285904
+FuncCall_5090285904 -> ConstStr_5090285680
+ConstStr_5090285680 [label = ConstStr]
+str_5090285680 [label = "sizeof(SEX):%d"]
+ConstStr_5090285680 -> str_5090285680
+FuncCall_5090285904 -> SizeOf_5090285840
+SizeOf_5090285840 [label = SizeOf]
+SEX_5090285840 [label = SEX]
+SizeOf_5090285840 -> SEX_5090285840
+FuncBody_5090286352 -> FuncCall_5090286240
+FuncCall_5090286240 [label = FuncCall]
+printf_5090286240[ label = printf]
+FuncCall_5090286240 -> printf_5090286240
+FuncCall_5090286240 -> ConstStr_5090286016
+ConstStr_5090286016 [label = ConstStr]
+str_5090286016 [label = "sizeof(sex):%d"]
+ConstStr_5090286016 -> str_5090286016
+FuncCall_5090286240 -> SizeOf_5090286176
+SizeOf_5090286176 [label = SizeOf]
+sex_5090286176 [label = sex]
+SizeOf_5090286176 -> sex_5090286176
+FuncBody_5090286352 -> ReturnStmt_5090275168
+ReturnStmt_5090275168 [label = ReturnStmt]
+ReturnStmt_5090275168 -> Constant_5090286288
+Constant_5090286288 [label = Constant]
+int_5090286288 [label = "0"]
+Constant_5090286288 -> int_5090286288
+}

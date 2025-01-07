@@ -1,0 +1,801 @@
+digraph {
+Program [label = Program]
+Program -> FuncDecl_5544888128
+FuncDecl_5544888128 [label = FuncDecl]
+FuncDecl_5544888128 -> BuiltinType_5544887792
+BuiltinType_5544887792 [label = BuiltinType]
+"int_5544887792" [label = "int"]
+BuiltinType_5544887792 -> "int_5544887792"
+printf_5544888128[ label = printf]
+FuncDecl_5544888128 -> printf_5544888128
+FuncDecl_5544888128 -> ParamList_5544888064
+ParamList_5544888064 [label = ParamList]
+ParamList_5544888064 -> Param_5544888016
+Param_5544888016 [label = Param]
+Param_5544888016 -> PointerType_5544887952
+PointerType_5544887952 [label = PointerType]
+"char*_5544887952" [label = "char*"]
+PointerType_5544887952 -> "char*_5544887952"
+anonymous_5544888016 [label = anonymous]
+Param_5544888016 -> anonymous_5544888016
+"..._5544888064" [label = "..."]
+ParamList_5544888064 -> "..._5544888064"
+Program -> FuncDecl_5544890848
+FuncDecl_5544890848 [label = FuncDecl]
+FuncDecl_5544890848 -> BuiltinType_5544888208
+BuiltinType_5544888208 [label = BuiltinType]
+"void_5544888208" [label = "void"]
+BuiltinType_5544888208 -> "void_5544888208"
+checkAmpersandPrec_5544890848[ label = checkAmpersandPrec]
+FuncDecl_5544890848 -> checkAmpersandPrec_5544890848
+FuncDecl_5544890848 -> ParamList_5544888304
+ParamList_5544888304 [label = ParamList]
+FuncDecl_5544890848 -> FuncBody_5544890464
+FuncBody_5544890464 [label = FuncBody]
+FuncBody_5544890464 -> VarDecl_5544888640
+VarDecl_5544888640 [label = VarDecl]
+VarDecl_5544888640 -> BuiltinType_5544888384
+BuiltinType_5544888384 [label = BuiltinType]
+"ulong_5544888384" [label = "ulong"]
+BuiltinType_5544888384 -> "ulong_5544888384"
+VarDecl_5544888640 -> VarInit_5544888544
+VarInit_5544888544 [label = VarInit]
+a_5544888544 [label = a]
+VarInit_5544888544 -> a_5544888544
+VarInit_5544888544 -> Constant_5544888480
+Constant_5544888480 [label = Constant]
+uint_5544888480 [label = "305419896"]
+Constant_5544888480 -> uint_5544888480
+FuncBody_5544890464 -> VarDecl_5544888944
+VarDecl_5544888944 [label = VarDecl]
+VarDecl_5544888944 -> BuiltinType_5544888688
+BuiltinType_5544888688 [label = BuiltinType]
+"ulong_5544888688" [label = "ulong"]
+BuiltinType_5544888688 -> "ulong_5544888688"
+VarDecl_5544888944 -> VarInit_5544888848
+VarInit_5544888848 [label = VarInit]
+b_5544888848 [label = b]
+VarInit_5544888848 -> b_5544888848
+VarInit_5544888848 -> Constant_5544888784
+Constant_5544888784 [label = Constant]
+uint_5544888784 [label = "2596069104"]
+Constant_5544888784 -> uint_5544888784
+FuncBody_5544890464 -> VarDecl_5544889344
+VarDecl_5544889344 [label = VarDecl]
+VarDecl_5544889344 -> BuiltinType_5544888992
+BuiltinType_5544888992 [label = BuiltinType]
+"ulong_5544888992" [label = "ulong"]
+BuiltinType_5544888992 -> "ulong_5544888992"
+VarDecl_5544889344 -> VarInit_5544889248
+VarInit_5544889248 [label = VarInit]
+c_5544889248 [label = c]
+VarInit_5544889248 -> c_5544889248
+VarInit_5544889248 -> TypeCast_5544889216
+TypeCast_5544889216 [label = TypeCast]
+TypeCast_5544889216 -> BuiltinType_5544889088
+BuiltinType_5544889088 [label = BuiltinType]
+"ulong_5544889088" [label = "ulong"]
+BuiltinType_5544889088 -> "ulong_5544889088"
+TypeCast_5544889216 -> AddressOf_5544888672
+AddressOf_5544888672 [label = AddressOf]
+AddressOf_5544888672 -> Variable_5544889184
+Variable_5544889184 [label = Variable]
+a_5544889184 [label = a]
+Variable_5544889184 -> a_5544889184
+FuncBody_5544890464 -> VarDecl_5544889952
+VarDecl_5544889952 [label = VarDecl]
+VarDecl_5544889952 -> BuiltinType_5544889408
+BuiltinType_5544889408 [label = BuiltinType]
+"ulong_5544889408" [label = "ulong"]
+BuiltinType_5544889408 -> "ulong_5544889408"
+VarDecl_5544889952 -> VarInit_5544889856
+VarInit_5544889856 [label = VarInit]
+d_5544889856 [label = d]
+VarInit_5544889856 -> d_5544889856
+VarInit_5544889856 -> BitwiseAnd_5544889824
+BitwiseAnd_5544889824 [label = BitwiseAnd]
+BitwiseAnd_5544889824 -> BitwiseAnd_5544889728
+BitwiseAnd_5544889728 [label = BitwiseAnd]
+BitwiseAnd_5544889728 -> TypeCast_5544889632
+TypeCast_5544889632 [label = TypeCast]
+TypeCast_5544889632 -> BuiltinType_5544889504
+BuiltinType_5544889504 [label = BuiltinType]
+"ulong_5544889504" [label = "ulong"]
+BuiltinType_5544889504 -> "ulong_5544889504"
+TypeCast_5544889632 -> AddressOf_5544888976
+AddressOf_5544888976 [label = AddressOf]
+AddressOf_5544888976 -> Variable_5544889600
+Variable_5544889600 [label = Variable]
+c_5544889600 [label = c]
+Variable_5544889600 -> c_5544889600
+BitwiseAnd_5544889728 -> Variable_5544889696
+Variable_5544889696 [label = Variable]
+a_5544889696 [label = a]
+Variable_5544889696 -> a_5544889696
+BitwiseAnd_5544889824 -> Variable_5544889792
+Variable_5544889792 [label = Variable]
+b_5544889792 [label = b]
+Variable_5544889792 -> b_5544889792
+FuncBody_5544890464 -> FuncCall_5544890736
+FuncCall_5544890736 [label = FuncCall]
+printf_5544890736[ label = printf]
+FuncCall_5544890736 -> printf_5544890736
+FuncCall_5544890736 -> ConstStr_5544890192
+ConstStr_5544890192 [label = ConstStr]
+str_5544890192 [label = "checkAmpersandPrec a:%lu, b:%lu, c(addr a):%lu, d:%lu"]
+ConstStr_5544890192 -> str_5544890192
+FuncCall_5544890736 -> Variable_5544890432
+Variable_5544890432 [label = Variable]
+a_5544890432 [label = a]
+Variable_5544890432 -> a_5544890432
+FuncCall_5544890736 -> Variable_5544890480
+Variable_5544890480 [label = Variable]
+b_5544890480 [label = b]
+Variable_5544890480 -> b_5544890480
+FuncCall_5544890736 -> Variable_5544890576
+Variable_5544890576 [label = Variable]
+c_5544890576 [label = c]
+Variable_5544890576 -> c_5544890576
+FuncCall_5544890736 -> Variable_5544890640
+Variable_5544890640 [label = Variable]
+d_5544890640 [label = d]
+Variable_5544890640 -> d_5544890640
+Program -> FuncDecl_5544894288
+FuncDecl_5544894288 [label = FuncDecl]
+FuncDecl_5544894288 -> BuiltinType_5544890912
+BuiltinType_5544890912 [label = BuiltinType]
+"void_5544890912" [label = "void"]
+BuiltinType_5544890912 -> "void_5544890912"
+checkPlusPrec_5544894288[ label = checkPlusPrec]
+FuncDecl_5544894288 -> checkPlusPrec_5544894288
+FuncDecl_5544894288 -> ParamList_5544890976
+ParamList_5544890976 [label = ParamList]
+FuncDecl_5544894288 -> FuncBody_5544892912
+FuncBody_5544892912 [label = FuncBody]
+FuncBody_5544892912 -> FuncCall_5544891216
+FuncCall_5544891216 [label = FuncCall]
+printf_5544891216[ label = printf]
+FuncCall_5544891216 -> printf_5544891216
+FuncCall_5544891216 -> ConstStr_5544891088
+ConstStr_5544891088 [label = ConstStr]
+str_5544891088 [label = "checkPlusPrec"]
+ConstStr_5544891088 -> str_5544891088
+FuncBody_5544892912 -> VarDecl_5544891520
+VarDecl_5544891520 [label = VarDecl]
+VarDecl_5544891520 -> BuiltinType_5544891264
+BuiltinType_5544891264 [label = BuiltinType]
+"int_5544891264" [label = "int"]
+BuiltinType_5544891264 -> "int_5544891264"
+VarDecl_5544891520 -> VarInit_5544891424
+VarInit_5544891424 [label = VarInit]
+a_5544891424 [label = a]
+VarInit_5544891424 -> a_5544891424
+VarInit_5544891424 -> Constant_5544891360
+Constant_5544891360 [label = Constant]
+int_5544891360 [label = "13"]
+Constant_5544891360 -> int_5544891360
+FuncBody_5544892912 -> VarDecl_5544891920
+VarDecl_5544891920 [label = VarDecl]
+VarDecl_5544891920 -> BuiltinType_5544891568
+BuiltinType_5544891568 [label = BuiltinType]
+"int_5544891568" [label = "int"]
+BuiltinType_5544891568 -> "int_5544891568"
+VarDecl_5544891920 -> VarInit_5544891824
+VarInit_5544891824 [label = VarInit]
+b_5544891824 [label = b]
+VarInit_5544891824 -> b_5544891824
+VarInit_5544891824 -> Add_5544891792
+Add_5544891792 [label = Add]
+Add_5544891792 -> Constant_5544891664
+Constant_5544891664 [label = Constant]
+int_5544891664 [label = "3"]
+Constant_5544891664 -> int_5544891664
+Add_5544891792 -> UnaryPlus_5544890080
+UnaryPlus_5544890080 [label = UnaryPlus]
+UnaryPlus_5544890080 -> Variable_5544891760
+Variable_5544891760 [label = Variable]
+a_5544891760 [label = a]
+Variable_5544891760 -> a_5544891760
+FuncBody_5544892912 -> FuncCall_5544892256
+FuncCall_5544892256 [label = FuncCall]
+printf_5544892256[ label = printf]
+FuncCall_5544892256 -> printf_5544892256
+FuncCall_5544892256 -> ConstStr_5544892048
+ConstStr_5544892048 [label = ConstStr]
+str_5544892048 [label = "3 + +13: %d"]
+ConstStr_5544892048 -> str_5544892048
+FuncCall_5544892256 -> Variable_5544892208
+Variable_5544892208 [label = Variable]
+b_5544892208 [label = b]
+Variable_5544892208 -> b_5544892208
+FuncBody_5544892912 -> VarDecl_5544892656
+VarDecl_5544892656 [label = VarDecl]
+VarDecl_5544892656 -> BuiltinType_5544892304
+BuiltinType_5544892304 [label = BuiltinType]
+"int_5544892304" [label = "int"]
+BuiltinType_5544892304 -> "int_5544892304"
+VarDecl_5544892656 -> VarInit_5544892560
+VarInit_5544892560 [label = VarInit]
+c_5544892560 [label = c]
+VarInit_5544892560 -> c_5544892560
+VarInit_5544892560 -> Sub_5544892528
+Sub_5544892528 [label = Sub]
+Sub_5544892528 -> Constant_5544892400
+Constant_5544892400 [label = Constant]
+int_5544892400 [label = "3"]
+Constant_5544892400 -> int_5544892400
+Sub_5544892528 -> UnaryPlus_5544891552
+UnaryPlus_5544891552 [label = UnaryPlus]
+UnaryPlus_5544891552 -> Variable_5544892496
+Variable_5544892496 [label = Variable]
+a_5544892496 [label = a]
+Variable_5544892496 -> a_5544892496
+FuncBody_5544892912 -> FuncCall_5544893008
+FuncCall_5544893008 [label = FuncCall]
+printf_5544893008[ label = printf]
+FuncCall_5544893008 -> printf_5544893008
+FuncCall_5544893008 -> ConstStr_5544892784
+ConstStr_5544892784 [label = ConstStr]
+str_5544892784 [label = "3 - +13: %d"]
+ConstStr_5544892784 -> str_5544892784
+FuncCall_5544893008 -> Variable_5544892960
+Variable_5544892960 [label = Variable]
+c_5544892960 [label = c]
+Variable_5544892960 -> c_5544892960
+FuncBody_5544892912 -> Assign_5544893280
+Assign_5544893280 [label = Assign]
+Assign_5544893280 -> Variable_5544893088
+Variable_5544893088 [label = Variable]
+b_5544893088 [label = b]
+Variable_5544893088 -> b_5544893088
+Assign_5544893280 -> Add_5544893248
+Add_5544893248 [label = Add]
+Add_5544893248 -> Constant_5544893120
+Constant_5544893120 [label = Constant]
+int_5544893120 [label = "3"]
+Constant_5544893120 -> int_5544893120
+Add_5544893248 -> Constant_5544893184
+Constant_5544893184 [label = Constant]
+int_5544893184 [label = "13"]
+Constant_5544893184 -> int_5544893184
+FuncBody_5544892912 -> FuncCall_5544893584
+FuncCall_5544893584 [label = FuncCall]
+printf_5544893584[ label = printf]
+FuncCall_5544893584 -> printf_5544893584
+FuncCall_5544893584 -> ConstStr_5544893376
+ConstStr_5544893376 [label = ConstStr]
+str_5544893376 [label = "3 + +13: %d"]
+ConstStr_5544893376 -> str_5544893376
+FuncCall_5544893584 -> Variable_5544893536
+Variable_5544893536 [label = Variable]
+b_5544893536 [label = b]
+Variable_5544893536 -> b_5544893536
+FuncBody_5544892912 -> Assign_5544893856
+Assign_5544893856 [label = Assign]
+Assign_5544893856 -> Variable_5544893664
+Variable_5544893664 [label = Variable]
+c_5544893664 [label = c]
+Variable_5544893664 -> c_5544893664
+Assign_5544893856 -> Sub_5544893824
+Sub_5544893824 [label = Sub]
+Sub_5544893824 -> Constant_5544893696
+Constant_5544893696 [label = Constant]
+int_5544893696 [label = "3"]
+Constant_5544893696 -> int_5544893696
+Sub_5544893824 -> Constant_5544893760
+Constant_5544893760 [label = Constant]
+int_5544893760 [label = "13"]
+Constant_5544893760 -> int_5544893760
+FuncBody_5544892912 -> FuncCall_5544892688
+FuncCall_5544892688 [label = FuncCall]
+printf_5544892688[ label = printf]
+FuncCall_5544892688 -> printf_5544892688
+FuncCall_5544892688 -> ConstStr_5544894080
+ConstStr_5544894080 [label = ConstStr]
+str_5544894080 [label = "3 - +13: %d"]
+ConstStr_5544894080 -> str_5544894080
+FuncCall_5544892688 -> Variable_5544894240
+Variable_5544894240 [label = Variable]
+c_5544894240 [label = c]
+Variable_5544894240 -> c_5544894240
+Program -> FuncDecl_5544897824
+FuncDecl_5544897824 [label = FuncDecl]
+FuncDecl_5544897824 -> BuiltinType_5544894384
+BuiltinType_5544894384 [label = BuiltinType]
+"void_5544894384" [label = "void"]
+BuiltinType_5544894384 -> "void_5544894384"
+checkMinusPrec_5544897824[ label = checkMinusPrec]
+FuncDecl_5544897824 -> checkMinusPrec_5544897824
+FuncDecl_5544897824 -> ParamList_5544894480
+ParamList_5544894480 [label = ParamList]
+FuncDecl_5544897824 -> FuncBody_5544896448
+FuncBody_5544896448 [label = FuncBody]
+FuncBody_5544896448 -> FuncCall_5544894752
+FuncCall_5544894752 [label = FuncCall]
+printf_5544894752[ label = printf]
+FuncCall_5544894752 -> printf_5544894752
+FuncCall_5544894752 -> ConstStr_5544894624
+ConstStr_5544894624 [label = ConstStr]
+str_5544894624 [label = "checkMinusPrec"]
+ConstStr_5544894624 -> str_5544894624
+FuncBody_5544896448 -> VarDecl_5544895056
+VarDecl_5544895056 [label = VarDecl]
+VarDecl_5544895056 -> BuiltinType_5544894800
+BuiltinType_5544894800 [label = BuiltinType]
+"int_5544894800" [label = "int"]
+BuiltinType_5544894800 -> "int_5544894800"
+VarDecl_5544895056 -> VarInit_5544894960
+VarInit_5544894960 [label = VarInit]
+a_5544894960 [label = a]
+VarInit_5544894960 -> a_5544894960
+VarInit_5544894960 -> Constant_5544894896
+Constant_5544894896 [label = Constant]
+int_5544894896 [label = "13"]
+Constant_5544894896 -> int_5544894896
+FuncBody_5544896448 -> VarDecl_5544895456
+VarDecl_5544895456 [label = VarDecl]
+VarDecl_5544895456 -> BuiltinType_5544895104
+BuiltinType_5544895104 [label = BuiltinType]
+"int_5544895104" [label = "int"]
+BuiltinType_5544895104 -> "int_5544895104"
+VarDecl_5544895456 -> VarInit_5544895360
+VarInit_5544895360 [label = VarInit]
+b_5544895360 [label = b]
+VarInit_5544895360 -> b_5544895360
+VarInit_5544895360 -> Sub_5544895328
+Sub_5544895328 [label = Sub]
+Sub_5544895328 -> Constant_5544895200
+Constant_5544895200 [label = Constant]
+int_5544895200 [label = "3"]
+Constant_5544895200 -> int_5544895200
+Sub_5544895328 -> UnaryMinus_5544892736
+UnaryMinus_5544892736 [label = UnaryMinus]
+UnaryMinus_5544892736 -> Variable_5544895296
+Variable_5544895296 [label = Variable]
+a_5544895296 [label = a]
+Variable_5544895296 -> a_5544895296
+FuncBody_5544896448 -> FuncCall_5544895792
+FuncCall_5544895792 [label = FuncCall]
+printf_5544895792[ label = printf]
+FuncCall_5544895792 -> printf_5544895792
+FuncCall_5544895792 -> ConstStr_5544895584
+ConstStr_5544895584 [label = ConstStr]
+str_5544895584 [label = "3 - -13: %d"]
+ConstStr_5544895584 -> str_5544895584
+FuncCall_5544895792 -> Variable_5544895744
+Variable_5544895744 [label = Variable]
+b_5544895744 [label = b]
+Variable_5544895744 -> b_5544895744
+FuncBody_5544896448 -> VarDecl_5544896192
+VarDecl_5544896192 [label = VarDecl]
+VarDecl_5544896192 -> BuiltinType_5544895840
+BuiltinType_5544895840 [label = BuiltinType]
+"int_5544895840" [label = "int"]
+BuiltinType_5544895840 -> "int_5544895840"
+VarDecl_5544896192 -> VarInit_5544896096
+VarInit_5544896096 [label = VarInit]
+c_5544896096 [label = c]
+VarInit_5544896096 -> c_5544896096
+VarInit_5544896096 -> Sub_5544896064
+Sub_5544896064 [label = Sub]
+Sub_5544896064 -> Constant_5544895936
+Constant_5544895936 [label = Constant]
+int_5544895936 [label = "3"]
+Constant_5544895936 -> int_5544895936
+Sub_5544896064 -> UnaryMinus_5544895088
+UnaryMinus_5544895088 [label = UnaryMinus]
+UnaryMinus_5544895088 -> Variable_5544896032
+Variable_5544896032 [label = Variable]
+a_5544896032 [label = a]
+Variable_5544896032 -> a_5544896032
+FuncBody_5544896448 -> FuncCall_5544896544
+FuncCall_5544896544 [label = FuncCall]
+printf_5544896544[ label = printf]
+FuncCall_5544896544 -> printf_5544896544
+FuncCall_5544896544 -> ConstStr_5544896320
+ConstStr_5544896320 [label = ConstStr]
+str_5544896320 [label = "3 - -13: %d"]
+ConstStr_5544896320 -> str_5544896320
+FuncCall_5544896544 -> Variable_5544896496
+Variable_5544896496 [label = Variable]
+c_5544896496 [label = c]
+Variable_5544896496 -> c_5544896496
+FuncBody_5544896448 -> Assign_5544896816
+Assign_5544896816 [label = Assign]
+Assign_5544896816 -> Variable_5544896624
+Variable_5544896624 [label = Variable]
+b_5544896624 [label = b]
+Variable_5544896624 -> b_5544896624
+Assign_5544896816 -> Sub_5544896784
+Sub_5544896784 [label = Sub]
+Sub_5544896784 -> Constant_5544896656
+Constant_5544896656 [label = Constant]
+int_5544896656 [label = "3"]
+Constant_5544896656 -> int_5544896656
+Sub_5544896784 -> Constant_5544896720
+Constant_5544896720 [label = Constant]
+int_5544896720 [label = "-13"]
+Constant_5544896720 -> int_5544896720
+FuncBody_5544896448 -> FuncCall_5544897120
+FuncCall_5544897120 [label = FuncCall]
+printf_5544897120[ label = printf]
+FuncCall_5544897120 -> printf_5544897120
+FuncCall_5544897120 -> ConstStr_5544896912
+ConstStr_5544896912 [label = ConstStr]
+str_5544896912 [label = "3 - -13: %d"]
+ConstStr_5544896912 -> str_5544896912
+FuncCall_5544897120 -> Variable_5544897072
+Variable_5544897072 [label = Variable]
+b_5544897072 [label = b]
+Variable_5544897072 -> b_5544897072
+FuncBody_5544896448 -> Assign_5544897392
+Assign_5544897392 [label = Assign]
+Assign_5544897392 -> Variable_5544897200
+Variable_5544897200 [label = Variable]
+c_5544897200 [label = c]
+Variable_5544897200 -> c_5544897200
+Assign_5544897392 -> Sub_5544897360
+Sub_5544897360 [label = Sub]
+Sub_5544897360 -> Constant_5544897232
+Constant_5544897232 [label = Constant]
+int_5544897232 [label = "3"]
+Constant_5544897232 -> int_5544897232
+Sub_5544897360 -> Constant_5544897296
+Constant_5544897296 [label = Constant]
+int_5544897296 [label = "-13"]
+Constant_5544897296 -> int_5544897296
+FuncBody_5544896448 -> FuncCall_5544896224
+FuncCall_5544896224 [label = FuncCall]
+printf_5544896224[ label = printf]
+FuncCall_5544896224 -> printf_5544896224
+FuncCall_5544896224 -> ConstStr_5544897616
+ConstStr_5544897616 [label = ConstStr]
+str_5544897616 [label = "3 - -13: %d"]
+ConstStr_5544897616 -> str_5544897616
+FuncCall_5544896224 -> Variable_5544897776
+Variable_5544897776 [label = Variable]
+c_5544897776 [label = c]
+Variable_5544897776 -> c_5544897776
+Program -> FuncDecl_5544900144
+FuncDecl_5544900144 [label = FuncDecl]
+FuncDecl_5544900144 -> BuiltinType_5544897888
+BuiltinType_5544897888 [label = BuiltinType]
+"void_5544897888" [label = "void"]
+BuiltinType_5544897888 -> "void_5544897888"
+checkAsterisk_5544900144[ label = checkAsterisk]
+FuncDecl_5544900144 -> checkAsterisk_5544900144
+FuncDecl_5544900144 -> ParamList_5544897984
+ParamList_5544897984 [label = ParamList]
+FuncDecl_5544900144 -> FuncBody_5544900000
+FuncBody_5544900000 [label = FuncBody]
+FuncBody_5544900000 -> FuncCall_5544898256
+FuncCall_5544898256 [label = FuncCall]
+printf_5544898256[ label = printf]
+FuncCall_5544898256 -> printf_5544898256
+FuncCall_5544898256 -> ConstStr_5544898128
+ConstStr_5544898128 [label = ConstStr]
+str_5544898128 [label = "checkAsterisk"]
+ConstStr_5544898128 -> str_5544898128
+FuncBody_5544900000 -> VarDecl_5544898576
+VarDecl_5544898576 [label = VarDecl]
+VarDecl_5544898576 -> BuiltinType_5544898320
+BuiltinType_5544898320 [label = BuiltinType]
+"int_5544898320" [label = "int"]
+BuiltinType_5544898320 -> "int_5544898320"
+VarDecl_5544898576 -> VarInit_5544898480
+VarInit_5544898480 [label = VarInit]
+a_5544898480 [label = a]
+VarInit_5544898480 -> a_5544898480
+VarInit_5544898480 -> Constant_5544898416
+Constant_5544898416 [label = Constant]
+int_5544898416 [label = "3"]
+Constant_5544898416 -> int_5544898416
+FuncBody_5544900000 -> VarDecl_5544898864
+VarDecl_5544898864 [label = VarDecl]
+VarDecl_5544898864 -> BuiltinType_5544898624
+BuiltinType_5544898624 [label = BuiltinType]
+"int_5544898624" [label = "int"]
+BuiltinType_5544898624 -> "int_5544898624"
+VarDecl_5544898864 -> VarInit_5544898784
+VarInit_5544898784 [label = VarInit]
+b_5544898784 [label = b]
+VarInit_5544898784 -> b_5544898784
+VarInit_5544898784 -> Constant_5544898720
+Constant_5544898720 [label = Constant]
+int_5544898720 [label = "4"]
+Constant_5544898720 -> int_5544898720
+FuncBody_5544900000 -> VarDecl_5544899248
+VarDecl_5544899248 [label = VarDecl]
+VarDecl_5544899248 -> PointerType_5544898992
+PointerType_5544898992 [label = PointerType]
+"int*_5544898992" [label = "int*"]
+PointerType_5544898992 -> "int*_5544898992"
+VarDecl_5544899248 -> VarInit_5544899152
+VarInit_5544899152 [label = VarInit]
+c_5544899152 [label = c]
+VarInit_5544899152 -> c_5544899152
+VarInit_5544899152 -> AddressOf_5544898608
+AddressOf_5544898608 [label = AddressOf]
+AddressOf_5544898608 -> Variable_5544899120
+Variable_5544899120 [label = Variable]
+b_5544899120 [label = b]
+Variable_5544899120 -> b_5544899120
+FuncBody_5544900000 -> VarDecl_5544899744
+VarDecl_5544899744 [label = VarDecl]
+VarDecl_5544899744 -> BuiltinType_5544899280
+BuiltinType_5544899280 [label = BuiltinType]
+"int_5544899280" [label = "int"]
+BuiltinType_5544899280 -> "int_5544899280"
+VarDecl_5544899744 -> VarInit_5544899648
+VarInit_5544899648 [label = VarInit]
+d_5544899648 [label = d]
+VarInit_5544899648 -> d_5544899648
+VarInit_5544899648 -> Mul_5544899616
+Mul_5544899616 [label = Mul]
+Mul_5544899616 -> Mul_5544899504
+Mul_5544899504 [label = Mul]
+Mul_5544899504 -> Variable_5544899408
+Variable_5544899408 [label = Variable]
+a_5544899408 [label = a]
+Variable_5544899408 -> a_5544899408
+Mul_5544899504 -> Variable_5544899472
+Variable_5544899472 [label = Variable]
+b_5544899472 [label = b]
+Variable_5544899472 -> b_5544899472
+Mul_5544899616 -> PointerDeref_5544899600
+PointerDeref_5544899600 [label = PointerDeref]
+PointerDeref_5544899600 -> Variable_5544899568
+Variable_5544899568 [label = Variable]
+c_5544899568 [label = c]
+Variable_5544899568 -> c_5544899568
+FuncBody_5544900000 -> FuncCall_5544900096
+FuncCall_5544900096 [label = FuncCall]
+printf_5544900096[ label = printf]
+FuncCall_5544900096 -> printf_5544900096
+FuncCall_5544900096 -> ConstStr_5544899872
+ConstStr_5544899872 [label = ConstStr]
+str_5544899872 [label = "3 * 4 * 4: %d"]
+ConstStr_5544899872 -> str_5544899872
+FuncCall_5544900096 -> Variable_5544900048
+Variable_5544900048 [label = Variable]
+d_5544900048 [label = d]
+Variable_5544900048 -> d_5544900048
+Program -> FuncDecl_5544900928
+FuncDecl_5544900928 [label = FuncDecl]
+FuncDecl_5544900928 -> BuiltinType_5544900272
+BuiltinType_5544900272 [label = BuiltinType]
+"void_5544900272" [label = "void"]
+BuiltinType_5544900272 -> "void_5544900272"
+subFunc_5544900928[ label = subFunc]
+FuncDecl_5544900928 -> subFunc_5544900928
+FuncDecl_5544900928 -> ParamList_5544900480
+ParamList_5544900480 [label = ParamList]
+ParamList_5544900480 -> Param_5544900432
+Param_5544900432 [label = Param]
+Param_5544900432 -> BuiltinType_5544900336
+BuiltinType_5544900336 [label = BuiltinType]
+"int_5544900336" [label = "int"]
+BuiltinType_5544900336 -> "int_5544900336"
+i_5544900432 [label = i]
+Param_5544900432 -> i_5544900432
+FuncDecl_5544900928 -> FuncBody_5544900912
+FuncBody_5544900912 [label = FuncBody]
+FuncBody_5544900912 -> FuncCall_5544900864
+FuncCall_5544900864 [label = FuncCall]
+printf_5544900864[ label = printf]
+FuncCall_5544900864 -> printf_5544900864
+FuncCall_5544900864 -> ConstStr_5544900640
+ConstStr_5544900640 [label = ConstStr]
+str_5544900640 [label = "subFunc i: %d"]
+ConstStr_5544900640 -> str_5544900640
+FuncCall_5544900864 -> Variable_5544900816
+Variable_5544900816 [label = Variable]
+i_5544900816 [label = i]
+Variable_5544900816 -> i_5544900816
+Program -> FuncDecl_5544901776
+FuncDecl_5544901776 [label = FuncDecl]
+FuncDecl_5544901776 -> BuiltinType_5544900992
+BuiltinType_5544900992 [label = BuiltinType]
+"void_5544900992" [label = "void"]
+BuiltinType_5544900992 -> "void_5544900992"
+checkFuncCall_5544901776[ label = checkFuncCall]
+FuncDecl_5544901776 -> checkFuncCall_5544901776
+FuncDecl_5544901776 -> ParamList_5544901088
+ParamList_5544901088 [label = ParamList]
+FuncDecl_5544901776 -> FuncBody_5544901456
+FuncBody_5544901456 [label = FuncBody]
+FuncBody_5544901456 -> VarDecl_5544901424
+VarDecl_5544901424 [label = VarDecl]
+VarDecl_5544901424 -> BuiltinType_5544901168
+BuiltinType_5544901168 [label = BuiltinType]
+"long_5544901168" [label = "long"]
+BuiltinType_5544901168 -> "long_5544901168"
+VarDecl_5544901424 -> VarInit_5544901328
+VarInit_5544901328 [label = VarInit]
+i_5544901328 [label = i]
+VarInit_5544901328 -> i_5544901328
+VarInit_5544901328 -> Constant_5544901264
+Constant_5544901264 [label = Constant]
+int_5544901264 [label = "1234"]
+Constant_5544901264 -> int_5544901264
+FuncBody_5544901456 -> FuncCall_5544901712
+FuncCall_5544901712 [label = FuncCall]
+subFunc_5544901712[ label = subFunc]
+FuncCall_5544901712 -> subFunc_5544901712
+FuncCall_5544901712 -> TypeCast_5544901632
+TypeCast_5544901632 [label = TypeCast]
+TypeCast_5544901632 -> BuiltinType_5544901504
+BuiltinType_5544901504 [label = BuiltinType]
+"int_5544901504" [label = "int"]
+BuiltinType_5544901504 -> "int_5544901504"
+TypeCast_5544901632 -> Variable_5544901600
+Variable_5544901600 [label = Variable]
+i_5544901600 [label = i]
+Variable_5544901600 -> i_5544901600
+Program -> FuncDecl_5544903184
+FuncDecl_5544903184 [label = FuncDecl]
+FuncDecl_5544903184 -> BuiltinType_5544901840
+BuiltinType_5544901840 [label = BuiltinType]
+"void_5544901840" [label = "void"]
+BuiltinType_5544901840 -> "void_5544901840"
+checkInc_5544903184[ label = checkInc]
+FuncDecl_5544903184 -> checkInc_5544903184
+FuncDecl_5544903184 -> ParamList_5544901936
+ParamList_5544901936 [label = ParamList]
+FuncDecl_5544903184 -> FuncBody_5544902640
+FuncBody_5544902640 [label = FuncBody]
+FuncBody_5544902640 -> VarDecl_5544902272
+VarDecl_5544902272 [label = VarDecl]
+VarDecl_5544902272 -> BuiltinType_5544902016
+BuiltinType_5544902016 [label = BuiltinType]
+"int_5544902016" [label = "int"]
+BuiltinType_5544902016 -> "int_5544902016"
+VarDecl_5544902272 -> VarInit_5544902176
+VarInit_5544902176 [label = VarInit]
+a_5544902176 [label = a]
+VarInit_5544902176 -> a_5544902176
+VarInit_5544902176 -> Constant_5544902112
+Constant_5544902112 [label = Constant]
+int_5544902112 [label = "10"]
+Constant_5544902112 -> int_5544902112
+FuncBody_5544902640 -> VarDecl_5544902608
+VarDecl_5544902608 [label = VarDecl]
+VarDecl_5544902608 -> BuiltinType_5544902320
+BuiltinType_5544902320 [label = BuiltinType]
+"int_5544902320" [label = "int"]
+BuiltinType_5544902320 -> "int_5544902320"
+VarDecl_5544902608 -> VarInit_5544902512
+VarInit_5544902512 [label = VarInit]
+b_5544902512 [label = b]
+VarInit_5544902512 -> b_5544902512
+VarInit_5544902512 -> PostfixInc_5544902496
+PostfixInc_5544902496 [label = PostfixInc]
+PostfixInc_5544902496 -> PrefixInc_5544902480
+PrefixInc_5544902480 [label = PrefixInc]
+PrefixInc_5544902480 -> Variable_5544902448
+Variable_5544902448 [label = Variable]
+a_5544902448 [label = a]
+Variable_5544902448 -> a_5544902448
+FuncBody_5544902640 -> FuncCall_5544903104
+FuncCall_5544903104 [label = FuncCall]
+printf_5544903104[ label = printf]
+FuncCall_5544903104 -> printf_5544903104
+FuncCall_5544903104 -> ConstStr_5544902768
+ConstStr_5544902768 [label = ConstStr]
+str_5544902768 [label = "checkInc, a: %d, b: %d"]
+ConstStr_5544902768 -> str_5544902768
+FuncCall_5544903104 -> Variable_5544902960
+Variable_5544902960 [label = Variable]
+a_5544902960 [label = a]
+Variable_5544902960 -> a_5544902960
+FuncCall_5544903104 -> Variable_5544903040
+Variable_5544903040 [label = Variable]
+b_5544903040 [label = b]
+Variable_5544903040 -> b_5544903040
+Program -> FuncDecl_5544904560
+FuncDecl_5544904560 [label = FuncDecl]
+FuncDecl_5544904560 -> BuiltinType_5544903248
+BuiltinType_5544903248 [label = BuiltinType]
+"void_5544903248" [label = "void"]
+BuiltinType_5544903248 -> "void_5544903248"
+checkDec_5544904560[ label = checkDec]
+FuncDecl_5544904560 -> checkDec_5544904560
+FuncDecl_5544904560 -> ParamList_5544903344
+ParamList_5544903344 [label = ParamList]
+FuncDecl_5544904560 -> FuncBody_5544904016
+FuncBody_5544904016 [label = FuncBody]
+FuncBody_5544904016 -> VarDecl_5544903664
+VarDecl_5544903664 [label = VarDecl]
+VarDecl_5544903664 -> BuiltinType_5544903424
+BuiltinType_5544903424 [label = BuiltinType]
+"int_5544903424" [label = "int"]
+BuiltinType_5544903424 -> "int_5544903424"
+VarDecl_5544903664 -> VarInit_5544903584
+VarInit_5544903584 [label = VarInit]
+a_5544903584 [label = a]
+VarInit_5544903584 -> a_5544903584
+VarInit_5544903584 -> Constant_5544903520
+Constant_5544903520 [label = Constant]
+int_5544903520 [label = "10"]
+Constant_5544903520 -> int_5544903520
+FuncBody_5544904016 -> VarDecl_5544903984
+VarDecl_5544903984 [label = VarDecl]
+VarDecl_5544903984 -> BuiltinType_5544903696
+BuiltinType_5544903696 [label = BuiltinType]
+"int_5544903696" [label = "int"]
+BuiltinType_5544903696 -> "int_5544903696"
+VarDecl_5544903984 -> VarInit_5544903888
+VarInit_5544903888 [label = VarInit]
+b_5544903888 [label = b]
+VarInit_5544903888 -> b_5544903888
+VarInit_5544903888 -> PostfixDec_5544903872
+PostfixDec_5544903872 [label = PostfixDec]
+PostfixDec_5544903872 -> PrefixDec_5544903856
+PrefixDec_5544903856 [label = PrefixDec]
+PrefixDec_5544903856 -> Variable_5544903824
+Variable_5544903824 [label = Variable]
+a_5544903824 [label = a]
+Variable_5544903824 -> a_5544903824
+FuncBody_5544904016 -> FuncCall_5544904480
+FuncCall_5544904480 [label = FuncCall]
+printf_5544904480[ label = printf]
+FuncCall_5544904480 -> printf_5544904480
+FuncCall_5544904480 -> ConstStr_5544904144
+ConstStr_5544904144 [label = ConstStr]
+str_5544904144 [label = "checkDec, a: %d, b: %d"]
+ConstStr_5544904144 -> str_5544904144
+FuncCall_5544904480 -> Variable_5544904336
+Variable_5544904336 [label = Variable]
+a_5544904336 [label = a]
+Variable_5544904336 -> a_5544904336
+FuncCall_5544904480 -> Variable_5544904416
+Variable_5544904416 [label = Variable]
+b_5544904416 [label = b]
+Variable_5544904416 -> b_5544904416
+Program -> FuncDecl_5544905776
+FuncDecl_5544905776 [label = FuncDecl]
+FuncDecl_5544905776 -> BuiltinType_5544900208
+BuiltinType_5544900208 [label = BuiltinType]
+"int_5544900208" [label = "int"]
+BuiltinType_5544900208 -> "int_5544900208"
+main_5544905776[ label = main]
+FuncDecl_5544905776 -> main_5544905776
+FuncDecl_5544905776 -> ParamList_5544904784
+ParamList_5544904784 [label = ParamList]
+FuncDecl_5544905776 -> FuncBody_5544904368
+FuncBody_5544904368 [label = FuncBody]
+FuncBody_5544904368 -> FuncCall_5544904928
+FuncCall_5544904928 [label = FuncCall]
+checkAmpersandPrec_5544904928[ label = checkAmpersandPrec]
+FuncCall_5544904928 -> checkAmpersandPrec_5544904928
+FuncBody_5544904368 -> FuncCall_5544905040
+FuncCall_5544905040 [label = FuncCall]
+checkPlusPrec_5544905040[ label = checkPlusPrec]
+FuncCall_5544905040 -> checkPlusPrec_5544905040
+FuncBody_5544904368 -> FuncCall_5544905152
+FuncCall_5544905152 [label = FuncCall]
+checkMinusPrec_5544905152[ label = checkMinusPrec]
+FuncCall_5544905152 -> checkMinusPrec_5544905152
+FuncBody_5544904368 -> FuncCall_5544905296
+FuncCall_5544905296 [label = FuncCall]
+checkAsterisk_5544905296[ label = checkAsterisk]
+FuncCall_5544905296 -> checkAsterisk_5544905296
+FuncBody_5544904368 -> FuncCall_5544905408
+FuncCall_5544905408 [label = FuncCall]
+checkFuncCall_5544905408[ label = checkFuncCall]
+FuncCall_5544905408 -> checkFuncCall_5544905408
+FuncBody_5544904368 -> FuncCall_5544905552
+FuncCall_5544905552 [label = FuncCall]
+checkInc_5544905552[ label = checkInc]
+FuncCall_5544905552 -> checkInc_5544905552
+FuncBody_5544904368 -> FuncCall_5544905664
+FuncCall_5544905664 [label = FuncCall]
+checkDec_5544905664[ label = checkDec]
+FuncCall_5544905664 -> checkDec_5544905664
+FuncBody_5544904368 -> ReturnStmt_5544902304
+ReturnStmt_5544902304 [label = ReturnStmt]
+ReturnStmt_5544902304 -> Constant_5544905712
+Constant_5544905712 [label = Constant]
+int_5544905712 [label = "0"]
+Constant_5544905712 -> int_5544905712
+}

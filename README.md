@@ -120,6 +120,8 @@ To run one test:
 `./run-tests.sh <C file name>`  
 such as `./run-tests.sh 0.hello_world.c`
 
+All unit tests' AST files(.dot and .png) and IR files(.ll) were uploaded to `lcc/debug/`.
+
 ## `lcc` Debugging
 
 Use Visual Studio Code to code and debug `lcc`.  

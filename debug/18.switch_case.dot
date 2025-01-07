@@ -1,0 +1,255 @@
+digraph {
+Program [label = Program]
+Program -> FuncDecl_4796667920
+FuncDecl_4796667920 [label = FuncDecl]
+FuncDecl_4796667920 -> BuiltinType_4796667696
+BuiltinType_4796667696 [label = BuiltinType]
+"int_4796667696" [label = "int"]
+BuiltinType_4796667696 -> "int_4796667696"
+printf_4796667920[ label = printf]
+FuncDecl_4796667920 -> printf_4796667920
+FuncDecl_4796667920 -> ParamList_4796667552
+ParamList_4796667552 [label = ParamList]
+ParamList_4796667552 -> Param_4796667504
+Param_4796667504 [label = Param]
+Param_4796667504 -> PointerType_4796667440
+PointerType_4796667440 [label = PointerType]
+"char*_4796667440" [label = "char*"]
+PointerType_4796667440 -> "char*_4796667440"
+anonymous_4796667504 [label = anonymous]
+Param_4796667504 -> anonymous_4796667504
+"..._4796667552" [label = "..."]
+ParamList_4796667552 -> "..._4796667552"
+Program -> FuncDecl_4796671552
+FuncDecl_4796671552 [label = FuncDecl]
+FuncDecl_4796671552 -> BuiltinType_4796667984
+BuiltinType_4796667984 [label = BuiltinType]
+"void_4796667984" [label = "void"]
+BuiltinType_4796667984 -> "void_4796667984"
+gradeOfScore_4796671552[ label = gradeOfScore]
+FuncDecl_4796671552 -> gradeOfScore_4796671552
+FuncDecl_4796671552 -> ParamList_4796668192
+ParamList_4796668192 [label = ParamList]
+ParamList_4796668192 -> Param_4796668144
+Param_4796668144 [label = Param]
+Param_4796668144 -> BuiltinType_4796668048
+BuiltinType_4796668048 [label = BuiltinType]
+"int_4796668048" [label = "int"]
+BuiltinType_4796668048 -> "int_4796668048"
+score_4796668144 [label = score]
+Param_4796668144 -> score_4796668144
+FuncDecl_4796671552 -> FuncBody_4796432240
+FuncBody_4796432240 [label = FuncBody]
+FuncBody_4796432240 -> VarDecl_4796668448
+VarDecl_4796668448 [label = VarDecl]
+VarDecl_4796668448 -> BuiltinType_4796668272
+BuiltinType_4796668272 [label = BuiltinType]
+"char_4796668272" [label = "char"]
+BuiltinType_4796668272 -> "char_4796668272"
+VarDecl_4796668448 -> VarInit_4796668368
+VarInit_4796668368 [label = VarInit]
+grade_4796668368 [label = grade]
+VarInit_4796668368 -> grade_4796668368
+FuncBody_4796432240 -> SwitchStmt_4796671072
+SwitchStmt_4796671072 [label = SwitchStmt]
+SwitchStmt_4796671072 -> Variable_4796668512
+Variable_4796668512 [label = Variable]
+score_4796668512 [label = score]
+Variable_4796668512 -> score_4796668512
+SwitchStmt_4796671072 -> CaseStmt_4796668864
+CaseStmt_4796668864 [label = CaseStmt]
+CaseStmt_4796668864 -> Constant_4796668768
+Constant_4796668768 [label = Constant]
+int_4796668768 [label = "1"]
+Constant_4796668768 -> int_4796668768
+SwitchStmt_4796671072 -> CaseStmt_4796668992
+CaseStmt_4796668992 [label = CaseStmt]
+CaseStmt_4796668992 -> Constant_4796668896
+Constant_4796668896 [label = Constant]
+int_4796668896 [label = "2"]
+Constant_4796668896 -> int_4796668896
+SwitchStmt_4796671072 -> CaseStmt_4796669120
+CaseStmt_4796669120 [label = CaseStmt]
+CaseStmt_4796669120 -> Constant_4796669024
+Constant_4796669024 [label = Constant]
+int_4796669024 [label = "3"]
+Constant_4796669024 -> int_4796669024
+SwitchStmt_4796671072 -> CaseStmt_4796669280
+CaseStmt_4796669280 [label = CaseStmt]
+CaseStmt_4796669280 -> Constant_4796669184
+Constant_4796669184 [label = Constant]
+int_4796669184 [label = "4"]
+Constant_4796669184 -> int_4796669184
+SwitchStmt_4796671072 -> CaseStmt_4796669568
+CaseStmt_4796669568 [label = CaseStmt]
+CaseStmt_4796669568 -> Constant_4796669312
+Constant_4796669312 [label = Constant]
+int_4796669312 [label = "5"]
+Constant_4796669312 -> int_4796669312
+CaseStmt_4796669568 -> Assign_4796669536
+Assign_4796669536 [label = Assign]
+Assign_4796669536 -> Variable_4796669440
+Variable_4796669440 [label = Variable]
+grade_4796669440 [label = grade]
+Variable_4796669440 -> grade_4796669440
+Assign_4796669536 -> Constant_4796669472
+Constant_4796669472 [label = Constant]
+char_4796669472 [label = "68"]
+Constant_4796669472 -> char_4796669472
+CaseStmt_4796669568 -> BreakStmt_4796668544
+BreakStmt_4796668544 [label = BreakStmt]
+SwitchStmt_4796671072 -> CaseStmt_4796669888
+CaseStmt_4796669888 [label = CaseStmt]
+CaseStmt_4796669888 -> Constant_4796669664
+Constant_4796669664 [label = Constant]
+int_4796669664 [label = "6"]
+Constant_4796669664 -> int_4796669664
+CaseStmt_4796669888 -> Assign_4796669856
+Assign_4796669856 [label = Assign]
+Assign_4796669856 -> Variable_4796669760
+Variable_4796669760 [label = Variable]
+grade_4796669760 [label = grade]
+Variable_4796669760 -> grade_4796669760
+Assign_4796669856 -> Constant_4796669792
+Constant_4796669792 [label = Constant]
+char_4796669792 [label = "67"]
+Constant_4796669792 -> char_4796669792
+CaseStmt_4796669888 -> BreakStmt_4796231840
+BreakStmt_4796231840 [label = BreakStmt]
+SwitchStmt_4796671072 -> CaseStmt_4796670016
+CaseStmt_4796670016 [label = CaseStmt]
+CaseStmt_4796670016 -> Constant_4796669920
+Constant_4796669920 [label = Constant]
+int_4796669920 [label = "7"]
+Constant_4796669920 -> int_4796669920
+SwitchStmt_4796671072 -> CaseStmt_4796670304
+CaseStmt_4796670304 [label = CaseStmt]
+CaseStmt_4796670304 -> Constant_4796670048
+Constant_4796670048 [label = Constant]
+int_4796670048 [label = "8"]
+Constant_4796670048 -> int_4796670048
+CaseStmt_4796670304 -> Assign_4796670272
+Assign_4796670272 [label = Assign]
+Assign_4796670272 -> Variable_4796670176
+Variable_4796670176 [label = Variable]
+grade_4796670176 [label = grade]
+Variable_4796670176 -> grade_4796670176
+Assign_4796670272 -> Constant_4796670208
+Constant_4796670208 [label = Constant]
+char_4796670208 [label = "66"]
+Constant_4796670208 -> char_4796670208
+CaseStmt_4796670304 -> BreakStmt_4796426848
+BreakStmt_4796426848 [label = BreakStmt]
+SwitchStmt_4796671072 -> CaseStmt_4796670432
+CaseStmt_4796670432 [label = CaseStmt]
+CaseStmt_4796670432 -> Constant_4796670336
+Constant_4796670336 [label = Constant]
+int_4796670336 [label = "9"]
+Constant_4796670336 -> int_4796670336
+SwitchStmt_4796671072 -> CaseStmt_4796670784
+CaseStmt_4796670784 [label = CaseStmt]
+CaseStmt_4796670784 -> Constant_4796669600
+Constant_4796669600 [label = Constant]
+int_4796669600 [label = "10"]
+Constant_4796669600 -> int_4796669600
+CaseStmt_4796670784 -> Assign_4796670752
+Assign_4796670752 [label = Assign]
+Assign_4796670752 -> Variable_4796670656
+Variable_4796670656 [label = Variable]
+grade_4796670656 [label = grade]
+Variable_4796670656 -> grade_4796670656
+Assign_4796670752 -> Constant_4796670688
+Constant_4796670688 [label = Constant]
+char_4796670688 [label = "65"]
+Constant_4796670688 -> char_4796670688
+CaseStmt_4796670784 -> BreakStmt_4796210832
+BreakStmt_4796210832 [label = BreakStmt]
+SwitchStmt_4796671072 -> CaseStmt_4796671040
+CaseStmt_4796671040 [label = CaseStmt]
+CaseStmt_4796671040 -> Assign_4796670976
+Assign_4796670976 [label = Assign]
+Assign_4796670976 -> Variable_4796670880
+Variable_4796670880 [label = Variable]
+grade_4796670880 [label = grade]
+Variable_4796670880 -> grade_4796670880
+Assign_4796670976 -> Constant_4796670912
+Constant_4796670912 [label = Constant]
+char_4796670912 [label = "69"]
+Constant_4796670912 -> char_4796670912
+CaseStmt_4796671040 -> BreakStmt_4796671008
+BreakStmt_4796671008 [label = BreakStmt]
+FuncBody_4796432240 -> FuncCall_4796671472
+FuncCall_4796671472 [label = FuncCall]
+printf_4796671472[ label = printf]
+FuncCall_4796671472 -> printf_4796671472
+FuncCall_4796671472 -> ConstStr_4796671168
+ConstStr_4796671168 [label = ConstStr]
+str_4796671168 [label = "score:%d grade:%c"]
+ConstStr_4796671168 -> str_4796671168
+FuncCall_4796671472 -> Variable_4796671328
+Variable_4796671328 [label = Variable]
+score_4796671328 [label = score]
+Variable_4796671328 -> score_4796671328
+FuncCall_4796671472 -> Variable_4796671408
+Variable_4796671408 [label = Variable]
+grade_4796671408 [label = grade]
+Variable_4796671408 -> grade_4796671408
+Program -> FuncDecl_4796672912
+FuncDecl_4796672912 [label = FuncDecl]
+FuncDecl_4796672912 -> BuiltinType_4796671616
+BuiltinType_4796671616 [label = BuiltinType]
+"int_4796671616" [label = "int"]
+BuiltinType_4796671616 -> "int_4796671616"
+main_4796672912[ label = main]
+FuncDecl_4796672912 -> main_4796672912
+FuncDecl_4796672912 -> ParamList_4796671712
+ParamList_4796671712 [label = ParamList]
+FuncDecl_4796672912 -> FuncBody_4796672896
+FuncBody_4796672896 [label = FuncBody]
+FuncBody_4796672896 -> FuncCall_4796671920
+FuncCall_4796671920 [label = FuncCall]
+gradeOfScore_4796671920[ label = gradeOfScore]
+FuncCall_4796671920 -> gradeOfScore_4796671920
+FuncCall_4796671920 -> Constant_4796671824
+Constant_4796671824 [label = Constant]
+int_4796671824 [label = "3"]
+Constant_4796671824 -> int_4796671824
+FuncBody_4796672896 -> FuncCall_4796672112
+FuncCall_4796672112 [label = FuncCall]
+gradeOfScore_4796672112[ label = gradeOfScore]
+FuncCall_4796672112 -> gradeOfScore_4796672112
+FuncCall_4796672112 -> Constant_4796672000
+Constant_4796672000 [label = Constant]
+int_4796672000 [label = "5"]
+Constant_4796672000 -> int_4796672000
+FuncBody_4796672896 -> FuncCall_4796672304
+FuncCall_4796672304 [label = FuncCall]
+gradeOfScore_4796672304[ label = gradeOfScore]
+FuncCall_4796672304 -> gradeOfScore_4796672304
+FuncCall_4796672304 -> Constant_4796672208
+Constant_4796672208 [label = Constant]
+int_4796672208 [label = "6"]
+Constant_4796672208 -> int_4796672208
+FuncBody_4796672896 -> FuncCall_4796672512
+FuncCall_4796672512 [label = FuncCall]
+gradeOfScore_4796672512[ label = gradeOfScore]
+FuncCall_4796672512 -> gradeOfScore_4796672512
+FuncCall_4796672512 -> Constant_4796672416
+Constant_4796672416 [label = Constant]
+int_4796672416 [label = "8"]
+Constant_4796672416 -> int_4796672416
+FuncBody_4796672896 -> FuncCall_4796672704
+FuncCall_4796672704 [label = FuncCall]
+gradeOfScore_4796672704[ label = gradeOfScore]
+FuncCall_4796672704 -> gradeOfScore_4796672704
+FuncCall_4796672704 -> Constant_4796672592
+Constant_4796672592 [label = Constant]
+int_4796672592 [label = "9"]
+Constant_4796672592 -> int_4796672592
+FuncBody_4796672896 -> ReturnStmt_4796672880
+ReturnStmt_4796672880 [label = ReturnStmt]
+ReturnStmt_4796672880 -> Constant_4796672816
+Constant_4796672816 [label = Constant]
+int_4796672816 [label = "0"]
+Constant_4796672816 -> int_4796672816
+}

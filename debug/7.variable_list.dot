@@ -1,0 +1,207 @@
+digraph {
+Program [label = Program]
+Program -> FuncDecl_4981217296
+FuncDecl_4981217296 [label = FuncDecl]
+FuncDecl_4981217296 -> BuiltinType_4981217072
+BuiltinType_4981217072 [label = BuiltinType]
+"int_4981217072" [label = "int"]
+BuiltinType_4981217072 -> "int_4981217072"
+printf_4981217296[ label = printf]
+FuncDecl_4981217296 -> printf_4981217296
+FuncDecl_4981217296 -> ParamList_4981216928
+ParamList_4981216928 [label = ParamList]
+ParamList_4981216928 -> Param_4981216880
+Param_4981216880 [label = Param]
+Param_4981216880 -> PointerType_4981216816
+PointerType_4981216816 [label = PointerType]
+"char*_4981216816" [label = "char*"]
+PointerType_4981216816 -> "char*_4981216816"
+anonymous_4981216880 [label = anonymous]
+Param_4981216880 -> anonymous_4981216880
+"..._4981216928" [label = "..."]
+ParamList_4981216928 -> "..._4981216928"
+Program -> FuncDecl_4981221152
+FuncDecl_4981221152 [label = FuncDecl]
+FuncDecl_4981221152 -> BuiltinType_4981217360
+BuiltinType_4981217360 [label = BuiltinType]
+"int_4981217360" [label = "int"]
+BuiltinType_4981217360 -> "int_4981217360"
+main_4981221152[ label = main]
+FuncDecl_4981221152 -> main_4981221152
+FuncDecl_4981221152 -> ParamList_4981217424
+ParamList_4981217424 [label = ParamList]
+FuncDecl_4981221152 -> FuncBody_4980981616
+FuncBody_4980981616 [label = FuncBody]
+FuncBody_4980981616 -> VarDecl_4981218192
+VarDecl_4981218192 [label = VarDecl]
+VarDecl_4981218192 -> BuiltinType_4981217504
+BuiltinType_4981217504 [label = BuiltinType]
+"int_4981217504" [label = "int"]
+BuiltinType_4981217504 -> "int_4981217504"
+VarDecl_4981218192 -> VarInit_4981217600
+VarInit_4981217600 [label = VarInit]
+a_4981217600 [label = a]
+VarInit_4981217600 -> a_4981217600
+VarDecl_4981218192 -> VarInit_4981217776
+VarInit_4981217776 [label = VarInit]
+b_4981217776 [label = b]
+VarInit_4981217776 -> b_4981217776
+VarInit_4981217776 -> Constant_4981217712
+Constant_4981217712 [label = Constant]
+int_4981217712 [label = "1"]
+Constant_4981217712 -> int_4981217712
+VarDecl_4981218192 -> VarInit_4981218112
+VarInit_4981218112 [label = VarInit]
+c_4981218112 [label = c]
+VarInit_4981218112 -> c_4981218112
+VarInit_4981218112 -> Constant_4981217856
+Constant_4981217856 [label = Constant]
+int_4981217856 [label = "2"]
+Constant_4981217856 -> int_4981217856
+FuncBody_4980981616 -> VarDecl_4981218544
+VarDecl_4981218544 [label = VarDecl]
+VarDecl_4981218544 -> BuiltinType_4981218224
+BuiltinType_4981218224 [label = BuiltinType]
+"int_4981218224" [label = "int"]
+BuiltinType_4981218224 -> "int_4981218224"
+VarDecl_4981218544 -> VarInit_4981218384
+VarInit_4981218384 [label = VarInit]
+d_4981218384 [label = d]
+VarInit_4981218384 -> d_4981218384
+VarInit_4981218384 -> Constant_4981218320
+Constant_4981218320 [label = Constant]
+int_4981218320 [label = "3"]
+Constant_4981218320 -> int_4981218320
+VarDecl_4981218544 -> VarInit_4981218496
+VarInit_4981218496 [label = VarInit]
+e_4981218496 [label = e]
+VarInit_4981218496 -> e_4981218496
+FuncBody_4980981616 -> VarDecl_4981218752
+VarDecl_4981218752 [label = VarDecl]
+VarDecl_4981218752 -> BuiltinType_4981218576
+BuiltinType_4981218576 [label = BuiltinType]
+"int_4981218576" [label = "int"]
+BuiltinType_4981218576 -> "int_4981218576"
+VarDecl_4981218752 -> VarInit_4981218672
+VarInit_4981218672 [label = VarInit]
+f_4981218672 [label = f]
+VarInit_4981218672 -> f_4981218672
+FuncBody_4980981616 -> Assign_4981218944
+Assign_4981218944 [label = Assign]
+Assign_4981218944 -> Variable_4981218848
+Variable_4981218848 [label = Variable]
+a_4981218848 [label = a]
+Variable_4981218848 -> a_4981218848
+Assign_4981218944 -> Constant_4981218880
+Constant_4981218880 [label = Constant]
+int_4981218880 [label = "0"]
+Constant_4981218880 -> int_4981218880
+FuncBody_4980981616 -> Assign_4981219104
+Assign_4981219104 [label = Assign]
+Assign_4981219104 -> Variable_4981219008
+Variable_4981219008 [label = Variable]
+e_4981219008 [label = e]
+Variable_4981219008 -> e_4981219008
+Assign_4981219104 -> Constant_4981219040
+Constant_4981219040 [label = Constant]
+int_4981219040 [label = "4"]
+Constant_4981219040 -> int_4981219040
+FuncBody_4980981616 -> Assign_4981219296
+Assign_4981219296 [label = Assign]
+Assign_4981219296 -> Variable_4981219200
+Variable_4981219200 [label = Variable]
+f_4981219200 [label = f]
+Variable_4981219200 -> f_4981219200
+Assign_4981219296 -> Constant_4981219232
+Constant_4981219232 [label = Constant]
+int_4981219232 [label = "5"]
+Constant_4981219232 -> int_4981219232
+FuncBody_4980981616 -> VarDecl_4981219584
+VarDecl_4981219584 [label = VarDecl]
+VarDecl_4981219584 -> BuiltinType_4981219328
+BuiltinType_4981219328 [label = BuiltinType]
+"int_4981219328" [label = "int"]
+BuiltinType_4981219328 -> "int_4981219328"
+VarDecl_4981219584 -> VarInit_4981219424
+VarInit_4981219424 [label = VarInit]
+g_4981219424 [label = g]
+VarInit_4981219424 -> g_4981219424
+VarDecl_4981219584 -> VarInit_4981219536
+VarInit_4981219536 [label = VarInit]
+h_4981219536 [label = h]
+VarInit_4981219536 -> h_4981219536
+FuncBody_4980981616 -> Assign_4981219744
+Assign_4981219744 [label = Assign]
+Assign_4981219744 -> Variable_4981219648
+Variable_4981219648 [label = Variable]
+g_4981219648 [label = g]
+Variable_4981219648 -> g_4981219648
+Assign_4981219744 -> Constant_4981219680
+Constant_4981219680 [label = Constant]
+int_4981219680 [label = "6"]
+Constant_4981219680 -> int_4981219680
+FuncBody_4980981616 -> Assign_4981219904
+Assign_4981219904 [label = Assign]
+Assign_4981219904 -> Variable_4981219808
+Variable_4981219808 [label = Variable]
+h_4981219808 [label = h]
+Variable_4981219808 -> h_4981219808
+Assign_4981219904 -> Constant_4981219840
+Constant_4981219840 [label = Constant]
+int_4981219840 [label = "7"]
+Constant_4981219840 -> int_4981219840
+FuncBody_4980981616 -> FuncCall_4981220640
+FuncCall_4981220640 [label = FuncCall]
+printf_4981220640[ label = printf]
+FuncCall_4981220640 -> printf_4981220640
+FuncCall_4981220640 -> ConstStr_4981220128
+ConstStr_4981220128 [label = ConstStr]
+str_4981220128 [label = "%d %d %d %d %d %d"]
+ConstStr_4981220128 -> str_4981220128
+FuncCall_4981220640 -> Variable_4981220288
+Variable_4981220288 [label = Variable]
+a_4981220288 [label = a]
+Variable_4981220288 -> a_4981220288
+FuncCall_4981220640 -> Variable_4981219168
+Variable_4981219168 [label = Variable]
+b_4981219168 [label = b]
+Variable_4981219168 -> b_4981219168
+FuncCall_4981220640 -> Variable_4981220384
+Variable_4981220384 [label = Variable]
+c_4981220384 [label = c]
+Variable_4981220384 -> c_4981220384
+FuncCall_4981220640 -> Variable_4981220448
+Variable_4981220448 [label = Variable]
+d_4981220448 [label = d]
+Variable_4981220448 -> d_4981220448
+FuncCall_4981220640 -> Variable_4981220544
+Variable_4981220544 [label = Variable]
+e_4981220544 [label = e]
+Variable_4981220544 -> e_4981220544
+FuncCall_4981220640 -> Variable_4981220608
+Variable_4981220608 [label = Variable]
+f_4981220608 [label = f]
+Variable_4981220608 -> f_4981220608
+FuncBody_4980981616 -> FuncCall_4981221040
+FuncCall_4981221040 [label = FuncCall]
+printf_4981221040[ label = printf]
+FuncCall_4981221040 -> printf_4981221040
+FuncCall_4981221040 -> ConstStr_4981220752
+ConstStr_4981220752 [label = ConstStr]
+str_4981220752 [label = "%d %d"]
+ConstStr_4981220752 -> str_4981220752
+FuncCall_4981221040 -> Variable_4981220912
+Variable_4981220912 [label = Variable]
+g_4981220912 [label = g]
+Variable_4981220912 -> g_4981220912
+FuncCall_4981221040 -> Variable_4981220976
+Variable_4981220976 [label = Variable]
+h_4981220976 [label = h]
+Variable_4981220976 -> h_4981220976
+FuncBody_4980981616 -> ReturnStmt_4980982176
+ReturnStmt_4980982176 [label = ReturnStmt]
+ReturnStmt_4980982176 -> Constant_4981221088
+Constant_4981221088 [label = Constant]
+int_4981221088 [label = "0"]
+Constant_4981221088 -> int_4981221088
+}

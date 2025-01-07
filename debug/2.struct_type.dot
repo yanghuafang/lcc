@@ -1,0 +1,501 @@
+digraph {
+Program [label = Program]
+Program -> FuncDecl_4939274224
+FuncDecl_4939274224 [label = FuncDecl]
+FuncDecl_4939274224 -> BuiltinType_4939274032
+BuiltinType_4939274032 [label = BuiltinType]
+"int_4939274032" [label = "int"]
+BuiltinType_4939274032 -> "int_4939274032"
+printf_4939274224[ label = printf]
+FuncDecl_4939274224 -> printf_4939274224
+FuncDecl_4939274224 -> ParamList_4939273888
+ParamList_4939273888 [label = ParamList]
+ParamList_4939273888 -> Param_4939273840
+Param_4939273840 [label = Param]
+Param_4939273840 -> PointerType_4939273776
+PointerType_4939273776 [label = PointerType]
+"char*_4939273776" [label = "char*"]
+PointerType_4939273776 -> "char*_4939273776"
+anonymous_4939273840 [label = anonymous]
+Param_4939273840 -> anonymous_4939273840
+"..._4939273888" [label = "..."]
+ParamList_4939273888 -> "..._4939273888"
+Program -> TypeDecl_4939047504
+TypeDecl_4939047504 [label = TypeDecl]
+TypeDecl_4939047504 -> StructType_4939275648
+StructType_4939275648 [label = StructType]
+"Employee_4939275648" [label = "Employee"]
+StructType_4939275648 -> "Employee_4939275648"
+StructType_4939275648 -> FieldDecl_4939274576
+FieldDecl_4939274576 [label = FieldDecl]
+FieldDecl_4939274576 -> PointerType_4939274416
+PointerType_4939274416 [label = PointerType]
+"char*_4939274416" [label = "char*"]
+PointerType_4939274416 -> "char*_4939274416"
+name_4939274576 [label = name]
+FieldDecl_4939274576 -> name_4939274576
+StructType_4939275648 -> FieldDecl_4939274768
+FieldDecl_4939274768 [label = FieldDecl]
+FieldDecl_4939274768 -> BuiltinType_4939274608
+BuiltinType_4939274608 [label = BuiltinType]
+"char_4939274608" [label = "char"]
+BuiltinType_4939274608 -> "char_4939274608"
+sex_4939274768 [label = sex]
+FieldDecl_4939274768 -> sex_4939274768
+StructType_4939275648 -> FieldDecl_4939275136
+FieldDecl_4939275136 [label = FieldDecl]
+FieldDecl_4939275136 -> BuiltinType_4939274800
+BuiltinType_4939274800 [label = BuiltinType]
+"int_4939274800" [label = "int"]
+BuiltinType_4939274800 -> "int_4939274800"
+id_4939275136 [label = id]
+FieldDecl_4939275136 -> id_4939275136
+StructType_4939275648 -> FieldDecl_4939275360
+FieldDecl_4939275360 [label = FieldDecl]
+FieldDecl_4939275360 -> BuiltinType_4939275200
+BuiltinType_4939275200 [label = BuiltinType]
+"uint_4939275200" [label = "uint"]
+BuiltinType_4939275200 -> "uint_4939275200"
+age_4939275360 [label = age]
+FieldDecl_4939275360 -> age_4939275360
+StructType_4939275648 -> FieldDecl_4939275552
+FieldDecl_4939275552 [label = FieldDecl]
+FieldDecl_4939275552 -> BuiltinType_4939275392
+BuiltinType_4939275392 [label = BuiltinType]
+"float_4939275392" [label = "float"]
+BuiltinType_4939275392 -> "float_4939275392"
+salary_4939275552 [label = salary]
+FieldDecl_4939275552 -> salary_4939275552
+Program -> FuncDecl_4939278304
+FuncDecl_4939278304 [label = FuncDecl]
+FuncDecl_4939278304 -> BuiltinType_4939275712
+BuiltinType_4939275712 [label = BuiltinType]
+"void_4939275712" [label = "void"]
+BuiltinType_4939275712 -> "void_4939275712"
+derefStruct_4939278304[ label = derefStruct]
+FuncDecl_4939278304 -> derefStruct_4939278304
+FuncDecl_4939278304 -> ParamList_4939276000
+ParamList_4939276000 [label = ParamList]
+ParamList_4939276000 -> Param_4939275952
+Param_4939275952 [label = Param]
+Param_4939275952 -> PointerType_4939275856
+PointerType_4939275856 [label = PointerType]
+"Employee*_4939275856" [label = "Employee*"]
+PointerType_4939275856 -> "Employee*_4939275856"
+employee_4939275952 [label = employee]
+Param_4939275952 -> employee_4939275952
+FuncDecl_4939278304 -> FuncBody_4939038576
+FuncBody_4939038576 [label = FuncBody]
+FuncBody_4939038576 -> FuncCall_4939276272
+FuncCall_4939276272 [label = FuncCall]
+printf_4939276272[ label = printf]
+FuncCall_4939276272 -> printf_4939276272
+FuncCall_4939276272 -> ConstStr_4939276144
+ConstStr_4939276144 [label = ConstStr]
+str_4939276144 [label = "deref struct..."]
+ConstStr_4939276144 -> str_4939276144
+FuncBody_4939038576 -> FuncCall_4939276656
+FuncCall_4939276656 [label = FuncCall]
+printf_4939276656[ label = printf]
+FuncCall_4939276656 -> printf_4939276656
+FuncCall_4939276656 -> ConstStr_4939276384
+ConstStr_4939276384 [label = ConstStr]
+str_4939276384 [label = "	name: %s"]
+ConstStr_4939276384 -> str_4939276384
+FuncCall_4939276656 -> StructDeref_4939276608
+StructDeref_4939276608 [label = StructDeref]
+StructDeref_4939276608 -> Variable_4939276544
+Variable_4939276544 [label = Variable]
+employee_4939276544 [label = employee]
+Variable_4939276544 -> employee_4939276544
+name_4939276608[ label = name]
+StructDeref_4939276608 -> name_4939276608
+FuncBody_4939038576 -> FuncCall_4939277040
+FuncCall_4939277040 [label = FuncCall]
+printf_4939277040[ label = printf]
+FuncCall_4939277040 -> printf_4939277040
+FuncCall_4939277040 -> ConstStr_4939276768
+ConstStr_4939276768 [label = ConstStr]
+str_4939276768 [label = "	sex: %c"]
+ConstStr_4939276768 -> str_4939276768
+FuncCall_4939277040 -> StructDeref_4939276992
+StructDeref_4939276992 [label = StructDeref]
+StructDeref_4939276992 -> Variable_4939276928
+Variable_4939276928 [label = Variable]
+employee_4939276928 [label = employee]
+Variable_4939276928 -> employee_4939276928
+sex_4939276992[ label = sex]
+StructDeref_4939276992 -> sex_4939276992
+FuncBody_4939038576 -> FuncCall_4939277456
+FuncCall_4939277456 [label = FuncCall]
+printf_4939277456[ label = printf]
+FuncCall_4939277456 -> printf_4939277456
+FuncCall_4939277456 -> ConstStr_4939277184
+ConstStr_4939277184 [label = ConstStr]
+str_4939277184 [label = "	id: %d"]
+ConstStr_4939277184 -> str_4939277184
+FuncCall_4939277456 -> StructDeref_4939277408
+StructDeref_4939277408 [label = StructDeref]
+StructDeref_4939277408 -> Variable_4939277344
+Variable_4939277344 [label = Variable]
+employee_4939277344 [label = employee]
+Variable_4939277344 -> employee_4939277344
+id_4939277408[ label = id]
+StructDeref_4939277408 -> id_4939277408
+FuncBody_4939038576 -> FuncCall_4939277840
+FuncCall_4939277840 [label = FuncCall]
+printf_4939277840[ label = printf]
+FuncCall_4939277840 -> printf_4939277840
+FuncCall_4939277840 -> ConstStr_4939277568
+ConstStr_4939277568 [label = ConstStr]
+str_4939277568 [label = "	age: %u"]
+ConstStr_4939277568 -> str_4939277568
+FuncCall_4939277840 -> StructDeref_4939277792
+StructDeref_4939277792 [label = StructDeref]
+StructDeref_4939277792 -> Variable_4939277728
+Variable_4939277728 [label = Variable]
+employee_4939277728 [label = employee]
+Variable_4939277728 -> employee_4939277728
+age_4939277792[ label = age]
+StructDeref_4939277792 -> age_4939277792
+FuncBody_4939038576 -> FuncCall_4939278256
+FuncCall_4939278256 [label = FuncCall]
+printf_4939278256[ label = printf]
+FuncCall_4939278256 -> printf_4939278256
+FuncCall_4939278256 -> ConstStr_4939277984
+ConstStr_4939277984 [label = ConstStr]
+str_4939277984 [label = "	salary: %f"]
+ConstStr_4939277984 -> str_4939277984
+FuncCall_4939278256 -> StructDeref_4939278208
+StructDeref_4939278208 [label = StructDeref]
+StructDeref_4939278208 -> Variable_4939278144
+Variable_4939278144 [label = Variable]
+employee_4939278144 [label = employee]
+Variable_4939278144 -> employee_4939278144
+salary_4939278208[ label = salary]
+StructDeref_4939278208 -> salary_4939278208
+Program -> FuncDecl_4939281168
+FuncDecl_4939281168 [label = FuncDecl]
+FuncDecl_4939281168 -> BuiltinType_4939278400
+BuiltinType_4939278400 [label = BuiltinType]
+"void_4939278400" [label = "void"]
+BuiltinType_4939278400 -> "void_4939278400"
+derefPointer_4939281168[ label = derefPointer]
+FuncDecl_4939281168 -> derefPointer_4939281168
+FuncDecl_4939281168 -> ParamList_4939278720
+ParamList_4939278720 [label = ParamList]
+ParamList_4939278720 -> Param_4939278672
+Param_4939278672 [label = Param]
+Param_4939278672 -> PointerType_4939278576
+PointerType_4939278576 [label = PointerType]
+"Employee*_4939278576" [label = "Employee*"]
+PointerType_4939278576 -> "Employee*_4939278576"
+employee_4939278672 [label = employee]
+Param_4939278672 -> employee_4939278672
+FuncDecl_4939281168 -> FuncBody_4938817264
+FuncBody_4938817264 [label = FuncBody]
+FuncBody_4938817264 -> FuncCall_4939278992
+FuncCall_4939278992 [label = FuncCall]
+printf_4939278992[ label = printf]
+FuncCall_4939278992 -> printf_4939278992
+FuncCall_4939278992 -> ConstStr_4939278864
+ConstStr_4939278864 [label = ConstStr]
+str_4939278864 [label = "deref pointer..."]
+ConstStr_4939278864 -> str_4939278864
+FuncBody_4938817264 -> FuncCall_4939279408
+FuncCall_4939279408 [label = FuncCall]
+printf_4939279408[ label = printf]
+FuncCall_4939279408 -> printf_4939279408
+FuncCall_4939279408 -> ConstStr_4939279104
+ConstStr_4939279104 [label = ConstStr]
+str_4939279104 [label = "	name: %s"]
+ConstStr_4939279104 -> str_4939279104
+FuncCall_4939279408 -> StructRef_4939279344
+StructRef_4939279344 [label = StructRef]
+StructRef_4939279344 -> PointerDeref_4939279296
+PointerDeref_4939279296 [label = PointerDeref]
+PointerDeref_4939279296 -> Variable_4939279264
+Variable_4939279264 [label = Variable]
+employee_4939279264 [label = employee]
+Variable_4939279264 -> employee_4939279264
+name_4939279344[ label = name]
+StructRef_4939279344 -> name_4939279344
+FuncBody_4938817264 -> FuncCall_4939279824
+FuncCall_4939279824 [label = FuncCall]
+printf_4939279824[ label = printf]
+FuncCall_4939279824 -> printf_4939279824
+FuncCall_4939279824 -> ConstStr_4939279520
+ConstStr_4939279520 [label = ConstStr]
+str_4939279520 [label = "	sex: %c"]
+ConstStr_4939279520 -> str_4939279520
+FuncCall_4939279824 -> StructRef_4939279760
+StructRef_4939279760 [label = StructRef]
+StructRef_4939279760 -> PointerDeref_4939279712
+PointerDeref_4939279712 [label = PointerDeref]
+PointerDeref_4939279712 -> Variable_4939279680
+Variable_4939279680 [label = Variable]
+employee_4939279680 [label = employee]
+Variable_4939279680 -> employee_4939279680
+sex_4939279760[ label = sex]
+StructRef_4939279760 -> sex_4939279760
+FuncBody_4938817264 -> FuncCall_4939280256
+FuncCall_4939280256 [label = FuncCall]
+printf_4939280256[ label = printf]
+FuncCall_4939280256 -> printf_4939280256
+FuncCall_4939280256 -> ConstStr_4939279968
+ConstStr_4939279968 [label = ConstStr]
+str_4939279968 [label = "	id: %d"]
+ConstStr_4939279968 -> str_4939279968
+FuncCall_4939280256 -> StructRef_4939280192
+StructRef_4939280192 [label = StructRef]
+StructRef_4939280192 -> PointerDeref_4938817168
+PointerDeref_4938817168 [label = PointerDeref]
+PointerDeref_4938817168 -> Variable_4939280128
+Variable_4939280128 [label = Variable]
+employee_4939280128 [label = employee]
+Variable_4939280128 -> employee_4939280128
+id_4939280192[ label = id]
+StructRef_4939280192 -> id_4939280192
+FuncBody_4938817264 -> FuncCall_4939280672
+FuncCall_4939280672 [label = FuncCall]
+printf_4939280672[ label = printf]
+FuncCall_4939280672 -> printf_4939280672
+FuncCall_4939280672 -> ConstStr_4939280368
+ConstStr_4939280368 [label = ConstStr]
+str_4939280368 [label = "	age: %u"]
+ConstStr_4939280368 -> str_4939280368
+FuncCall_4939280672 -> StructRef_4939280608
+StructRef_4939280608 [label = StructRef]
+StructRef_4939280608 -> PointerDeref_4939280560
+PointerDeref_4939280560 [label = PointerDeref]
+PointerDeref_4939280560 -> Variable_4939280528
+Variable_4939280528 [label = Variable]
+employee_4939280528 [label = employee]
+Variable_4939280528 -> employee_4939280528
+age_4939280608[ label = age]
+StructRef_4939280608 -> age_4939280608
+FuncBody_4938817264 -> FuncCall_4939281120
+FuncCall_4939281120 [label = FuncCall]
+printf_4939281120[ label = printf]
+FuncCall_4939281120 -> printf_4939281120
+FuncCall_4939281120 -> ConstStr_4939280816
+ConstStr_4939280816 [label = ConstStr]
+str_4939280816 [label = "	salary: %f"]
+ConstStr_4939280816 -> str_4939280816
+FuncCall_4939281120 -> StructRef_4939281056
+StructRef_4939281056 [label = StructRef]
+StructRef_4939281056 -> PointerDeref_4939281008
+PointerDeref_4939281008 [label = PointerDeref]
+PointerDeref_4939281008 -> Variable_4939280976
+Variable_4939280976 [label = Variable]
+employee_4939280976 [label = employee]
+Variable_4939280976 -> employee_4939280976
+salary_4939281056[ label = salary]
+StructRef_4939281056 -> salary_4939281056
+Program -> FuncDecl_4939286336
+FuncDecl_4939286336 [label = FuncDecl]
+FuncDecl_4939286336 -> BuiltinType_4939281232
+BuiltinType_4939281232 [label = BuiltinType]
+"int_4939281232" [label = "int"]
+BuiltinType_4939281232 -> "int_4939281232"
+main_4939286336[ label = main]
+FuncDecl_4939286336 -> main_4939286336
+FuncDecl_4939286336 -> ParamList_4939281328
+ParamList_4939281328 [label = ParamList]
+FuncDecl_4939286336 -> FuncBody_4939286320
+FuncBody_4939286320 [label = FuncBody]
+FuncBody_4939286320 -> VarDecl_4939281616
+VarDecl_4939281616 [label = VarDecl]
+VarDecl_4939281616 -> DefinedType_4939281472
+DefinedType_4939281472 [label = DefinedType]
+"Employee_4939281472" [label = "Employee"]
+DefinedType_4939281472 -> "Employee_4939281472"
+VarDecl_4939281616 -> VarInit_4939281520
+VarInit_4939281520 [label = VarInit]
+employee_4939281520 [label = employee]
+VarInit_4939281520 -> employee_4939281520
+FuncBody_4939286320 -> Assign_4939281936
+Assign_4939281936 [label = Assign]
+Assign_4939281936 -> StructRef_4939281760
+StructRef_4939281760 [label = StructRef]
+StructRef_4939281760 -> Variable_4939281696
+Variable_4939281696 [label = Variable]
+employee_4939281696 [label = employee]
+Variable_4939281696 -> employee_4939281696
+name_4939281760[ label = name]
+StructRef_4939281760 -> name_4939281760
+Assign_4939281936 -> ConstStr_4939281840
+ConstStr_4939281840 [label = ConstStr]
+str_4939281840 [label = "employee"]
+ConstStr_4939281840 -> str_4939281840
+FuncBody_4939286320 -> Assign_4939282192
+Assign_4939282192 [label = Assign]
+Assign_4939282192 -> StructRef_4939282080
+StructRef_4939282080 [label = StructRef]
+StructRef_4939282080 -> Variable_4939282016
+Variable_4939282016 [label = Variable]
+employee_4939282016 [label = employee]
+Variable_4939282016 -> employee_4939282016
+sex_4939282080[ label = sex]
+StructRef_4939282080 -> sex_4939282080
+Assign_4939282192 -> Constant_4939282128
+Constant_4939282128 [label = Constant]
+char_4939282128 [label = "77"]
+Constant_4939282128 -> char_4939282128
+FuncBody_4939286320 -> Assign_4939282464
+Assign_4939282464 [label = Assign]
+Assign_4939282464 -> StructRef_4939282352
+StructRef_4939282352 [label = StructRef]
+StructRef_4939282352 -> Variable_4939282288
+Variable_4939282288 [label = Variable]
+employee_4939282288 [label = employee]
+Variable_4939282288 -> employee_4939282288
+id_4939282352[ label = id]
+StructRef_4939282352 -> id_4939282352
+Assign_4939282464 -> Constant_4939282400
+Constant_4939282400 [label = Constant]
+int_4939282400 [label = "100"]
+Constant_4939282400 -> int_4939282400
+FuncBody_4939286320 -> Assign_4939282704
+Assign_4939282704 [label = Assign]
+Assign_4939282704 -> StructRef_4939282592
+StructRef_4939282592 [label = StructRef]
+StructRef_4939282592 -> Variable_4939282528
+Variable_4939282528 [label = Variable]
+employee_4939282528 [label = employee]
+Variable_4939282528 -> employee_4939282528
+age_4939282592[ label = age]
+StructRef_4939282592 -> age_4939282592
+Assign_4939282704 -> Constant_4939282640
+Constant_4939282640 [label = Constant]
+int_4939282640 [label = "22"]
+Constant_4939282640 -> int_4939282640
+FuncBody_4939286320 -> Assign_4939283504
+Assign_4939283504 [label = Assign]
+Assign_4939283504 -> StructRef_4939282864
+StructRef_4939282864 [label = StructRef]
+StructRef_4939282864 -> Variable_4939282800
+Variable_4939282800 [label = Variable]
+employee_4939282800 [label = employee]
+Variable_4939282800 -> employee_4939282800
+salary_4939282864[ label = salary]
+StructRef_4939282864 -> salary_4939282864
+Assign_4939283504 -> Constant_4939283440
+Constant_4939283440 [label = Constant]
+double_4939283440 [label = "3000.000000"]
+Constant_4939283440 -> double_4939283440
+FuncBody_4939286320 -> FuncCall_4939283728
+FuncCall_4939283728 [label = FuncCall]
+printf_4939283728[ label = printf]
+FuncCall_4939283728 -> printf_4939283728
+FuncCall_4939283728 -> ConstStr_4939283600
+ConstStr_4939283600 [label = ConstStr]
+str_4939283600 [label = "Employee ref..."]
+ConstStr_4939283600 -> str_4939283600
+FuncBody_4939286320 -> FuncCall_4939284128
+FuncCall_4939284128 [label = FuncCall]
+printf_4939284128[ label = printf]
+FuncCall_4939284128 -> printf_4939284128
+FuncCall_4939284128 -> ConstStr_4939283840
+ConstStr_4939283840 [label = ConstStr]
+str_4939283840 [label = "	name: %s"]
+ConstStr_4939283840 -> str_4939283840
+FuncCall_4939284128 -> StructRef_4939284064
+StructRef_4939284064 [label = StructRef]
+StructRef_4939284064 -> Variable_4939284000
+Variable_4939284000 [label = Variable]
+employee_4939284000 [label = employee]
+Variable_4939284000 -> employee_4939284000
+name_4939284064[ label = name]
+StructRef_4939284064 -> name_4939284064
+FuncBody_4939286320 -> FuncCall_4939284528
+FuncCall_4939284528 [label = FuncCall]
+printf_4939284528[ label = printf]
+FuncCall_4939284528 -> printf_4939284528
+FuncCall_4939284528 -> ConstStr_4939284240
+ConstStr_4939284240 [label = ConstStr]
+str_4939284240 [label = "	sex: %c"]
+ConstStr_4939284240 -> str_4939284240
+FuncCall_4939284528 -> StructRef_4939284464
+StructRef_4939284464 [label = StructRef]
+StructRef_4939284464 -> Variable_4939284400
+Variable_4939284400 [label = Variable]
+employee_4939284400 [label = employee]
+Variable_4939284400 -> employee_4939284400
+sex_4939284464[ label = sex]
+StructRef_4939284464 -> sex_4939284464
+FuncBody_4939286320 -> FuncCall_4939282736
+FuncCall_4939282736 [label = FuncCall]
+printf_4939282736[ label = printf]
+FuncCall_4939282736 -> printf_4939282736
+FuncCall_4939282736 -> ConstStr_4939284768
+ConstStr_4939284768 [label = ConstStr]
+str_4939284768 [label = "	id: %d"]
+ConstStr_4939284768 -> str_4939284768
+FuncCall_4939282736 -> StructRef_4939284992
+StructRef_4939284992 [label = StructRef]
+StructRef_4939284992 -> Variable_4939284928
+Variable_4939284928 [label = Variable]
+employee_4939284928 [label = employee]
+Variable_4939284928 -> employee_4939284928
+id_4939284992[ label = id]
+StructRef_4939284992 -> id_4939284992
+FuncBody_4939286320 -> FuncCall_4939285392
+FuncCall_4939285392 [label = FuncCall]
+printf_4939285392[ label = printf]
+FuncCall_4939285392 -> printf_4939285392
+FuncCall_4939285392 -> ConstStr_4939285120
+ConstStr_4939285120 [label = ConstStr]
+str_4939285120 [label = "	age: %u"]
+ConstStr_4939285120 -> str_4939285120
+FuncCall_4939285392 -> StructRef_4939285344
+StructRef_4939285344 [label = StructRef]
+StructRef_4939285344 -> Variable_4939285280
+Variable_4939285280 [label = Variable]
+employee_4939285280 [label = employee]
+Variable_4939285280 -> employee_4939285280
+age_4939285344[ label = age]
+StructRef_4939285344 -> age_4939285344
+FuncBody_4939286320 -> FuncCall_4939285792
+FuncCall_4939285792 [label = FuncCall]
+printf_4939285792[ label = printf]
+FuncCall_4939285792 -> printf_4939285792
+FuncCall_4939285792 -> ConstStr_4939285504
+ConstStr_4939285504 [label = ConstStr]
+str_4939285504 [label = "	salary: %f"]
+ConstStr_4939285504 -> str_4939285504
+FuncCall_4939285792 -> StructRef_4939285728
+StructRef_4939285728 [label = StructRef]
+StructRef_4939285728 -> Variable_4939285664
+Variable_4939285664 [label = Variable]
+employee_4939285664 [label = employee]
+Variable_4939285664 -> employee_4939285664
+salary_4939285728[ label = salary]
+StructRef_4939285728 -> salary_4939285728
+FuncBody_4939286320 -> FuncCall_4939285984
+FuncCall_4939285984 [label = FuncCall]
+derefStruct_4939285984[ label = derefStruct]
+FuncCall_4939285984 -> derefStruct_4939285984
+FuncCall_4939285984 -> AddressOf_4939281648
+AddressOf_4939281648 [label = AddressOf]
+AddressOf_4939281648 -> Variable_4939285904
+Variable_4939285904 [label = Variable]
+employee_4939285904 [label = employee]
+Variable_4939285904 -> employee_4939285904
+FuncBody_4939286320 -> FuncCall_4939286192
+FuncCall_4939286192 [label = FuncCall]
+derefPointer_4939286192[ label = derefPointer]
+FuncCall_4939286192 -> derefPointer_4939286192
+FuncCall_4939286192 -> AddressOf_4939286128
+AddressOf_4939286128 [label = AddressOf]
+AddressOf_4939286128 -> Variable_4939286096
+Variable_4939286096 [label = Variable]
+employee_4939286096 [label = employee]
+Variable_4939286096 -> employee_4939286096
+FuncBody_4939286320 -> ReturnStmt_4939286304
+ReturnStmt_4939286304 [label = ReturnStmt]
+ReturnStmt_4939286304 -> Constant_4939286240
+Constant_4939286240 [label = Constant]
+int_4939286240 [label = "0"]
+Constant_4939286240 -> int_4939286240
+}
