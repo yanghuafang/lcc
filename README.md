@@ -41,6 +41,8 @@ Except the following features:
 - Complicated initialization: such as `int a[] = {1, 2, 3}`;
 - Multiple dimensional array: such as `int a[8][8];`
 - `typedef`: not crucial, define by `struct`, `union` and `enum` is enough.
+- `extern`: lcc requires function declaration for linkage, extern variable is not allowable.
+- `static`: not supported by lcc, use global variable.
 - `size_t`: use `unsigned long`.
 
 `lcc` compile a translation unit(.c file) to a object file(.o), then the object file can be linked to executable by `clang` or `gcc`.  
