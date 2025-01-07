@@ -1,0 +1,149 @@
+digraph {
+Program [label = Program]
+Program -> FuncDecl_0
+FuncDecl_0 [label = FuncDecl]
+FuncDecl_0 -> BuiltinType_1
+BuiltinType_1 [label = BuiltinType]
+"int_1" [label = "int"]
+BuiltinType_1 -> "int_1"
+printf_0[ label = printf]
+FuncDecl_0 -> printf_0
+FuncDecl_0 -> ParamList_2
+ParamList_2 [label = ParamList]
+ParamList_2 -> Param_3
+Param_3 [label = Param]
+Param_3 -> PointerType_4
+PointerType_4 [label = PointerType]
+"char*_4" [label = "char*"]
+PointerType_4 -> "char*_4"
+anonymous_3 [label = anonymous]
+Param_3 -> anonymous_3
+"..._2" [label = "..."]
+ParamList_2 -> "..._2"
+Program -> TypeDecl_5
+TypeDecl_5 [label = TypeDecl]
+TypeDecl_5 -> UnionType_6
+UnionType_6 [label = UnionType]
+"IPv4_6" [label = "IPv4"]
+UnionType_6 -> "IPv4_6"
+UnionType_6 -> FieldDecl_7
+FieldDecl_7 [label = FieldDecl]
+FieldDecl_7 -> BuiltinType_8
+BuiltinType_8 [label = BuiltinType]
+"uint_8" [label = "uint"]
+BuiltinType_8 -> "uint_8"
+ip_7 [label = ip]
+FieldDecl_7 -> ip_7
+UnionType_6 -> FieldDecl_9
+FieldDecl_9 [label = FieldDecl]
+FieldDecl_9 -> BuiltinType_10
+BuiltinType_10 [label = BuiltinType]
+"uchar_10" [label = "uchar"]
+BuiltinType_10 -> "uchar_10"
+c_9 [label = c]
+FieldDecl_9 -> c_9
+Program -> FuncDecl_11
+FuncDecl_11 [label = FuncDecl]
+FuncDecl_11 -> BuiltinType_12
+BuiltinType_12 [label = BuiltinType]
+"int_12" [label = "int"]
+BuiltinType_12 -> "int_12"
+main_11[ label = main]
+FuncDecl_11 -> main_11
+FuncDecl_11 -> ParamList_13
+ParamList_13 [label = ParamList]
+FuncDecl_11 -> FuncBody_14
+FuncBody_14 [label = FuncBody]
+FuncBody_14 -> VarDecl_15
+VarDecl_15 [label = VarDecl]
+VarDecl_15 -> DefinedType_16
+DefinedType_16 [label = DefinedType]
+"IPv4_16" [label = "IPv4"]
+DefinedType_16 -> "IPv4_16"
+VarDecl_15 -> VarInit_17
+VarInit_17 [label = VarInit]
+ipv4_17 [label = ipv4]
+VarInit_17 -> ipv4_17
+FuncBody_14 -> Assign_18
+Assign_18 [label = Assign]
+Assign_18 -> StructRef_19
+StructRef_19 [label = StructRef]
+StructRef_19 -> Variable_20
+Variable_20 [label = Variable]
+ipv4_20 [label = ipv4]
+Variable_20 -> ipv4_20
+ip_19[ label = ip]
+StructRef_19 -> ip_19
+Assign_18 -> Constant_21
+Constant_21 [label = Constant]
+uint_21 [label = "313249076"]
+Constant_21 -> uint_21
+FuncBody_14 -> FuncCall_22
+FuncCall_22 [label = FuncCall]
+printf_22[ label = printf]
+FuncCall_22 -> printf_22
+FuncCall_22 -> ConstStr_23
+ConstStr_23 [label = ConstStr]
+str_23 [label = "ip 0x%x c 0x%x"]
+ConstStr_23 -> str_23
+FuncCall_22 -> StructRef_24
+StructRef_24 [label = StructRef]
+StructRef_24 -> Variable_25
+Variable_25 [label = Variable]
+ipv4_25 [label = ipv4]
+Variable_25 -> ipv4_25
+ip_24[ label = ip]
+StructRef_24 -> ip_24
+FuncCall_22 -> StructRef_26
+StructRef_26 [label = StructRef]
+StructRef_26 -> Variable_27
+Variable_27 [label = Variable]
+ipv4_27 [label = ipv4]
+Variable_27 -> ipv4_27
+c_26[ label = c]
+StructRef_26 -> c_26
+FuncBody_14 -> Assign_28
+Assign_28 [label = Assign]
+Assign_28 -> StructRef_29
+StructRef_29 [label = StructRef]
+StructRef_29 -> Variable_30
+Variable_30 [label = Variable]
+ipv4_30 [label = ipv4]
+Variable_30 -> ipv4_30
+c_29[ label = c]
+StructRef_29 -> c_29
+Assign_28 -> Constant_31
+Constant_31 [label = Constant]
+uint_31 [label = "86"]
+Constant_31 -> uint_31
+FuncBody_14 -> FuncCall_32
+FuncCall_32 [label = FuncCall]
+printf_32[ label = printf]
+FuncCall_32 -> printf_32
+FuncCall_32 -> ConstStr_33
+ConstStr_33 [label = ConstStr]
+str_33 [label = "ip 0x%x c 0x%x"]
+ConstStr_33 -> str_33
+FuncCall_32 -> StructRef_34
+StructRef_34 [label = StructRef]
+StructRef_34 -> Variable_35
+Variable_35 [label = Variable]
+ipv4_35 [label = ipv4]
+Variable_35 -> ipv4_35
+ip_34[ label = ip]
+StructRef_34 -> ip_34
+FuncCall_32 -> StructRef_36
+StructRef_36 [label = StructRef]
+StructRef_36 -> Variable_37
+Variable_37 [label = Variable]
+ipv4_37 [label = ipv4]
+Variable_37 -> ipv4_37
+c_36[ label = c]
+StructRef_36 -> c_36
+FuncBody_14 -> ReturnStmt_38
+ReturnStmt_38 [label = ReturnStmt]
+ReturnStmt_38 -> Constant_39
+Constant_39 [label = Constant]
+int_39 [label = "0"]
+Constant_39 -> int_39
+}

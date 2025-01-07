@@ -1,0 +1,201 @@
+digraph {
+Program [label = Program]
+Program -> FuncDecl_0
+FuncDecl_0 [label = FuncDecl]
+FuncDecl_0 -> BuiltinType_1
+BuiltinType_1 [label = BuiltinType]
+"int_1" [label = "int"]
+BuiltinType_1 -> "int_1"
+printf_0[ label = printf]
+FuncDecl_0 -> printf_0
+FuncDecl_0 -> ParamList_2
+ParamList_2 [label = ParamList]
+ParamList_2 -> Param_3
+Param_3 [label = Param]
+Param_3 -> PointerType_4
+PointerType_4 [label = PointerType]
+"char*_4" [label = "char*"]
+PointerType_4 -> "char*_4"
+anonymous_3 [label = anonymous]
+Param_3 -> anonymous_3
+"..._2" [label = "..."]
+ParamList_2 -> "..._2"
+Program -> TypeDecl_5
+TypeDecl_5 [label = TypeDecl]
+TypeDecl_5 -> EnumType_6
+EnumType_6 [label = EnumType]
+"WEEKDAY_6" [label = "WEEKDAY"]
+EnumType_6 -> "WEEKDAY_6"
+EnumType_6 -> Enum_7
+Enum_7 [label = Enum]
+SUNDAY_7 [label = SUNDAY]
+Enum_7 -> SUNDAY_7
+"0_7" [label = "0"]
+Enum_7 -> "0_7"
+EnumType_6 -> Enum_8
+Enum_8 [label = Enum]
+MONDAY_8 [label = MONDAY]
+Enum_8 -> MONDAY_8
+EnumType_6 -> Enum_9
+Enum_9 [label = Enum]
+TUESDAY_9 [label = TUESDAY]
+Enum_9 -> TUESDAY_9
+EnumType_6 -> Enum_10
+Enum_10 [label = Enum]
+WEDNESDAY_10 [label = WEDNESDAY]
+Enum_10 -> WEDNESDAY_10
+EnumType_6 -> Enum_11
+Enum_11 [label = Enum]
+THURSDAY_11 [label = THURSDAY]
+Enum_11 -> THURSDAY_11
+EnumType_6 -> Enum_12
+Enum_12 [label = Enum]
+FRIDAY_12 [label = FRIDAY]
+Enum_12 -> FRIDAY_12
+EnumType_6 -> Enum_13
+Enum_13 [label = Enum]
+SATURDAY_13 [label = SATURDAY]
+Enum_13 -> SATURDAY_13
+Program -> TypeDecl_14
+TypeDecl_14 [label = TypeDecl]
+TypeDecl_14 -> EnumType_15
+EnumType_15 [label = EnumType]
+"SEX_15" [label = "SEX"]
+EnumType_15 -> "SEX_15"
+EnumType_15 -> Enum_16
+Enum_16 [label = Enum]
+MALE_16 [label = MALE]
+Enum_16 -> MALE_16
+EnumType_15 -> Enum_17
+Enum_17 [label = Enum]
+FEMALE_17 [label = FEMALE]
+Enum_17 -> FEMALE_17
+Program -> FuncDecl_18
+FuncDecl_18 [label = FuncDecl]
+FuncDecl_18 -> BuiltinType_19
+BuiltinType_19 [label = BuiltinType]
+"int_19" [label = "int"]
+BuiltinType_19 -> "int_19"
+main_18[ label = main]
+FuncDecl_18 -> main_18
+FuncDecl_18 -> ParamList_20
+ParamList_20 [label = ParamList]
+FuncDecl_18 -> FuncBody_21
+FuncBody_21 [label = FuncBody]
+FuncBody_21 -> FuncCall_22
+FuncCall_22 [label = FuncCall]
+printf_22[ label = printf]
+FuncCall_22 -> printf_22
+FuncCall_22 -> ConstStr_23
+ConstStr_23 [label = ConstStr]
+str_23 [label = "WEEK: %d, %d, %d, %d, %d, %d, %d"]
+ConstStr_23 -> str_23
+FuncCall_22 -> Variable_24
+Variable_24 [label = Variable]
+SUNDAY_24 [label = SUNDAY]
+Variable_24 -> SUNDAY_24
+FuncCall_22 -> Variable_25
+Variable_25 [label = Variable]
+MONDAY_25 [label = MONDAY]
+Variable_25 -> MONDAY_25
+FuncCall_22 -> Variable_26
+Variable_26 [label = Variable]
+TUESDAY_26 [label = TUESDAY]
+Variable_26 -> TUESDAY_26
+FuncCall_22 -> Variable_27
+Variable_27 [label = Variable]
+WEDNESDAY_27 [label = WEDNESDAY]
+Variable_27 -> WEDNESDAY_27
+FuncCall_22 -> Variable_28
+Variable_28 [label = Variable]
+THURSDAY_28 [label = THURSDAY]
+Variable_28 -> THURSDAY_28
+FuncCall_22 -> Variable_29
+Variable_29 [label = Variable]
+FRIDAY_29 [label = FRIDAY]
+Variable_29 -> FRIDAY_29
+FuncCall_22 -> Variable_30
+Variable_30 [label = Variable]
+SATURDAY_30 [label = SATURDAY]
+Variable_30 -> SATURDAY_30
+FuncBody_21 -> VarDecl_31
+VarDecl_31 [label = VarDecl]
+VarDecl_31 -> DefinedType_32
+DefinedType_32 [label = DefinedType]
+"WEEKDAY_32" [label = "WEEKDAY"]
+DefinedType_32 -> "WEEKDAY_32"
+VarDecl_31 -> VarInit_33
+VarInit_33 [label = VarInit]
+day_33 [label = day]
+VarInit_33 -> day_33
+FuncBody_21 -> Assign_34
+Assign_34 [label = Assign]
+Assign_34 -> Variable_35
+Variable_35 [label = Variable]
+day_35 [label = day]
+Variable_35 -> day_35
+Assign_34 -> Variable_36
+Variable_36 [label = Variable]
+FRIDAY_36 [label = FRIDAY]
+Variable_36 -> FRIDAY_36
+FuncBody_21 -> FuncCall_37
+FuncCall_37 [label = FuncCall]
+printf_37[ label = printf]
+FuncCall_37 -> printf_37
+FuncCall_37 -> ConstStr_38
+ConstStr_38 [label = ConstStr]
+str_38 [label = "day: %d"]
+ConstStr_38 -> str_38
+FuncCall_37 -> Variable_39
+Variable_39 [label = Variable]
+day_39 [label = day]
+Variable_39 -> day_39
+FuncBody_21 -> FuncCall_40
+FuncCall_40 [label = FuncCall]
+printf_40[ label = printf]
+FuncCall_40 -> printf_40
+FuncCall_40 -> ConstStr_41
+ConstStr_41 [label = ConstStr]
+str_41 [label = "all sexes: %d, %d"]
+ConstStr_41 -> str_41
+FuncCall_40 -> Variable_42
+Variable_42 [label = Variable]
+MALE_42 [label = MALE]
+Variable_42 -> MALE_42
+FuncCall_40 -> Variable_43
+Variable_43 [label = Variable]
+FEMALE_43 [label = FEMALE]
+Variable_43 -> FEMALE_43
+FuncBody_21 -> VarDecl_44
+VarDecl_44 [label = VarDecl]
+VarDecl_44 -> DefinedType_45
+DefinedType_45 [label = DefinedType]
+"SEX_45" [label = "SEX"]
+DefinedType_45 -> "SEX_45"
+VarDecl_44 -> VarInit_46
+VarInit_46 [label = VarInit]
+sex_46 [label = sex]
+VarInit_46 -> sex_46
+VarInit_46 -> Variable_47
+Variable_47 [label = Variable]
+FEMALE_47 [label = FEMALE]
+Variable_47 -> FEMALE_47
+FuncBody_21 -> FuncCall_48
+FuncCall_48 [label = FuncCall]
+printf_48[ label = printf]
+FuncCall_48 -> printf_48
+FuncCall_48 -> ConstStr_49
+ConstStr_49 [label = ConstStr]
+str_49 [label = "sex: %d"]
+ConstStr_49 -> str_49
+FuncCall_48 -> Variable_50
+Variable_50 [label = Variable]
+sex_50 [label = sex]
+Variable_50 -> sex_50
+FuncBody_21 -> ReturnStmt_51
+ReturnStmt_51 [label = ReturnStmt]
+ReturnStmt_51 -> Constant_52
+Constant_52 [label = Constant]
+int_52 [label = "0"]
+Constant_52 -> int_52
+}

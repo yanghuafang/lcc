@@ -1,0 +1,149 @@
+digraph {
+Program [label = Program]
+Program -> FuncDecl_0
+FuncDecl_0 [label = FuncDecl]
+FuncDecl_0 -> BuiltinType_1
+BuiltinType_1 [label = BuiltinType]
+"int_1" [label = "int"]
+BuiltinType_1 -> "int_1"
+printf_0[ label = printf]
+FuncDecl_0 -> printf_0
+FuncDecl_0 -> ParamList_2
+ParamList_2 [label = ParamList]
+ParamList_2 -> Param_3
+Param_3 [label = Param]
+Param_3 -> PointerType_4
+PointerType_4 [label = PointerType]
+"char*_4" [label = "char*"]
+PointerType_4 -> "char*_4"
+anonymous_3 [label = anonymous]
+Param_3 -> anonymous_3
+"..._2" [label = "..."]
+ParamList_2 -> "..._2"
+Program -> TypeDecl_5
+TypeDecl_5 [label = TypeDecl]
+TypeDecl_5 -> StructType_6
+StructType_6 [label = StructType]
+"Data_6" [label = "Data"]
+StructType_6 -> "Data_6"
+StructType_6 -> FieldDecl_7
+FieldDecl_7 [label = FieldDecl]
+FieldDecl_7 -> BuiltinType_8
+BuiltinType_8 [label = BuiltinType]
+"int_8" [label = "int"]
+BuiltinType_8 -> "int_8"
+id_7 [label = id]
+FieldDecl_7 -> id_7
+StructType_6 -> FieldDecl_9
+FieldDecl_9 [label = FieldDecl]
+FieldDecl_9 -> BuiltinType_10
+BuiltinType_10 [label = BuiltinType]
+"int_10" [label = "int"]
+BuiltinType_10 -> "int_10"
+data_9 [label = data]
+FieldDecl_9 -> data_9
+Program -> FuncDecl_11
+FuncDecl_11 [label = FuncDecl]
+FuncDecl_11 -> BuiltinType_12
+BuiltinType_12 [label = BuiltinType]
+"int_12" [label = "int"]
+BuiltinType_12 -> "int_12"
+main_11[ label = main]
+FuncDecl_11 -> main_11
+FuncDecl_11 -> ParamList_13
+ParamList_13 [label = ParamList]
+FuncDecl_11 -> FuncBody_14
+FuncBody_14 [label = FuncBody]
+FuncBody_14 -> VarDecl_15
+VarDecl_15 [label = VarDecl]
+VarDecl_15 -> ArrayType_16
+ArrayType_16 [label = ArrayType]
+"Data[2]_16" [label = "Data[2]"]
+ArrayType_16 -> "Data[2]_16"
+VarDecl_15 -> VarInit_17
+VarInit_17 [label = VarInit]
+da_17 [label = da]
+VarInit_17 -> da_17
+FuncBody_14 -> Assign_18
+Assign_18 [label = Assign]
+Assign_18 -> StructRef_19
+StructRef_19 [label = StructRef]
+StructRef_19 -> Subscript_20
+Subscript_20 [label = Subscript]
+Subscript_20 -> Variable_21
+Variable_21 [label = Variable]
+da_21 [label = da]
+Variable_21 -> da_21
+Subscript_20 -> Constant_22
+Constant_22 [label = Constant]
+int_22 [label = "1"]
+Constant_22 -> int_22
+id_19[ label = id]
+StructRef_19 -> id_19
+Assign_18 -> Constant_23
+Constant_23 [label = Constant]
+int_23 [label = "10"]
+Constant_23 -> int_23
+FuncBody_14 -> Assign_24
+Assign_24 [label = Assign]
+Assign_24 -> StructRef_25
+StructRef_25 [label = StructRef]
+StructRef_25 -> Subscript_26
+Subscript_26 [label = Subscript]
+Subscript_26 -> Variable_27
+Variable_27 [label = Variable]
+da_27 [label = da]
+Variable_27 -> da_27
+Subscript_26 -> Constant_28
+Constant_28 [label = Constant]
+int_28 [label = "1"]
+Constant_28 -> int_28
+data_25[ label = data]
+StructRef_25 -> data_25
+Assign_24 -> Constant_29
+Constant_29 [label = Constant]
+int_29 [label = "80"]
+Constant_29 -> int_29
+FuncBody_14 -> FuncCall_30
+FuncCall_30 [label = FuncCall]
+printf_30[ label = printf]
+FuncCall_30 -> printf_30
+FuncCall_30 -> ConstStr_31
+ConstStr_31 [label = ConstStr]
+str_31 [label = "da[1].id:%d da[1].data:%d"]
+ConstStr_31 -> str_31
+FuncCall_30 -> StructRef_32
+StructRef_32 [label = StructRef]
+StructRef_32 -> Subscript_33
+Subscript_33 [label = Subscript]
+Subscript_33 -> Variable_34
+Variable_34 [label = Variable]
+da_34 [label = da]
+Variable_34 -> da_34
+Subscript_33 -> Constant_35
+Constant_35 [label = Constant]
+int_35 [label = "1"]
+Constant_35 -> int_35
+id_32[ label = id]
+StructRef_32 -> id_32
+FuncCall_30 -> StructRef_36
+StructRef_36 [label = StructRef]
+StructRef_36 -> Subscript_37
+Subscript_37 [label = Subscript]
+Subscript_37 -> Variable_38
+Variable_38 [label = Variable]
+da_38 [label = da]
+Variable_38 -> da_38
+Subscript_37 -> Constant_39
+Constant_39 [label = Constant]
+int_39 [label = "1"]
+Constant_39 -> int_39
+data_36[ label = data]
+StructRef_36 -> data_36
+FuncBody_14 -> ReturnStmt_40
+ReturnStmt_40 [label = ReturnStmt]
+ReturnStmt_40 -> Constant_41
+Constant_41 [label = Constant]
+int_41 [label = "0"]
+Constant_41 -> int_41
+}

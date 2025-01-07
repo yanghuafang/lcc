@@ -1,0 +1,223 @@
+digraph {
+Program [label = Program]
+Program -> FuncDecl_0
+FuncDecl_0 [label = FuncDecl]
+FuncDecl_0 -> BuiltinType_1
+BuiltinType_1 [label = BuiltinType]
+"int_1" [label = "int"]
+BuiltinType_1 -> "int_1"
+printf_0[ label = printf]
+FuncDecl_0 -> printf_0
+FuncDecl_0 -> ParamList_2
+ParamList_2 [label = ParamList]
+ParamList_2 -> Param_3
+Param_3 [label = Param]
+Param_3 -> PointerType_4
+PointerType_4 [label = PointerType]
+"char*_4" [label = "char*"]
+PointerType_4 -> "char*_4"
+anonymous_3 [label = anonymous]
+Param_3 -> anonymous_3
+"..._2" [label = "..."]
+ParamList_2 -> "..._2"
+Program -> FuncDecl_5
+FuncDecl_5 [label = FuncDecl]
+FuncDecl_5 -> BuiltinType_6
+BuiltinType_6 [label = BuiltinType]
+"int_6" [label = "int"]
+BuiltinType_6 -> "int_6"
+countNumber_5[ label = countNumber]
+FuncDecl_5 -> countNumber_5
+FuncDecl_5 -> ParamList_7
+ParamList_7 [label = ParamList]
+ParamList_7 -> Param_8
+Param_8 [label = Param]
+Param_8 -> BuiltinType_9
+BuiltinType_9 [label = BuiltinType]
+"int_9" [label = "int"]
+BuiltinType_9 -> "int_9"
+maxRange_8 [label = maxRange]
+Param_8 -> maxRange_8
+ParamList_7 -> Param_10
+Param_10 [label = Param]
+Param_10 -> BuiltinType_11
+BuiltinType_11 [label = BuiltinType]
+"int_11" [label = "int"]
+BuiltinType_11 -> "int_11"
+smallRange_10 [label = smallRange]
+Param_10 -> smallRange_10
+FuncDecl_5 -> FuncBody_12
+FuncBody_12 [label = FuncBody]
+FuncBody_12 -> VarDecl_13
+VarDecl_13 [label = VarDecl]
+VarDecl_13 -> BuiltinType_14
+BuiltinType_14 [label = BuiltinType]
+"int_14" [label = "int"]
+BuiltinType_14 -> "int_14"
+VarDecl_13 -> VarInit_15
+VarInit_15 [label = VarInit]
+count_15 [label = count]
+VarInit_15 -> count_15
+VarInit_15 -> Constant_16
+Constant_16 [label = Constant]
+int_16 [label = "0"]
+Constant_16 -> int_16
+FuncBody_12 -> VarDecl_17
+VarDecl_17 [label = VarDecl]
+VarDecl_17 -> BuiltinType_18
+BuiltinType_18 [label = BuiltinType]
+"int_18" [label = "int"]
+BuiltinType_18 -> "int_18"
+VarDecl_17 -> VarInit_19
+VarInit_19 [label = VarInit]
+recordi_19 [label = recordi]
+VarInit_19 -> recordi_19
+VarInit_19 -> Constant_20
+Constant_20 [label = Constant]
+int_20 [label = "0"]
+Constant_20 -> int_20
+FuncBody_12 -> ForStmt_21
+ForStmt_21 [label = ForStmt]
+ForStmt_21 -> VarDecl_22
+VarDecl_22 [label = VarDecl]
+VarDecl_22 -> BuiltinType_23
+BuiltinType_23 [label = BuiltinType]
+"int_23" [label = "int"]
+BuiltinType_23 -> "int_23"
+VarDecl_22 -> VarInit_24
+VarInit_24 [label = VarInit]
+i_24 [label = i]
+VarInit_24 -> i_24
+VarInit_24 -> Constant_25
+Constant_25 [label = Constant]
+int_25 [label = "1"]
+Constant_25 -> int_25
+ForStmt_21 -> LogicLessEq_26
+LogicLessEq_26 [label = LogicLessEq]
+LogicLessEq_26 -> Variable_27
+Variable_27 [label = Variable]
+i_27 [label = i]
+Variable_27 -> i_27
+LogicLessEq_26 -> Variable_28
+Variable_28 [label = Variable]
+maxRange_28 [label = maxRange]
+Variable_28 -> maxRange_28
+ForStmt_21 -> AddAssign_29
+AddAssign_29 [label = AddAssign]
+AddAssign_29 -> Variable_30
+Variable_30 [label = Variable]
+i_30 [label = i]
+Variable_30 -> i_30
+AddAssign_29 -> Constant_31
+Constant_31 [label = Constant]
+int_31 [label = "1"]
+Constant_31 -> int_31
+ForStmt_21 -> Block_32
+Block_32 [label = Block]
+Block_32 -> IfStmt_33
+IfStmt_33 [label = IfStmt]
+IfStmt_33 -> LogicGreaterThan_34
+LogicGreaterThan_34 [label = LogicGreaterThan]
+LogicGreaterThan_34 -> Variable_35
+Variable_35 [label = Variable]
+i_35 [label = i]
+Variable_35 -> i_35
+LogicGreaterThan_34 -> Variable_36
+Variable_36 [label = Variable]
+smallRange_36 [label = smallRange]
+Variable_36 -> smallRange_36
+IfStmt_33 -> Block_37
+Block_37 [label = Block]
+Block_37 -> Assign_38
+Assign_38 [label = Assign]
+Assign_38 -> Variable_39
+Variable_39 [label = Variable]
+recordi_39 [label = recordi]
+Variable_39 -> recordi_39
+Assign_38 -> Variable_40
+Variable_40 [label = Variable]
+i_40 [label = i]
+Variable_40 -> i_40
+Block_37 -> BreakStmt_41
+BreakStmt_41 [label = BreakStmt]
+Block_32 -> AddAssign_42
+AddAssign_42 [label = AddAssign]
+AddAssign_42 -> Variable_43
+Variable_43 [label = Variable]
+count_43 [label = count]
+Variable_43 -> count_43
+AddAssign_42 -> Constant_44
+Constant_44 [label = Constant]
+int_44 [label = "1"]
+Constant_44 -> int_44
+FuncBody_12 -> FuncCall_45
+FuncCall_45 [label = FuncCall]
+printf_45[ label = printf]
+FuncCall_45 -> printf_45
+FuncCall_45 -> ConstStr_46
+ConstStr_46 [label = ConstStr]
+str_46 [label = "i:%d"]
+ConstStr_46 -> str_46
+FuncCall_45 -> Variable_47
+Variable_47 [label = Variable]
+recordi_47 [label = recordi]
+Variable_47 -> recordi_47
+FuncBody_12 -> ReturnStmt_48
+ReturnStmt_48 [label = ReturnStmt]
+ReturnStmt_48 -> Variable_49
+Variable_49 [label = Variable]
+count_49 [label = count]
+Variable_49 -> count_49
+Program -> FuncDecl_50
+FuncDecl_50 [label = FuncDecl]
+FuncDecl_50 -> BuiltinType_51
+BuiltinType_51 [label = BuiltinType]
+"int_51" [label = "int"]
+BuiltinType_51 -> "int_51"
+main_50[ label = main]
+FuncDecl_50 -> main_50
+FuncDecl_50 -> ParamList_52
+ParamList_52 [label = ParamList]
+FuncDecl_50 -> FuncBody_53
+FuncBody_53 [label = FuncBody]
+FuncBody_53 -> VarDecl_54
+VarDecl_54 [label = VarDecl]
+VarDecl_54 -> BuiltinType_55
+BuiltinType_55 [label = BuiltinType]
+"int_55" [label = "int"]
+BuiltinType_55 -> "int_55"
+VarDecl_54 -> VarInit_56
+VarInit_56 [label = VarInit]
+count_56 [label = count]
+VarInit_56 -> count_56
+VarInit_56 -> FuncCall_57
+FuncCall_57 [label = FuncCall]
+countNumber_57[ label = countNumber]
+FuncCall_57 -> countNumber_57
+FuncCall_57 -> Constant_58
+Constant_58 [label = Constant]
+int_58 [label = "100"]
+Constant_58 -> int_58
+FuncCall_57 -> Constant_59
+Constant_59 [label = Constant]
+int_59 [label = "37"]
+Constant_59 -> int_59
+FuncBody_53 -> FuncCall_60
+FuncCall_60 [label = FuncCall]
+printf_60[ label = printf]
+FuncCall_60 -> printf_60
+FuncCall_60 -> ConstStr_61
+ConstStr_61 [label = ConstStr]
+str_61 [label = "count 1 to 37: %d"]
+ConstStr_61 -> str_61
+FuncCall_60 -> Variable_62
+Variable_62 [label = Variable]
+count_62 [label = count]
+Variable_62 -> count_62
+FuncBody_53 -> ReturnStmt_63
+ReturnStmt_63 [label = ReturnStmt]
+ReturnStmt_63 -> Constant_64
+Constant_64 [label = Constant]
+int_64 [label = "0"]
+Constant_64 -> int_64
+}

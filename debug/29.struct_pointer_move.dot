@@ -1,0 +1,517 @@
+digraph {
+Program [label = Program]
+Program -> FuncDecl_0
+FuncDecl_0 [label = FuncDecl]
+FuncDecl_0 -> BuiltinType_1
+BuiltinType_1 [label = BuiltinType]
+"int_1" [label = "int"]
+BuiltinType_1 -> "int_1"
+printf_0[ label = printf]
+FuncDecl_0 -> printf_0
+FuncDecl_0 -> ParamList_2
+ParamList_2 [label = ParamList]
+ParamList_2 -> Param_3
+Param_3 [label = Param]
+Param_3 -> PointerType_4
+PointerType_4 [label = PointerType]
+"char*_4" [label = "char*"]
+PointerType_4 -> "char*_4"
+anonymous_3 [label = anonymous]
+Param_3 -> anonymous_3
+"..._2" [label = "..."]
+ParamList_2 -> "..._2"
+Program -> TypeDecl_5
+TypeDecl_5 [label = TypeDecl]
+TypeDecl_5 -> StructType_6
+StructType_6 [label = StructType]
+"Data_6" [label = "Data"]
+StructType_6 -> "Data_6"
+StructType_6 -> FieldDecl_7
+FieldDecl_7 [label = FieldDecl]
+FieldDecl_7 -> BuiltinType_8
+BuiltinType_8 [label = BuiltinType]
+"int_8" [label = "int"]
+BuiltinType_8 -> "int_8"
+id_7 [label = id]
+FieldDecl_7 -> id_7
+StructType_6 -> FieldDecl_9
+FieldDecl_9 [label = FieldDecl]
+FieldDecl_9 -> BuiltinType_10
+BuiltinType_10 [label = BuiltinType]
+"int_10" [label = "int"]
+BuiltinType_10 -> "int_10"
+data_9 [label = data]
+FieldDecl_9 -> data_9
+Program -> FuncDecl_11
+FuncDecl_11 [label = FuncDecl]
+FuncDecl_11 -> BuiltinType_12
+BuiltinType_12 [label = BuiltinType]
+"int_12" [label = "int"]
+BuiltinType_12 -> "int_12"
+main_11[ label = main]
+FuncDecl_11 -> main_11
+FuncDecl_11 -> ParamList_13
+ParamList_13 [label = ParamList]
+FuncDecl_11 -> FuncBody_14
+FuncBody_14 [label = FuncBody]
+FuncBody_14 -> VarDecl_15
+VarDecl_15 [label = VarDecl]
+VarDecl_15 -> ArrayType_16
+ArrayType_16 [label = ArrayType]
+"Data[4]_16" [label = "Data[4]"]
+ArrayType_16 -> "Data[4]_16"
+VarDecl_15 -> VarInit_17
+VarInit_17 [label = VarInit]
+data_17 [label = data]
+VarInit_17 -> data_17
+FuncBody_14 -> Assign_18
+Assign_18 [label = Assign]
+Assign_18 -> StructRef_19
+StructRef_19 [label = StructRef]
+StructRef_19 -> Subscript_20
+Subscript_20 [label = Subscript]
+Subscript_20 -> Variable_21
+Variable_21 [label = Variable]
+data_21 [label = data]
+Variable_21 -> data_21
+Subscript_20 -> Constant_22
+Constant_22 [label = Constant]
+int_22 [label = "0"]
+Constant_22 -> int_22
+id_19[ label = id]
+StructRef_19 -> id_19
+Assign_18 -> Constant_23
+Constant_23 [label = Constant]
+int_23 [label = "10"]
+Constant_23 -> int_23
+FuncBody_14 -> Assign_24
+Assign_24 [label = Assign]
+Assign_24 -> StructRef_25
+StructRef_25 [label = StructRef]
+StructRef_25 -> Subscript_26
+Subscript_26 [label = Subscript]
+Subscript_26 -> Variable_27
+Variable_27 [label = Variable]
+data_27 [label = data]
+Variable_27 -> data_27
+Subscript_26 -> Constant_28
+Constant_28 [label = Constant]
+int_28 [label = "0"]
+Constant_28 -> int_28
+data_25[ label = data]
+StructRef_25 -> data_25
+Assign_24 -> Constant_29
+Constant_29 [label = Constant]
+int_29 [label = "12"]
+Constant_29 -> int_29
+FuncBody_14 -> Assign_30
+Assign_30 [label = Assign]
+Assign_30 -> StructRef_31
+StructRef_31 [label = StructRef]
+StructRef_31 -> Subscript_32
+Subscript_32 [label = Subscript]
+Subscript_32 -> Variable_33
+Variable_33 [label = Variable]
+data_33 [label = data]
+Variable_33 -> data_33
+Subscript_32 -> Constant_34
+Constant_34 [label = Constant]
+int_34 [label = "1"]
+Constant_34 -> int_34
+id_31[ label = id]
+StructRef_31 -> id_31
+Assign_30 -> Constant_35
+Constant_35 [label = Constant]
+int_35 [label = "20"]
+Constant_35 -> int_35
+FuncBody_14 -> Assign_36
+Assign_36 [label = Assign]
+Assign_36 -> StructRef_37
+StructRef_37 [label = StructRef]
+StructRef_37 -> Subscript_38
+Subscript_38 [label = Subscript]
+Subscript_38 -> Variable_39
+Variable_39 [label = Variable]
+data_39 [label = data]
+Variable_39 -> data_39
+Subscript_38 -> Constant_40
+Constant_40 [label = Constant]
+int_40 [label = "1"]
+Constant_40 -> int_40
+data_37[ label = data]
+StructRef_37 -> data_37
+Assign_36 -> Constant_41
+Constant_41 [label = Constant]
+int_41 [label = "24"]
+Constant_41 -> int_41
+FuncBody_14 -> Assign_42
+Assign_42 [label = Assign]
+Assign_42 -> StructRef_43
+StructRef_43 [label = StructRef]
+StructRef_43 -> Subscript_44
+Subscript_44 [label = Subscript]
+Subscript_44 -> Variable_45
+Variable_45 [label = Variable]
+data_45 [label = data]
+Variable_45 -> data_45
+Subscript_44 -> Constant_46
+Constant_46 [label = Constant]
+int_46 [label = "2"]
+Constant_46 -> int_46
+id_43[ label = id]
+StructRef_43 -> id_43
+Assign_42 -> Constant_47
+Constant_47 [label = Constant]
+int_47 [label = "30"]
+Constant_47 -> int_47
+FuncBody_14 -> Assign_48
+Assign_48 [label = Assign]
+Assign_48 -> StructRef_49
+StructRef_49 [label = StructRef]
+StructRef_49 -> Subscript_50
+Subscript_50 [label = Subscript]
+Subscript_50 -> Variable_51
+Variable_51 [label = Variable]
+data_51 [label = data]
+Variable_51 -> data_51
+Subscript_50 -> Constant_52
+Constant_52 [label = Constant]
+int_52 [label = "2"]
+Constant_52 -> int_52
+data_49[ label = data]
+StructRef_49 -> data_49
+Assign_48 -> Constant_53
+Constant_53 [label = Constant]
+int_53 [label = "36"]
+Constant_53 -> int_53
+FuncBody_14 -> Assign_54
+Assign_54 [label = Assign]
+Assign_54 -> StructRef_55
+StructRef_55 [label = StructRef]
+StructRef_55 -> Subscript_56
+Subscript_56 [label = Subscript]
+Subscript_56 -> Variable_57
+Variable_57 [label = Variable]
+data_57 [label = data]
+Variable_57 -> data_57
+Subscript_56 -> Constant_58
+Constant_58 [label = Constant]
+int_58 [label = "3"]
+Constant_58 -> int_58
+id_55[ label = id]
+StructRef_55 -> id_55
+Assign_54 -> Constant_59
+Constant_59 [label = Constant]
+int_59 [label = "40"]
+Constant_59 -> int_59
+FuncBody_14 -> Assign_60
+Assign_60 [label = Assign]
+Assign_60 -> StructRef_61
+StructRef_61 [label = StructRef]
+StructRef_61 -> Subscript_62
+Subscript_62 [label = Subscript]
+Subscript_62 -> Variable_63
+Variable_63 [label = Variable]
+data_63 [label = data]
+Variable_63 -> data_63
+Subscript_62 -> Constant_64
+Constant_64 [label = Constant]
+int_64 [label = "3"]
+Constant_64 -> int_64
+data_61[ label = data]
+StructRef_61 -> data_61
+Assign_60 -> Constant_65
+Constant_65 [label = Constant]
+int_65 [label = "48"]
+Constant_65 -> int_65
+FuncBody_14 -> VarDecl_66
+VarDecl_66 [label = VarDecl]
+VarDecl_66 -> PointerType_67
+PointerType_67 [label = PointerType]
+"Data*_67" [label = "Data*"]
+PointerType_67 -> "Data*_67"
+VarDecl_66 -> VarInit_68
+VarInit_68 [label = VarInit]
+p_68 [label = p]
+VarInit_68 -> p_68
+VarInit_68 -> Variable_69
+Variable_69 [label = Variable]
+data_69 [label = data]
+Variable_69 -> data_69
+FuncBody_14 -> FuncCall_70
+FuncCall_70 [label = FuncCall]
+printf_70[ label = printf]
+FuncCall_70 -> printf_70
+FuncCall_70 -> ConstStr_71
+ConstStr_71 [label = ConstStr]
+str_71 [label = "data[0] id:%d, data:%d"]
+ConstStr_71 -> str_71
+FuncCall_70 -> StructDeref_72
+StructDeref_72 [label = StructDeref]
+StructDeref_72 -> Variable_73
+Variable_73 [label = Variable]
+p_73 [label = p]
+Variable_73 -> p_73
+id_72[ label = id]
+StructDeref_72 -> id_72
+FuncCall_70 -> StructRef_74
+StructRef_74 [label = StructRef]
+StructRef_74 -> PointerDeref_75
+PointerDeref_75 [label = PointerDeref]
+PointerDeref_75 -> Variable_76
+Variable_76 [label = Variable]
+p_76 [label = p]
+Variable_76 -> p_76
+data_74[ label = data]
+StructRef_74 -> data_74
+FuncBody_14 -> AddAssign_77
+AddAssign_77 [label = AddAssign]
+AddAssign_77 -> Variable_78
+Variable_78 [label = Variable]
+p_78 [label = p]
+Variable_78 -> p_78
+AddAssign_77 -> Constant_79
+Constant_79 [label = Constant]
+int_79 [label = "1"]
+Constant_79 -> int_79
+FuncBody_14 -> FuncCall_80
+FuncCall_80 [label = FuncCall]
+printf_80[ label = printf]
+FuncCall_80 -> printf_80
+FuncCall_80 -> ConstStr_81
+ConstStr_81 [label = ConstStr]
+str_81 [label = "data[1] id:%d, data:%d"]
+ConstStr_81 -> str_81
+FuncCall_80 -> StructDeref_82
+StructDeref_82 [label = StructDeref]
+StructDeref_82 -> Variable_83
+Variable_83 [label = Variable]
+p_83 [label = p]
+Variable_83 -> p_83
+id_82[ label = id]
+StructDeref_82 -> id_82
+FuncCall_80 -> StructRef_84
+StructRef_84 [label = StructRef]
+StructRef_84 -> PointerDeref_85
+PointerDeref_85 [label = PointerDeref]
+PointerDeref_85 -> Variable_86
+Variable_86 [label = Variable]
+p_86 [label = p]
+Variable_86 -> p_86
+data_84[ label = data]
+StructRef_84 -> data_84
+FuncBody_14 -> PrefixInc_87
+PrefixInc_87 [label = PrefixInc]
+PrefixInc_87 -> Variable_88
+Variable_88 [label = Variable]
+p_88 [label = p]
+Variable_88 -> p_88
+FuncBody_14 -> FuncCall_89
+FuncCall_89 [label = FuncCall]
+printf_89[ label = printf]
+FuncCall_89 -> printf_89
+FuncCall_89 -> ConstStr_90
+ConstStr_90 [label = ConstStr]
+str_90 [label = "data[2] id:%d, data:%d"]
+ConstStr_90 -> str_90
+FuncCall_89 -> StructDeref_91
+StructDeref_91 [label = StructDeref]
+StructDeref_91 -> Variable_92
+Variable_92 [label = Variable]
+p_92 [label = p]
+Variable_92 -> p_92
+id_91[ label = id]
+StructDeref_91 -> id_91
+FuncCall_89 -> StructRef_93
+StructRef_93 [label = StructRef]
+StructRef_93 -> PointerDeref_94
+PointerDeref_94 [label = PointerDeref]
+PointerDeref_94 -> Variable_95
+Variable_95 [label = Variable]
+p_95 [label = p]
+Variable_95 -> p_95
+data_93[ label = data]
+StructRef_93 -> data_93
+FuncBody_14 -> PostfixInc_96
+PostfixInc_96 [label = PostfixInc]
+PostfixInc_96 -> Variable_97
+Variable_97 [label = Variable]
+p_97 [label = p]
+Variable_97 -> p_97
+FuncBody_14 -> FuncCall_98
+FuncCall_98 [label = FuncCall]
+printf_98[ label = printf]
+FuncCall_98 -> printf_98
+FuncCall_98 -> ConstStr_99
+ConstStr_99 [label = ConstStr]
+str_99 [label = "data[3] id:%d, data:%d"]
+ConstStr_99 -> str_99
+FuncCall_98 -> StructDeref_100
+StructDeref_100 [label = StructDeref]
+StructDeref_100 -> Variable_101
+Variable_101 [label = Variable]
+p_101 [label = p]
+Variable_101 -> p_101
+id_100[ label = id]
+StructDeref_100 -> id_100
+FuncCall_98 -> StructRef_102
+StructRef_102 [label = StructRef]
+StructRef_102 -> PointerDeref_103
+PointerDeref_103 [label = PointerDeref]
+PointerDeref_103 -> Variable_104
+Variable_104 [label = Variable]
+p_104 [label = p]
+Variable_104 -> p_104
+data_102[ label = data]
+StructRef_102 -> data_102
+FuncBody_14 -> Assign_105
+Assign_105 [label = Assign]
+Assign_105 -> Variable_106
+Variable_106 [label = Variable]
+p_106 [label = p]
+Variable_106 -> p_106
+Assign_105 -> AddressOf_107
+AddressOf_107 [label = AddressOf]
+AddressOf_107 -> Subscript_108
+Subscript_108 [label = Subscript]
+Subscript_108 -> Variable_109
+Variable_109 [label = Variable]
+data_109 [label = data]
+Variable_109 -> data_109
+Subscript_108 -> Constant_110
+Constant_110 [label = Constant]
+int_110 [label = "3"]
+Constant_110 -> int_110
+FuncBody_14 -> FuncCall_111
+FuncCall_111 [label = FuncCall]
+printf_111[ label = printf]
+FuncCall_111 -> printf_111
+FuncCall_111 -> ConstStr_112
+ConstStr_112 [label = ConstStr]
+str_112 [label = "data[3] id:%d, data:%d"]
+ConstStr_112 -> str_112
+FuncCall_111 -> StructDeref_113
+StructDeref_113 [label = StructDeref]
+StructDeref_113 -> Variable_114
+Variable_114 [label = Variable]
+p_114 [label = p]
+Variable_114 -> p_114
+id_113[ label = id]
+StructDeref_113 -> id_113
+FuncCall_111 -> StructRef_115
+StructRef_115 [label = StructRef]
+StructRef_115 -> PointerDeref_116
+PointerDeref_116 [label = PointerDeref]
+PointerDeref_116 -> Variable_117
+Variable_117 [label = Variable]
+p_117 [label = p]
+Variable_117 -> p_117
+data_115[ label = data]
+StructRef_115 -> data_115
+FuncBody_14 -> SubAssign_118
+SubAssign_118 [label = SubAssign]
+SubAssign_118 -> Variable_119
+Variable_119 [label = Variable]
+p_119 [label = p]
+Variable_119 -> p_119
+SubAssign_118 -> Constant_120
+Constant_120 [label = Constant]
+int_120 [label = "1"]
+Constant_120 -> int_120
+FuncBody_14 -> FuncCall_121
+FuncCall_121 [label = FuncCall]
+printf_121[ label = printf]
+FuncCall_121 -> printf_121
+FuncCall_121 -> ConstStr_122
+ConstStr_122 [label = ConstStr]
+str_122 [label = "data[2] id:%d, data:%d"]
+ConstStr_122 -> str_122
+FuncCall_121 -> StructDeref_123
+StructDeref_123 [label = StructDeref]
+StructDeref_123 -> Variable_124
+Variable_124 [label = Variable]
+p_124 [label = p]
+Variable_124 -> p_124
+id_123[ label = id]
+StructDeref_123 -> id_123
+FuncCall_121 -> StructRef_125
+StructRef_125 [label = StructRef]
+StructRef_125 -> PointerDeref_126
+PointerDeref_126 [label = PointerDeref]
+PointerDeref_126 -> Variable_127
+Variable_127 [label = Variable]
+p_127 [label = p]
+Variable_127 -> p_127
+data_125[ label = data]
+StructRef_125 -> data_125
+FuncBody_14 -> PrefixDec_128
+PrefixDec_128 [label = PrefixDec]
+PrefixDec_128 -> Variable_129
+Variable_129 [label = Variable]
+p_129 [label = p]
+Variable_129 -> p_129
+FuncBody_14 -> FuncCall_130
+FuncCall_130 [label = FuncCall]
+printf_130[ label = printf]
+FuncCall_130 -> printf_130
+FuncCall_130 -> ConstStr_131
+ConstStr_131 [label = ConstStr]
+str_131 [label = "data[1] id:%d, data:%d"]
+ConstStr_131 -> str_131
+FuncCall_130 -> StructDeref_132
+StructDeref_132 [label = StructDeref]
+StructDeref_132 -> Variable_133
+Variable_133 [label = Variable]
+p_133 [label = p]
+Variable_133 -> p_133
+id_132[ label = id]
+StructDeref_132 -> id_132
+FuncCall_130 -> StructRef_134
+StructRef_134 [label = StructRef]
+StructRef_134 -> PointerDeref_135
+PointerDeref_135 [label = PointerDeref]
+PointerDeref_135 -> Variable_136
+Variable_136 [label = Variable]
+p_136 [label = p]
+Variable_136 -> p_136
+data_134[ label = data]
+StructRef_134 -> data_134
+FuncBody_14 -> PostfixDec_137
+PostfixDec_137 [label = PostfixDec]
+PostfixDec_137 -> Variable_138
+Variable_138 [label = Variable]
+p_138 [label = p]
+Variable_138 -> p_138
+FuncBody_14 -> FuncCall_139
+FuncCall_139 [label = FuncCall]
+printf_139[ label = printf]
+FuncCall_139 -> printf_139
+FuncCall_139 -> ConstStr_140
+ConstStr_140 [label = ConstStr]
+str_140 [label = "data[0] id:%d, data:%d"]
+ConstStr_140 -> str_140
+FuncCall_139 -> StructDeref_141
+StructDeref_141 [label = StructDeref]
+StructDeref_141 -> Variable_142
+Variable_142 [label = Variable]
+p_142 [label = p]
+Variable_142 -> p_142
+id_141[ label = id]
+StructDeref_141 -> id_141
+FuncCall_139 -> StructRef_143
+StructRef_143 [label = StructRef]
+StructRef_143 -> PointerDeref_144
+PointerDeref_144 [label = PointerDeref]
+PointerDeref_144 -> Variable_145
+Variable_145 [label = Variable]
+p_145 [label = p]
+Variable_145 -> p_145
+data_143[ label = data]
+StructRef_143 -> data_143
+FuncBody_14 -> ReturnStmt_146
+ReturnStmt_146 [label = ReturnStmt]
+ReturnStmt_146 -> Constant_147
+Constant_147 [label = Constant]
+int_147 [label = "0"]
+Constant_147 -> int_147
+}

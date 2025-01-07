@@ -1,0 +1,273 @@
+digraph {
+Program [label = Program]
+Program -> FuncDecl_0
+FuncDecl_0 [label = FuncDecl]
+FuncDecl_0 -> BuiltinType_1
+BuiltinType_1 [label = BuiltinType]
+"int_1" [label = "int"]
+BuiltinType_1 -> "int_1"
+printf_0[ label = printf]
+FuncDecl_0 -> printf_0
+FuncDecl_0 -> ParamList_2
+ParamList_2 [label = ParamList]
+ParamList_2 -> Param_3
+Param_3 [label = Param]
+Param_3 -> PointerType_4
+PointerType_4 [label = PointerType]
+"char*_4" [label = "char*"]
+PointerType_4 -> "char*_4"
+anonymous_3 [label = anonymous]
+Param_3 -> anonymous_3
+"..._2" [label = "..."]
+ParamList_2 -> "..._2"
+Program -> FuncDecl_5
+FuncDecl_5 [label = FuncDecl]
+FuncDecl_5 -> BuiltinType_6
+BuiltinType_6 [label = BuiltinType]
+"int_6" [label = "int"]
+BuiltinType_6 -> "int_6"
+countSum_5[ label = countSum]
+FuncDecl_5 -> countSum_5
+FuncDecl_5 -> ParamList_7
+ParamList_7 [label = ParamList]
+ParamList_7 -> Param_8
+Param_8 [label = Param]
+Param_8 -> BuiltinType_9
+BuiltinType_9 [label = BuiltinType]
+"int_9" [label = "int"]
+BuiltinType_9 -> "int_9"
+n_8 [label = n]
+Param_8 -> n_8
+FuncDecl_5 -> FuncBody_10
+FuncBody_10 [label = FuncBody]
+FuncBody_10 -> VarDecl_11
+VarDecl_11 [label = VarDecl]
+VarDecl_11 -> BuiltinType_12
+BuiltinType_12 [label = BuiltinType]
+"int_12" [label = "int"]
+BuiltinType_12 -> "int_12"
+VarDecl_11 -> VarInit_13
+VarInit_13 [label = VarInit]
+sum_13 [label = sum]
+VarInit_13 -> sum_13
+VarInit_13 -> Constant_14
+Constant_14 [label = Constant]
+int_14 [label = "0"]
+Constant_14 -> int_14
+FuncBody_10 -> VarDecl_15
+VarDecl_15 [label = VarDecl]
+VarDecl_15 -> BuiltinType_16
+BuiltinType_16 [label = BuiltinType]
+"int_16" [label = "int"]
+BuiltinType_16 -> "int_16"
+VarDecl_15 -> VarInit_17
+VarInit_17 [label = VarInit]
+i_17 [label = i]
+VarInit_17 -> i_17
+VarInit_17 -> Constant_18
+Constant_18 [label = Constant]
+int_18 [label = "1"]
+Constant_18 -> int_18
+FuncBody_10 -> WhileStmt_19
+WhileStmt_19 [label = WhileStmt]
+WhileStmt_19 -> LogicLessEq_20
+LogicLessEq_20 [label = LogicLessEq]
+LogicLessEq_20 -> Variable_21
+Variable_21 [label = Variable]
+i_21 [label = i]
+Variable_21 -> i_21
+LogicLessEq_20 -> Variable_22
+Variable_22 [label = Variable]
+n_22 [label = n]
+Variable_22 -> n_22
+WhileStmt_19 -> Block_23
+Block_23 [label = Block]
+Block_23 -> AddAssign_24
+AddAssign_24 [label = AddAssign]
+AddAssign_24 -> Variable_25
+Variable_25 [label = Variable]
+sum_25 [label = sum]
+Variable_25 -> sum_25
+AddAssign_24 -> Variable_26
+Variable_26 [label = Variable]
+i_26 [label = i]
+Variable_26 -> i_26
+Block_23 -> AddAssign_27
+AddAssign_27 [label = AddAssign]
+AddAssign_27 -> Variable_28
+Variable_28 [label = Variable]
+i_28 [label = i]
+Variable_28 -> i_28
+AddAssign_27 -> Constant_29
+Constant_29 [label = Constant]
+int_29 [label = "1"]
+Constant_29 -> int_29
+FuncBody_10 -> ReturnStmt_30
+ReturnStmt_30 [label = ReturnStmt]
+ReturnStmt_30 -> Variable_31
+Variable_31 [label = Variable]
+sum_31 [label = sum]
+Variable_31 -> sum_31
+Program -> FuncDecl_32
+FuncDecl_32 [label = FuncDecl]
+FuncDecl_32 -> BuiltinType_33
+BuiltinType_33 [label = BuiltinType]
+"int_33" [label = "int"]
+BuiltinType_33 -> "int_33"
+countSum2_32[ label = countSum2]
+FuncDecl_32 -> countSum2_32
+FuncDecl_32 -> ParamList_34
+ParamList_34 [label = ParamList]
+ParamList_34 -> Param_35
+Param_35 [label = Param]
+Param_35 -> BuiltinType_36
+BuiltinType_36 [label = BuiltinType]
+"int_36" [label = "int"]
+BuiltinType_36 -> "int_36"
+n_35 [label = n]
+Param_35 -> n_35
+FuncDecl_32 -> FuncBody_37
+FuncBody_37 [label = FuncBody]
+FuncBody_37 -> VarDecl_38
+VarDecl_38 [label = VarDecl]
+VarDecl_38 -> BuiltinType_39
+BuiltinType_39 [label = BuiltinType]
+"int_39" [label = "int"]
+BuiltinType_39 -> "int_39"
+VarDecl_38 -> VarInit_40
+VarInit_40 [label = VarInit]
+sum_40 [label = sum]
+VarInit_40 -> sum_40
+VarInit_40 -> Constant_41
+Constant_41 [label = Constant]
+int_41 [label = "0"]
+Constant_41 -> int_41
+FuncBody_37 -> VarDecl_42
+VarDecl_42 [label = VarDecl]
+VarDecl_42 -> BuiltinType_43
+BuiltinType_43 [label = BuiltinType]
+"int_43" [label = "int"]
+BuiltinType_43 -> "int_43"
+VarDecl_42 -> VarInit_44
+VarInit_44 [label = VarInit]
+i_44 [label = i]
+VarInit_44 -> i_44
+VarInit_44 -> Constant_45
+Constant_45 [label = Constant]
+int_45 [label = "0"]
+Constant_45 -> int_45
+FuncBody_37 -> DoStmt_46
+DoStmt_46 [label = DoStmt]
+DoStmt_46 -> Block_47
+Block_47 [label = Block]
+Block_47 -> AddAssign_48
+AddAssign_48 [label = AddAssign]
+AddAssign_48 -> Variable_49
+Variable_49 [label = Variable]
+sum_49 [label = sum]
+Variable_49 -> sum_49
+AddAssign_48 -> Variable_50
+Variable_50 [label = Variable]
+i_50 [label = i]
+Variable_50 -> i_50
+Block_47 -> AddAssign_51
+AddAssign_51 [label = AddAssign]
+AddAssign_51 -> Variable_52
+Variable_52 [label = Variable]
+i_52 [label = i]
+Variable_52 -> i_52
+AddAssign_51 -> Constant_53
+Constant_53 [label = Constant]
+int_53 [label = "1"]
+Constant_53 -> int_53
+DoStmt_46 -> LogicLessEq_54
+LogicLessEq_54 [label = LogicLessEq]
+LogicLessEq_54 -> Variable_55
+Variable_55 [label = Variable]
+i_55 [label = i]
+Variable_55 -> i_55
+LogicLessEq_54 -> Variable_56
+Variable_56 [label = Variable]
+n_56 [label = n]
+Variable_56 -> n_56
+FuncBody_37 -> ReturnStmt_57
+ReturnStmt_57 [label = ReturnStmt]
+ReturnStmt_57 -> Variable_58
+Variable_58 [label = Variable]
+sum_58 [label = sum]
+Variable_58 -> sum_58
+Program -> FuncDecl_59
+FuncDecl_59 [label = FuncDecl]
+FuncDecl_59 -> BuiltinType_60
+BuiltinType_60 [label = BuiltinType]
+"int_60" [label = "int"]
+BuiltinType_60 -> "int_60"
+main_59[ label = main]
+FuncDecl_59 -> main_59
+FuncDecl_59 -> ParamList_61
+ParamList_61 [label = ParamList]
+FuncDecl_59 -> FuncBody_62
+FuncBody_62 [label = FuncBody]
+FuncBody_62 -> VarDecl_63
+VarDecl_63 [label = VarDecl]
+VarDecl_63 -> BuiltinType_64
+BuiltinType_64 [label = BuiltinType]
+"int_64" [label = "int"]
+BuiltinType_64 -> "int_64"
+VarDecl_63 -> VarInit_65
+VarInit_65 [label = VarInit]
+sum100_65 [label = sum100]
+VarInit_65 -> sum100_65
+VarInit_65 -> FuncCall_66
+FuncCall_66 [label = FuncCall]
+countSum_66[ label = countSum]
+FuncCall_66 -> countSum_66
+FuncCall_66 -> Constant_67
+Constant_67 [label = Constant]
+int_67 [label = "100"]
+Constant_67 -> int_67
+FuncBody_62 -> FuncCall_68
+FuncCall_68 [label = FuncCall]
+printf_68[ label = printf]
+FuncCall_68 -> printf_68
+FuncCall_68 -> ConstStr_69
+ConstStr_69 [label = ConstStr]
+str_69 [label = "1+2+...+100 = %d"]
+ConstStr_69 -> str_69
+FuncCall_68 -> Variable_70
+Variable_70 [label = Variable]
+sum100_70 [label = sum100]
+Variable_70 -> sum100_70
+FuncBody_62 -> Assign_71
+Assign_71 [label = Assign]
+Assign_71 -> Variable_72
+Variable_72 [label = Variable]
+sum100_72 [label = sum100]
+Variable_72 -> sum100_72
+Assign_71 -> FuncCall_73
+FuncCall_73 [label = FuncCall]
+countSum2_73[ label = countSum2]
+FuncCall_73 -> countSum2_73
+FuncCall_73 -> Constant_74
+Constant_74 [label = Constant]
+int_74 [label = "100"]
+Constant_74 -> int_74
+FuncBody_62 -> FuncCall_75
+FuncCall_75 [label = FuncCall]
+printf_75[ label = printf]
+FuncCall_75 -> printf_75
+FuncCall_75 -> ConstStr_76
+ConstStr_76 [label = ConstStr]
+str_76 [label = "1+2+...+100 = %d"]
+ConstStr_76 -> str_76
+FuncCall_75 -> Variable_77
+Variable_77 [label = Variable]
+sum100_77 [label = sum100]
+Variable_77 -> sum100_77
+FuncBody_62 -> ReturnStmt_78
+ReturnStmt_78 [label = ReturnStmt]
+ReturnStmt_78 -> Constant_79
+Constant_79 [label = Constant]
+int_79 [label = "0"]
+Constant_79 -> int_79
+}

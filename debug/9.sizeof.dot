@@ -1,0 +1,653 @@
+digraph {
+Program [label = Program]
+Program -> FuncDecl_0
+FuncDecl_0 [label = FuncDecl]
+FuncDecl_0 -> BuiltinType_1
+BuiltinType_1 [label = BuiltinType]
+"int_1" [label = "int"]
+BuiltinType_1 -> "int_1"
+printf_0[ label = printf]
+FuncDecl_0 -> printf_0
+FuncDecl_0 -> ParamList_2
+ParamList_2 [label = ParamList]
+ParamList_2 -> Param_3
+Param_3 [label = Param]
+Param_3 -> PointerType_4
+PointerType_4 [label = PointerType]
+"char*_4" [label = "char*"]
+PointerType_4 -> "char*_4"
+anonymous_3 [label = anonymous]
+Param_3 -> anonymous_3
+"..._2" [label = "..."]
+ParamList_2 -> "..._2"
+Program -> TypeDecl_5
+TypeDecl_5 [label = TypeDecl]
+TypeDecl_5 -> StructType_6
+StructType_6 [label = StructType]
+"Student_6" [label = "Student"]
+StructType_6 -> "Student_6"
+StructType_6 -> FieldDecl_7
+FieldDecl_7 [label = FieldDecl]
+FieldDecl_7 -> BuiltinType_8
+BuiltinType_8 [label = BuiltinType]
+"int_8" [label = "int"]
+BuiltinType_8 -> "int_8"
+id_7 [label = id]
+FieldDecl_7 -> id_7
+StructType_6 -> FieldDecl_9
+FieldDecl_9 [label = FieldDecl]
+FieldDecl_9 -> PointerType_10
+PointerType_10 [label = PointerType]
+"char*_10" [label = "char*"]
+PointerType_10 -> "char*_10"
+name_9 [label = name]
+FieldDecl_9 -> name_9
+StructType_6 -> FieldDecl_11
+FieldDecl_11 [label = FieldDecl]
+FieldDecl_11 -> BuiltinType_12
+BuiltinType_12 [label = BuiltinType]
+"char_12" [label = "char"]
+BuiltinType_12 -> "char_12"
+sex_11 [label = sex]
+FieldDecl_11 -> sex_11
+StructType_6 -> FieldDecl_13
+FieldDecl_13 [label = FieldDecl]
+FieldDecl_13 -> BuiltinType_14
+BuiltinType_14 [label = BuiltinType]
+"float_14" [label = "float"]
+BuiltinType_14 -> "float_14"
+score_13 [label = score]
+FieldDecl_13 -> score_13
+Program -> TypeDecl_15
+TypeDecl_15 [label = TypeDecl]
+TypeDecl_15 -> UnionType_16
+UnionType_16 [label = UnionType]
+"ID_16" [label = "ID"]
+UnionType_16 -> "ID_16"
+UnionType_16 -> FieldDecl_17
+FieldDecl_17 [label = FieldDecl]
+FieldDecl_17 -> BuiltinType_18
+BuiltinType_18 [label = BuiltinType]
+"int_18" [label = "int"]
+BuiltinType_18 -> "int_18"
+id_17 [label = id]
+FieldDecl_17 -> id_17
+UnionType_16 -> FieldDecl_19
+FieldDecl_19 [label = FieldDecl]
+FieldDecl_19 -> PointerType_20
+PointerType_20 [label = PointerType]
+"char*_20" [label = "char*"]
+PointerType_20 -> "char*_20"
+name_19 [label = name]
+FieldDecl_19 -> name_19
+Program -> TypeDecl_21
+TypeDecl_21 [label = TypeDecl]
+TypeDecl_21 -> EnumType_22
+EnumType_22 [label = EnumType]
+"SEX_22" [label = "SEX"]
+EnumType_22 -> "SEX_22"
+EnumType_22 -> Enum_23
+Enum_23 [label = Enum]
+MALE_23 [label = MALE]
+Enum_23 -> MALE_23
+EnumType_22 -> Enum_24
+Enum_24 [label = Enum]
+FEMALE_24 [label = FEMALE]
+Enum_24 -> FEMALE_24
+Program -> FuncDecl_25
+FuncDecl_25 [label = FuncDecl]
+FuncDecl_25 -> BuiltinType_26
+BuiltinType_26 [label = BuiltinType]
+"int_26" [label = "int"]
+BuiltinType_26 -> "int_26"
+main_25[ label = main]
+FuncDecl_25 -> main_25
+FuncDecl_25 -> ParamList_27
+ParamList_27 [label = ParamList]
+FuncDecl_25 -> FuncBody_28
+FuncBody_28 [label = FuncBody]
+FuncBody_28 -> VarDecl_29
+VarDecl_29 [label = VarDecl]
+VarDecl_29 -> BuiltinType_30
+BuiltinType_30 [label = BuiltinType]
+"char_30" [label = "char"]
+BuiltinType_30 -> "char_30"
+VarDecl_29 -> VarInit_31
+VarInit_31 [label = VarInit]
+charVal_31 [label = charVal]
+VarInit_31 -> charVal_31
+VarInit_31 -> Constant_32
+Constant_32 [label = Constant]
+char_32 [label = "65"]
+Constant_32 -> char_32
+FuncBody_28 -> VarDecl_33
+VarDecl_33 [label = VarDecl]
+VarDecl_33 -> BuiltinType_34
+BuiltinType_34 [label = BuiltinType]
+"uchar_34" [label = "uchar"]
+BuiltinType_34 -> "uchar_34"
+VarDecl_33 -> VarInit_35
+VarInit_35 [label = VarInit]
+ucharVal_35 [label = ucharVal]
+VarInit_35 -> ucharVal_35
+FuncBody_28 -> VarDecl_36
+VarDecl_36 [label = VarDecl]
+VarDecl_36 -> BuiltinType_37
+BuiltinType_37 [label = BuiltinType]
+"short_37" [label = "short"]
+BuiltinType_37 -> "short_37"
+VarDecl_36 -> VarInit_38
+VarInit_38 [label = VarInit]
+shortVal_38 [label = shortVal]
+VarInit_38 -> shortVal_38
+FuncBody_28 -> VarDecl_39
+VarDecl_39 [label = VarDecl]
+VarDecl_39 -> BuiltinType_40
+BuiltinType_40 [label = BuiltinType]
+"ushort_40" [label = "ushort"]
+BuiltinType_40 -> "ushort_40"
+VarDecl_39 -> VarInit_41
+VarInit_41 [label = VarInit]
+ushortVal_41 [label = ushortVal]
+VarInit_41 -> ushortVal_41
+FuncBody_28 -> VarDecl_42
+VarDecl_42 [label = VarDecl]
+VarDecl_42 -> BuiltinType_43
+BuiltinType_43 [label = BuiltinType]
+"int_43" [label = "int"]
+BuiltinType_43 -> "int_43"
+VarDecl_42 -> VarInit_44
+VarInit_44 [label = VarInit]
+intVal_44 [label = intVal]
+VarInit_44 -> intVal_44
+FuncBody_28 -> VarDecl_45
+VarDecl_45 [label = VarDecl]
+VarDecl_45 -> BuiltinType_46
+BuiltinType_46 [label = BuiltinType]
+"uint_46" [label = "uint"]
+BuiltinType_46 -> "uint_46"
+VarDecl_45 -> VarInit_47
+VarInit_47 [label = VarInit]
+uintVal_47 [label = uintVal]
+VarInit_47 -> uintVal_47
+FuncBody_28 -> VarDecl_48
+VarDecl_48 [label = VarDecl]
+VarDecl_48 -> BuiltinType_49
+BuiltinType_49 [label = BuiltinType]
+"long_49" [label = "long"]
+BuiltinType_49 -> "long_49"
+VarDecl_48 -> VarInit_50
+VarInit_50 [label = VarInit]
+longVal_50 [label = longVal]
+VarInit_50 -> longVal_50
+FuncBody_28 -> VarDecl_51
+VarDecl_51 [label = VarDecl]
+VarDecl_51 -> BuiltinType_52
+BuiltinType_52 [label = BuiltinType]
+"ulong_52" [label = "ulong"]
+BuiltinType_52 -> "ulong_52"
+VarDecl_51 -> VarInit_53
+VarInit_53 [label = VarInit]
+ulongVal_53 [label = ulongVal]
+VarInit_53 -> ulongVal_53
+FuncBody_28 -> VarDecl_54
+VarDecl_54 [label = VarDecl]
+VarDecl_54 -> BuiltinType_55
+BuiltinType_55 [label = BuiltinType]
+"float_55" [label = "float"]
+BuiltinType_55 -> "float_55"
+VarDecl_54 -> VarInit_56
+VarInit_56 [label = VarInit]
+floatVal_56 [label = floatVal]
+VarInit_56 -> floatVal_56
+FuncBody_28 -> VarDecl_57
+VarDecl_57 [label = VarDecl]
+VarDecl_57 -> BuiltinType_58
+BuiltinType_58 [label = BuiltinType]
+"double_58" [label = "double"]
+BuiltinType_58 -> "double_58"
+VarDecl_57 -> VarInit_59
+VarInit_59 [label = VarInit]
+doubleVal_59 [label = doubleVal]
+VarInit_59 -> doubleVal_59
+FuncBody_28 -> VarDecl_60
+VarDecl_60 [label = VarDecl]
+VarDecl_60 -> PointerType_61
+PointerType_61 [label = PointerType]
+"char*_61" [label = "char*"]
+PointerType_61 -> "char*_61"
+VarDecl_60 -> VarInit_62
+VarInit_62 [label = VarInit]
+pchar_62 [label = pchar]
+VarInit_62 -> pchar_62
+FuncBody_28 -> VarDecl_63
+VarDecl_63 [label = VarDecl]
+VarDecl_63 -> PointerType_64
+PointerType_64 [label = PointerType]
+"int*_64" [label = "int*"]
+PointerType_64 -> "int*_64"
+VarDecl_63 -> VarInit_65
+VarInit_65 [label = VarInit]
+pint_65 [label = pint]
+VarInit_65 -> pint_65
+FuncBody_28 -> VarDecl_66
+VarDecl_66 [label = VarDecl]
+VarDecl_66 -> DefinedType_67
+DefinedType_67 [label = DefinedType]
+"Student_67" [label = "Student"]
+DefinedType_67 -> "Student_67"
+VarDecl_66 -> VarInit_68
+VarInit_68 [label = VarInit]
+student_68 [label = student]
+VarInit_68 -> student_68
+FuncBody_28 -> VarDecl_69
+VarDecl_69 [label = VarDecl]
+VarDecl_69 -> DefinedType_70
+DefinedType_70 [label = DefinedType]
+"ID_70" [label = "ID"]
+DefinedType_70 -> "ID_70"
+VarDecl_69 -> VarInit_71
+VarInit_71 [label = VarInit]
+id_71 [label = id]
+VarInit_71 -> id_71
+FuncBody_28 -> VarDecl_72
+VarDecl_72 [label = VarDecl]
+VarDecl_72 -> DefinedType_73
+DefinedType_73 [label = DefinedType]
+"SEX_73" [label = "SEX"]
+DefinedType_73 -> "SEX_73"
+VarDecl_72 -> VarInit_74
+VarInit_74 [label = VarInit]
+sex_74 [label = sex]
+VarInit_74 -> sex_74
+FuncBody_28 -> FuncCall_75
+FuncCall_75 [label = FuncCall]
+printf_75[ label = printf]
+FuncCall_75 -> printf_75
+FuncCall_75 -> ConstStr_76
+ConstStr_76 [label = ConstStr]
+str_76 [label = "sizeof(char):%d"]
+ConstStr_76 -> str_76
+FuncCall_75 -> SizeOf_77
+SizeOf_77 [label = SizeOf]
+SizeOf_77 -> BuiltinType_78
+BuiltinType_78 [label = BuiltinType]
+"char_78" [label = "char"]
+BuiltinType_78 -> "char_78"
+FuncBody_28 -> FuncCall_79
+FuncCall_79 [label = FuncCall]
+printf_79[ label = printf]
+FuncCall_79 -> printf_79
+FuncCall_79 -> ConstStr_80
+ConstStr_80 [label = ConstStr]
+str_80 [label = "sizeof(charVal):%d"]
+ConstStr_80 -> str_80
+FuncCall_79 -> SizeOf_81
+SizeOf_81 [label = SizeOf]
+charVal_81 [label = charVal]
+SizeOf_81 -> charVal_81
+FuncBody_28 -> FuncCall_82
+FuncCall_82 [label = FuncCall]
+printf_82[ label = printf]
+FuncCall_82 -> printf_82
+FuncCall_82 -> ConstStr_83
+ConstStr_83 [label = ConstStr]
+str_83 [label = "sizeof(unsigned char):%d"]
+ConstStr_83 -> str_83
+FuncCall_82 -> SizeOf_84
+SizeOf_84 [label = SizeOf]
+SizeOf_84 -> BuiltinType_85
+BuiltinType_85 [label = BuiltinType]
+"uchar_85" [label = "uchar"]
+BuiltinType_85 -> "uchar_85"
+FuncBody_28 -> FuncCall_86
+FuncCall_86 [label = FuncCall]
+printf_86[ label = printf]
+FuncCall_86 -> printf_86
+FuncCall_86 -> ConstStr_87
+ConstStr_87 [label = ConstStr]
+str_87 [label = "sizeof(ucharVal):%d"]
+ConstStr_87 -> str_87
+FuncCall_86 -> SizeOf_88
+SizeOf_88 [label = SizeOf]
+ucharVal_88 [label = ucharVal]
+SizeOf_88 -> ucharVal_88
+FuncBody_28 -> FuncCall_89
+FuncCall_89 [label = FuncCall]
+printf_89[ label = printf]
+FuncCall_89 -> printf_89
+FuncCall_89 -> ConstStr_90
+ConstStr_90 [label = ConstStr]
+str_90 [label = "sizeof(short):%d"]
+ConstStr_90 -> str_90
+FuncCall_89 -> SizeOf_91
+SizeOf_91 [label = SizeOf]
+SizeOf_91 -> BuiltinType_92
+BuiltinType_92 [label = BuiltinType]
+"short_92" [label = "short"]
+BuiltinType_92 -> "short_92"
+FuncBody_28 -> FuncCall_93
+FuncCall_93 [label = FuncCall]
+printf_93[ label = printf]
+FuncCall_93 -> printf_93
+FuncCall_93 -> ConstStr_94
+ConstStr_94 [label = ConstStr]
+str_94 [label = "sizeof(shortVal):%d"]
+ConstStr_94 -> str_94
+FuncCall_93 -> SizeOf_95
+SizeOf_95 [label = SizeOf]
+shortVal_95 [label = shortVal]
+SizeOf_95 -> shortVal_95
+FuncBody_28 -> FuncCall_96
+FuncCall_96 [label = FuncCall]
+printf_96[ label = printf]
+FuncCall_96 -> printf_96
+FuncCall_96 -> ConstStr_97
+ConstStr_97 [label = ConstStr]
+str_97 [label = "sizeof(unsigned short):%d"]
+ConstStr_97 -> str_97
+FuncCall_96 -> SizeOf_98
+SizeOf_98 [label = SizeOf]
+SizeOf_98 -> BuiltinType_99
+BuiltinType_99 [label = BuiltinType]
+"ushort_99" [label = "ushort"]
+BuiltinType_99 -> "ushort_99"
+FuncBody_28 -> FuncCall_100
+FuncCall_100 [label = FuncCall]
+printf_100[ label = printf]
+FuncCall_100 -> printf_100
+FuncCall_100 -> ConstStr_101
+ConstStr_101 [label = ConstStr]
+str_101 [label = "sizeof(ushortVal):%d"]
+ConstStr_101 -> str_101
+FuncCall_100 -> SizeOf_102
+SizeOf_102 [label = SizeOf]
+ushortVal_102 [label = ushortVal]
+SizeOf_102 -> ushortVal_102
+FuncBody_28 -> FuncCall_103
+FuncCall_103 [label = FuncCall]
+printf_103[ label = printf]
+FuncCall_103 -> printf_103
+FuncCall_103 -> ConstStr_104
+ConstStr_104 [label = ConstStr]
+str_104 [label = "sizeof(int):%d"]
+ConstStr_104 -> str_104
+FuncCall_103 -> SizeOf_105
+SizeOf_105 [label = SizeOf]
+SizeOf_105 -> BuiltinType_106
+BuiltinType_106 [label = BuiltinType]
+"int_106" [label = "int"]
+BuiltinType_106 -> "int_106"
+FuncBody_28 -> FuncCall_107
+FuncCall_107 [label = FuncCall]
+printf_107[ label = printf]
+FuncCall_107 -> printf_107
+FuncCall_107 -> ConstStr_108
+ConstStr_108 [label = ConstStr]
+str_108 [label = "sizeof(intVal):%d"]
+ConstStr_108 -> str_108
+FuncCall_107 -> SizeOf_109
+SizeOf_109 [label = SizeOf]
+intVal_109 [label = intVal]
+SizeOf_109 -> intVal_109
+FuncBody_28 -> FuncCall_110
+FuncCall_110 [label = FuncCall]
+printf_110[ label = printf]
+FuncCall_110 -> printf_110
+FuncCall_110 -> ConstStr_111
+ConstStr_111 [label = ConstStr]
+str_111 [label = "sizeof(unsigned int):%d"]
+ConstStr_111 -> str_111
+FuncCall_110 -> SizeOf_112
+SizeOf_112 [label = SizeOf]
+SizeOf_112 -> BuiltinType_113
+BuiltinType_113 [label = BuiltinType]
+"uint_113" [label = "uint"]
+BuiltinType_113 -> "uint_113"
+FuncBody_28 -> FuncCall_114
+FuncCall_114 [label = FuncCall]
+printf_114[ label = printf]
+FuncCall_114 -> printf_114
+FuncCall_114 -> ConstStr_115
+ConstStr_115 [label = ConstStr]
+str_115 [label = "sizeof(uintVal):%d"]
+ConstStr_115 -> str_115
+FuncCall_114 -> SizeOf_116
+SizeOf_116 [label = SizeOf]
+uintVal_116 [label = uintVal]
+SizeOf_116 -> uintVal_116
+FuncBody_28 -> FuncCall_117
+FuncCall_117 [label = FuncCall]
+printf_117[ label = printf]
+FuncCall_117 -> printf_117
+FuncCall_117 -> ConstStr_118
+ConstStr_118 [label = ConstStr]
+str_118 [label = "sizeof(long):%d"]
+ConstStr_118 -> str_118
+FuncCall_117 -> SizeOf_119
+SizeOf_119 [label = SizeOf]
+SizeOf_119 -> BuiltinType_120
+BuiltinType_120 [label = BuiltinType]
+"long_120" [label = "long"]
+BuiltinType_120 -> "long_120"
+FuncBody_28 -> FuncCall_121
+FuncCall_121 [label = FuncCall]
+printf_121[ label = printf]
+FuncCall_121 -> printf_121
+FuncCall_121 -> ConstStr_122
+ConstStr_122 [label = ConstStr]
+str_122 [label = "sizeof(longVal):%d"]
+ConstStr_122 -> str_122
+FuncCall_121 -> SizeOf_123
+SizeOf_123 [label = SizeOf]
+longVal_123 [label = longVal]
+SizeOf_123 -> longVal_123
+FuncBody_28 -> FuncCall_124
+FuncCall_124 [label = FuncCall]
+printf_124[ label = printf]
+FuncCall_124 -> printf_124
+FuncCall_124 -> ConstStr_125
+ConstStr_125 [label = ConstStr]
+str_125 [label = "sizeof(unsigned long):%d"]
+ConstStr_125 -> str_125
+FuncCall_124 -> SizeOf_126
+SizeOf_126 [label = SizeOf]
+SizeOf_126 -> BuiltinType_127
+BuiltinType_127 [label = BuiltinType]
+"ulong_127" [label = "ulong"]
+BuiltinType_127 -> "ulong_127"
+FuncBody_28 -> FuncCall_128
+FuncCall_128 [label = FuncCall]
+printf_128[ label = printf]
+FuncCall_128 -> printf_128
+FuncCall_128 -> ConstStr_129
+ConstStr_129 [label = ConstStr]
+str_129 [label = "sizeof(ulongVal):%d"]
+ConstStr_129 -> str_129
+FuncCall_128 -> SizeOf_130
+SizeOf_130 [label = SizeOf]
+ulongVal_130 [label = ulongVal]
+SizeOf_130 -> ulongVal_130
+FuncBody_28 -> FuncCall_131
+FuncCall_131 [label = FuncCall]
+printf_131[ label = printf]
+FuncCall_131 -> printf_131
+FuncCall_131 -> ConstStr_132
+ConstStr_132 [label = ConstStr]
+str_132 [label = "sizeof(float):%d"]
+ConstStr_132 -> str_132
+FuncCall_131 -> SizeOf_133
+SizeOf_133 [label = SizeOf]
+SizeOf_133 -> BuiltinType_134
+BuiltinType_134 [label = BuiltinType]
+"float_134" [label = "float"]
+BuiltinType_134 -> "float_134"
+FuncBody_28 -> FuncCall_135
+FuncCall_135 [label = FuncCall]
+printf_135[ label = printf]
+FuncCall_135 -> printf_135
+FuncCall_135 -> ConstStr_136
+ConstStr_136 [label = ConstStr]
+str_136 [label = "sizeof(floatVal):%d"]
+ConstStr_136 -> str_136
+FuncCall_135 -> SizeOf_137
+SizeOf_137 [label = SizeOf]
+floatVal_137 [label = floatVal]
+SizeOf_137 -> floatVal_137
+FuncBody_28 -> FuncCall_138
+FuncCall_138 [label = FuncCall]
+printf_138[ label = printf]
+FuncCall_138 -> printf_138
+FuncCall_138 -> ConstStr_139
+ConstStr_139 [label = ConstStr]
+str_139 [label = "sizeof(double):%d"]
+ConstStr_139 -> str_139
+FuncCall_138 -> SizeOf_140
+SizeOf_140 [label = SizeOf]
+SizeOf_140 -> BuiltinType_141
+BuiltinType_141 [label = BuiltinType]
+"double_141" [label = "double"]
+BuiltinType_141 -> "double_141"
+FuncBody_28 -> FuncCall_142
+FuncCall_142 [label = FuncCall]
+printf_142[ label = printf]
+FuncCall_142 -> printf_142
+FuncCall_142 -> ConstStr_143
+ConstStr_143 [label = ConstStr]
+str_143 [label = "sizeof(doubleVal):%d"]
+ConstStr_143 -> str_143
+FuncCall_142 -> SizeOf_144
+SizeOf_144 [label = SizeOf]
+doubleVal_144 [label = doubleVal]
+SizeOf_144 -> doubleVal_144
+FuncBody_28 -> FuncCall_145
+FuncCall_145 [label = FuncCall]
+printf_145[ label = printf]
+FuncCall_145 -> printf_145
+FuncCall_145 -> ConstStr_146
+ConstStr_146 [label = ConstStr]
+str_146 [label = "sizeof(char*):%d"]
+ConstStr_146 -> str_146
+FuncCall_145 -> SizeOf_147
+SizeOf_147 [label = SizeOf]
+SizeOf_147 -> PointerType_148
+PointerType_148 [label = PointerType]
+"char*_148" [label = "char*"]
+PointerType_148 -> "char*_148"
+FuncBody_28 -> FuncCall_149
+FuncCall_149 [label = FuncCall]
+printf_149[ label = printf]
+FuncCall_149 -> printf_149
+FuncCall_149 -> ConstStr_150
+ConstStr_150 [label = ConstStr]
+str_150 [label = "sizeof(pchar):%d"]
+ConstStr_150 -> str_150
+FuncCall_149 -> SizeOf_151
+SizeOf_151 [label = SizeOf]
+pchar_151 [label = pchar]
+SizeOf_151 -> pchar_151
+FuncBody_28 -> FuncCall_152
+FuncCall_152 [label = FuncCall]
+printf_152[ label = printf]
+FuncCall_152 -> printf_152
+FuncCall_152 -> ConstStr_153
+ConstStr_153 [label = ConstStr]
+str_153 [label = "sizeof(int*):%d"]
+ConstStr_153 -> str_153
+FuncCall_152 -> SizeOf_154
+SizeOf_154 [label = SizeOf]
+SizeOf_154 -> PointerType_155
+PointerType_155 [label = PointerType]
+"int*_155" [label = "int*"]
+PointerType_155 -> "int*_155"
+FuncBody_28 -> FuncCall_156
+FuncCall_156 [label = FuncCall]
+printf_156[ label = printf]
+FuncCall_156 -> printf_156
+FuncCall_156 -> ConstStr_157
+ConstStr_157 [label = ConstStr]
+str_157 [label = "sizeof(pint):%d"]
+ConstStr_157 -> str_157
+FuncCall_156 -> SizeOf_158
+SizeOf_158 [label = SizeOf]
+pint_158 [label = pint]
+SizeOf_158 -> pint_158
+FuncBody_28 -> FuncCall_159
+FuncCall_159 [label = FuncCall]
+printf_159[ label = printf]
+FuncCall_159 -> printf_159
+FuncCall_159 -> ConstStr_160
+ConstStr_160 [label = ConstStr]
+str_160 [label = "sizeof(Student):%d"]
+ConstStr_160 -> str_160
+FuncCall_159 -> SizeOf_161
+SizeOf_161 [label = SizeOf]
+Student_161 [label = Student]
+SizeOf_161 -> Student_161
+FuncBody_28 -> FuncCall_162
+FuncCall_162 [label = FuncCall]
+printf_162[ label = printf]
+FuncCall_162 -> printf_162
+FuncCall_162 -> ConstStr_163
+ConstStr_163 [label = ConstStr]
+str_163 [label = "sizeof(student):%d"]
+ConstStr_163 -> str_163
+FuncCall_162 -> SizeOf_164
+SizeOf_164 [label = SizeOf]
+student_164 [label = student]
+SizeOf_164 -> student_164
+FuncBody_28 -> FuncCall_165
+FuncCall_165 [label = FuncCall]
+printf_165[ label = printf]
+FuncCall_165 -> printf_165
+FuncCall_165 -> ConstStr_166
+ConstStr_166 [label = ConstStr]
+str_166 [label = "sizeof(ID):%d"]
+ConstStr_166 -> str_166
+FuncCall_165 -> SizeOf_167
+SizeOf_167 [label = SizeOf]
+ID_167 [label = ID]
+SizeOf_167 -> ID_167
+FuncBody_28 -> FuncCall_168
+FuncCall_168 [label = FuncCall]
+printf_168[ label = printf]
+FuncCall_168 -> printf_168
+FuncCall_168 -> ConstStr_169
+ConstStr_169 [label = ConstStr]
+str_169 [label = "sizeof(id):%d"]
+ConstStr_169 -> str_169
+FuncCall_168 -> SizeOf_170
+SizeOf_170 [label = SizeOf]
+id_170 [label = id]
+SizeOf_170 -> id_170
+FuncBody_28 -> FuncCall_171
+FuncCall_171 [label = FuncCall]
+printf_171[ label = printf]
+FuncCall_171 -> printf_171
+FuncCall_171 -> ConstStr_172
+ConstStr_172 [label = ConstStr]
+str_172 [label = "sizeof(SEX):%d"]
+ConstStr_172 -> str_172
+FuncCall_171 -> SizeOf_173
+SizeOf_173 [label = SizeOf]
+SEX_173 [label = SEX]
+SizeOf_173 -> SEX_173
+FuncBody_28 -> FuncCall_174
+FuncCall_174 [label = FuncCall]
+printf_174[ label = printf]
+FuncCall_174 -> printf_174
+FuncCall_174 -> ConstStr_175
+ConstStr_175 [label = ConstStr]
+str_175 [label = "sizeof(sex):%d"]
+ConstStr_175 -> str_175
+FuncCall_174 -> SizeOf_176
+SizeOf_176 [label = SizeOf]
+sex_176 [label = sex]
+SizeOf_176 -> sex_176
+FuncBody_28 -> ReturnStmt_177
+ReturnStmt_177 [label = ReturnStmt]
+ReturnStmt_177 -> Constant_178
+Constant_178 [label = Constant]
+int_178 [label = "0"]
+Constant_178 -> int_178
+}

@@ -1,0 +1,205 @@
+digraph {
+Program [label = Program]
+Program -> FuncDecl_0
+FuncDecl_0 [label = FuncDecl]
+FuncDecl_0 -> BuiltinType_1
+BuiltinType_1 [label = BuiltinType]
+"int_1" [label = "int"]
+BuiltinType_1 -> "int_1"
+printf_0[ label = printf]
+FuncDecl_0 -> printf_0
+FuncDecl_0 -> ParamList_2
+ParamList_2 [label = ParamList]
+ParamList_2 -> Param_3
+Param_3 [label = Param]
+Param_3 -> PointerType_4
+PointerType_4 [label = PointerType]
+"char*_4" [label = "char*"]
+PointerType_4 -> "char*_4"
+anonymous_3 [label = anonymous]
+Param_3 -> anonymous_3
+"..._2" [label = "..."]
+ParamList_2 -> "..._2"
+Program -> VarDecl_5
+VarDecl_5 [label = VarDecl]
+VarDecl_5 -> BuiltinType_6
+BuiltinType_6 [label = BuiltinType]
+"int_6" [label = "int"]
+BuiltinType_6 -> "int_6"
+VarDecl_5 -> VarInit_7
+VarInit_7 [label = VarInit]
+g_data_7 [label = g_data]
+VarInit_7 -> g_data_7
+VarInit_7 -> Constant_8
+Constant_8 [label = Constant]
+int_8 [label = "0"]
+Constant_8 -> int_8
+Program -> FuncDecl_9
+FuncDecl_9 [label = FuncDecl]
+FuncDecl_9 -> BuiltinType_10
+BuiltinType_10 [label = BuiltinType]
+"void_10" [label = "void"]
+BuiltinType_10 -> "void_10"
+getAddress_9[ label = getAddress]
+FuncDecl_9 -> getAddress_9
+FuncDecl_9 -> ParamList_11
+ParamList_11 [label = ParamList]
+ParamList_11 -> Param_12
+Param_12 [label = Param]
+Param_12 -> PointerType_13
+PointerType_13 [label = PointerType]
+"int**_13" [label = "int**"]
+PointerType_13 -> "int**_13"
+p_12 [label = p]
+Param_12 -> p_12
+FuncDecl_9 -> FuncBody_14
+FuncBody_14 [label = FuncBody]
+FuncBody_14 -> Assign_15
+Assign_15 [label = Assign]
+Assign_15 -> PointerDeref_16
+PointerDeref_16 [label = PointerDeref]
+PointerDeref_16 -> Variable_17
+Variable_17 [label = Variable]
+p_17 [label = p]
+Variable_17 -> p_17
+Assign_15 -> AddressOf_18
+AddressOf_18 [label = AddressOf]
+AddressOf_18 -> Variable_19
+Variable_19 [label = Variable]
+g_data_19 [label = g_data]
+Variable_19 -> g_data_19
+Program -> FuncDecl_20
+FuncDecl_20 [label = FuncDecl]
+FuncDecl_20 -> BuiltinType_21
+BuiltinType_21 [label = BuiltinType]
+"int_21" [label = "int"]
+BuiltinType_21 -> "int_21"
+main_20[ label = main]
+FuncDecl_20 -> main_20
+FuncDecl_20 -> ParamList_22
+ParamList_22 [label = ParamList]
+FuncDecl_20 -> FuncBody_23
+FuncBody_23 [label = FuncBody]
+FuncBody_23 -> VarDecl_24
+VarDecl_24 [label = VarDecl]
+VarDecl_24 -> PointerType_25
+PointerType_25 [label = PointerType]
+"int*_25" [label = "int*"]
+PointerType_25 -> "int*_25"
+VarDecl_24 -> VarInit_26
+VarInit_26 [label = VarInit]
+p_26 [label = p]
+VarInit_26 -> p_26
+VarInit_26 -> AddressOf_27
+AddressOf_27 [label = AddressOf]
+AddressOf_27 -> Variable_28
+Variable_28 [label = Variable]
+g_data_28 [label = g_data]
+Variable_28 -> g_data_28
+FuncBody_23 -> Assign_29
+Assign_29 [label = Assign]
+Assign_29 -> PointerDeref_30
+PointerDeref_30 [label = PointerDeref]
+PointerDeref_30 -> Variable_31
+Variable_31 [label = Variable]
+p_31 [label = p]
+Variable_31 -> p_31
+Assign_29 -> Constant_32
+Constant_32 [label = Constant]
+int_32 [label = "1234"]
+Constant_32 -> int_32
+FuncBody_23 -> FuncCall_33
+FuncCall_33 [label = FuncCall]
+printf_33[ label = printf]
+FuncCall_33 -> printf_33
+FuncCall_33 -> ConstStr_34
+ConstStr_34 [label = ConstStr]
+str_34 [label = "p: %p, *p: %d, &g_data: %p, g_data: %d"]
+ConstStr_34 -> str_34
+FuncCall_33 -> Variable_35
+Variable_35 [label = Variable]
+p_35 [label = p]
+Variable_35 -> p_35
+FuncCall_33 -> PointerDeref_36
+PointerDeref_36 [label = PointerDeref]
+PointerDeref_36 -> Variable_37
+Variable_37 [label = Variable]
+p_37 [label = p]
+Variable_37 -> p_37
+FuncCall_33 -> AddressOf_38
+AddressOf_38 [label = AddressOf]
+AddressOf_38 -> Variable_39
+Variable_39 [label = Variable]
+g_data_39 [label = g_data]
+Variable_39 -> g_data_39
+FuncCall_33 -> Variable_40
+Variable_40 [label = Variable]
+g_data_40 [label = g_data]
+Variable_40 -> g_data_40
+FuncBody_23 -> VarDecl_41
+VarDecl_41 [label = VarDecl]
+VarDecl_41 -> PointerType_42
+PointerType_42 [label = PointerType]
+"int*_42" [label = "int*"]
+PointerType_42 -> "int*_42"
+VarDecl_41 -> VarInit_43
+VarInit_43 [label = VarInit]
+p2_43 [label = p2]
+VarInit_43 -> p2_43
+FuncBody_23 -> FuncCall_44
+FuncCall_44 [label = FuncCall]
+getAddress_44[ label = getAddress]
+FuncCall_44 -> getAddress_44
+FuncCall_44 -> AddressOf_45
+AddressOf_45 [label = AddressOf]
+AddressOf_45 -> Variable_46
+Variable_46 [label = Variable]
+p2_46 [label = p2]
+Variable_46 -> p2_46
+FuncBody_23 -> Assign_47
+Assign_47 [label = Assign]
+Assign_47 -> PointerDeref_48
+PointerDeref_48 [label = PointerDeref]
+PointerDeref_48 -> Variable_49
+Variable_49 [label = Variable]
+p2_49 [label = p2]
+Variable_49 -> p2_49
+Assign_47 -> Constant_50
+Constant_50 [label = Constant]
+int_50 [label = "5678"]
+Constant_50 -> int_50
+FuncBody_23 -> FuncCall_51
+FuncCall_51 [label = FuncCall]
+printf_51[ label = printf]
+FuncCall_51 -> printf_51
+FuncCall_51 -> ConstStr_52
+ConstStr_52 [label = ConstStr]
+str_52 [label = "p2: %p, *p2: %d, &g_data: %p, g_data: %d"]
+ConstStr_52 -> str_52
+FuncCall_51 -> Variable_53
+Variable_53 [label = Variable]
+p2_53 [label = p2]
+Variable_53 -> p2_53
+FuncCall_51 -> PointerDeref_54
+PointerDeref_54 [label = PointerDeref]
+PointerDeref_54 -> Variable_55
+Variable_55 [label = Variable]
+p2_55 [label = p2]
+Variable_55 -> p2_55
+FuncCall_51 -> AddressOf_56
+AddressOf_56 [label = AddressOf]
+AddressOf_56 -> Variable_57
+Variable_57 [label = Variable]
+g_data_57 [label = g_data]
+Variable_57 -> g_data_57
+FuncCall_51 -> Variable_58
+Variable_58 [label = Variable]
+g_data_58 [label = g_data]
+Variable_58 -> g_data_58
+FuncBody_23 -> ReturnStmt_59
+ReturnStmt_59 [label = ReturnStmt]
+ReturnStmt_59 -> Constant_60
+Constant_60 [label = Constant]
+int_60 [label = "0"]
+Constant_60 -> int_60
+}

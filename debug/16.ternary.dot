@@ -1,0 +1,167 @@
+digraph {
+Program [label = Program]
+Program -> FuncDecl_0
+FuncDecl_0 [label = FuncDecl]
+FuncDecl_0 -> BuiltinType_1
+BuiltinType_1 [label = BuiltinType]
+"int_1" [label = "int"]
+BuiltinType_1 -> "int_1"
+printf_0[ label = printf]
+FuncDecl_0 -> printf_0
+FuncDecl_0 -> ParamList_2
+ParamList_2 [label = ParamList]
+ParamList_2 -> Param_3
+Param_3 [label = Param]
+Param_3 -> PointerType_4
+PointerType_4 [label = PointerType]
+"char*_4" [label = "char*"]
+PointerType_4 -> "char*_4"
+anonymous_3 [label = anonymous]
+Param_3 -> anonymous_3
+"..._2" [label = "..."]
+ParamList_2 -> "..._2"
+Program -> FuncDecl_5
+FuncDecl_5 [label = FuncDecl]
+FuncDecl_5 -> BuiltinType_6
+BuiltinType_6 [label = BuiltinType]
+"int_6" [label = "int"]
+BuiltinType_6 -> "int_6"
+main_5[ label = main]
+FuncDecl_5 -> main_5
+FuncDecl_5 -> ParamList_7
+ParamList_7 [label = ParamList]
+FuncDecl_5 -> FuncBody_8
+FuncBody_8 [label = FuncBody]
+FuncBody_8 -> VarDecl_9
+VarDecl_9 [label = VarDecl]
+VarDecl_9 -> BuiltinType_10
+BuiltinType_10 [label = BuiltinType]
+"int_10" [label = "int"]
+BuiltinType_10 -> "int_10"
+VarDecl_9 -> VarInit_11
+VarInit_11 [label = VarInit]
+a_11 [label = a]
+VarInit_11 -> a_11
+VarInit_11 -> Constant_12
+Constant_12 [label = Constant]
+int_12 [label = "3"]
+Constant_12 -> int_12
+FuncBody_8 -> VarDecl_13
+VarDecl_13 [label = VarDecl]
+VarDecl_13 -> BuiltinType_14
+BuiltinType_14 [label = BuiltinType]
+"int_14" [label = "int"]
+BuiltinType_14 -> "int_14"
+VarDecl_13 -> VarInit_15
+VarInit_15 [label = VarInit]
+b_15 [label = b]
+VarInit_15 -> b_15
+VarInit_15 -> Constant_16
+Constant_16 [label = Constant]
+int_16 [label = "3"]
+Constant_16 -> int_16
+FuncBody_8 -> VarDecl_17
+VarDecl_17 [label = VarDecl]
+VarDecl_17 -> BuiltinType_18
+BuiltinType_18 [label = BuiltinType]
+"int_18" [label = "int"]
+BuiltinType_18 -> "int_18"
+VarDecl_17 -> VarInit_19
+VarInit_19 [label = VarInit]
+c_19 [label = c]
+VarInit_19 -> c_19
+VarInit_19 -> Constant_20
+Constant_20 [label = Constant]
+int_20 [label = "7"]
+Constant_20 -> int_20
+FuncBody_8 -> VarDecl_21
+VarDecl_21 [label = VarDecl]
+VarDecl_21 -> BuiltinType_22
+BuiltinType_22 [label = BuiltinType]
+"int_22" [label = "int"]
+BuiltinType_22 -> "int_22"
+VarDecl_21 -> VarInit_23
+VarInit_23 [label = VarInit]
+minVal_23 [label = minVal]
+VarInit_23 -> minVal_23
+VarInit_23 -> TernaryCondition_24
+TernaryCondition_24 [label = TernaryCondition]
+TernaryCondition_24 -> LogicLessThan_25
+LogicLessThan_25 [label = LogicLessThan]
+LogicLessThan_25 -> Variable_26
+Variable_26 [label = Variable]
+a_26 [label = a]
+Variable_26 -> a_26
+LogicLessThan_25 -> Variable_27
+Variable_27 [label = Variable]
+c_27 [label = c]
+Variable_27 -> c_27
+TernaryCondition_24 -> Variable_28
+Variable_28 [label = Variable]
+a_28 [label = a]
+Variable_28 -> a_28
+TernaryCondition_24 -> Variable_29
+Variable_29 [label = Variable]
+c_29 [label = c]
+Variable_29 -> c_29
+FuncBody_8 -> VarDecl_30
+VarDecl_30 [label = VarDecl]
+VarDecl_30 -> BuiltinType_31
+BuiltinType_31 [label = BuiltinType]
+"int_31" [label = "int"]
+BuiltinType_31 -> "int_31"
+VarDecl_30 -> VarInit_32
+VarInit_32 [label = VarInit]
+maxVal_32 [label = maxVal]
+VarInit_32 -> maxVal_32
+VarInit_32 -> TernaryCondition_33
+TernaryCondition_33 [label = TernaryCondition]
+TernaryCondition_33 -> LogicLessThan_34
+LogicLessThan_34 [label = LogicLessThan]
+LogicLessThan_34 -> Variable_35
+Variable_35 [label = Variable]
+a_35 [label = a]
+Variable_35 -> a_35
+LogicLessThan_34 -> Variable_36
+Variable_36 [label = Variable]
+c_36 [label = c]
+Variable_36 -> c_36
+TernaryCondition_33 -> Variable_37
+Variable_37 [label = Variable]
+c_37 [label = c]
+Variable_37 -> c_37
+TernaryCondition_33 -> Variable_38
+Variable_38 [label = Variable]
+a_38 [label = a]
+Variable_38 -> a_38
+FuncBody_8 -> FuncCall_39
+FuncCall_39 [label = FuncCall]
+printf_39[ label = printf]
+FuncCall_39 -> printf_39
+FuncCall_39 -> ConstStr_40
+ConstStr_40 [label = ConstStr]
+str_40 [label = "minVal:%d"]
+ConstStr_40 -> str_40
+FuncCall_39 -> Variable_41
+Variable_41 [label = Variable]
+minVal_41 [label = minVal]
+Variable_41 -> minVal_41
+FuncBody_8 -> FuncCall_42
+FuncCall_42 [label = FuncCall]
+printf_42[ label = printf]
+FuncCall_42 -> printf_42
+FuncCall_42 -> ConstStr_43
+ConstStr_43 [label = ConstStr]
+str_43 [label = "maxVal:%d"]
+ConstStr_43 -> str_43
+FuncCall_42 -> Variable_44
+Variable_44 [label = Variable]
+maxVal_44 [label = maxVal]
+Variable_44 -> maxVal_44
+FuncBody_8 -> ReturnStmt_45
+ReturnStmt_45 [label = ReturnStmt]
+ReturnStmt_45 -> Constant_46
+Constant_46 [label = Constant]
+int_46 [label = "0"]
+Constant_46 -> int_46
+}

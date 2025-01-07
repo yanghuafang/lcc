@@ -1,0 +1,729 @@
+digraph {
+Program [label = Program]
+Program -> FuncDecl_0
+FuncDecl_0 [label = FuncDecl]
+FuncDecl_0 -> BuiltinType_1
+BuiltinType_1 [label = BuiltinType]
+"int_1" [label = "int"]
+BuiltinType_1 -> "int_1"
+printf_0[ label = printf]
+FuncDecl_0 -> printf_0
+FuncDecl_0 -> ParamList_2
+ParamList_2 [label = ParamList]
+ParamList_2 -> Param_3
+Param_3 [label = Param]
+Param_3 -> PointerType_4
+PointerType_4 [label = PointerType]
+"char*_4" [label = "char*"]
+PointerType_4 -> "char*_4"
+anonymous_3 [label = anonymous]
+Param_3 -> anonymous_3
+"..._2" [label = "..."]
+ParamList_2 -> "..._2"
+Program -> FuncDecl_5
+FuncDecl_5 [label = FuncDecl]
+FuncDecl_5 -> BuiltinType_6
+BuiltinType_6 [label = BuiltinType]
+"int_6" [label = "int"]
+BuiltinType_6 -> "int_6"
+checkAge1_5[ label = checkAge1]
+FuncDecl_5 -> checkAge1_5
+FuncDecl_5 -> ParamList_7
+ParamList_7 [label = ParamList]
+ParamList_7 -> Param_8
+Param_8 [label = Param]
+Param_8 -> BuiltinType_9
+BuiltinType_9 [label = BuiltinType]
+"int_9" [label = "int"]
+BuiltinType_9 -> "int_9"
+age_8 [label = age]
+Param_8 -> age_8
+FuncDecl_5 -> FuncBody_10
+FuncBody_10 [label = FuncBody]
+FuncBody_10 -> IfStmt_11
+IfStmt_11 [label = IfStmt]
+IfStmt_11 -> LogicLessThan_12
+LogicLessThan_12 [label = LogicLessThan]
+LogicLessThan_12 -> Variable_13
+Variable_13 [label = Variable]
+age_13 [label = age]
+Variable_13 -> age_13
+LogicLessThan_12 -> Constant_14
+Constant_14 [label = Constant]
+int_14 [label = "18"]
+Constant_14 -> int_14
+IfStmt_11 -> Block_15
+Block_15 [label = Block]
+Block_15 -> FuncCall_16
+FuncCall_16 [label = FuncCall]
+printf_16[ label = printf]
+FuncCall_16 -> printf_16
+FuncCall_16 -> ConstStr_17
+ConstStr_17 [label = ConstStr]
+str_17 [label = "age < 18: %d"]
+ConstStr_17 -> str_17
+FuncCall_16 -> Variable_18
+Variable_18 [label = Variable]
+age_18 [label = age]
+Variable_18 -> age_18
+Block_15 -> ReturnStmt_19
+ReturnStmt_19 [label = ReturnStmt]
+ReturnStmt_19 -> Variable_20
+Variable_20 [label = Variable]
+age_20 [label = age]
+Variable_20 -> age_20
+FuncBody_10 -> IfStmt_21
+IfStmt_21 [label = IfStmt]
+IfStmt_21 -> LogicEq_22
+LogicEq_22 [label = LogicEq]
+LogicEq_22 -> Variable_23
+Variable_23 [label = Variable]
+age_23 [label = age]
+Variable_23 -> age_23
+LogicEq_22 -> Constant_24
+Constant_24 [label = Constant]
+int_24 [label = "18"]
+Constant_24 -> int_24
+IfStmt_21 -> Block_25
+Block_25 [label = Block]
+Block_25 -> FuncCall_26
+FuncCall_26 [label = FuncCall]
+printf_26[ label = printf]
+FuncCall_26 -> printf_26
+FuncCall_26 -> ConstStr_27
+ConstStr_27 [label = ConstStr]
+str_27 [label = "age == 18: %d"]
+ConstStr_27 -> str_27
+FuncCall_26 -> Variable_28
+Variable_28 [label = Variable]
+age_28 [label = age]
+Variable_28 -> age_28
+Block_25 -> ReturnStmt_29
+ReturnStmt_29 [label = ReturnStmt]
+ReturnStmt_29 -> Variable_30
+Variable_30 [label = Variable]
+age_30 [label = age]
+Variable_30 -> age_30
+IfStmt_21 -> Block_31
+Block_31 [label = Block]
+Block_31 -> FuncCall_32
+FuncCall_32 [label = FuncCall]
+printf_32[ label = printf]
+FuncCall_32 -> printf_32
+FuncCall_32 -> ConstStr_33
+ConstStr_33 [label = ConstStr]
+str_33 [label = "age != 18"]
+ConstStr_33 -> str_33
+FuncCall_32 -> Variable_34
+Variable_34 [label = Variable]
+age_34 [label = age]
+Variable_34 -> age_34
+FuncBody_10 -> IfStmt_35
+IfStmt_35 [label = IfStmt]
+IfStmt_35 -> LogicGreaterThan_36
+LogicGreaterThan_36 [label = LogicGreaterThan]
+LogicGreaterThan_36 -> Variable_37
+Variable_37 [label = Variable]
+age_37 [label = age]
+Variable_37 -> age_37
+LogicGreaterThan_36 -> Constant_38
+Constant_38 [label = Constant]
+int_38 [label = "18"]
+Constant_38 -> int_38
+IfStmt_35 -> Block_39
+Block_39 [label = Block]
+Block_39 -> FuncCall_40
+FuncCall_40 [label = FuncCall]
+printf_40[ label = printf]
+FuncCall_40 -> printf_40
+FuncCall_40 -> ConstStr_41
+ConstStr_41 [label = ConstStr]
+str_41 [label = "age > 18: %d"]
+ConstStr_41 -> str_41
+FuncCall_40 -> Variable_42
+Variable_42 [label = Variable]
+age_42 [label = age]
+Variable_42 -> age_42
+Block_39 -> ReturnStmt_43
+ReturnStmt_43 [label = ReturnStmt]
+ReturnStmt_43 -> Variable_44
+Variable_44 [label = Variable]
+age_44 [label = age]
+Variable_44 -> age_44
+Program -> FuncDecl_45
+FuncDecl_45 [label = FuncDecl]
+FuncDecl_45 -> BuiltinType_46
+BuiltinType_46 [label = BuiltinType]
+"int_46" [label = "int"]
+BuiltinType_46 -> "int_46"
+checkAge2_45[ label = checkAge2]
+FuncDecl_45 -> checkAge2_45
+FuncDecl_45 -> ParamList_47
+ParamList_47 [label = ParamList]
+ParamList_47 -> Param_48
+Param_48 [label = Param]
+Param_48 -> BuiltinType_49
+BuiltinType_49 [label = BuiltinType]
+"int_49" [label = "int"]
+BuiltinType_49 -> "int_49"
+age_48 [label = age]
+Param_48 -> age_48
+FuncDecl_45 -> FuncBody_50
+FuncBody_50 [label = FuncBody]
+FuncBody_50 -> IfStmt_51
+IfStmt_51 [label = IfStmt]
+IfStmt_51 -> LogicLessThan_52
+LogicLessThan_52 [label = LogicLessThan]
+LogicLessThan_52 -> Variable_53
+Variable_53 [label = Variable]
+age_53 [label = age]
+Variable_53 -> age_53
+LogicLessThan_52 -> Constant_54
+Constant_54 [label = Constant]
+int_54 [label = "18"]
+Constant_54 -> int_54
+IfStmt_51 -> Block_55
+Block_55 [label = Block]
+Block_55 -> FuncCall_56
+FuncCall_56 [label = FuncCall]
+printf_56[ label = printf]
+FuncCall_56 -> printf_56
+FuncCall_56 -> ConstStr_57
+ConstStr_57 [label = ConstStr]
+str_57 [label = "age < 18: %d"]
+ConstStr_57 -> str_57
+FuncCall_56 -> Variable_58
+Variable_58 [label = Variable]
+age_58 [label = age]
+Variable_58 -> age_58
+Block_55 -> ReturnStmt_59
+ReturnStmt_59 [label = ReturnStmt]
+ReturnStmt_59 -> Variable_60
+Variable_60 [label = Variable]
+age_60 [label = age]
+Variable_60 -> age_60
+IfStmt_51 -> IfStmt_61
+IfStmt_61 [label = IfStmt]
+IfStmt_61 -> LogicEq_62
+LogicEq_62 [label = LogicEq]
+LogicEq_62 -> Variable_63
+Variable_63 [label = Variable]
+age_63 [label = age]
+Variable_63 -> age_63
+LogicEq_62 -> Constant_64
+Constant_64 [label = Constant]
+int_64 [label = "18"]
+Constant_64 -> int_64
+IfStmt_61 -> Block_65
+Block_65 [label = Block]
+Block_65 -> FuncCall_66
+FuncCall_66 [label = FuncCall]
+printf_66[ label = printf]
+FuncCall_66 -> printf_66
+FuncCall_66 -> ConstStr_67
+ConstStr_67 [label = ConstStr]
+str_67 [label = "age == 18: %d"]
+ConstStr_67 -> str_67
+FuncCall_66 -> Variable_68
+Variable_68 [label = Variable]
+age_68 [label = age]
+Variable_68 -> age_68
+Block_65 -> ReturnStmt_69
+ReturnStmt_69 [label = ReturnStmt]
+ReturnStmt_69 -> Variable_70
+Variable_70 [label = Variable]
+age_70 [label = age]
+Variable_70 -> age_70
+IfStmt_61 -> Block_71
+Block_71 [label = Block]
+Block_71 -> FuncCall_72
+FuncCall_72 [label = FuncCall]
+printf_72[ label = printf]
+FuncCall_72 -> printf_72
+FuncCall_72 -> ConstStr_73
+ConstStr_73 [label = ConstStr]
+str_73 [label = "age > 18: %d"]
+ConstStr_73 -> str_73
+FuncCall_72 -> Variable_74
+Variable_74 [label = Variable]
+age_74 [label = age]
+Variable_74 -> age_74
+Block_71 -> ReturnStmt_75
+ReturnStmt_75 [label = ReturnStmt]
+ReturnStmt_75 -> Variable_76
+Variable_76 [label = Variable]
+age_76 [label = age]
+Variable_76 -> age_76
+Program -> FuncDecl_77
+FuncDecl_77 [label = FuncDecl]
+FuncDecl_77 -> BuiltinType_78
+BuiltinType_78 [label = BuiltinType]
+"int_78" [label = "int"]
+BuiltinType_78 -> "int_78"
+checkAge3_77[ label = checkAge3]
+FuncDecl_77 -> checkAge3_77
+FuncDecl_77 -> ParamList_79
+ParamList_79 [label = ParamList]
+ParamList_79 -> Param_80
+Param_80 [label = Param]
+Param_80 -> BuiltinType_81
+BuiltinType_81 [label = BuiltinType]
+"int_81" [label = "int"]
+BuiltinType_81 -> "int_81"
+age_80 [label = age]
+Param_80 -> age_80
+FuncDecl_77 -> FuncBody_82
+FuncBody_82 [label = FuncBody]
+FuncBody_82 -> IfStmt_83
+IfStmt_83 [label = IfStmt]
+IfStmt_83 -> LogicLessEq_84
+LogicLessEq_84 [label = LogicLessEq]
+LogicLessEq_84 -> Variable_85
+Variable_85 [label = Variable]
+age_85 [label = age]
+Variable_85 -> age_85
+LogicLessEq_84 -> Constant_86
+Constant_86 [label = Constant]
+int_86 [label = "6"]
+Constant_86 -> int_86
+IfStmt_83 -> Block_87
+Block_87 [label = Block]
+Block_87 -> FuncCall_88
+FuncCall_88 [label = FuncCall]
+printf_88[ label = printf]
+FuncCall_88 -> printf_88
+FuncCall_88 -> ConstStr_89
+ConstStr_89 [label = ConstStr]
+str_89 [label = "baby: %d"]
+ConstStr_89 -> str_89
+FuncCall_88 -> Variable_90
+Variable_90 [label = Variable]
+age_90 [label = age]
+Variable_90 -> age_90
+Block_87 -> ReturnStmt_91
+ReturnStmt_91 [label = ReturnStmt]
+ReturnStmt_91 -> Variable_92
+Variable_92 [label = Variable]
+age_92 [label = age]
+Variable_92 -> age_92
+IfStmt_83 -> IfStmt_93
+IfStmt_93 [label = IfStmt]
+IfStmt_93 -> LogicAnd_94
+LogicAnd_94 [label = LogicAnd]
+LogicAnd_94 -> LogicGreaterThan_95
+LogicGreaterThan_95 [label = LogicGreaterThan]
+LogicGreaterThan_95 -> Variable_96
+Variable_96 [label = Variable]
+age_96 [label = age]
+Variable_96 -> age_96
+LogicGreaterThan_95 -> Constant_97
+Constant_97 [label = Constant]
+int_97 [label = "6"]
+Constant_97 -> int_97
+LogicAnd_94 -> LogicLessEq_98
+LogicLessEq_98 [label = LogicLessEq]
+LogicLessEq_98 -> Variable_99
+Variable_99 [label = Variable]
+age_99 [label = age]
+Variable_99 -> age_99
+LogicLessEq_98 -> Constant_100
+Constant_100 [label = Constant]
+int_100 [label = "14"]
+Constant_100 -> int_100
+IfStmt_93 -> Block_101
+Block_101 [label = Block]
+Block_101 -> FuncCall_102
+FuncCall_102 [label = FuncCall]
+printf_102[ label = printf]
+FuncCall_102 -> printf_102
+FuncCall_102 -> ConstStr_103
+ConstStr_103 [label = ConstStr]
+str_103 [label = "chld: %d"]
+ConstStr_103 -> str_103
+FuncCall_102 -> Variable_104
+Variable_104 [label = Variable]
+age_104 [label = age]
+Variable_104 -> age_104
+Block_101 -> ReturnStmt_105
+ReturnStmt_105 [label = ReturnStmt]
+ReturnStmt_105 -> Variable_106
+Variable_106 [label = Variable]
+age_106 [label = age]
+Variable_106 -> age_106
+IfStmt_93 -> IfStmt_107
+IfStmt_107 [label = IfStmt]
+IfStmt_107 -> LogicAnd_108
+LogicAnd_108 [label = LogicAnd]
+LogicAnd_108 -> LogicGreaterThan_109
+LogicGreaterThan_109 [label = LogicGreaterThan]
+LogicGreaterThan_109 -> Variable_110
+Variable_110 [label = Variable]
+age_110 [label = age]
+Variable_110 -> age_110
+LogicGreaterThan_109 -> Constant_111
+Constant_111 [label = Constant]
+int_111 [label = "14"]
+Constant_111 -> int_111
+LogicAnd_108 -> LogicLessEq_112
+LogicLessEq_112 [label = LogicLessEq]
+LogicLessEq_112 -> Variable_113
+Variable_113 [label = Variable]
+age_113 [label = age]
+Variable_113 -> age_113
+LogicLessEq_112 -> Constant_114
+Constant_114 [label = Constant]
+int_114 [label = "18"]
+Constant_114 -> int_114
+IfStmt_107 -> Block_115
+Block_115 [label = Block]
+Block_115 -> FuncCall_116
+FuncCall_116 [label = FuncCall]
+printf_116[ label = printf]
+FuncCall_116 -> printf_116
+FuncCall_116 -> ConstStr_117
+ConstStr_117 [label = ConstStr]
+str_117 [label = "teenager: %d"]
+ConstStr_117 -> str_117
+FuncCall_116 -> Variable_118
+Variable_118 [label = Variable]
+age_118 [label = age]
+Variable_118 -> age_118
+Block_115 -> ReturnStmt_119
+ReturnStmt_119 [label = ReturnStmt]
+ReturnStmt_119 -> Variable_120
+Variable_120 [label = Variable]
+age_120 [label = age]
+Variable_120 -> age_120
+IfStmt_107 -> IfStmt_121
+IfStmt_121 [label = IfStmt]
+IfStmt_121 -> LogicAnd_122
+LogicAnd_122 [label = LogicAnd]
+LogicAnd_122 -> LogicGreaterThan_123
+LogicGreaterThan_123 [label = LogicGreaterThan]
+LogicGreaterThan_123 -> Variable_124
+Variable_124 [label = Variable]
+age_124 [label = age]
+Variable_124 -> age_124
+LogicGreaterThan_123 -> Constant_125
+Constant_125 [label = Constant]
+int_125 [label = "18"]
+Constant_125 -> int_125
+LogicAnd_122 -> LogicLessEq_126
+LogicLessEq_126 [label = LogicLessEq]
+LogicLessEq_126 -> Variable_127
+Variable_127 [label = Variable]
+age_127 [label = age]
+Variable_127 -> age_127
+LogicLessEq_126 -> Constant_128
+Constant_128 [label = Constant]
+int_128 [label = "35"]
+Constant_128 -> int_128
+IfStmt_121 -> Block_129
+Block_129 [label = Block]
+Block_129 -> FuncCall_130
+FuncCall_130 [label = FuncCall]
+printf_130[ label = printf]
+FuncCall_130 -> printf_130
+FuncCall_130 -> ConstStr_131
+ConstStr_131 [label = ConstStr]
+str_131 [label = "young: %d"]
+ConstStr_131 -> str_131
+FuncCall_130 -> Variable_132
+Variable_132 [label = Variable]
+age_132 [label = age]
+Variable_132 -> age_132
+Block_129 -> ReturnStmt_133
+ReturnStmt_133 [label = ReturnStmt]
+ReturnStmt_133 -> Variable_134
+Variable_134 [label = Variable]
+age_134 [label = age]
+Variable_134 -> age_134
+FuncBody_82 -> ReturnStmt_135
+ReturnStmt_135 [label = ReturnStmt]
+ReturnStmt_135 -> Variable_136
+Variable_136 [label = Variable]
+age_136 [label = age]
+Variable_136 -> age_136
+Program -> FuncDecl_137
+FuncDecl_137 [label = FuncDecl]
+FuncDecl_137 -> BuiltinType_138
+BuiltinType_138 [label = BuiltinType]
+"int_138" [label = "int"]
+BuiltinType_138 -> "int_138"
+main_137[ label = main]
+FuncDecl_137 -> main_137
+FuncDecl_137 -> ParamList_139
+ParamList_139 [label = ParamList]
+FuncDecl_137 -> FuncBody_140
+FuncBody_140 [label = FuncBody]
+FuncBody_140 -> VarDecl_141
+VarDecl_141 [label = VarDecl]
+VarDecl_141 -> BuiltinType_142
+BuiltinType_142 [label = BuiltinType]
+"int_142" [label = "int"]
+BuiltinType_142 -> "int_142"
+VarDecl_141 -> VarInit_143
+VarInit_143 [label = VarInit]
+age_143 [label = age]
+VarInit_143 -> age_143
+VarInit_143 -> FuncCall_144
+FuncCall_144 [label = FuncCall]
+checkAge1_144[ label = checkAge1]
+FuncCall_144 -> checkAge1_144
+FuncCall_144 -> Constant_145
+Constant_145 [label = Constant]
+int_145 [label = "16"]
+Constant_145 -> int_145
+FuncBody_140 -> FuncCall_146
+FuncCall_146 [label = FuncCall]
+printf_146[ label = printf]
+FuncCall_146 -> printf_146
+FuncCall_146 -> ConstStr_147
+ConstStr_147 [label = ConstStr]
+str_147 [label = "age:%d"]
+ConstStr_147 -> str_147
+FuncCall_146 -> Variable_148
+Variable_148 [label = Variable]
+age_148 [label = age]
+Variable_148 -> age_148
+FuncBody_140 -> Assign_149
+Assign_149 [label = Assign]
+Assign_149 -> Variable_150
+Variable_150 [label = Variable]
+age_150 [label = age]
+Variable_150 -> age_150
+Assign_149 -> FuncCall_151
+FuncCall_151 [label = FuncCall]
+checkAge1_151[ label = checkAge1]
+FuncCall_151 -> checkAge1_151
+FuncCall_151 -> Constant_152
+Constant_152 [label = Constant]
+int_152 [label = "18"]
+Constant_152 -> int_152
+FuncBody_140 -> FuncCall_153
+FuncCall_153 [label = FuncCall]
+printf_153[ label = printf]
+FuncCall_153 -> printf_153
+FuncCall_153 -> ConstStr_154
+ConstStr_154 [label = ConstStr]
+str_154 [label = "age:%d"]
+ConstStr_154 -> str_154
+FuncCall_153 -> Variable_155
+Variable_155 [label = Variable]
+age_155 [label = age]
+Variable_155 -> age_155
+FuncBody_140 -> Assign_156
+Assign_156 [label = Assign]
+Assign_156 -> Variable_157
+Variable_157 [label = Variable]
+age_157 [label = age]
+Variable_157 -> age_157
+Assign_156 -> FuncCall_158
+FuncCall_158 [label = FuncCall]
+checkAge1_158[ label = checkAge1]
+FuncCall_158 -> checkAge1_158
+FuncCall_158 -> Constant_159
+Constant_159 [label = Constant]
+int_159 [label = "20"]
+Constant_159 -> int_159
+FuncBody_140 -> FuncCall_160
+FuncCall_160 [label = FuncCall]
+printf_160[ label = printf]
+FuncCall_160 -> printf_160
+FuncCall_160 -> ConstStr_161
+ConstStr_161 [label = ConstStr]
+str_161 [label = "age:%d"]
+ConstStr_161 -> str_161
+FuncCall_160 -> Variable_162
+Variable_162 [label = Variable]
+age_162 [label = age]
+Variable_162 -> age_162
+FuncBody_140 -> Assign_163
+Assign_163 [label = Assign]
+Assign_163 -> Variable_164
+Variable_164 [label = Variable]
+age_164 [label = age]
+Variable_164 -> age_164
+Assign_163 -> FuncCall_165
+FuncCall_165 [label = FuncCall]
+checkAge2_165[ label = checkAge2]
+FuncCall_165 -> checkAge2_165
+FuncCall_165 -> Constant_166
+Constant_166 [label = Constant]
+int_166 [label = "16"]
+Constant_166 -> int_166
+FuncBody_140 -> FuncCall_167
+FuncCall_167 [label = FuncCall]
+printf_167[ label = printf]
+FuncCall_167 -> printf_167
+FuncCall_167 -> ConstStr_168
+ConstStr_168 [label = ConstStr]
+str_168 [label = "age2:%d"]
+ConstStr_168 -> str_168
+FuncCall_167 -> Variable_169
+Variable_169 [label = Variable]
+age_169 [label = age]
+Variable_169 -> age_169
+FuncBody_140 -> Assign_170
+Assign_170 [label = Assign]
+Assign_170 -> Variable_171
+Variable_171 [label = Variable]
+age_171 [label = age]
+Variable_171 -> age_171
+Assign_170 -> FuncCall_172
+FuncCall_172 [label = FuncCall]
+checkAge2_172[ label = checkAge2]
+FuncCall_172 -> checkAge2_172
+FuncCall_172 -> Constant_173
+Constant_173 [label = Constant]
+int_173 [label = "18"]
+Constant_173 -> int_173
+FuncBody_140 -> FuncCall_174
+FuncCall_174 [label = FuncCall]
+printf_174[ label = printf]
+FuncCall_174 -> printf_174
+FuncCall_174 -> ConstStr_175
+ConstStr_175 [label = ConstStr]
+str_175 [label = "age2:%d"]
+ConstStr_175 -> str_175
+FuncCall_174 -> Variable_176
+Variable_176 [label = Variable]
+age_176 [label = age]
+Variable_176 -> age_176
+FuncBody_140 -> Assign_177
+Assign_177 [label = Assign]
+Assign_177 -> Variable_178
+Variable_178 [label = Variable]
+age_178 [label = age]
+Variable_178 -> age_178
+Assign_177 -> FuncCall_179
+FuncCall_179 [label = FuncCall]
+checkAge2_179[ label = checkAge2]
+FuncCall_179 -> checkAge2_179
+FuncCall_179 -> Constant_180
+Constant_180 [label = Constant]
+int_180 [label = "20"]
+Constant_180 -> int_180
+FuncBody_140 -> FuncCall_181
+FuncCall_181 [label = FuncCall]
+printf_181[ label = printf]
+FuncCall_181 -> printf_181
+FuncCall_181 -> ConstStr_182
+ConstStr_182 [label = ConstStr]
+str_182 [label = "age2:%d"]
+ConstStr_182 -> str_182
+FuncCall_181 -> Variable_183
+Variable_183 [label = Variable]
+age_183 [label = age]
+Variable_183 -> age_183
+FuncBody_140 -> Assign_184
+Assign_184 [label = Assign]
+Assign_184 -> Variable_185
+Variable_185 [label = Variable]
+age_185 [label = age]
+Variable_185 -> age_185
+Assign_184 -> FuncCall_186
+FuncCall_186 [label = FuncCall]
+checkAge3_186[ label = checkAge3]
+FuncCall_186 -> checkAge3_186
+FuncCall_186 -> Constant_187
+Constant_187 [label = Constant]
+int_187 [label = "6"]
+Constant_187 -> int_187
+FuncBody_140 -> FuncCall_188
+FuncCall_188 [label = FuncCall]
+printf_188[ label = printf]
+FuncCall_188 -> printf_188
+FuncCall_188 -> ConstStr_189
+ConstStr_189 [label = ConstStr]
+str_189 [label = "age3:%d"]
+ConstStr_189 -> str_189
+FuncCall_188 -> Variable_190
+Variable_190 [label = Variable]
+age_190 [label = age]
+Variable_190 -> age_190
+FuncBody_140 -> Assign_191
+Assign_191 [label = Assign]
+Assign_191 -> Variable_192
+Variable_192 [label = Variable]
+age_192 [label = age]
+Variable_192 -> age_192
+Assign_191 -> FuncCall_193
+FuncCall_193 [label = FuncCall]
+checkAge3_193[ label = checkAge3]
+FuncCall_193 -> checkAge3_193
+FuncCall_193 -> Constant_194
+Constant_194 [label = Constant]
+int_194 [label = "14"]
+Constant_194 -> int_194
+FuncBody_140 -> FuncCall_195
+FuncCall_195 [label = FuncCall]
+printf_195[ label = printf]
+FuncCall_195 -> printf_195
+FuncCall_195 -> ConstStr_196
+ConstStr_196 [label = ConstStr]
+str_196 [label = "age3:%d"]
+ConstStr_196 -> str_196
+FuncCall_195 -> Variable_197
+Variable_197 [label = Variable]
+age_197 [label = age]
+Variable_197 -> age_197
+FuncBody_140 -> Assign_198
+Assign_198 [label = Assign]
+Assign_198 -> Variable_199
+Variable_199 [label = Variable]
+age_199 [label = age]
+Variable_199 -> age_199
+Assign_198 -> FuncCall_200
+FuncCall_200 [label = FuncCall]
+checkAge3_200[ label = checkAge3]
+FuncCall_200 -> checkAge3_200
+FuncCall_200 -> Constant_201
+Constant_201 [label = Constant]
+int_201 [label = "18"]
+Constant_201 -> int_201
+FuncBody_140 -> FuncCall_202
+FuncCall_202 [label = FuncCall]
+printf_202[ label = printf]
+FuncCall_202 -> printf_202
+FuncCall_202 -> ConstStr_203
+ConstStr_203 [label = ConstStr]
+str_203 [label = "age3:%d"]
+ConstStr_203 -> str_203
+FuncCall_202 -> Variable_204
+Variable_204 [label = Variable]
+age_204 [label = age]
+Variable_204 -> age_204
+FuncBody_140 -> Assign_205
+Assign_205 [label = Assign]
+Assign_205 -> Variable_206
+Variable_206 [label = Variable]
+age_206 [label = age]
+Variable_206 -> age_206
+Assign_205 -> FuncCall_207
+FuncCall_207 [label = FuncCall]
+checkAge3_207[ label = checkAge3]
+FuncCall_207 -> checkAge3_207
+FuncCall_207 -> Constant_208
+Constant_208 [label = Constant]
+int_208 [label = "35"]
+Constant_208 -> int_208
+FuncBody_140 -> FuncCall_209
+FuncCall_209 [label = FuncCall]
+printf_209[ label = printf]
+FuncCall_209 -> printf_209
+FuncCall_209 -> ConstStr_210
+ConstStr_210 [label = ConstStr]
+str_210 [label = "age3:%d"]
+ConstStr_210 -> str_210
+FuncCall_209 -> Variable_211
+Variable_211 [label = Variable]
+age_211 [label = age]
+Variable_211 -> age_211
+FuncBody_140 -> ReturnStmt_212
+ReturnStmt_212 [label = ReturnStmt]
+ReturnStmt_212 -> Constant_213
+Constant_213 [label = Constant]
+int_213 [label = "0"]
+Constant_213 -> int_213
+}
