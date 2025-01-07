@@ -27,6 +27,10 @@ tests=(
   "23.return.c"
   "24.struct_array.c"
   "25.quick_sort.c"
+  "26.operator_precedence.c"
+  "27.parenthesis_change_precedence.c"
+  "28.pointer_move.c"
+  "29.struct_pointer_move.c"
 )
 
 compileC2Obj() {

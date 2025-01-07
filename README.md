@@ -8,6 +8,7 @@ Not like the most popular industrial C compilers, such as clang and gcc which ad
 - Builtin types: `char`, `short`, `int`, `long`, `float`, `double`, according `unsigned` types, `bool` and `void`.
 - User defined types: struct, union and enum, according reference(`structObj.member`) and dereference(`structPtr->member`) on struct and union objects.
 - Pointer and address of: `Type* objectPtr`, `objectPtr = &object`; dereference: `*objectPtr`.
+- Pointer move on array of builtin types and user defined types by using operators `++`, `--`, `+=` and `-=`.
 - One dimensional array: `Type arrayName[INTEGER];`
 - Variable list: such as `a = 1, b, c = 3`
 - Variant parameters: `...`
@@ -15,6 +16,7 @@ Not like the most popular industrial C compilers, such as clang and gcc which ad
 - `sizeof` operator.
 - Explicit(`(Type)varObject`) and implicit type cast.
 - C operator precedence: https://en.cppreference.com/w/c/language/operator_precedence
+- `(Expr)` modifies precedence in expression, such as `(a + b) * c`.
 - Assign: `=`
 - Arithmetic: `+`, `-`, `*`, `/`, `%`
 - Arithmetic Assign: `+=`, `-=`, `*=`, `/=`, `%=`

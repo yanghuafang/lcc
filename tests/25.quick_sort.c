@@ -52,6 +52,9 @@ int main() {
   arr[5] = 5;
   int n = sizeof(arr) / sizeof(arr[0]);
 
+  printf("Original array: \n");
+  printArray(arr, n);
+
   quickSort(arr, 0, n - 1);
 
   printf("Sorted array: \n");
