@@ -14,6 +14,7 @@ Not like the most popular industrial C compilers, such as clang and gcc which ad
 - Function declaration, definition and call.
 - `sizeof` operator.
 - Explicit(`(Type)varObject`) and implicit type cast.
+- C operator precedence: https://en.cppreference.com/w/c/language/operator_precedence
 - Assign: `=`
 - Arithmetic: `+`, `-`, `*`, `/`, `%`
 - Arithmetic Assign: `+=`, `-=`, `*=`, `/=`, `%=`

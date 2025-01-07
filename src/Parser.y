@@ -189,7 +189,7 @@ AST::Program* g_root;
 %left SHL SHR //5
 %left ADD SUB //4
 %left ASTERISK DIV MOD //3
-%left DADD DSUB NOT BNOT SIZEOF //2
+%right DADD DSUB NOT BNOT SIZEOF //2
 %left DOT ARROW //1
 
  /* Association */
@@ -453,9 +453,11 @@ Expr:       IDENTIFIER          { $$ = new AST::Variable(*$1); }
             | AMPERSAND Expr %prec NOT
                                 { $$ = new AST::AddressOf($2); }
             | Expr ASSIGN Expr  { $$ = new AST::Assign($1, $3); }
-            | Expr ADD Expr     { $$ = new AST::Add($1, $3); }
-            | Expr SUB Expr     { $$ = new AST::Sub($1, $3); }
-            | Expr ASTERISK Expr 
+            | Expr ADD Expr %prec ADD
+                                { $$ = new AST::Add($1, $3); }
+            | Expr SUB Expr %prec ADD
+                                { $$ = new AST::Sub($1, $3); }
+            | Expr ASTERISK Expr %prec DIV
                                 { $$ = new AST::Mul($1, $3); }
             | Expr DIV Expr     { $$ = new AST::Div($1, $3); }
             | Expr MOD Expr     { $$ = new AST::Mod($1, $3); }
@@ -472,7 +474,7 @@ Expr:       IDENTIFIER          { $$ = new AST::Variable(*$1); }
             | Expr MULEQ Expr   { $$ = new AST::MulAssign($1, $3); }
             | Expr DIVEQ Expr   { $$ = new AST::DivAssign($1, $3); }
             | Expr MODEQ Expr   { $$ = new AST::ModAssign($1, $3); }
-            | Expr AMPERSAND Expr
+            | Expr AMPERSAND Expr %prec AMPERSAND
                                 { $$ = new AST::BitwiseAnd($1, $3); }
             | Expr BOR Expr     { $$ = new AST::BitwiseOr($1, $3); }
             | Expr BXOR Expr    { $$ = new AST::BitwiseXor($1, $3); }
