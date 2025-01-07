@@ -37,13 +37,14 @@ Not like the most popular industrial C compilers, such as clang and gcc which ad
 
 Except the following features:
 - Preprocessing: such as `#include`
-- Macro definition and expansion
+- Macro definition `#define` and expansion
 - Complicated initialization: such as `int a[] = {1, 2, 3}`;
 - Multiple dimensional array: such as `int a[8][8];`
 - `typedef`: not crucial, define by `struct`, `union` and `enum` is enough.
 - `size_t`: use `unsigned long`.
 
 `lcc` compile a translation unit(.c file) to a object file(.o), then the object file can be linked to executable by `clang` or `gcc`.  
+
 User must specify function declarations manually for linkage.
 - `printf`, instead of `#include <stdio.h>`, add a declaration before using it: `int printf(char*, ...);`
 - `malloc`, add declaration: `void* malloc(unsigned long size);`
@@ -120,7 +121,7 @@ To run one test:
 `./run-tests.sh <C file name>`  
 such as `./run-tests.sh 0.hello_world.c`
 
-All unit tests' AST files(.dot and .png) and IR files(.ll) were uploaded to `lcc/debug/`.
+All unit tests' AST files(.dot and .png) and IR files(.ll) were uploaded to `lcc/debug`.
 
 ## `lcc` Debugging
 
@@ -133,6 +134,13 @@ Two LLDB debugger plugins can be used:
 Config `lcc/.vscode/launch.json` to use one of above debugger plugins:
 - `"type": "lldb-dap"` for `LLDB DAP`
 - `"type": "lldb"` for `CodeLLDB`
+
+Maybe LLDB is unable to step into `yyparse` as it tries to locate `Parser.cpp`, `Parser.hpp` (generated from `Parser.y`) and `Lexer.cpp` (genrated from `Lexer.l`) from `lcc/../lcc-build` instead of `lcc/src`  
+
+Run command in LLDB to fix the source file not found issue:  
+`settings set target.source-map <build path> <src path>`  
+
+Such as `settings set target.source-map /Users/yanghuafang/study-projects/lcc-build /Users/yanghuafang/study-projects/lcc/src`
 
 ## TODO
 
