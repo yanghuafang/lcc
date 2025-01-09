@@ -60,7 +60,7 @@ compile() {
 linkObj2Bin() {
   local obj=$1
   local bin=$2
-  clang++ ../../lcc-build/${obj} -o ../../lcc-build/${bin}
+  clang ../../lcc-build/${obj} -o ../../lcc-build/${bin}
 }
 
 link() {
