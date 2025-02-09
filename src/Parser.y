@@ -46,6 +46,7 @@ AST::Program* g_root;
     AST::Decls* decls;
 
     AST::TypeDecl* typeDecl;
+    AST::TypedefDecl* typedefDecl;
     AST::VarDecl* varDecl;
     AST::VarType* varType;
 
@@ -114,7 +115,7 @@ AST::Program* g_root;
        SWITCH CASE DEFAULT
        FOR DO WHILE
        CONTINUE BREAK RETURN
-       STRUCT UNION ENUM
+       STRUCT UNION ENUM TYPEDEF
        SIZEOF
 
 %token<idVal>                   IDENTIFIER
@@ -135,6 +136,7 @@ AST::Program* g_root;
 %type<decls>                    Decls
 
 %type<typeDecl>                 TypeDecl
+%type<typedefDecl>              TypedefDecl
 %type<varDecl>                  VarDecl
 %type<varType>                  VarType _VarType
 
@@ -230,6 +232,19 @@ Decls:      Decls Decl          { $$ = $1; $$->push_back($2); }
 Decl:       FuncDecl            { $$ = $1; }
             | VarDecl           { $$ = $1; }
             | TypeDecl          { $$ = $1; }
+            | TypedefDecl       { $$ = $1; }
+            ;
+
+ /* TypedefDecl — alias for VarType or combined struct/union definition */
+ /* e.g. typedef unsigned long size_t;  e.g. typedef struct S { … } S; */
+TypedefDecl: TYPEDEF VarType IDENTIFIER SEMICOLON
+                                { $$ = new AST::TypedefDecl($2, *$3); }
+            | TYPEDEF STRUCT IDENTIFIER LBRACE FieldDecls RBRACE IDENTIFIER SEMICOLON
+                                { $$ = new AST::TypedefDecl(
+                                      new AST::StructType($5, *$3), *$7); }
+            | TYPEDEF UNION IDENTIFIER LBRACE FieldDecls RBRACE IDENTIFIER SEMICOLON
+                                { $$ = new AST::TypedefDecl(
+                                      new AST::UnionType($5, *$3), *$7); }
             ;
 
 FuncDecl:   VarType IDENTIFIER LPARENTHESES ParamList RPARENTHESES SEMICOLON
@@ -257,10 +272,13 @@ VarType:    _VarType            { $$ = $1; }
 _VarType:   BuiltinType         { $$ = $1; }
             | STRUCT IDENTIFIER LBRACE FieldDecls RBRACE
                                 { $$ = new AST::StructType($4, *$2); }
+            | STRUCT IDENTIFIER { $$ = new AST::DefinedType(*$2); }
             | UNION IDENTIFIER LBRACE FieldDecls RBRACE
                                 { $$ = new AST::UnionType($4, *$2); }
+            | UNION IDENTIFIER  { $$ = new AST::DefinedType(*$2); }
             | ENUM IDENTIFIER LBRACE EnumList RBRACE
                                 { $$ = new AST::EnumType($4, *$2); }
+            | ENUM IDENTIFIER   { $$ = new AST::DefinedType(*$2); }
             | _VarType ASTERISK { $$ = new AST::PointerType($1); }
             | IDENTIFIER        { $$ = new AST::DefinedType(*$1); }
             ;
@@ -297,6 +315,7 @@ InitList:   InitList COMMA InitItem
                                 { $$ = new AST::InitList(); $$->push_back($1); }
             ;
 
+ /* %prec COMMA: disambiguate InitList from comma expressions (see ParserConflicts.md) */
 InitItem:   Expr %prec COMMA
                                 { $$ = new AST::InitElement($1); }
             | LBRACE InitList RBRACE

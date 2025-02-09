@@ -15,6 +15,12 @@
 
 namespace {
 
+// Array declarator and initializer helpers (VarDecl::genCode only).
+// Parser attaches bounds and inits to VarInit (per name in a VarList).
+// kInferredArrayBound is resolved in resolveArrayBounds(); brace inits are
+// flattened to a linear slot vector (nullptr = zero-fill) before GEP/store
+// (local) or ConstantArray assembly (global).
+
 struct Array1DInfo {
   AST::VarType* elemVarType;
   size_t length;
@@ -56,6 +62,7 @@ size_t count1DInitElements(const AST::InitList& initList) {
   return initList.size();
 }
 
+// Nested {{…},{…}} → outer list size; flat {a,b,c,…} → ceil(n/cols) rows.
 size_t infer2DRowCount(const AST::InitList& initList, size_t cols) {
   if (initList.empty()) {
     throw std::logic_error("Cannot infer array size from empty initializer.");
@@ -66,6 +73,8 @@ size_t infer2DRowCount(const AST::InitList& initList, size_t cols) {
   return (initList.size() - 1) / cols + 1;
 }
 
+// Brace initializers normalize to one slot per element; nullptr slots
+// zero-fill.
 std::vector<AST::Expr*> flatten1DInit(const AST::InitList& initList,
                                       size_t length) {
   if (initList.size() > length) {
@@ -146,6 +155,8 @@ void validateStringFitsArray(const std::string& str, size_t length) {
   }
 }
 
+// Replace kInferredArrayBound on the first dimension only: element count from
+// brace init, 2D row count from nested/flat InitList, or strlen+1 for char[].
 std::vector<size_t> resolveArrayBounds(const AST::VarInit* var,
                                        AST::VarType* baseType) {
   std::vector<size_t> bounds = var->arrayBounds_;
@@ -476,7 +487,7 @@ VarType* Expr::getLValueVarType(CodeGenerator& generator) { return nullptr; }
 BuiltinTypeId Expr::getExprTypeId(CodeGenerator& generator) {
   VarType* varType = getExprVarType(generator);
   if (varType != nullptr) {
-    return Utils::varTypeToTypeId(varType);
+    return Utils::resolvedVarTypeToTypeId(varType, generator);
   }
 
   return BuiltinTypeId::UNKNOWN;
@@ -485,7 +496,7 @@ BuiltinTypeId Expr::getExprTypeId(CodeGenerator& generator) {
 BuiltinTypeId Expr::getLValueTypeId(CodeGenerator& generator) {
   VarType* varType = getLValueVarType(generator);
   if (varType != nullptr) {
-    return Utils::varTypeToTypeId(varType);
+    return Utils::resolvedVarTypeToTypeId(varType, generator);
   }
 
   return BuiltinTypeId::UNKNOWN;
@@ -1025,6 +1036,8 @@ VarType* VarInit::buildVarType(VarType* baseType) const {
   return buildVarType(baseType, arrayBounds_);
 }
 
+// C declarator int a[8][5] yields bounds [8,5]; nest ArrayType inside-out
+// (innermost bound first) so a[i] has type int[5] and a[i][j] is int.
 VarType* VarInit::buildVarType(VarType* baseType,
                                const std::vector<size_t>& bounds) const {
   VarType* type = baseType;
@@ -1037,6 +1050,8 @@ VarType* VarInit::buildVarType(VarType* baseType,
   return type;
 }
 
+// Per VarInit: resolve bounds → build nested ArrayType → alloca or global,
+// then brace init, char string literal, scalar expr, or undef (global only).
 llvm::Value* VarDecl::genCode(CodeGenerator& generator) {
   llvm::Type* baseLlvmType = varType_->getType(generator);
   if (baseLlvmType == nullptr) {
@@ -1077,6 +1092,11 @@ llvm::Value* VarDecl::genCode(CodeGenerator& generator) {
           generator.getCurrentFunction(), var->varName_, llvmVarType);
       if (!generator.addVariable(var->varName_, allocaInst, varType)) {
         allocaInst->eraseFromParent();
+        if (generator.hasTypedefAliasInCurrentScope(var->varName_)) {
+          throw std::logic_error("It is not allowed to use typedef name " +
+                                 var->varName_ +
+                                 " as a variable in the same scope!");
+        }
         throw std::logic_error(
             "It is not allowed to redefine the same local variable " +
             var->varName_ + " in the same scope!");
@@ -1095,7 +1115,7 @@ llvm::Value* VarDecl::genCode(CodeGenerator& generator) {
         llvm::Value* initializer = Utils::typeCast(
             generator.getBuilder(), var->initialExpr_->genCode(generator),
             llvmVarType, var->initialExpr_->getExprTypeId(generator),
-            Utils::varTypeToTypeId(varType));
+            Utils::resolvedVarTypeToTypeId(varType, generator));
         if (initializer == nullptr) {
           allocaInst->eraseFromParent();
           throw std::logic_error("It failed to init variable " + var->varName_ +
@@ -1121,7 +1141,7 @@ llvm::Value* VarDecl::genCode(CodeGenerator& generator) {
         llvm::Value* initialExpr = Utils::typeCast(
             generator.getBuilder(), var->initialExpr_->genCode(generator),
             llvmVarType, var->initialExpr_->getExprTypeId(generator),
-            Utils::varTypeToTypeId(varType));
+            Utils::resolvedVarTypeToTypeId(varType, generator));
         if (initialExpr == nullptr) {
           throw std::logic_error("It failed to init variable " + var->varName_ +
                                  " with value of different type!");
@@ -1136,6 +1156,11 @@ llvm::Value* VarDecl::genCode(CodeGenerator& generator) {
           generator.getModule(), llvmVarType, varType_->isConst_,
           llvm::Function::ExternalLinkage, initializer, var->varName_);
       if (!generator.addVariable(var->varName_, globalVar, varType)) {
+        if (generator.hasTypedefAliasInCurrentScope(var->varName_)) {
+          throw std::logic_error("It is not allowed to use typedef name " +
+                                 var->varName_ +
+                                 " as a variable in the same scope!");
+        }
         throw std::logic_error(
             "It is not allowed to redefine global variable " + var->varName_);
       }
@@ -1168,6 +1193,54 @@ llvm::Value* TypeDecl::genCode(CodeGenerator& generator) {
     ((StructType*)varType_)->genTypeBody(generator);
   } else if (varType_->isUnionType()) {
     ((UnionType*)varType_)->genTypeBody(generator);
+  }
+
+  return nullptr;
+}
+
+llvm::Value* TypedefDecl::genCode(CodeGenerator& generator) {
+  llvm::Type* llvmType;
+  if (underlyingType_->isStructType()) {
+    llvmType = ((StructType*)underlyingType_)
+                   ->genTypeHead(generator, underlyingType_->typeName_);
+  } else if (underlyingType_->isUnionType()) {
+    llvmType = ((UnionType*)underlyingType_)
+                   ->genTypeHead(generator, underlyingType_->typeName_);
+  } else {
+    llvmType = underlyingType_->getType(generator);
+  }
+
+  if (llvmType == nullptr) {
+    throw std::logic_error("Failed to define typedef " + aliasName_);
+  }
+
+  if (!generator.addTypedefAlias(aliasName_, underlyingType_)) {
+    throw std::logic_error("It is not allowed to redefine typedef " +
+                           aliasName_);
+  }
+
+  auto registerTypeName = [&](const std::string& typeName) {
+    if (generator.findType(typeName) == nullptr) {
+      if (!generator.addType(typeName, llvmType)) {
+        throw std::logic_error("It is not allowed to redefine type " +
+                               typeName);
+      }
+    }
+  };
+
+  registerTypeName(aliasName_);
+
+  if (underlyingType_->isStructType() || underlyingType_->isUnionType()) {
+    const std::string& tagName = underlyingType_->typeName_;
+    if (tagName != aliasName_) {
+      registerTypeName(tagName);
+    }
+  }
+
+  if (underlyingType_->isStructType()) {
+    ((StructType*)underlyingType_)->genTypeBody(generator);
+  } else if (underlyingType_->isUnionType()) {
+    ((UnionType*)underlyingType_)->genTypeBody(generator);
   }
 
   return nullptr;
@@ -1242,6 +1315,15 @@ llvm::Type* ArrayType::getType(CodeGenerator& generator) {
 
 llvm::Type* DefinedType::getType(CodeGenerator& generator) {
   if (llvmType_ != nullptr) {
+    return llvmType_;
+  }
+
+  AST::VarType* alias = generator.findTypedefAlias(typeName_);
+  if (alias != nullptr) {
+    llvmType_ = alias->getType(generator);
+    if (llvmType_ == nullptr) {
+      throw std::logic_error(typeName_ + " is undefined!");
+    }
     return llvmType_;
   }
 
@@ -1723,8 +1805,8 @@ llvm::Value* ReturnStmt::genCode(CodeGenerator& generator) {
     llvm::Value* retVal = Utils::typeCast(
         generator.getBuilder(), retVal_->genCode(generator),
         func->getReturnType(), retVal_->getExprTypeId(generator),
-        Utils::varTypeToTypeId(
-            generator.findFuncRetType(func->getName().str())));
+        Utils::resolvedVarTypeToTypeId(
+            generator.findFuncRetType(func->getName().str()), generator));
     if (retVal == nullptr) {
       throw std::logic_error(
           "The type of return value does not match, and can not be casted to "
@@ -1770,6 +1852,10 @@ llvm::Value* Variable::genCode(CodeGenerator& generator) {
     return var;
   }
 
+  if (generator.findTypedefAlias(varName_) != nullptr) {
+    throw std::logic_error(varName_ + " is a typedef name, not a variable!");
+  }
+
   throw std::logic_error(varName_ + " is neither a variable nor a constant!");
   return nullptr;
 }
@@ -1783,6 +1869,10 @@ llvm::Value* Variable::genCodePtr(CodeGenerator& generator) {
   var = generator.findConstant(varName_);
   if (var != nullptr) {
     throw std::logic_error(varName_ + " is const, not left value!");
+  }
+
+  if (generator.findTypedefAlias(varName_) != nullptr) {
+    throw std::logic_error(varName_ + " is a typedef name, not a variable!");
   }
 
   throw std::logic_error(varName_ + " is neither a variable nor a constant!");
@@ -1867,9 +1957,10 @@ llvm::Value* FuncCall::genCode(CodeGenerator& generator) {
        ++argIter, ++index) {
     llvm::Value* arg = argList_->at(index)->genCode(generator);
     AST::VarType* paramVarType = generator.findFuncParamType(funcName_, index);
-    arg = Utils::typeCast(generator.getBuilder(), arg, argIter->getType(),
-                          argList_->at(index)->getExprTypeId(generator),
-                          Utils::varTypeToTypeId(paramVarType));
+    arg = Utils::typeCast(
+        generator.getBuilder(), arg, argIter->getType(),
+        argList_->at(index)->getExprTypeId(generator),
+        Utils::resolvedVarTypeToTypeId(paramVarType, generator));
     if (arg == nullptr) {
       throw std::logic_error("Argument " + std::to_string(index) +
                              " does not match type to call function " +

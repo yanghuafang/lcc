@@ -42,6 +42,8 @@ tests=(
   "32.array_1d_inferred_string_init.c"
   "33.array_2d_decl.c"
   "34.array_2d_brace_init.c"
+  "35.typedef_builtin.c"
+  "36.typedef_struct.c"
 )
 
 compileC2Obj() {

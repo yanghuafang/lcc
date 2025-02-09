@@ -154,6 +154,7 @@ char escapeDecode(char c) {
 "struct"            { return STRUCT; }
 "union"             { return UNION; }
 "enum"              { return ENUM; }
+"typedef"           { return TYPEDEF; }
 
 "sizeof"            { return SIZEOF; }
 

@@ -134,16 +134,17 @@ extern int yydebug;
     STRUCT = 327,                  /* STRUCT  */
     UNION = 328,                   /* UNION  */
     ENUM = 329,                    /* ENUM  */
-    SIZEOF = 330,                  /* SIZEOF  */
-    IDENTIFIER = 331,              /* IDENTIFIER  */
-    CHARACTER = 332,               /* CHARACTER  */
-    INTEGER = 333,                 /* INTEGER  */
-    UINTEGER = 334,                /* UINTEGER  */
-    LONGVAL = 335,                 /* LONGVAL  */
-    ULONGVAL = 336,                /* ULONGVAL  */
-    FLOATVAL = 337,                /* FLOATVAL  */
-    DOUBLEVAL = 338,               /* DOUBLEVAL  */
-    STRING = 339                   /* STRING  */
+    TYPEDEF = 330,                 /* TYPEDEF  */
+    SIZEOF = 331,                  /* SIZEOF  */
+    IDENTIFIER = 332,              /* IDENTIFIER  */
+    CHARACTER = 333,               /* CHARACTER  */
+    INTEGER = 334,                 /* INTEGER  */
+    UINTEGER = 335,                /* UINTEGER  */
+    LONGVAL = 336,                 /* LONGVAL  */
+    ULONGVAL = 337,                /* ULONGVAL  */
+    FLOATVAL = 338,                /* FLOATVAL  */
+    DOUBLEVAL = 339,               /* DOUBLEVAL  */
+    STRING = 340                   /* STRING  */
   };
   typedef enum yytokentype yytoken_kind_t;
 #endif
@@ -173,6 +174,7 @@ union YYSTYPE
     AST::Decls* decls;
 
     AST::TypeDecl* typeDecl;
+    AST::TypedefDecl* typedefDecl;
     AST::VarDecl* varDecl;
     AST::VarType* varType;
 
@@ -223,7 +225,7 @@ union YYSTYPE
     AST::Enum* enumeration;
     AST::EnumList* enumList;
 
-#line 227 "Parser.hpp"
+#line 229 "Parser.hpp"
 
 };
 typedef union YYSTYPE YYSTYPE;

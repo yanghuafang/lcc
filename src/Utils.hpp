@@ -7,6 +7,8 @@
 
 #include "Types.hpp"
 
+class CodeGenerator;
+
 namespace llvm {
 
 class AllocaInst;
@@ -125,4 +127,10 @@ class Utils {
       bool& isUnsigned);
 
   static AST::BuiltinTypeId varTypeToTypeId(AST::VarType* varType);
+
+  static AST::VarType* resolveTypedefVarType(AST::VarType* varType,
+                                             CodeGenerator& generator);
+
+  static AST::BuiltinTypeId resolvedVarTypeToTypeId(AST::VarType* varType,
+                                                    CodeGenerator& generator);
 };

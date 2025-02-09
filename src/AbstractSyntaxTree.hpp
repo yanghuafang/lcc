@@ -47,6 +47,7 @@ class VarInit;
 using VarList = std::vector<VarInit*>;
 
 class TypeDecl;
+class TypedefDecl;
 
 // Variable Types
 class VarType;
@@ -288,6 +289,7 @@ class VarDecl : public Decl {
   std::pair<std::string, std::string> genGraph() override;
 };
 
+// One element of a brace initializer: scalar expr or nested InitList (2D row).
 class InitElement : public Node {
  public:
   Expr* expr_;
@@ -303,6 +305,8 @@ class InitElement : public Node {
   std::pair<std::string, std::string> genGraph() override;
 };
 
+// One name in a declaration list (int a[4], b = 1). Holds declarator suffix
+// (arrayBounds_) and initializer separate from the shared VarType base type.
 class VarInit : public Node {
  public:
   std::string varName_;
@@ -333,6 +337,19 @@ class TypeDecl : public Decl {
 
   TypeDecl(VarType* varType) : varType_(varType) {}
   ~TypeDecl() {}
+
+  llvm::Value* genCode(CodeGenerator& generator) override;
+  std::pair<std::string, std::string> genGraph() override;
+};
+
+class TypedefDecl : public Decl {
+ public:
+  VarType* underlyingType_;
+  std::string aliasName_;
+
+  TypedefDecl(VarType* underlyingType, const std::string& aliasName)
+      : underlyingType_(underlyingType), aliasName_(aliasName) {}
+  ~TypedefDecl() {}
 
   llvm::Value* genCode(CodeGenerator& generator) override;
   std::pair<std::string, std::string> genGraph() override;
@@ -414,6 +431,8 @@ class PointerType : public VarType {
   VarType* getElementVarType() override { return baseType_; }
 };
 
+// One array dimension; chained ArrayType nodes model multidim types.
+// getElementVarType() peels the outermost dimension (used by Subscript).
 class ArrayType : public VarType {
  public:
   VarType* baseType_;
@@ -942,6 +961,8 @@ class StructDeref : public Expr {
   std::pair<std::string, std::string> genGraph() override;
 };
 
+// Indexing: genCodePtr uses array_->genCode() (rvalue/decay) plus pointer
+// arithmetic; getLValueVarType peels one ArrayType so m[i][j] chains.
 class Subscript : public Expr {
  public:
   Expr* array_;
