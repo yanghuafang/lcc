@@ -51,7 +51,7 @@ class Utils {
   static llvm::Value* createCmpEq(llvm::Value* lhs, llvm::Value* rhs);
 
   // Create a load instruction.
-  // When is lhs is type of array, only return a pointer to the first element.
+  // When lhs is type of array, only return a pointer to the first element.
   static llvm::Value* createLoad(llvm::Value* lhs, CodeGenerator& generator);
 
   // Create an assignment instruction. Automatic type casting/upgrading will be

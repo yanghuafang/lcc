@@ -364,6 +364,21 @@ llvm::Type* StructType::genTypeBody(CodeGenerator& generator) {
   return llvmType_;
 }
 
+size_t StructType::getMemberIndex(const std::string& memberName) {
+  size_t index = 0;
+  for (FieldDecl* decl : *structBody_) {
+    for (std::string& name : *decl->memberList_) {
+      if (memberName == name) {
+        return index;
+      }
+
+      ++index;
+    }
+  }
+
+  return -1;
+}
+
 llvm::Type* UnionType::getType(CodeGenerator& generator) {
   if (llvmType_ != NULL) {
     return llvmType_;
@@ -382,21 +397,6 @@ llvm::Type* UnionType::genTypeHead(CodeGenerator& generator,
   generator.addUnionType(type, this);
   llvmType_ = type;
   return llvmType_;
-}
-
-size_t StructType::getMemberIndex(const std::string& memberName) {
-  size_t index = 0;
-  for (FieldDecl* decl : *structBody_) {
-    for (std::string& name : *decl->memberList_) {
-      if (memberName == name) {
-        return index;
-      }
-
-      ++index;
-    }
-  }
-
-  return -1;
 }
 
 llvm::Type* UnionType::genTypeBody(CodeGenerator& generator) {

@@ -196,7 +196,7 @@ AST::Program* g_root;
  /* Use nonassoc to resolve else dangling ambiguity which arises when there are
    multiple nested IF statements, and it is unclear innermost or outermost unpaired IF
    an ELSE should associate with */
- /* ELSE will paired with nearest preceding(innermost) unpaired IF */
+ /* ELSE will pair with nearest preceding(innermost) unpaired IF */
  /* Make ELSE nonassoc to make it intend to shift instead of reduce */
 %nonassoc ELSE
 
