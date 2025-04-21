@@ -14,6 +14,3 @@ export EXT_LDFLAGS="$EXT_LDFLAGS -L/opt/homebrew/opt/llvm@14/lib/c++"
 export EXT_LDFLAGS="$EXT_LDFLAGS -Wl,-rpath,/opt/homebrew/opt/llvm@14/lib/c++"
 export EXT_LDFLAGS="$EXT_LDFLAGS -L/opt/homebrew/opt/llvm@14/lib"
 export LDFLAGS="$EXT_LDFLAGS $LDFLAGS"
-
-export CC="/opt/homebrew/opt/llvm@14/bin/clang"
-export CXX="/opt/homebrew/opt/llvm@14/bin/clang++"
