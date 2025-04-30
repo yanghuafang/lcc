@@ -91,7 +91,7 @@ int main(int argc, char* argv[]) {
 
   // Open input source file.
   FILE* p = freopen(parser.get<std::string>("-i").c_str(), "r", stdin);
-  if (p == NULL) {
+  if (p == nullptr) {
     std::cerr << "Failed to open C source file "
               << parser.get<std::string>("-i") << std::endl;
     return 3;
@@ -105,7 +105,7 @@ int main(int argc, char* argv[]) {
   }
 
   fclose(p);
-  p = NULL;
+  p = nullptr;
 
   // Generate AST file of GraphViz DOT format for visualization.
   try {

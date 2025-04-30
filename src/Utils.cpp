@@ -33,7 +33,7 @@ llvm::Value* Utils::typeCast(llvm::Value* value, llvm::Type* type) {
   } else if (value->getType()->isPointerTy() && type->isPointerTy()) {
     return g_builder.CreatePointerCast(value, type);
   } else {
-    return NULL;
+    return nullptr;
   }
 }
 
@@ -84,7 +84,7 @@ llvm::Value* Utils::typeUpgrade(llvm::Value* value, llvm::Type* type) {
   } else if (value->getType()->isFloatingPointTy() && type->isIntegerTy()) {
     return value;
   } else {
-    return NULL;
+    return nullptr;
   }
 }
 
@@ -146,7 +146,7 @@ llvm::BranchInst* Utils::terminateBlockByBr(llvm::BasicBlock* basicBlock) {
     return g_builder.CreateBr(basicBlock);
   }
 
-  return NULL;
+  return nullptr;
 }
 
 llvm::Value* Utils::createCmpEq(llvm::Value* lhs, llvm::Value* rhs) {
@@ -193,7 +193,7 @@ llvm::Value* Utils::createLoad(llvm::Value* lhs, CodeGenerator& generator) {
 llvm::Value* Utils::createAssign(llvm::Value* lhs, llvm::Value* rhs,
                                  CodeGenerator& generator) {
   rhs = Utils::typeCast(rhs, lhs->getType()->getNonOpaquePointerElementType());
-  if (rhs == NULL) {
+  if (rhs == nullptr) {
     throw std::domain_error(
         "Assign with values that can not be cast to the target type!");
   }

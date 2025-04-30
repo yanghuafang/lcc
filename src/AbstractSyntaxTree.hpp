@@ -205,7 +205,7 @@ class FuncDecl : public Decl {
   FuncBody* funcBody_;
 
   FuncDecl(VarType* retType, const std::string& funcName, ParamList* paramList,
-           FuncBody* funcBody = NULL)
+           FuncBody* funcBody = nullptr)
       : retType_(retType),
         funcName_(funcName),
         paramList_(paramList),
@@ -226,7 +226,7 @@ class Param : public Node {
   ~Param() {}
 
   // Code already generated in FuncDecl::genCode.
-  llvm::Value* genCode(CodeGenerator& generator) override { return NULL; }
+  llvm::Value* genCode(CodeGenerator& generator) override { return nullptr; }
   std::pair<std::string, std::string> genGraph() override;
 };
 
@@ -238,7 +238,7 @@ class ParamList : public std::vector<Param*>, public Node {
   ~ParamList() {}
 
   // Code already generated in FuncDecl::genCode.
-  llvm::Value* genCode(CodeGenerator& generator) override { return NULL; }
+  llvm::Value* genCode(CodeGenerator& generator) override { return nullptr; }
   std::pair<std::string, std::string> genGraph() override;
 
   void setVariant() { isVariant_ = true; }
@@ -273,11 +273,11 @@ class VarInit : public Node {
   std::string varName_;
   Expr* initialExpr_;
 
-  VarInit(const std::string& varName, Expr* initialExpr = NULL)
+  VarInit(const std::string& varName, Expr* initialExpr = nullptr)
       : varName_(varName), initialExpr_(initialExpr) {}
   ~VarInit() {}
 
-  llvm::Value* genCode(CodeGenerator& generator) override { return NULL; }
+  llvm::Value* genCode(CodeGenerator& generator) override { return nullptr; }
   std::pair<std::string, std::string> genGraph() override;
 };
 
@@ -301,10 +301,10 @@ class VarType : public Node {
   llvm::Type* llvmType_;
 
   VarType(const std::string& typeName)
-      : isConst_(false), typeName_(typeName), llvmType_(NULL) {}
+      : isConst_(false), typeName_(typeName), llvmType_(nullptr) {}
   ~VarType() {}
 
-  llvm::Value* genCode(CodeGenerator& generator) override { return NULL; }
+  llvm::Value* genCode(CodeGenerator& generator) override { return nullptr; }
 
   virtual llvm::Type* getType(CodeGenerator& generator) = 0;
 
@@ -482,7 +482,7 @@ class FieldDecl : public Decl {
       : varType_(varType), memberList_(memberList) {}
   ~FieldDecl() {}
 
-  llvm::Value* genCode(CodeGenerator& generator) override { return NULL; }
+  llvm::Value* genCode(CodeGenerator& generator) override { return nullptr; }
   std::pair<std::string, std::string> genGraph() override;
 };
 
@@ -518,7 +518,7 @@ class Enum : public Node {
   ~Enum() {}
 
   // Code already generated in EnumType::getType
-  llvm::Value* genCode(CodeGenerator& generator) override { return NULL; }
+  llvm::Value* genCode(CodeGenerator& generator) override { return nullptr; }
   std::pair<std::string, std::string> genGraph() override;
 };
 
@@ -530,7 +530,7 @@ class IfStmt : public Stmt {
   Stmt* thenStmt_;
   Stmt* elseStmt_;
 
-  IfStmt(Expr* condition, Stmt* thenStmt, Stmt* elseStmt = NULL)
+  IfStmt(Expr* condition, Stmt* thenStmt, Stmt* elseStmt = nullptr)
       : condition_(condition), thenStmt_(thenStmt), elseStmt_(elseStmt) {}
   ~IfStmt() {}
 
@@ -630,7 +630,7 @@ class ReturnStmt : public Stmt {
  public:
   Expr* retVal_;
 
-  ReturnStmt(Expr* retVal = NULL) : retVal_(retVal) {}
+  ReturnStmt(Expr* retVal = nullptr) : retVal_(retVal) {}
   ~ReturnStmt() {}
 
   llvm::Value* genCode(CodeGenerator& generator) override;
@@ -843,10 +843,11 @@ class SizeOf : public Expr {
   Expr* expr_;
   std::string identifier_;
 
-  SizeOf(VarType* varType) : varType_(varType), expr_(NULL), identifier_("") {}
-  SizeOf(Expr* expr) : varType_(NULL), expr_(expr), identifier_("") {}
+  SizeOf(VarType* varType)
+      : varType_(varType), expr_(nullptr), identifier_("") {}
+  SizeOf(Expr* expr) : varType_(nullptr), expr_(expr), identifier_("") {}
   SizeOf(std::string& identifier)
-      : varType_(NULL), expr_(NULL), identifier_(identifier) {}
+      : varType_(nullptr), expr_(nullptr), identifier_(identifier) {}
   ~SizeOf() {}
 
   llvm::Value* genCode(CodeGenerator& generator) override;

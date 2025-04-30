@@ -17,11 +17,11 @@ namespace AST {
 // Grammar Root
 llvm::Value* Program::genCode(CodeGenerator& generator) {
   for (Decl* decl : *decls_) {
-    if (decl != NULL) {
+    if (decl != nullptr) {
       decl->genCode(generator);
     }
   }
-  return NULL;
+  return nullptr;
 }
 
 // Declarations
@@ -31,7 +31,7 @@ llvm::Value* FuncDecl::genCode(CodeGenerator& generator) {
   bool hasVoidParamType = false;
   for (Param* param : *paramList_) {
     llvm::Type* type = param->varType_->getType(generator);
-    if (type == NULL) {
+    if (type == nullptr) {
       throw std::logic_error("Define function " + funcName_ +
                              " with known type!");
     }
@@ -87,14 +87,14 @@ llvm::Value* FuncDecl::genCode(CodeGenerator& generator) {
     // Function declaration conflict.
     // Previous function declaration must be declaration without function body.
     // Current function declaration must be definition with function body.
-    if (!func->empty() || funcBody_ == NULL) {
+    if (!func->empty() || funcBody_ == nullptr) {
       throw std::logic_error("Function " + funcName_ +
                              " declarations conflict!");
     }
   }
 
   // Generate code if function body exists.
-  if (funcBody_ != NULL) {
+  if (funcBody_ != nullptr) {
     // Create and insert the entry block.
     llvm::BasicBlock* funcBlock =
         llvm::BasicBlock::Create(g_context, "entry", func);
@@ -123,7 +123,7 @@ llvm::Value* FuncDecl::genCode(CodeGenerator& generator) {
     generator.popSymbolTable();
   }
 
-  return NULL;
+  return nullptr;
 }
 
 llvm::Value* FuncBody::genCode(CodeGenerator& generator) {
@@ -131,7 +131,7 @@ llvm::Value* FuncBody::genCode(CodeGenerator& generator) {
   for (AST::Stmt* stmt : *content_) {
     // If current block already has a terminator instruction, such as "return",
     // stop generating.
-    if (g_builder.GetInsertBlock()->getTerminator() != NULL) {
+    if (g_builder.GetInsertBlock()->getTerminator() != nullptr) {
       break;
     } else {
       stmt->genCode(generator);
@@ -140,7 +140,7 @@ llvm::Value* FuncBody::genCode(CodeGenerator& generator) {
 
   // If the function does not have a "return" at the end of its body, create a
   // default one.
-  if (g_builder.GetInsertBlock()->getTerminator() == NULL) {
+  if (g_builder.GetInsertBlock()->getTerminator() == nullptr) {
     llvm::Type* retType = generator.getCurrentFunction()->getReturnType();
     if (retType->isVoidTy()) {
       g_builder.CreateRetVoid();
@@ -149,12 +149,12 @@ llvm::Value* FuncBody::genCode(CodeGenerator& generator) {
     }
   }
 
-  return NULL;
+  return nullptr;
 }
 
 llvm::Value* VarDecl::genCode(CodeGenerator& generator) {
   llvm::Type* varType = varType_->getType(generator);
-  if (varType == NULL) {
+  if (varType == nullptr) {
     throw std::logic_error("Define variable with unknown type!");
   }
   if (varType->isVoidTy()) {
@@ -163,13 +163,13 @@ llvm::Value* VarDecl::genCode(CodeGenerator& generator) {
 
   // Create variables one by one.
   for (VarInit* var : *varList_) {
-    if (generator.getCurrentFunction() != NULL) {
+    if (generator.getCurrentFunction() != nullptr) {
       // The declaration is inside a function, create an alloca.
       llvm::AllocaInst* allocaInst = Utils::createEntryBlockAlloca(
           generator.getCurrentFunction(), var->varName_, varType);
       if (!generator.addVariable(var->varName_, allocaInst)) {
         allocaInst->eraseFromParent();
-        allocaInst = NULL;
+        allocaInst = nullptr;
         throw std::logic_error(
             "It is not allowed to redefine the same local variable " +
             var->varName_ + " in the same scope!");
@@ -177,12 +177,12 @@ llvm::Value* VarDecl::genCode(CodeGenerator& generator) {
 
       // Assign variable by "store" instruction if variable is with initial
       // value.
-      if (var->initialExpr_ != NULL) {
+      if (var->initialExpr_ != nullptr) {
         llvm::Value* initializer =
             Utils::typeCast(var->initialExpr_->genCode(generator), varType);
-        if (initializer == NULL) {
+        if (initializer == nullptr) {
           allocaInst->eraseFromParent();
-          allocaInst = NULL;
+          allocaInst = nullptr;
           throw std::logic_error("It failed to init variable " + var->varName_ +
                                  " with value of different type!");
         }
@@ -190,12 +190,12 @@ llvm::Value* VarDecl::genCode(CodeGenerator& generator) {
       }
     } else {
       // The declaration is NOT inside a function, create a global variable.
-      llvm::Constant* initializer = NULL;
-      if (var->initialExpr_ != NULL) {
+      llvm::Constant* initializer = nullptr;
+      if (var->initialExpr_ != nullptr) {
         generator.switchInsertPointToGlobalBlock();
         llvm::Value* initialExpr =
             Utils::typeCast(var->initialExpr_->genCode(generator), varType);
-        if (initialExpr == NULL) {
+        if (initialExpr == nullptr) {
           throw std::logic_error("It failed to init variable " + var->varName_ +
                                  " with value of different type!");
         }
@@ -219,7 +219,7 @@ llvm::Value* VarDecl::genCode(CodeGenerator& generator) {
     }
   }
 
-  return NULL;
+  return nullptr;
 }
 
 llvm::Value* TypeDecl::genCode(CodeGenerator& generator) {
@@ -232,7 +232,7 @@ llvm::Value* TypeDecl::genCode(CodeGenerator& generator) {
     type = varType_->getType(generator);
   }
 
-  if (type == NULL) {
+  if (type == nullptr) {
     throw std::logic_error("Failed to define type " + varType_->typeName_);
   }
 
@@ -247,13 +247,13 @@ llvm::Value* TypeDecl::genCode(CodeGenerator& generator) {
     ((UnionType*)varType_)->genTypeBody(generator);
   }
 
-  return NULL;
+  return nullptr;
 }
 
 // Variable Types
 
 llvm::Type* BuiltinType::getType(CodeGenerator& generator) {
-  if (llvmType_ != NULL) {
+  if (llvmType_ != nullptr) {
     return llvmType_;
   }
 
@@ -287,7 +287,7 @@ llvm::Type* BuiltinType::getType(CodeGenerator& generator) {
       llvmType_ = g_builder.getVoidTy();
       break;
     default:
-      llvmType_ = NULL;
+      llvmType_ = nullptr;
       break;
   }
 
@@ -295,7 +295,7 @@ llvm::Type* BuiltinType::getType(CodeGenerator& generator) {
 }
 
 llvm::Type* PointerType::getType(CodeGenerator& generator) {
-  if (llvmType_ != NULL) {
+  if (llvmType_ != nullptr) {
     return llvmType_;
   }
 
@@ -305,7 +305,7 @@ llvm::Type* PointerType::getType(CodeGenerator& generator) {
 }
 
 llvm::Type* ArrayType::getType(CodeGenerator& generator) {
-  if (llvmType_ != NULL) {
+  if (llvmType_ != nullptr) {
     return llvmType_;
   }
 
@@ -318,19 +318,19 @@ llvm::Type* ArrayType::getType(CodeGenerator& generator) {
 }
 
 llvm::Type* DefinedType::getType(CodeGenerator& generator) {
-  if (llvmType_ != NULL) {
+  if (llvmType_ != nullptr) {
     return llvmType_;
   }
 
   llvmType_ = generator.findType(typeName_);
-  if (llvmType_ == NULL) {
+  if (llvmType_ == nullptr) {
     throw std::logic_error(typeName_ + " is undefined!");
   }
   return llvmType_;
 }
 
 llvm::Type* StructType::getType(CodeGenerator& generator) {
-  if (llvmType_ != NULL) {
+  if (llvmType_ != nullptr) {
     return llvmType_;
   }
 
@@ -380,7 +380,7 @@ size_t StructType::getMemberIndex(const std::string& memberName) {
 }
 
 llvm::Type* UnionType::getType(CodeGenerator& generator) {
-  if (llvmType_ != NULL) {
+  if (llvmType_ != nullptr) {
     return llvmType_;
   }
 
@@ -406,7 +406,7 @@ llvm::Type* UnionType::genTypeBody(CodeGenerator& generator) {
 
   // Find the max size member.
   size_t maxSize = 0;
-  llvm::Type* maxSizeMemberType = NULL;
+  llvm::Type* maxSizeMemberType = nullptr;
   for (FieldDecl* member : *unionBody_) {
     if (member->varType_->getType(generator)->isVoidTy()) {
       throw std::logic_error("Union member type cannot be void!");
@@ -432,11 +432,11 @@ llvm::Type* UnionType::getMemberType(const std::string& memberName,
     }
   }
 
-  return NULL;
+  return nullptr;
 }
 
 llvm::Type* EnumType::getType(CodeGenerator& generator) {
-  if (llvmType_ != NULL) {
+  if (llvmType_ != nullptr) {
     return llvmType_;
   }
 
@@ -466,7 +466,7 @@ llvm::Type* EnumType::getType(CodeGenerator& generator) {
 llvm::Value* IfStmt::genCode(CodeGenerator& generator) {
   llvm::Value* condition = condition_->genCode(generator);
   condition = Utils::castToBool(condition);
-  if (condition == NULL) {
+  if (condition == nullptr) {
     throw std::logic_error(
         "IfStmt condition must be either int, or float, or pointer.");
   }
@@ -480,7 +480,7 @@ llvm::Value* IfStmt::genCode(CodeGenerator& generator) {
   g_builder.CreateCondBr(condition, thenBlock, elseBlock);
   func->getBasicBlockList().push_back(thenBlock);
   g_builder.SetInsertPoint(thenBlock);
-  if (thenStmt_ != NULL) {
+  if (thenStmt_ != nullptr) {
     generator.pushSymbolTable();
     thenStmt_->genCode(generator);
     generator.popSymbolTable();
@@ -490,7 +490,7 @@ llvm::Value* IfStmt::genCode(CodeGenerator& generator) {
   // Generate code in "else" block.
   func->getBasicBlockList().push_back(elseBlock);
   g_builder.SetInsertPoint(elseBlock);
-  if (elseStmt_ != NULL) {
+  if (elseStmt_ != nullptr) {
     generator.pushSymbolTable();
     elseStmt_->genCode(generator);
     generator.popSymbolTable();
@@ -503,7 +503,7 @@ llvm::Value* IfStmt::genCode(CodeGenerator& generator) {
     g_builder.SetInsertPoint(endBlock);
   }
 
-  return NULL;
+  return nullptr;
 }
 
 llvm::Value* SwitchStmt::genCode(CodeGenerator& generator) {
@@ -544,7 +544,7 @@ llvm::Value* SwitchStmt::genCode(CodeGenerator& generator) {
       g_builder.SetInsertPoint(comparisionBlocks[i]);
     }
 
-    if (caseStmtList_->at(i)->condition_ != NULL) {
+    if (caseStmtList_->at(i)->condition_ != nullptr) {
       g_builder.CreateCondBr(
           Utils::createCmpEq(
               matcher, caseStmtList_->at(i)->condition_->genCode(generator)),
@@ -575,7 +575,7 @@ llvm::Value* SwitchStmt::genCode(CodeGenerator& generator) {
     g_builder.SetInsertPoint(caseBlocks.back());
   }
 
-  return NULL;
+  return nullptr;
 }
 
 llvm::Value* CaseStmt::genCode(CodeGenerator& generator) {
@@ -584,14 +584,14 @@ llvm::Value* CaseStmt::genCode(CodeGenerator& generator) {
     if (g_builder.GetInsertBlock()->getTerminator()) {
       // Stop code generation if encounter a terminator, such as "break".
       break;
-    } else if (stmt != NULL) {
+    } else if (stmt != nullptr) {
       stmt->genCode(generator);
     }
   }
 
   // No break, jump to the next case block.
   Utils::terminateBlockByBr(generator.getContinueBlock());
-  return NULL;
+  return nullptr;
 }
 
 llvm::Value* ForStmt::genCode(CodeGenerator& generator) {
@@ -603,7 +603,7 @@ llvm::Value* ForStmt::genCode(CodeGenerator& generator) {
   llvm::BasicBlock* endBlock = llvm::BasicBlock::Create(g_context, "for.end");
   llvm::BasicBlock* loopBlock = llvm::BasicBlock::Create(g_context, "for.loop");
 
-  if (initial_ != NULL) {
+  if (initial_ != nullptr) {
     generator.pushSymbolTable();
     initial_->genCode(generator);
   }
@@ -614,10 +614,10 @@ llvm::Value* ForStmt::genCode(CodeGenerator& generator) {
   // Generate code for condition block.
   func->getBasicBlockList().push_back(conditionBlock);
   g_builder.SetInsertPoint(conditionBlock);
-  if (condition_ != NULL) {
+  if (condition_ != nullptr) {
     llvm::Value* condition = condition_->genCode(generator);
     condition = Utils::castToBool(condition);
-    if (condition == NULL) {
+    if (condition == nullptr) {
       throw std::logic_error(
           "ForStmt condition must be either int, or float, or pointer.");
     }
@@ -630,7 +630,7 @@ llvm::Value* ForStmt::genCode(CodeGenerator& generator) {
   // Generate code for the loop block.
   func->getBasicBlockList().push_back(loopBlock);
   g_builder.SetInsertPoint(loopBlock);
-  if (loopBody_ != NULL) {
+  if (loopBody_ != nullptr) {
     generator.enterLoop(updateBlock, endBlock);
     generator.pushSymbolTable();
     loopBody_->genCode(generator);
@@ -644,7 +644,7 @@ llvm::Value* ForStmt::genCode(CodeGenerator& generator) {
   // Generate code for update block.
   func->getBasicBlockList().push_back(updateBlock);
   g_builder.SetInsertPoint(updateBlock);
-  if (update_ != NULL) {
+  if (update_ != nullptr) {
     update_->genCode(generator);
   }
 
@@ -655,11 +655,11 @@ llvm::Value* ForStmt::genCode(CodeGenerator& generator) {
   func->getBasicBlockList().push_back(endBlock);
   g_builder.SetInsertPoint(endBlock);
 
-  if (initial_ != NULL) {
+  if (initial_ != nullptr) {
     generator.popSymbolTable();
   }
 
-  return NULL;
+  return nullptr;
 }
 
 llvm::Value* DoStmt::genCode(CodeGenerator& generator) {
@@ -675,7 +675,7 @@ llvm::Value* DoStmt::genCode(CodeGenerator& generator) {
   // Generate code for loop block.
   func->getBasicBlockList().push_back(loopBlock);
   g_builder.SetInsertPoint(loopBlock);
-  if (loopBody_ != NULL) {
+  if (loopBody_ != nullptr) {
     generator.enterLoop(conditionBlock, endBlock);
     generator.pushSymbolTable();
     loopBody_->genCode(generator);
@@ -691,7 +691,7 @@ llvm::Value* DoStmt::genCode(CodeGenerator& generator) {
   g_builder.SetInsertPoint(conditionBlock);
   llvm::Value* condition = condition_->genCode(generator);
   condition = Utils::castToBool(condition);
-  if (condition == NULL) {
+  if (condition == nullptr) {
     throw std::logic_error(
         "DoStmt condition must be either int, or float, or pointer.");
   }
@@ -702,7 +702,7 @@ llvm::Value* DoStmt::genCode(CodeGenerator& generator) {
   func->getBasicBlockList().push_back(endBlock);
   g_builder.SetInsertPoint(endBlock);
 
-  return NULL;
+  return nullptr;
 }
 
 llvm::Value* WhileStmt::genCode(CodeGenerator& generator) {
@@ -720,7 +720,7 @@ llvm::Value* WhileStmt::genCode(CodeGenerator& generator) {
   g_builder.SetInsertPoint(conditionBlock);
   llvm::Value* condition = condition_->genCode(generator);
   condition = Utils::castToBool(condition);
-  if (condition == NULL) {
+  if (condition == nullptr) {
     throw std::logic_error(
         "WhileStmt condition must be either int, or float, or pointer.");
   }
@@ -730,7 +730,7 @@ llvm::Value* WhileStmt::genCode(CodeGenerator& generator) {
   // Generate code for loop block.
   func->getBasicBlockList().push_back(loopBlock);
   g_builder.SetInsertPoint(loopBlock);
-  if (loopBody_ != NULL) {
+  if (loopBody_ != nullptr) {
     generator.enterLoop(conditionBlock, endBlock);
     generator.pushSymbolTable();
     loopBody_->genCode(generator);
@@ -745,39 +745,39 @@ llvm::Value* WhileStmt::genCode(CodeGenerator& generator) {
   func->getBasicBlockList().push_back(endBlock);
   g_builder.SetInsertPoint(endBlock);
 
-  return NULL;
+  return nullptr;
 }
 
 llvm::Value* ContinueStmt::genCode(CodeGenerator& generator) {
   llvm::BasicBlock* continueToBlock = generator.getContinueBlock();
-  if (continueToBlock == NULL) {
+  if (continueToBlock == nullptr) {
     throw std::logic_error("Continue must be in switch or loop!");
   }
 
   g_builder.CreateBr(continueToBlock);
-  return NULL;
+  return nullptr;
 }
 
 llvm::Value* BreakStmt::genCode(CodeGenerator& generator) {
   llvm::BasicBlock* breakToBlock = generator.getBreakBlock();
-  if (breakToBlock == NULL) {
+  if (breakToBlock == nullptr) {
     throw std::logic_error("Break must be in switch or loop!");
   }
 
   g_builder.CreateBr(breakToBlock);
-  return NULL;
+  return nullptr;
 }
 
 llvm::Value* ReturnStmt::genCode(CodeGenerator& generator) {
   llvm::Function* func = generator.getCurrentFunction();
-  if (func == NULL) {
+  if (func == nullptr) {
     throw std::logic_error("Return should be in a function body!");
   }
 
-  if (retVal_ != NULL) {
+  if (retVal_ != nullptr) {
     llvm::Value* retVal =
         Utils::typeCast(retVal_->genCode(generator), func->getReturnType());
-    if (retVal == NULL) {
+    if (retVal == nullptr) {
       throw std::logic_error(
           "The type of return value does not match, and can not be casted to "
           "return type!");
@@ -791,54 +791,54 @@ llvm::Value* ReturnStmt::genCode(CodeGenerator& generator) {
     }
   }
 
-  return NULL;
+  return nullptr;
 }
 
 llvm::Value* Block::genCode(CodeGenerator& generator) {
   generator.pushSymbolTable();
   // Generate code for statements one by one in block.
   for (Stmt* stmt : *content_) {
-    if (g_builder.GetInsertBlock()->getTerminator() != NULL) {
+    if (g_builder.GetInsertBlock()->getTerminator() != nullptr) {
       // Stop code generation if encounter a terminator, such as "break".
       break;
-    } else if (stmt != NULL) {
+    } else if (stmt != nullptr) {
       stmt->genCode(generator);
     }
   }
   generator.popSymbolTable();
-  return NULL;
+  return nullptr;
 }
 
 // Expressions
 
 llvm::Value* Variable::genCode(CodeGenerator& generator) {
   llvm::Value* var = generator.findVariable(varName_);
-  if (var != NULL) {
+  if (var != nullptr) {
     return Utils::createLoad(var, generator);
   }
 
   var = generator.findConstant(varName_);
-  if (var != NULL) {
+  if (var != nullptr) {
     return var;
   }
 
   throw std::logic_error(varName_ + " is neither a variable nor a constant!");
-  return NULL;
+  return nullptr;
 }
 
 llvm::Value* Variable::genCodePtr(CodeGenerator& generator) {
   llvm::Value* var = generator.findVariable(varName_);
-  if (var != NULL) {
+  if (var != nullptr) {
     return var;
   }
 
   var = generator.findConstant(varName_);
-  if (var != NULL) {
+  if (var != nullptr) {
     throw std::logic_error(varName_ + " is const, not left value!");
   }
 
   throw std::logic_error(varName_ + " is neither a variable nor a constant!");
-  return NULL;
+  return nullptr;
 }
 
 llvm::Value* Constant::genCode(CodeGenerator& generator) {
@@ -897,7 +897,7 @@ llvm::Value* CommaExpr::genCodePtr(CodeGenerator& generator) {
 
 llvm::Value* FuncCall::genCode(CodeGenerator& generator) {
   llvm::Function* func = generator.findFunction(funcName_);
-  if (func == NULL) {
+  if (func == nullptr) {
     throw std::domain_error("Function " + funcName_ + " is not defined!");
   }
 
@@ -914,7 +914,7 @@ llvm::Value* FuncCall::genCode(CodeGenerator& generator) {
        ++argIter, ++index) {
     llvm::Value* arg = argList_->at(index)->genCode(generator);
     arg = Utils::typeCast(arg, argIter->getType());
-    if (arg == NULL) {
+    if (arg == nullptr) {
       throw std::logic_error("Argument " + std::to_string(index) +
                              " does not match type to call function " +
                              funcName_);
@@ -963,7 +963,7 @@ llvm::Value* StructRef::genCodePtr(CodeGenerator& generator) {
   AST::StructType* structType =
       generator.findStructType((llvm::StructType*)structPtr->getType()
                                    ->getNonOpaquePointerElementType());
-  if (structType != NULL) {
+  if (structType != nullptr) {
     size_t memberIndex = structType->getMemberIndex(memberName_);
     if (memberIndex == -1) {
       throw std::logic_error("The struct does not have a member named " +
@@ -982,9 +982,9 @@ llvm::Value* StructRef::genCodePtr(CodeGenerator& generator) {
   AST::UnionType* unionType =
       generator.findUnionType((llvm::StructType*)structPtr->getType()
                                   ->getNonOpaquePointerElementType());
-  if (unionType != NULL) {
+  if (unionType != nullptr) {
     llvm::Type* memberType = unionType->getMemberType(memberName_, generator);
-    if (memberType == NULL) {
+    if (memberType == nullptr) {
       throw std::logic_error("The union does not have a member named " +
                              memberName_);
     }
@@ -1012,7 +1012,7 @@ llvm::Value* StructDeref::genCodePtr(CodeGenerator& generator) {
   AST::StructType* structType =
       generator.findStructType((llvm::StructType*)structPtr->getType()
                                    ->getNonOpaquePointerElementType());
-  if (structType != NULL) {
+  if (structType != nullptr) {
     size_t memberIndex = structType->getMemberIndex(memberName_);
     if (memberIndex == -1) {
       throw std::logic_error("The struct does not have a member named " +
@@ -1031,9 +1031,9 @@ llvm::Value* StructDeref::genCodePtr(CodeGenerator& generator) {
   AST::UnionType* unionType =
       generator.findUnionType((llvm::StructType*)structPtr->getType()
                                   ->getNonOpaquePointerElementType());
-  if (unionType != NULL) {
+  if (unionType != nullptr) {
     llvm::Type* memberType = unionType->getMemberType(memberName_, generator);
-    if (memberType == NULL) {
+    if (memberType == nullptr) {
       throw std::logic_error("The union does not have a member named " +
                              memberName_);
     }
@@ -1067,7 +1067,7 @@ llvm::Value* Subscript::genCodePtr(CodeGenerator& generator) {
 llvm::Value* TypeCast::genCode(CodeGenerator& generator) {
   llvm::Value* ret = Utils::typeCast(operand_->genCode(generator),
                                      varType_->getType(generator));
-  if (ret == NULL) {
+  if (ret == nullptr) {
     throw std::logic_error("Unable to type cast!");
   }
   return ret;
@@ -1078,21 +1078,21 @@ llvm::Value* TypeCast::genCodePtr(CodeGenerator& generator) {
 }
 
 llvm::Value* SizeOf::genCode(CodeGenerator& generator) {
-  if (varType_ != NULL) {
+  if (varType_ != nullptr) {
     return g_builder.getInt64(
         generator.getTypeSize(varType_->getType(generator)));
-  } else if (expr_ != NULL) {
+  } else if (expr_ != nullptr) {
     return g_builder.getInt64(
         generator.getTypeSize(expr_->genCode(generator)->getType()));
   } else if (!identifier_.empty()) {
     llvm::Type* type = generator.findType(identifier_);
-    if (type != NULL) {
+    if (type != nullptr) {
       varType_ = new DefinedType(identifier_);
       return g_builder.getInt64(generator.getTypeSize(type));
     }
 
     llvm::Value* var = generator.findVariable(identifier_);
-    if (var != NULL) {
+    if (var != nullptr) {
       expr_ = new Variable(identifier_);
       return g_builder.getInt64(generator.getTypeSize(
           var->getType()->getNonOpaquePointerElementType()));
@@ -1227,9 +1227,9 @@ llvm::Value* PostfixInc::genCode(CodeGenerator& generator) {
   llvm::Value* operand = operand_->genCodePtr(generator);
   llvm::Value* value = g_builder.CreateLoad(
       operand->getType()->getNonOpaquePointerElementType(), operand);
-  if (value != NULL && (value->getType()->isIntegerTy() ||
-                        value->getType()->isFloatingPointTy() ||
-                        value->getType()->isPointerTy())) {
+  if (value != nullptr && (value->getType()->isIntegerTy() ||
+                           value->getType()->isFloatingPointTy() ||
+                           value->getType()->isPointerTy())) {
     size_t valueBitWidth =
         ((llvm::IntegerType*)value->getType())->getBitWidth();
     llvm::Value* oneValue = Utils::getOneValue(valueBitWidth);
@@ -1252,9 +1252,9 @@ llvm::Value* PostfixDec::genCode(CodeGenerator& generator) {
   llvm::Value* operand = operand_->genCodePtr(generator);
   llvm::Value* value = g_builder.CreateLoad(
       operand->getType()->getNonOpaquePointerElementType(), operand);
-  if (value != NULL && (value->getType()->isIntegerTy() ||
-                        value->getType()->isFloatingPointTy() ||
-                        value->getType()->isPointerTy())) {
+  if (value != nullptr && (value->getType()->isIntegerTy() ||
+                           value->getType()->isFloatingPointTy() ||
+                           value->getType()->isPointerTy())) {
     size_t valueBitWidth =
         ((llvm::IntegerType*)value->getType())->getBitWidth();
     llvm::Value* oneValue = Utils::getOneValue(valueBitWidth);
@@ -1281,9 +1281,9 @@ llvm::Value* PrefixInc::genCodePtr(CodeGenerator& generator) {
   llvm::Value* operand = operand_->genCodePtr(generator);
   llvm::Value* value = g_builder.CreateLoad(
       operand->getType()->getNonOpaquePointerElementType(), operand);
-  if (value != NULL && (value->getType()->isIntegerTy() ||
-                        value->getType()->isFloatingPointTy() ||
-                        value->getType()->isPointerTy())) {
+  if (value != nullptr && (value->getType()->isIntegerTy() ||
+                           value->getType()->isFloatingPointTy() ||
+                           value->getType()->isPointerTy())) {
     size_t valueBitWidth =
         ((llvm::IntegerType*)value->getType())->getBitWidth();
     llvm::Value* oneValue = Utils::getOneValue(valueBitWidth);
@@ -1305,9 +1305,9 @@ llvm::Value* PrefixDec::genCodePtr(CodeGenerator& generator) {
   llvm::Value* operand = operand_->genCodePtr(generator);
   llvm::Value* value = g_builder.CreateLoad(
       operand->getType()->getNonOpaquePointerElementType(), operand);
-  if (value != NULL && (value->getType()->isIntegerTy() ||
-                        value->getType()->isFloatingPointTy() ||
-                        value->getType()->isPointerTy())) {
+  if (value != nullptr && (value->getType()->isIntegerTy() ||
+                           value->getType()->isFloatingPointTy() ||
+                           value->getType()->isPointerTy())) {
     size_t valueBitWidth =
         ((llvm::IntegerType*)value->getType())->getBitWidth();
     llvm::Value* oneValue = Utils::getOneValue(valueBitWidth);
@@ -1554,14 +1554,14 @@ llvm::Value* RightShiftAssign::genCodePtr(CodeGenerator& generator) {
 llvm::Value* LogicAnd::genCode(CodeGenerator& generator) {
   llvm::Value* lhs = lhs_->genCode(generator);
   lhs = Utils::castToBool(lhs);
-  if (lhs == NULL) {
+  if (lhs == nullptr) {
     throw std::domain_error(
         "lhs of logic operator \"&&\" can not be cast to bool!");
   }
 
   llvm::Value* rhs = rhs_->genCode(generator);
   rhs = Utils::castToBool(rhs);
-  if (rhs == NULL) {
+  if (rhs == nullptr) {
     throw std::domain_error(
         "rhs of logic operator \"&&\" can not be cast to bool!");
   }
@@ -1577,14 +1577,14 @@ llvm::Value* LogicAnd::genCodePtr(CodeGenerator& generator) {
 llvm::Value* LogicOr::genCode(CodeGenerator& generator) {
   llvm::Value* lhs = lhs_->genCode(generator);
   lhs = Utils::castToBool(lhs);
-  if (lhs == NULL) {
+  if (lhs == nullptr) {
     throw std::domain_error(
         "lhs of logic operator \"||\" can not be cast to bool!");
   }
 
   llvm::Value* rhs = rhs_->genCode(generator);
   rhs = Utils::castToBool(rhs);
-  if (rhs == NULL) {
+  if (rhs == nullptr) {
     throw std::domain_error(
         "rhs of logic operator \"||\" can not be cast to bool!");
   }
@@ -1792,7 +1792,7 @@ llvm::Value* LogicGreaterEq::genCodePtr(CodeGenerator& generator) {
 
 llvm::Value* TernaryCondition::genCode(CodeGenerator& generator) {
   llvm::Value* condition = Utils::castToBool(condition_->genCode(generator));
-  if (condition == NULL) {
+  if (condition == nullptr) {
     std::logic_error(
         "Condition is not a bool expression in ternary condition expression!");
   }
@@ -1811,7 +1811,7 @@ llvm::Value* TernaryCondition::genCode(CodeGenerator& generator) {
 
 llvm::Value* TernaryCondition::genCodePtr(CodeGenerator& generator) {
   llvm::Value* condition = Utils::castToBool(condition_->genCode(generator));
-  if (condition == NULL) {
+  if (condition == nullptr) {
     std::logic_error(
         "Condition is not a bool expression in ternary condition expression!");
   }

@@ -153,7 +153,7 @@ class CodeGenerator {
 
   class Symbol {
    public:
-    Symbol() : content_(NULL), type_(SymbolType::UNDEFINED) {}
+    Symbol() : content_(nullptr), type_(SymbolType::UNDEFINED) {}
     Symbol(llvm::Function* func)
         : content_(func), type_(SymbolType::FUNCTION) {}
     Symbol(llvm::Type* type) : content_(type), type_(SymbolType::TYPE) {}
@@ -162,19 +162,20 @@ class CodeGenerator {
           type_(isConst ? SymbolType::CONSTANT : SymbolType::VARIABLE) {}
 
     llvm::Function* getFunction() {
-      return type_ == SymbolType::FUNCTION ? (llvm::Function*)content_ : NULL;
+      return type_ == SymbolType::FUNCTION ? (llvm::Function*)content_
+                                           : nullptr;
     }
 
     llvm::Type* getType() {
-      return type_ == SymbolType::TYPE ? (llvm::Type*)content_ : NULL;
+      return type_ == SymbolType::TYPE ? (llvm::Type*)content_ : nullptr;
     }
 
     llvm::Value* getVariable() {
-      return type_ == SymbolType::VARIABLE ? (llvm::Value*)content_ : NULL;
+      return type_ == SymbolType::VARIABLE ? (llvm::Value*)content_ : nullptr;
     }
 
     llvm::Value* getConstant() {
-      return type_ == SymbolType::CONSTANT ? (llvm::Value*)content_ : NULL;
+      return type_ == SymbolType::CONSTANT ? (llvm::Value*)content_ : nullptr;
     }
 
    private:

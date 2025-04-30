@@ -27,21 +27,21 @@ CodeGenerator::CodeGenerator()
       dataLayout_(new llvm::DataLayout(module_)),
       structTypeTable_(new StructTypeTable),
       unionTypeTable_(new UnionTypeTable),
-      globalBlock_(NULL),
-      globalFunc_(NULL),
-      currentBlock_(NULL),
-      currentFunc_(NULL) {}
+      globalBlock_(nullptr),
+      globalFunc_(nullptr),
+      currentBlock_(nullptr),
+      currentFunc_(nullptr) {}
 
 CodeGenerator::~CodeGenerator() {
   delete structTypeTable_;
-  structTypeTable_ = NULL;
+  structTypeTable_ = nullptr;
   delete unionTypeTable_;
-  unionTypeTable_ = NULL;
+  unionTypeTable_ = nullptr;
 
   // llvm::DataLayout will be cleaned up automatically, as it is owned by
   // llvm::Module, so do not need to delete it.
   delete module_;
-  module_ = NULL;
+  module_ = nullptr;
 }
 
 void CodeGenerator::pushSymbolTable() {
@@ -63,7 +63,7 @@ llvm::TypeSize CodeGenerator::getTypeSize(llvm::Type* type) {
 
 llvm::Type* CodeGenerator::findType(const std::string& typeName) {
   if (symbolTableStack_.empty()) {
-    return NULL;
+    return nullptr;
   }
 
   for (auto iter = symbolTableStack_.end() - 1;
@@ -74,7 +74,7 @@ llvm::Type* CodeGenerator::findType(const std::string& typeName) {
     }
   }
 
-  return NULL;
+  return nullptr;
 }
 
 bool CodeGenerator::addType(const std::string& typeName, llvm::Type* type) {
@@ -95,7 +95,7 @@ bool CodeGenerator::addType(const std::string& typeName, llvm::Type* type) {
 
 llvm::Value* CodeGenerator::findVariable(const std::string& varName) {
   if (symbolTableStack_.empty()) {
-    return NULL;
+    return nullptr;
   }
 
   for (auto iter = symbolTableStack_.end() - 1;
@@ -106,7 +106,7 @@ llvm::Value* CodeGenerator::findVariable(const std::string& varName) {
     }
   }
 
-  return NULL;
+  return nullptr;
 }
 
 bool CodeGenerator::addVariable(const std::string& varName, llvm::Value* var) {
@@ -127,7 +127,7 @@ bool CodeGenerator::addVariable(const std::string& varName, llvm::Value* var) {
 
 llvm::Value* CodeGenerator::findConstant(const std::string& varName) {
   if (symbolTableStack_.empty()) {
-    return NULL;
+    return nullptr;
   }
 
   for (auto iter = symbolTableStack_.end() - 1;
@@ -138,7 +138,7 @@ llvm::Value* CodeGenerator::findConstant(const std::string& varName) {
     }
   }
 
-  return NULL;
+  return nullptr;
 }
 
 bool CodeGenerator::addConstant(const std::string& varName, llvm::Value* var) {
@@ -163,7 +163,7 @@ AST::StructType* CodeGenerator::findStructType(llvm::StructType* type) {
     return pairIter->second;
   }
 
-  return NULL;
+  return nullptr;
 }
 
 bool CodeGenerator::addStructType(llvm::StructType* llvmType,
@@ -184,7 +184,7 @@ AST::UnionType* CodeGenerator::findUnionType(llvm::StructType* type) {
     return pairIter->second;
   }
 
-  return NULL;
+  return nullptr;
 }
 
 bool CodeGenerator::addUnionType(llvm::StructType* llvmType,
@@ -201,7 +201,7 @@ bool CodeGenerator::addUnionType(llvm::StructType* llvmType,
 
 llvm::Function* CodeGenerator::findFunction(const std::string& funcName) {
   if (symbolTableStack_.empty()) {
-    return NULL;
+    return nullptr;
   }
 
   for (auto iter = symbolTableStack_.end() - 1;
@@ -212,7 +212,7 @@ llvm::Function* CodeGenerator::findFunction(const std::string& funcName) {
     }
   }
 
-  return NULL;
+  return nullptr;
 }
 
 bool CodeGenerator::addFunction(const std::string& funcName,
@@ -236,7 +236,7 @@ llvm::Function* CodeGenerator::getCurrentFunction() { return currentFunc_; }
 
 void CodeGenerator::enterFunction(llvm::Function* func) { currentFunc_ = func; }
 
-void CodeGenerator::leaveFunction() { currentFunc_ = NULL; }
+void CodeGenerator::leaveFunction() { currentFunc_ = nullptr; }
 
 void CodeGenerator::enterLoop(llvm::BasicBlock* continueBlock,
                               llvm::BasicBlock* breakBlock) {
@@ -256,7 +256,7 @@ void CodeGenerator::leaveLoop() {
 
 llvm::BasicBlock* CodeGenerator::getContinueBlock() {
   if (continueBlockStack_.empty()) {
-    return NULL;
+    return nullptr;
   }
 
   return continueBlockStack_.back();
@@ -264,7 +264,7 @@ llvm::BasicBlock* CodeGenerator::getContinueBlock() {
 
 llvm::BasicBlock* CodeGenerator::getBreakBlock() {
   if (breakBlockStack_.empty()) {
-    return NULL;
+    return nullptr;
   }
 
   return breakBlockStack_.back();
@@ -281,8 +281,8 @@ void CodeGenerator::switchInsertPointToCurrentBlock() {
 
 void CodeGenerator::genIrCode(AST::Program* root,
                               const std::string& optimizationLevel) {
-  if (root == NULL) {
-    std::cerr << "AST root is NULL!" << std::endl;
+  if (root == nullptr) {
+    std::cerr << "AST root is nullptr!" << std::endl;
     return;
   }
 
@@ -318,7 +318,7 @@ void CodeGenerator::genObjectCode(const std::string& fileName) {
   std::string targetTriple = llvm::sys::getDefaultTargetTriple();
   const llvm::Target* target =
       llvm::TargetRegistry::lookupTarget(targetTriple, error);
-  if (target == NULL) {
+  if (target == nullptr) {
     throw std::runtime_error(error);
   }
 
@@ -361,7 +361,7 @@ void CodeGenerator::dumpIrCode(const std::string& fileName) {
                              errCode.message());
   }
 
-  module_->print(irFileStream, NULL);
+  module_->print(irFileStream, nullptr);
   if (llvm::verifyModule(*module_, &irFileStream) != 0) {
     std::cout << "Errors in IR code!" << std::endl;
   }
