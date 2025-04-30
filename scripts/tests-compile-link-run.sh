@@ -38,14 +38,14 @@ compileC2Obj() {
   local obj=$2
   local ir=$3
   local graph=$4
-  ../../lcc-build/lcc -i ../tests/${source} -o ../../lcc-build/${obj} -l ../debug/${ir} -v ../debug/${graph};
+  ../../lcc-build/lcc -i ../tests/${source} -o ../../lcc-build/${obj} -l ../../lcc-build/debug/${ir} -v ../../lcc-build/debug/${graph};
 }
 
 graph2Image() {
   local source=$1
   local graph=${source%.c}.dot
   local image=${source%.c}.png
-  dot -T png -o ../debug/${image} ../debug/${graph}
+  dot -T png -o ../../lcc-build/debug/${image} ../../lcc-build/debug/${graph}
 }
 
 compile() {

@@ -9,6 +9,8 @@ compileAll() {
   done
 }
 
+mkdir -p ../../lcc-build/debug
+
 if [ $# -eq 0 ]; then
   compileAll
 else
