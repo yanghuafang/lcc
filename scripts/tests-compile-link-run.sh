@@ -44,6 +44,8 @@ tests=(
   "34.array_2d_brace_init.c"
   "35.typedef_builtin.c"
   "36.typedef_struct.c"
+  "37.static_file.c"
+  "38.static_local.c"
 )
 
 compileC2Obj() {

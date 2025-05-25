@@ -1,56 +1,76 @@
-Parser.y: warning: 47 shift/reduce conflicts [-Wconflicts-sr]
+Parser.y: warning: 48 shift/reduce conflicts [-Wconflicts-sr]
 Parser.y: warning: 6 reduce/reduce conflicts [-Wconflicts-rr]
 Parser.y: warning: shift/reduce conflict on token SEMICOLON [-Wcounterexamples]
   Example: _VarType • SEMICOLON
   Shift derivation
     Decl
     ↳ 6: TypeDecl
-         ↳ 15: _VarType • SEMICOLON
+         ↳ 18: _VarType • SEMICOLON
   Reduce derivation
     Decl
     ↳ 5: VarDecl
-         ↳ 14: VarType          VarList SEMICOLON
-               ↳ 16: _VarType • ↳ 14: ε
+         ↳ 17: VarType          VarList SEMICOLON
+               ↳ 19: _VarType • ↳ 17: ε
 Parser.y: warning: shift/reduce conflict on token LBRACKET [-Wcounterexamples]
   Example: • LBRACKET INTEGER RBRACKET
   Shift derivation
     ArrayBoundList
-    ↳ 39: ArrayBound
-          ↳ 41: • LBRACKET INTEGER RBRACKET
+    ↳ 42: ArrayBound
+          ↳ 44: • LBRACKET INTEGER RBRACKET
   Reduce derivation
     ArrayBoundList
-    ↳ 38: ArrayBoundList ArrayBound
-          ↳ 40: ε •      ↳ 41: LBRACKET INTEGER RBRACKET
+    ↳ 41: ArrayBoundList ArrayBound
+          ↳ 43: ε •      ↳ 44: LBRACKET INTEGER RBRACKET
 Parser.y: warning: shift/reduce conflict on token LBRACKET [-Wcounterexamples]
   Example: • LBRACKET RBRACKET
   Shift derivation
     ArrayBoundList
-    ↳ 39: ArrayBound
-          ↳ 42: • LBRACKET RBRACKET
+    ↳ 42: ArrayBound
+          ↳ 45: • LBRACKET RBRACKET
   Reduce derivation
     ArrayBoundList
-    ↳ 38: ArrayBoundList ArrayBound
-          ↳ 40: ε •      ↳ 42: LBRACKET RBRACKET
+    ↳ 41: ArrayBoundList ArrayBound
+          ↳ 43: ε •      ↳ 45: LBRACKET RBRACKET
 Parser.y: warning: shift/reduce conflict on token LBRACKET [-Wcounterexamples]
   Example: • LBRACKET INTEGER RBRACKET
   Shift derivation
     ArrayBoundList
-    ↳ 39: ArrayBound
-          ↳ 41: • LBRACKET INTEGER RBRACKET
+    ↳ 42: ArrayBound
+          ↳ 44: • LBRACKET INTEGER RBRACKET
   Reduce derivation
     ArrayBoundList
-    ↳ 38: ArrayBoundList ArrayBound
-          ↳ 40: ε •      ↳ 41: LBRACKET INTEGER RBRACKET
+    ↳ 41: ArrayBoundList ArrayBound
+          ↳ 43: ε •      ↳ 44: LBRACKET INTEGER RBRACKET
 Parser.y: warning: shift/reduce conflict on token LBRACKET [-Wcounterexamples]
   Example: • LBRACKET RBRACKET
   Shift derivation
     ArrayBoundList
-    ↳ 39: ArrayBound
-          ↳ 42: • LBRACKET RBRACKET
+    ↳ 42: ArrayBound
+          ↳ 45: • LBRACKET RBRACKET
   Reduce derivation
     ArrayBoundList
-    ↳ 38: ArrayBoundList ArrayBound
-          ↳ 40: ε •      ↳ 42: LBRACKET RBRACKET
+    ↳ 41: ArrayBoundList ArrayBound
+          ↳ 43: ε •      ↳ 45: LBRACKET RBRACKET
+Parser.y: warning: shift/reduce conflict on token LBRACKET [-Wcounterexamples]
+  Example: • LBRACKET INTEGER RBRACKET
+  Shift derivation
+    ArrayBoundList
+    ↳ 42: ArrayBound
+          ↳ 44: • LBRACKET INTEGER RBRACKET
+  Reduce derivation
+    ArrayBoundList
+    ↳ 41: ArrayBoundList ArrayBound
+          ↳ 43: ε •      ↳ 44: LBRACKET INTEGER RBRACKET
+Parser.y: warning: shift/reduce conflict on token LBRACKET [-Wcounterexamples]
+  Example: • LBRACKET RBRACKET
+  Shift derivation
+    ArrayBoundList
+    ↳ 42: ArrayBound
+          ↳ 45: • LBRACKET RBRACKET
+  Reduce derivation
+    ArrayBoundList
+    ↳ 41: ArrayBoundList ArrayBound
+          ↳ 43: ε •      ↳ 45: LBRACKET RBRACKET
 Parser.y: warning: shift/reduce conflict on token IDENTIFIER [-Wcounterexamples]
   Example: TYPEDEF STRUCT IDENTIFIER LBRACE FieldDecls RBRACE • IDENTIFIER SEMICOLON
   Shift derivation
@@ -59,8 +79,8 @@ Parser.y: warning: shift/reduce conflict on token IDENTIFIER [-Wcounterexamples]
   Reduce derivation
     TypedefDecl
     ↳ 8: TYPEDEF VarType                                                  IDENTIFIER SEMICOLON
-                 ↳ 16: _VarType
-                       ↳ 19: STRUCT IDENTIFIER LBRACE FieldDecls RBRACE •
+                 ↳ 19: _VarType
+                       ↳ 22: STRUCT IDENTIFIER LBRACE FieldDecls RBRACE •
 Parser.y: warning: shift/reduce conflict on token IDENTIFIER [-Wcounterexamples]
   Example: TYPEDEF UNION IDENTIFIER LBRACE FieldDecls RBRACE • IDENTIFIER SEMICOLON
   Shift derivation
@@ -69,458 +89,458 @@ Parser.y: warning: shift/reduce conflict on token IDENTIFIER [-Wcounterexamples]
   Reduce derivation
     TypedefDecl
     ↳ 8: TYPEDEF VarType                                                 IDENTIFIER SEMICOLON
-                 ↳ 16: _VarType
-                       ↳ 21: UNION IDENTIFIER LBRACE FieldDecls RBRACE •
+                 ↳ 19: _VarType
+                       ↳ 24: UNION IDENTIFIER LBRACE FieldDecls RBRACE •
 Parser.y: warning: shift/reduce conflict on token LBRACKET [-Wcounterexamples]
   Example: ASTERISK Expr • LBRACKET Expr RBRACKET
   Shift derivation
     Expr
-    ↳ 121: ASTERISK Expr
-                    ↳ 114: Expr • LBRACKET Expr RBRACKET
+    ↳ 124: ASTERISK Expr
+                    ↳ 117: Expr • LBRACKET Expr RBRACKET
   Reduce derivation
     Expr
-    ↳ 114: Expr                   LBRACKET Expr RBRACKET
-           ↳ 121: ASTERISK Expr •
+    ↳ 117: Expr                   LBRACKET Expr RBRACKET
+           ↳ 124: ASTERISK Expr •
 Parser.y: warning: shift/reduce conflict on token LBRACKET [-Wcounterexamples]
   Example: AMPERSAND Expr • LBRACKET Expr RBRACKET
   Shift derivation
     Expr
-    ↳ 122: AMPERSAND Expr
-                     ↳ 114: Expr • LBRACKET Expr RBRACKET
+    ↳ 125: AMPERSAND Expr
+                     ↳ 117: Expr • LBRACKET Expr RBRACKET
   Reduce derivation
     Expr
-    ↳ 114: Expr                    LBRACKET Expr RBRACKET
-           ↳ 122: AMPERSAND Expr •
+    ↳ 117: Expr                    LBRACKET Expr RBRACKET
+           ↳ 125: AMPERSAND Expr •
 Parser.y: warning: reduce/reduce conflict on tokens COMMA, SEMICOLON, ASTERISK, RPARENTHESES [-Wcounterexamples]
   Example: IDENTIFIER • SEMICOLON
   First reduce derivation
     Stmt
-    ↳ 87: TypeDecl
-          ↳ 15: _VarType           SEMICOLON
-                ↳ 26: IDENTIFIER •
+    ↳ 90: TypeDecl
+          ↳ 18: _VarType           SEMICOLON
+                ↳ 29: IDENTIFIER •
   Second reduce derivation
     Stmt
-    ↳ 77: Expr                SEMICOLON
-          ↳ 107: IDENTIFIER •
+    ↳ 80: Expr                SEMICOLON
+          ↳ 110: IDENTIFIER •
 Parser.y: warning: shift/reduce conflict on token LBRACKET [-Wcounterexamples]
   Example: ADD Expr • LBRACKET Expr RBRACKET
   Shift derivation
     Expr
-    ↳ 119: ADD Expr
-               ↳ 114: Expr • LBRACKET Expr RBRACKET
+    ↳ 122: ADD Expr
+               ↳ 117: Expr • LBRACKET Expr RBRACKET
   Reduce derivation
     Expr
-    ↳ 114: Expr              LBRACKET Expr RBRACKET
-           ↳ 119: ADD Expr •
+    ↳ 117: Expr              LBRACKET Expr RBRACKET
+           ↳ 122: ADD Expr •
 Parser.y: warning: shift/reduce conflict on token LBRACKET [-Wcounterexamples]
   Example: SUB Expr • LBRACKET Expr RBRACKET
   Shift derivation
     Expr
-    ↳ 120: SUB Expr
-               ↳ 114: Expr • LBRACKET Expr RBRACKET
+    ↳ 123: SUB Expr
+               ↳ 117: Expr • LBRACKET Expr RBRACKET
   Reduce derivation
     Expr
-    ↳ 114: Expr              LBRACKET Expr RBRACKET
-           ↳ 120: SUB Expr •
+    ↳ 117: Expr              LBRACKET Expr RBRACKET
+           ↳ 123: SUB Expr •
 Parser.y: warning: shift/reduce conflict on token LBRACKET [-Wcounterexamples]
   Example: DADD Expr • LBRACKET Expr RBRACKET
   Shift derivation
     Expr
-    ↳ 131: DADD Expr
-                ↳ 114: Expr • LBRACKET Expr RBRACKET
+    ↳ 134: DADD Expr
+                ↳ 117: Expr • LBRACKET Expr RBRACKET
   Reduce derivation
     Expr
-    ↳ 114: Expr               LBRACKET Expr RBRACKET
-           ↳ 131: DADD Expr •
+    ↳ 117: Expr               LBRACKET Expr RBRACKET
+           ↳ 134: DADD Expr •
 Parser.y: warning: shift/reduce conflict on token LBRACKET [-Wcounterexamples]
   Example: DSUB Expr • LBRACKET Expr RBRACKET
   Shift derivation
     Expr
-    ↳ 132: DSUB Expr
-                ↳ 114: Expr • LBRACKET Expr RBRACKET
+    ↳ 135: DSUB Expr
+                ↳ 117: Expr • LBRACKET Expr RBRACKET
   Reduce derivation
     Expr
-    ↳ 114: Expr               LBRACKET Expr RBRACKET
-           ↳ 132: DSUB Expr •
+    ↳ 117: Expr               LBRACKET Expr RBRACKET
+           ↳ 135: DSUB Expr •
 Parser.y: warning: shift/reduce conflict on token LBRACKET [-Wcounterexamples]
   Example: BNOT Expr • LBRACKET Expr RBRACKET
   Shift derivation
     Expr
-    ↳ 141: BNOT Expr
-                ↳ 114: Expr • LBRACKET Expr RBRACKET
+    ↳ 144: BNOT Expr
+                ↳ 117: Expr • LBRACKET Expr RBRACKET
   Reduce derivation
     Expr
-    ↳ 114: Expr               LBRACKET Expr RBRACKET
-           ↳ 141: BNOT Expr •
+    ↳ 117: Expr               LBRACKET Expr RBRACKET
+           ↳ 144: BNOT Expr •
 Parser.y: warning: shift/reduce conflict on token LBRACKET [-Wcounterexamples]
   Example: NOT Expr • LBRACKET Expr RBRACKET
   Shift derivation
     Expr
-    ↳ 151: NOT Expr
-               ↳ 114: Expr • LBRACKET Expr RBRACKET
+    ↳ 154: NOT Expr
+               ↳ 117: Expr • LBRACKET Expr RBRACKET
   Reduce derivation
     Expr
-    ↳ 114: Expr              LBRACKET Expr RBRACKET
-           ↳ 151: NOT Expr •
+    ↳ 117: Expr              LBRACKET Expr RBRACKET
+           ↳ 154: NOT Expr •
 Parser.y: warning: shift/reduce conflict on token RPARENTHESES [-Wcounterexamples]
   Example: SIZEOF LPARENTHESES IDENTIFIER • RPARENTHESES
   Shift derivation
     Expr
-    ↳ 118: SIZEOF LPARENTHESES IDENTIFIER • RPARENTHESES
+    ↳ 121: SIZEOF LPARENTHESES IDENTIFIER • RPARENTHESES
   Reduce derivation
     Expr
-    ↳ 116: SIZEOF LPARENTHESES VarType                  RPARENTHESES
-                               ↳ 16: _VarType
-                                     ↳ 26: IDENTIFIER •
+    ↳ 119: SIZEOF LPARENTHESES VarType                  RPARENTHESES
+                               ↳ 19: _VarType
+                                     ↳ 29: IDENTIFIER •
 Parser.y: warning: reduce/reduce conflict on tokens ASTERISK, RPARENTHESES [-Wcounterexamples]
   Example: SIZEOF LPARENTHESES IDENTIFIER • RPARENTHESES
   First reduce derivation
     Expr
-    ↳ 116: SIZEOF LPARENTHESES VarType                  RPARENTHESES
-                               ↳ 16: _VarType
-                                     ↳ 26: IDENTIFIER •
+    ↳ 119: SIZEOF LPARENTHESES VarType                  RPARENTHESES
+                               ↳ 19: _VarType
+                                     ↳ 29: IDENTIFIER •
   Second reduce derivation
     Expr
-    ↳ 117: SIZEOF LPARENTHESES Expr                RPARENTHESES
-                               ↳ 107: IDENTIFIER •
+    ↳ 120: SIZEOF LPARENTHESES Expr                RPARENTHESES
+                               ↳ 110: IDENTIFIER •
 Parser.y: warning: shift/reduce conflict on token RPARENTHESES [-Wcounterexamples]
   Example: SIZEOF LPARENTHESES IDENTIFIER • RPARENTHESES
   Shift derivation
     Expr
-    ↳ 118: SIZEOF LPARENTHESES IDENTIFIER • RPARENTHESES
+    ↳ 121: SIZEOF LPARENTHESES IDENTIFIER • RPARENTHESES
   Reduce derivation
     Expr
-    ↳ 117: SIZEOF LPARENTHESES Expr                RPARENTHESES
-                               ↳ 107: IDENTIFIER •
+    ↳ 120: SIZEOF LPARENTHESES Expr                RPARENTHESES
+                               ↳ 110: IDENTIFIER •
 Parser.y: warning: shift/reduce conflict on token LBRACKET [-Wcounterexamples]
   Example: Expr COMMA Expr • LBRACKET Expr RBRACKET
   Shift derivation
     Expr
-    ↳ 110: Expr COMMA Expr
-                      ↳ 114: Expr • LBRACKET Expr RBRACKET
+    ↳ 113: Expr COMMA Expr
+                      ↳ 117: Expr • LBRACKET Expr RBRACKET
   Reduce derivation
     Expr
-    ↳ 114: Expr                     LBRACKET Expr RBRACKET
-           ↳ 110: Expr COMMA Expr •
+    ↳ 117: Expr                     LBRACKET Expr RBRACKET
+           ↳ 113: Expr COMMA Expr •
 Parser.y: warning: shift/reduce conflict on token LBRACKET [-Wcounterexamples]
   Example: Expr ASTERISK Expr • LBRACKET Expr RBRACKET
   Shift derivation
     Expr
-    ↳ 126: Expr ASTERISK Expr
-                         ↳ 114: Expr • LBRACKET Expr RBRACKET
+    ↳ 129: Expr ASTERISK Expr
+                         ↳ 117: Expr • LBRACKET Expr RBRACKET
   Reduce derivation
     Expr
-    ↳ 114: Expr                        LBRACKET Expr RBRACKET
-           ↳ 126: Expr ASTERISK Expr •
+    ↳ 117: Expr                        LBRACKET Expr RBRACKET
+           ↳ 129: Expr ASTERISK Expr •
 Parser.y: warning: shift/reduce conflict on token LBRACKET [-Wcounterexamples]
   Example: Expr AMPERSAND Expr • LBRACKET Expr RBRACKET
   Shift derivation
     Expr
-    ↳ 138: Expr AMPERSAND Expr
-                          ↳ 114: Expr • LBRACKET Expr RBRACKET
+    ↳ 141: Expr AMPERSAND Expr
+                          ↳ 117: Expr • LBRACKET Expr RBRACKET
   Reduce derivation
     Expr
-    ↳ 114: Expr                         LBRACKET Expr RBRACKET
-           ↳ 138: Expr AMPERSAND Expr •
+    ↳ 117: Expr                         LBRACKET Expr RBRACKET
+           ↳ 141: Expr AMPERSAND Expr •
 Parser.y: warning: shift/reduce conflict on token LBRACKET [-Wcounterexamples]
   Example: Expr ASSIGN Expr • LBRACKET Expr RBRACKET
   Shift derivation
     Expr
-    ↳ 123: Expr ASSIGN Expr
-                       ↳ 114: Expr • LBRACKET Expr RBRACKET
+    ↳ 126: Expr ASSIGN Expr
+                       ↳ 117: Expr • LBRACKET Expr RBRACKET
   Reduce derivation
     Expr
-    ↳ 114: Expr                      LBRACKET Expr RBRACKET
-           ↳ 123: Expr ASSIGN Expr •
+    ↳ 117: Expr                      LBRACKET Expr RBRACKET
+           ↳ 126: Expr ASSIGN Expr •
 Parser.y: warning: shift/reduce conflict on token LBRACKET [-Wcounterexamples]
   Example: Expr ADD Expr • LBRACKET Expr RBRACKET
   Shift derivation
     Expr
-    ↳ 124: Expr ADD Expr
-                    ↳ 114: Expr • LBRACKET Expr RBRACKET
+    ↳ 127: Expr ADD Expr
+                    ↳ 117: Expr • LBRACKET Expr RBRACKET
   Reduce derivation
     Expr
-    ↳ 114: Expr                   LBRACKET Expr RBRACKET
-           ↳ 124: Expr ADD Expr •
+    ↳ 117: Expr                   LBRACKET Expr RBRACKET
+           ↳ 127: Expr ADD Expr •
 Parser.y: warning: shift/reduce conflict on token LBRACKET [-Wcounterexamples]
   Example: Expr SUB Expr • LBRACKET Expr RBRACKET
   Shift derivation
     Expr
-    ↳ 125: Expr SUB Expr
-                    ↳ 114: Expr • LBRACKET Expr RBRACKET
+    ↳ 128: Expr SUB Expr
+                    ↳ 117: Expr • LBRACKET Expr RBRACKET
   Reduce derivation
     Expr
-    ↳ 114: Expr                   LBRACKET Expr RBRACKET
-           ↳ 125: Expr SUB Expr •
+    ↳ 117: Expr                   LBRACKET Expr RBRACKET
+           ↳ 128: Expr SUB Expr •
 Parser.y: warning: shift/reduce conflict on token LBRACKET [-Wcounterexamples]
   Example: Expr DIV Expr • LBRACKET Expr RBRACKET
   Shift derivation
     Expr
-    ↳ 127: Expr DIV Expr
-                    ↳ 114: Expr • LBRACKET Expr RBRACKET
+    ↳ 130: Expr DIV Expr
+                    ↳ 117: Expr • LBRACKET Expr RBRACKET
   Reduce derivation
     Expr
-    ↳ 114: Expr                   LBRACKET Expr RBRACKET
-           ↳ 127: Expr DIV Expr •
+    ↳ 117: Expr                   LBRACKET Expr RBRACKET
+           ↳ 130: Expr DIV Expr •
 Parser.y: warning: shift/reduce conflict on token LBRACKET [-Wcounterexamples]
   Example: Expr MOD Expr • LBRACKET Expr RBRACKET
   Shift derivation
     Expr
-    ↳ 128: Expr MOD Expr
-                    ↳ 114: Expr • LBRACKET Expr RBRACKET
+    ↳ 131: Expr MOD Expr
+                    ↳ 117: Expr • LBRACKET Expr RBRACKET
   Reduce derivation
     Expr
-    ↳ 114: Expr                   LBRACKET Expr RBRACKET
-           ↳ 128: Expr MOD Expr •
+    ↳ 117: Expr                   LBRACKET Expr RBRACKET
+           ↳ 131: Expr MOD Expr •
 Parser.y: warning: shift/reduce conflict on token LBRACKET [-Wcounterexamples]
   Example: Expr ADDEQ Expr • LBRACKET Expr RBRACKET
   Shift derivation
     Expr
-    ↳ 133: Expr ADDEQ Expr
-                      ↳ 114: Expr • LBRACKET Expr RBRACKET
+    ↳ 136: Expr ADDEQ Expr
+                      ↳ 117: Expr • LBRACKET Expr RBRACKET
   Reduce derivation
     Expr
-    ↳ 114: Expr                     LBRACKET Expr RBRACKET
-           ↳ 133: Expr ADDEQ Expr •
+    ↳ 117: Expr                     LBRACKET Expr RBRACKET
+           ↳ 136: Expr ADDEQ Expr •
 Parser.y: warning: shift/reduce conflict on token LBRACKET [-Wcounterexamples]
   Example: Expr SUBEQ Expr • LBRACKET Expr RBRACKET
   Shift derivation
     Expr
-    ↳ 134: Expr SUBEQ Expr
-                      ↳ 114: Expr • LBRACKET Expr RBRACKET
+    ↳ 137: Expr SUBEQ Expr
+                      ↳ 117: Expr • LBRACKET Expr RBRACKET
   Reduce derivation
     Expr
-    ↳ 114: Expr                     LBRACKET Expr RBRACKET
-           ↳ 134: Expr SUBEQ Expr •
+    ↳ 117: Expr                     LBRACKET Expr RBRACKET
+           ↳ 137: Expr SUBEQ Expr •
 Parser.y: warning: shift/reduce conflict on token LBRACKET [-Wcounterexamples]
   Example: Expr MULEQ Expr • LBRACKET Expr RBRACKET
   Shift derivation
     Expr
-    ↳ 135: Expr MULEQ Expr
-                      ↳ 114: Expr • LBRACKET Expr RBRACKET
+    ↳ 138: Expr MULEQ Expr
+                      ↳ 117: Expr • LBRACKET Expr RBRACKET
   Reduce derivation
     Expr
-    ↳ 114: Expr                     LBRACKET Expr RBRACKET
-           ↳ 135: Expr MULEQ Expr •
+    ↳ 117: Expr                     LBRACKET Expr RBRACKET
+           ↳ 138: Expr MULEQ Expr •
 Parser.y: warning: shift/reduce conflict on token LBRACKET [-Wcounterexamples]
   Example: Expr DIVEQ Expr • LBRACKET Expr RBRACKET
   Shift derivation
     Expr
-    ↳ 136: Expr DIVEQ Expr
-                      ↳ 114: Expr • LBRACKET Expr RBRACKET
+    ↳ 139: Expr DIVEQ Expr
+                      ↳ 117: Expr • LBRACKET Expr RBRACKET
   Reduce derivation
     Expr
-    ↳ 114: Expr                     LBRACKET Expr RBRACKET
-           ↳ 136: Expr DIVEQ Expr •
+    ↳ 117: Expr                     LBRACKET Expr RBRACKET
+           ↳ 139: Expr DIVEQ Expr •
 Parser.y: warning: shift/reduce conflict on token LBRACKET [-Wcounterexamples]
   Example: Expr MODEQ Expr • LBRACKET Expr RBRACKET
   Shift derivation
     Expr
-    ↳ 137: Expr MODEQ Expr
-                      ↳ 114: Expr • LBRACKET Expr RBRACKET
+    ↳ 140: Expr MODEQ Expr
+                      ↳ 117: Expr • LBRACKET Expr RBRACKET
   Reduce derivation
     Expr
-    ↳ 114: Expr                     LBRACKET Expr RBRACKET
-           ↳ 137: Expr MODEQ Expr •
+    ↳ 117: Expr                     LBRACKET Expr RBRACKET
+           ↳ 140: Expr MODEQ Expr •
 Parser.y: warning: shift/reduce conflict on token LBRACKET [-Wcounterexamples]
   Example: Expr BOR Expr • LBRACKET Expr RBRACKET
   Shift derivation
     Expr
-    ↳ 139: Expr BOR Expr
-                    ↳ 114: Expr • LBRACKET Expr RBRACKET
+    ↳ 142: Expr BOR Expr
+                    ↳ 117: Expr • LBRACKET Expr RBRACKET
   Reduce derivation
     Expr
-    ↳ 114: Expr                   LBRACKET Expr RBRACKET
-           ↳ 139: Expr BOR Expr •
+    ↳ 117: Expr                   LBRACKET Expr RBRACKET
+           ↳ 142: Expr BOR Expr •
 Parser.y: warning: shift/reduce conflict on token LBRACKET [-Wcounterexamples]
   Example: Expr BXOR Expr • LBRACKET Expr RBRACKET
   Shift derivation
     Expr
-    ↳ 140: Expr BXOR Expr
-                     ↳ 114: Expr • LBRACKET Expr RBRACKET
+    ↳ 143: Expr BXOR Expr
+                     ↳ 117: Expr • LBRACKET Expr RBRACKET
   Reduce derivation
     Expr
-    ↳ 114: Expr                    LBRACKET Expr RBRACKET
-           ↳ 140: Expr BXOR Expr •
+    ↳ 117: Expr                    LBRACKET Expr RBRACKET
+           ↳ 143: Expr BXOR Expr •
 Parser.y: warning: shift/reduce conflict on token LBRACKET [-Wcounterexamples]
   Example: Expr BANDEQ Expr • LBRACKET Expr RBRACKET
   Shift derivation
     Expr
-    ↳ 142: Expr BANDEQ Expr
-                       ↳ 114: Expr • LBRACKET Expr RBRACKET
+    ↳ 145: Expr BANDEQ Expr
+                       ↳ 117: Expr • LBRACKET Expr RBRACKET
   Reduce derivation
     Expr
-    ↳ 114: Expr                      LBRACKET Expr RBRACKET
-           ↳ 142: Expr BANDEQ Expr •
+    ↳ 117: Expr                      LBRACKET Expr RBRACKET
+           ↳ 145: Expr BANDEQ Expr •
 Parser.y: warning: shift/reduce conflict on token LBRACKET [-Wcounterexamples]
   Example: Expr BOREQ Expr • LBRACKET Expr RBRACKET
   Shift derivation
     Expr
-    ↳ 143: Expr BOREQ Expr
-                      ↳ 114: Expr • LBRACKET Expr RBRACKET
+    ↳ 146: Expr BOREQ Expr
+                      ↳ 117: Expr • LBRACKET Expr RBRACKET
   Reduce derivation
     Expr
-    ↳ 114: Expr                     LBRACKET Expr RBRACKET
-           ↳ 143: Expr BOREQ Expr •
+    ↳ 117: Expr                     LBRACKET Expr RBRACKET
+           ↳ 146: Expr BOREQ Expr •
 Parser.y: warning: shift/reduce conflict on token LBRACKET [-Wcounterexamples]
   Example: Expr BXOREQ Expr • LBRACKET Expr RBRACKET
   Shift derivation
     Expr
-    ↳ 144: Expr BXOREQ Expr
-                       ↳ 114: Expr • LBRACKET Expr RBRACKET
+    ↳ 147: Expr BXOREQ Expr
+                       ↳ 117: Expr • LBRACKET Expr RBRACKET
   Reduce derivation
     Expr
-    ↳ 114: Expr                      LBRACKET Expr RBRACKET
-           ↳ 144: Expr BXOREQ Expr •
+    ↳ 117: Expr                      LBRACKET Expr RBRACKET
+           ↳ 147: Expr BXOREQ Expr •
 Parser.y: warning: shift/reduce conflict on token LBRACKET [-Wcounterexamples]
   Example: Expr SHL Expr • LBRACKET Expr RBRACKET
   Shift derivation
     Expr
-    ↳ 145: Expr SHL Expr
-                    ↳ 114: Expr • LBRACKET Expr RBRACKET
+    ↳ 148: Expr SHL Expr
+                    ↳ 117: Expr • LBRACKET Expr RBRACKET
   Reduce derivation
     Expr
-    ↳ 114: Expr                   LBRACKET Expr RBRACKET
-           ↳ 145: Expr SHL Expr •
+    ↳ 117: Expr                   LBRACKET Expr RBRACKET
+           ↳ 148: Expr SHL Expr •
 Parser.y: warning: shift/reduce conflict on token LBRACKET [-Wcounterexamples]
   Example: Expr SHR Expr • LBRACKET Expr RBRACKET
   Shift derivation
     Expr
-    ↳ 146: Expr SHR Expr
-                    ↳ 114: Expr • LBRACKET Expr RBRACKET
+    ↳ 149: Expr SHR Expr
+                    ↳ 117: Expr • LBRACKET Expr RBRACKET
   Reduce derivation
     Expr
-    ↳ 114: Expr                   LBRACKET Expr RBRACKET
-           ↳ 146: Expr SHR Expr •
+    ↳ 117: Expr                   LBRACKET Expr RBRACKET
+           ↳ 149: Expr SHR Expr •
 Parser.y: warning: shift/reduce conflict on token LBRACKET [-Wcounterexamples]
   Example: Expr SHLEQ Expr • LBRACKET Expr RBRACKET
   Shift derivation
     Expr
-    ↳ 147: Expr SHLEQ Expr
-                      ↳ 114: Expr • LBRACKET Expr RBRACKET
+    ↳ 150: Expr SHLEQ Expr
+                      ↳ 117: Expr • LBRACKET Expr RBRACKET
   Reduce derivation
     Expr
-    ↳ 114: Expr                     LBRACKET Expr RBRACKET
-           ↳ 147: Expr SHLEQ Expr •
+    ↳ 117: Expr                     LBRACKET Expr RBRACKET
+           ↳ 150: Expr SHLEQ Expr •
 Parser.y: warning: shift/reduce conflict on token LBRACKET [-Wcounterexamples]
   Example: Expr SHREQ Expr • LBRACKET Expr RBRACKET
   Shift derivation
     Expr
-    ↳ 148: Expr SHREQ Expr
-                      ↳ 114: Expr • LBRACKET Expr RBRACKET
+    ↳ 151: Expr SHREQ Expr
+                      ↳ 117: Expr • LBRACKET Expr RBRACKET
   Reduce derivation
     Expr
-    ↳ 114: Expr                     LBRACKET Expr RBRACKET
-           ↳ 148: Expr SHREQ Expr •
+    ↳ 117: Expr                     LBRACKET Expr RBRACKET
+           ↳ 151: Expr SHREQ Expr •
 Parser.y: warning: shift/reduce conflict on token LBRACKET [-Wcounterexamples]
   Example: Expr AND Expr • LBRACKET Expr RBRACKET
   Shift derivation
     Expr
-    ↳ 149: Expr AND Expr
-                    ↳ 114: Expr • LBRACKET Expr RBRACKET
+    ↳ 152: Expr AND Expr
+                    ↳ 117: Expr • LBRACKET Expr RBRACKET
   Reduce derivation
     Expr
-    ↳ 114: Expr                   LBRACKET Expr RBRACKET
-           ↳ 149: Expr AND Expr •
+    ↳ 117: Expr                   LBRACKET Expr RBRACKET
+           ↳ 152: Expr AND Expr •
 Parser.y: warning: shift/reduce conflict on token LBRACKET [-Wcounterexamples]
   Example: Expr OR Expr • LBRACKET Expr RBRACKET
   Shift derivation
     Expr
-    ↳ 150: Expr OR Expr
-                   ↳ 114: Expr • LBRACKET Expr RBRACKET
+    ↳ 153: Expr OR Expr
+                   ↳ 117: Expr • LBRACKET Expr RBRACKET
   Reduce derivation
     Expr
-    ↳ 114: Expr                  LBRACKET Expr RBRACKET
-           ↳ 150: Expr OR Expr •
+    ↳ 117: Expr                  LBRACKET Expr RBRACKET
+           ↳ 153: Expr OR Expr •
 Parser.y: warning: shift/reduce conflict on token LBRACKET [-Wcounterexamples]
   Example: Expr EQ Expr • LBRACKET Expr RBRACKET
   Shift derivation
     Expr
-    ↳ 152: Expr EQ Expr
-                   ↳ 114: Expr • LBRACKET Expr RBRACKET
+    ↳ 155: Expr EQ Expr
+                   ↳ 117: Expr • LBRACKET Expr RBRACKET
   Reduce derivation
     Expr
-    ↳ 114: Expr                  LBRACKET Expr RBRACKET
-           ↳ 152: Expr EQ Expr •
+    ↳ 117: Expr                  LBRACKET Expr RBRACKET
+           ↳ 155: Expr EQ Expr •
 Parser.y: warning: shift/reduce conflict on token LBRACKET [-Wcounterexamples]
   Example: Expr NEQ Expr • LBRACKET Expr RBRACKET
   Shift derivation
     Expr
-    ↳ 153: Expr NEQ Expr
-                    ↳ 114: Expr • LBRACKET Expr RBRACKET
+    ↳ 156: Expr NEQ Expr
+                    ↳ 117: Expr • LBRACKET Expr RBRACKET
   Reduce derivation
     Expr
-    ↳ 114: Expr                   LBRACKET Expr RBRACKET
-           ↳ 153: Expr NEQ Expr •
+    ↳ 117: Expr                   LBRACKET Expr RBRACKET
+           ↳ 156: Expr NEQ Expr •
 Parser.y: warning: shift/reduce conflict on token LBRACKET [-Wcounterexamples]
   Example: Expr GT Expr • LBRACKET Expr RBRACKET
   Shift derivation
     Expr
-    ↳ 156: Expr GT Expr
-                   ↳ 114: Expr • LBRACKET Expr RBRACKET
+    ↳ 159: Expr GT Expr
+                   ↳ 117: Expr • LBRACKET Expr RBRACKET
   Reduce derivation
     Expr
-    ↳ 114: Expr                  LBRACKET Expr RBRACKET
-           ↳ 156: Expr GT Expr •
+    ↳ 117: Expr                  LBRACKET Expr RBRACKET
+           ↳ 159: Expr GT Expr •
 Parser.y: warning: shift/reduce conflict on token LBRACKET [-Wcounterexamples]
   Example: Expr GE Expr • LBRACKET Expr RBRACKET
   Shift derivation
     Expr
-    ↳ 157: Expr GE Expr
-                   ↳ 114: Expr • LBRACKET Expr RBRACKET
+    ↳ 160: Expr GE Expr
+                   ↳ 117: Expr • LBRACKET Expr RBRACKET
   Reduce derivation
     Expr
-    ↳ 114: Expr                  LBRACKET Expr RBRACKET
-           ↳ 157: Expr GE Expr •
+    ↳ 117: Expr                  LBRACKET Expr RBRACKET
+           ↳ 160: Expr GE Expr •
 Parser.y: warning: shift/reduce conflict on token LBRACKET [-Wcounterexamples]
   Example: Expr LT Expr • LBRACKET Expr RBRACKET
   Shift derivation
     Expr
-    ↳ 154: Expr LT Expr
-                   ↳ 114: Expr • LBRACKET Expr RBRACKET
+    ↳ 157: Expr LT Expr
+                   ↳ 117: Expr • LBRACKET Expr RBRACKET
   Reduce derivation
     Expr
-    ↳ 114: Expr                  LBRACKET Expr RBRACKET
-           ↳ 154: Expr LT Expr •
+    ↳ 117: Expr                  LBRACKET Expr RBRACKET
+           ↳ 157: Expr LT Expr •
 Parser.y: warning: shift/reduce conflict on token LBRACKET [-Wcounterexamples]
   Example: Expr LE Expr • LBRACKET Expr RBRACKET
   Shift derivation
     Expr
-    ↳ 155: Expr LE Expr
-                   ↳ 114: Expr • LBRACKET Expr RBRACKET
+    ↳ 158: Expr LE Expr
+                   ↳ 117: Expr • LBRACKET Expr RBRACKET
   Reduce derivation
     Expr
-    ↳ 114: Expr                  LBRACKET Expr RBRACKET
-           ↳ 155: Expr LE Expr •
+    ↳ 117: Expr                  LBRACKET Expr RBRACKET
+           ↳ 158: Expr LE Expr •
 Parser.y: warning: shift/reduce conflict on token LBRACKET [-Wcounterexamples]
   Example: LPARENTHESES VarType RPARENTHESES Expr • LBRACKET Expr RBRACKET
   Shift derivation
     Expr
-    ↳ 115: LPARENTHESES VarType RPARENTHESES Expr
-                                             ↳ 114: Expr • LBRACKET Expr RBRACKET
+    ↳ 118: LPARENTHESES VarType RPARENTHESES Expr
+                                             ↳ 117: Expr • LBRACKET Expr RBRACKET
   Reduce derivation
     Expr
-    ↳ 114: Expr                                            LBRACKET Expr RBRACKET
-           ↳ 115: LPARENTHESES VarType RPARENTHESES Expr •
+    ↳ 117: Expr                                            LBRACKET Expr RBRACKET
+           ↳ 118: LPARENTHESES VarType RPARENTHESES Expr •
 Parser.y: warning: shift/reduce conflict on token LBRACKET [-Wcounterexamples]
   Example: Expr QUESTION Expr COLON Expr • LBRACKET Expr RBRACKET
   Shift derivation
     Expr
-    ↳ 158: Expr QUESTION Expr COLON Expr
-                                    ↳ 114: Expr • LBRACKET Expr RBRACKET
+    ↳ 161: Expr QUESTION Expr COLON Expr
+                                    ↳ 117: Expr • LBRACKET Expr RBRACKET
   Reduce derivation
     Expr
-    ↳ 114: Expr                                   LBRACKET Expr RBRACKET
-           ↳ 158: Expr QUESTION Expr COLON Expr •
+    ↳ 117: Expr                                   LBRACKET Expr RBRACKET
+           ↳ 161: Expr QUESTION Expr COLON Expr •
 Parser.y: warning: shift/reduce conflict on token ELSE [-Wcounterexamples]
   Example: IF LPARENTHESES Expr RPARENTHESES IF LPARENTHESES Expr RPARENTHESES Stmt • ELSE Stmt
   Shift derivation
     IfStmt
-    ↳ 91: IF LPARENTHESES Expr RPARENTHESES Stmt
-                                            ↳ 78: IfStmt
-                                                  ↳ 90: IF LPARENTHESES Expr RPARENTHESES Stmt • ELSE Stmt
+    ↳ 94: IF LPARENTHESES Expr RPARENTHESES Stmt
+                                            ↳ 81: IfStmt
+                                                  ↳ 93: IF LPARENTHESES Expr RPARENTHESES Stmt • ELSE Stmt
   Reduce derivation
     IfStmt
-    ↳ 90: IF LPARENTHESES Expr RPARENTHESES Stmt                                                 ELSE Stmt
-                                            ↳ 78: IfStmt
-                                                  ↳ 91: IF LPARENTHESES Expr RPARENTHESES Stmt •
+    ↳ 93: IF LPARENTHESES Expr RPARENTHESES Stmt                                                 ELSE Stmt
+                                            ↳ 81: IfStmt
+                                                  ↳ 94: IF LPARENTHESES Expr RPARENTHESES Stmt •

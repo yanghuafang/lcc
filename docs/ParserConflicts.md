@@ -8,13 +8,13 @@ lcc's grammar is intentionally compact: declarations, statements, and expression
 
 | Kind | Count | Bison default |
 |------|------:|---------------|
-| Shift/reduce | 47 | Prefer **shift** |
+| Shift/reduce | 48 | Prefer **shift** |
 | Reduce/reduce | 6 | Prefer the **first** grammar rule |
 
 As of the current grammar, `./build-lcc.sh` (which runs `bison -d Parser.y` via CMake) prints:
 
 ```
-Parser.y: warning: 47 shift/reduce conflicts [-Wconflicts-sr]
+Parser.y: warning: 48 shift/reduce conflicts [-Wconflicts-sr]
 Parser.y: warning: 6 reduce/reduce conflicts [-Wconflicts-rr]
 ```
 
@@ -68,7 +68,7 @@ You can override defaults with precedence (`%left`, `%right`, `%nonassoc`) or ex
 ## Conflict map (high level)
 
 ```
-47 shift/reduce
+48 shift/reduce
 ├── 40  Expr • [ subscript ]     (subscript vs completed unary/binary operand)
 ├──  1  _VarType • ;             (TypeDecl vs VarDecl with empty VarList)
 ├──  1  sizeof ( id • )          (three sizeof productions)
