@@ -353,13 +353,36 @@ void CodeGenerator::leaveLoop() {
   // do not assert size equality across the two stacks.
   assert(!continueBlockStack_.empty() && !breakBlockStack_.empty() &&
          "leaveLoop without a matching enterLoop");
-  assert(continueBlockStack_.size() == breakBlockStack_.size());
   if (continueBlockStack_.empty() || breakBlockStack_.empty()) {
     return;
   }
 
   continueBlockStack_.pop_back();
   breakBlockStack_.pop_back();
+}
+
+void CodeGenerator::enterSwitch(llvm::BasicBlock* breakBlock) {
+  breakBlockStack_.push_back(breakBlock);
+}
+
+void CodeGenerator::leaveSwitch() {
+  assert(!breakBlockStack_.empty() &&
+         "leaveSwitch without a matching enterSwitch");
+  if (breakBlockStack_.empty()) {
+    return;
+  }
+
+  breakBlockStack_.pop_back();
+  switchFallthroughBlock_ = nullptr;
+}
+
+void CodeGenerator::setSwitchFallthroughBlock(
+    llvm::BasicBlock* fallthroughBlock) {
+  switchFallthroughBlock_ = fallthroughBlock;
+}
+
+llvm::BasicBlock* CodeGenerator::getSwitchFallthroughBlock() {
+  return switchFallthroughBlock_;
 }
 
 llvm::BasicBlock* CodeGenerator::getContinueBlock() {
