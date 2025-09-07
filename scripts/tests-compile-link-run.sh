@@ -2,9 +2,18 @@
 
 # tests-compile-link-run.sh — shared definitions for the three test stages.
 #
-# Not run directly; compile-tests.sh, link-tests.sh and run-tests.sh each
+# Not run directly; compile-tests.sh, link-tests.sh, and run-tests.sh each
 # source it. Holds the one authoritative list of suite programs plus the
 # per-stage helpers, so adding a test means editing the `tests` array here only.
+#
+# Compile modes (setCompileMode) decide which lcc flags each test gets:
+# --debug adds -g, --release adds -O2. The debug/ artifacts are named after the
+# mode, which is why the goldens do not collide.
+#
+# No `set -euo pipefail` here, unlike every script that runs directly: shell
+# options are not scoped to a file, so setting them in something sourced
+# changes the caller's shell too. Each of the callers sets its own, and this
+# file runs under whichever one sourced it.
 
 tests=(
   "0.hello_world.c"
@@ -49,13 +58,42 @@ tests=(
   "39.break_continue_hierarchy.c"
 )
 
+# lcc flags for test compilation; set via setCompileMode() from compile-tests.sh.
+lcc_debug_flags=""
+lcc_opt_flags=""
+compile_mode=""
+
+setCompileMode() {
+  compile_mode="$1"
+  case "$1" in
+    --debug)
+      lcc_debug_flags="-g"
+      lcc_opt_flags="-O0"
+      ;;
+    --release)
+      lcc_debug_flags=""
+      lcc_opt_flags="-O2"
+      ;;
+    *)
+      echo "Unknown compile mode: $1" >&2
+      echo "Expected --debug or --release." >&2
+      return 1
+      ;;
+  esac
+}
+
 compileC2Obj() {
   local source=$1
   local obj=$2
   local ir=$3
   local graph=$4
-  ../../lcc-build/lcc -i ../tests/${source} -o ../../lcc-build/${obj} \
-    -l ../debug/${ir} -v ../debug/${graph}
+  if ! ../../lcc-build/lcc ${lcc_debug_flags} ${lcc_opt_flags} \
+    -i ../tests/${source} -o ../../lcc-build/${obj} \
+    -l ../debug/${ir} -v ../debug/${graph}; then
+    echo "Failed to compile ${source}" >&2
+    rm -f ../../lcc-build/${obj}
+    return 1
+  fi
 }
 
 graph2Image() {
@@ -67,9 +105,19 @@ graph2Image() {
 
 compile() {
   local source=$1
-  local obj=${source%.c}.o
-  local ir=${source%.c}.release.ll
-  local graph=${source%.c}.dot
+  local base=${source%.c}
+  local obj=${base}.o
+  local ir_suffix=".release.ll"
+  case "$compile_mode" in
+    --debug)
+      ir_suffix=".debug.ll"
+      ;;
+    --release)
+      ir_suffix=".release.ll"
+      ;;
+  esac
+  local ir="${base}${ir_suffix}"
+  local graph=${base}.dot
   compileC2Obj ${source} ${obj} ${ir} ${graph}
   graph2Image ${source}
 }

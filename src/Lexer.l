@@ -7,6 +7,22 @@
 
 #include <stdio.h>
 
+// Everything this file defines for itself. An anonymous namespace rather
+// than `static` on each definition: it is one mechanism covering functions
+// and file-scope state alike, it is what every other file in this tree
+// uses, and a definition added later cannot forget it the way it can
+// forget a keyword.
+namespace {
+
+int yycolumn = 1;
+
+// Bison %locations reads yylloc per token; yylineno alone does not populate it.
+#define YY_USER_ACTION                          \
+  yylloc.first_line = yylloc.last_line = yylineno; \
+  yylloc.first_column = yycolumn;               \
+  yylloc.last_column = yycolumn + yyleng - 1;   \
+  yycolumn += yyleng;
+
  /* Convert escape sequence begin with \\ to character */
 char escapeDecode(char c) {
     char character;
@@ -37,9 +53,11 @@ char escapeDecode(char c) {
     }
     return character;
 }
+}  // namespace
 %}
 
 %option noyywrap
+%option yylineno
 %option outfile = "Lexer.cpp"
 
 %%
@@ -235,7 +253,8 @@ char escapeDecode(char c) {
 }
 
  /** Characters to ignore **/
-[ \t\n]*            { ; }
+[ \t]+              { ; }
+\r?\n               { yycolumn = 1; }
 \/\*\.*\*\/         { ; }
 \/\/.*              { ; }
 

@@ -1,6 +1,9 @@
 #include "CodeGenerator.hpp"
 
 #include <llvm/Analysis/LoopAnalysisManager.h>
+#include <llvm/IR/DebugInfoMetadata.h>
+#include <llvm/IR/Function.h>
+#include <llvm/IR/Instructions.h>
 #include <llvm/IR/LegacyPassManager.h>
 #include <llvm/IR/PassManager.h>
 #include <llvm/IR/Verifier.h>
@@ -18,6 +21,7 @@
 #include <iostream>
 
 #include "AbstractSyntaxTree.hpp"
+#include "DebugInfoBuilder.hpp"
 
 CodeGenerator::CodeGenerator()
     : context_(),
@@ -340,7 +344,11 @@ llvm::Function* CodeGenerator::getCurrentFunction() { return currentFunc_; }
 
 void CodeGenerator::enterFunction(llvm::Function* func) { currentFunc_ = func; }
 
-void CodeGenerator::leaveFunction() { currentFunc_ = nullptr; }
+void CodeGenerator::leaveFunction() {
+  // Lexical scopes are per-function; do not carry into the next DISubprogram.
+  debugScopeStack_.clear();
+  currentFunc_ = nullptr;
+}
 
 void CodeGenerator::enterLoop(llvm::BasicBlock* continueBlock,
                               llvm::BasicBlock* breakBlock) {
@@ -410,11 +418,109 @@ void CodeGenerator::switchInsertPointToCurrentBlock() {
   builder_.SetInsertPoint(currentBlock_);
 }
 
+void CodeGenerator::setDebugLocation(const AST::SourceLoc& loc) {
+  if (!isDebugInfoEnabled() || loc.line == 0) {
+    return;
+  }
+
+  llvm::Function* func = getCurrentFunction();
+  if (func == nullptr) {
+    return;
+  }
+
+  llvm::DISubprogram* subprogram = func->getSubprogram();
+  if (subprogram == nullptr) {
+    return;
+  }
+
+  unsigned col = loc.col > 0 ? loc.col : 1;
+  llvm::DIScope* scope = getCurrentDebugScope();
+  if (scope == nullptr) {
+    return;
+  }
+  debugInfo_->setLocation(builder_, loc.line, scope, col);
+}
+
+void CodeGenerator::pushDebugLexicalBlock(const AST::SourceLoc& loc) {
+  if (!isDebugInfoEnabled() || loc.line == 0) {
+    return;
+  }
+
+  llvm::DIScope* parent = getCurrentDebugScope();
+  if (parent == nullptr) {
+    return;
+  }
+
+  unsigned col = loc.col > 0 ? loc.col : 1;
+  llvm::DIScope* block = debugInfo_->createLexicalBlock(parent, loc.line, col);
+  if (block != nullptr) {
+    debugScopeStack_.push_back(block);
+  }
+}
+
+void CodeGenerator::popDebugLexicalBlock() {
+  if (!debugScopeStack_.empty()) {
+    debugScopeStack_.pop_back();
+  }
+}
+
+llvm::DIScope* CodeGenerator::getCurrentDebugScope() {
+  if (!debugScopeStack_.empty()) {
+    return debugScopeStack_.back();
+  }
+
+  llvm::Function* func = getCurrentFunction();
+  if (func == nullptr) {
+    return nullptr;
+  }
+
+  return func->getSubprogram();
+}
+
+void CodeGenerator::declareDebugAlloca(
+    llvm::AllocaInst* alloca, const std::string& name, llvm::Type* llvmType,
+    AST::VarType* varType, const AST::SourceLoc& loc, unsigned paramArgNo) {
+  if (!isDebugInfoEnabled() || alloca == nullptr || loc.line == 0) {
+    return;
+  }
+
+  // Requires enterFunction() on the owning function (see FuncDecl::genCode).
+  llvm::Function* func = getCurrentFunction();
+  if (func == nullptr) {
+    return;
+  }
+
+  llvm::DISubprogram* subprogram = func->getSubprogram();
+  if (subprogram == nullptr) {
+    return;
+  }
+
+  // Parameters belong on the subprogram scope; locals use the innermost lexical
+  // block.
+  llvm::DIScope* scope = paramArgNo > 0
+                             ? static_cast<llvm::DIScope*>(subprogram)
+                             : getCurrentDebugScope();
+  if (scope == nullptr) {
+    return;
+  }
+
+  debugInfo_->declareAlloca(alloca, scope, name, llvmType, varType, loc.line,
+                            loc.col, paramArgNo);
+}
+
 void CodeGenerator::genIrCode(AST::Program* root,
-                              const std::string& optimizationLevel) {
+                              const std::string& optimizationLevel,
+                              bool generateDebugInfo,
+                              const std::string& sourcePath) {
   if (root == nullptr) {
     std::cerr << "AST root is nullptr!" << std::endl;
     return;
+  }
+
+  if (generateDebugInfo) {
+    debugInfo_ = std::make_unique<DebugInfoBuilder>(*module_);
+    debugInfo_->initialize(sourcePath);
+    debugInfo_->setCodeGenerator(this);
   }
 
   // Create top level symbol table, and push it to stack.
@@ -435,7 +541,18 @@ void CodeGenerator::genIrCode(AST::Program* root,
   // Pop top level symbol table, and destroy it.
   popSymbolTable();
 
-  optimizeCode(optimizationLevel);
+  // -g skips LLVM optimizations so dbg.declare allocas survive; dbg.value
+  // salvage for -O1+ is out of scope for this teaching compiler.
+  if (generateDebugInfo) {
+    if (!optimizationLevel.empty() && optimizationLevel != "O0") {
+      std::cerr << "Warning: -g disables LLVM optimizations (ignoring -"
+                << optimizationLevel
+                << "); use -g without -O for debuggable output." << std::endl;
+    }
+    debugInfo_->finalize();
+  } else {
+    optimizeCode(optimizationLevel);
+  }
 }
 
 void CodeGenerator::genObjectCode(const std::string& fileName) {

@@ -3,35 +3,16 @@ source_filename = "lcc"
 target datalayout = "e-m:o-i64:64-i128:128-n32:64-S128"
 target triple = "arm64-apple-darwin25.6.0"
 
-%struct.Student = type { i32, i8*, i8, float }
-%struct.Padded = type { i8, i64 }
-%union.ID = type { i8* }
+@str = private unnamed_addr constant [16 x i8] c"9.sizeof.c PASS\00", align 1
 
-@0 = private unnamed_addr constant [17 x i8] c"9.sizeof.c PASS\0A\00", align 1
-@1 = private unnamed_addr constant [17 x i8] c"9.sizeof.c FAIL\0A\00", align 1
-
-declare i32 @printf(i8*, ...)
-
-define i32 @main() {
+; Function Attrs: nofree nounwind
+define i32 @main() local_unnamed_addr #0 {
 entry:
-  %longs = alloca [4 x i64], align 8
-  %students = alloca [3 x %struct.Student], align 8
-  %padded = alloca %struct.Padded, align 8
-  %sex = alloca i32, align 4
-  %id = alloca %union.ID, align 8
-  %student = alloca %struct.Student, align 8
-  %pc = alloca i8*, align 8
-  %d = alloca double, align 8
-  %f = alloca float, align 4
-  %l = alloca i64, align 8
-  %i = alloca i32, align 4
-  %c = alloca i8, align 1
-  %err = alloca i32, align 4
-  store i32 0, i32* %err, align 4
-  %0 = load i32, i32* %err, align 4
-  %1 = icmp eq i32 %0, 0
-  %. = select i1 %1, i8* getelementptr inbounds ([17 x i8], [17 x i8]* @0, i32 0, i32 0), i8* getelementptr inbounds ([17 x i8], [17 x i8]* @1, i32 0, i32 0)
-  %2 = call i32 (i8*, ...) @printf(i8* %.)
-  %3 = load i32, i32* %err, align 4
-  ret i32 %3
+  %puts = tail call i32 @puts(i8* nonnull dereferenceable(1) getelementptr inbounds ([16 x i8], [16 x i8]* @str, i64 0, i64 0))
+  ret i32 0
 }
+
+; Function Attrs: nofree nounwind
+declare noundef i32 @puts(i8* nocapture noundef readonly) local_unnamed_addr #0
+
+attributes #0 = { nofree nounwind }

@@ -3,122 +3,56 @@ source_filename = "lcc"
 target datalayout = "e-m:o-i64:64-i128:128-n32:64-S128"
 target triple = "arm64-apple-darwin25.6.0"
 
-@0 = private unnamed_addr constant [20 x i8] c"20.do_while.c PASS\0A\00", align 1
-@1 = private unnamed_addr constant [20 x i8] c"20.do_while.c FAIL\0A\00", align 1
+@str.1 = private unnamed_addr constant [19 x i8] c"20.do_while.c PASS\00", align 1
 
-declare i32 @printf(i8*, ...)
-
-define i32 @countSum(i32 %0) {
+; Function Attrs: nofree norecurse nosync nounwind readnone
+define i32 @countSum(i32 %0) local_unnamed_addr #0 {
 entry:
-  %i = alloca i32, align 4
-  %sum = alloca i32, align 4
-  %n = alloca i32, align 4
-  store i32 %0, i32* %n, align 4
-  store i32 0, i32* %sum, align 4
-  store i32 1, i32* %i, align 4
-  br label %while.cond
+  %.not6 = icmp slt i32 %0, 1
+  br i1 %.not6, label %while.end, label %while.loop.preheader
 
-while.cond:                                       ; preds = %while.loop, %entry
-  %1 = load i32, i32* %i, align 4
-  %2 = load i32, i32* %n, align 4
-  %3 = icmp sle i32 %1, %2
-  br i1 %3, label %while.loop, label %while.end
+while.loop.preheader:                             ; preds = %entry
+  br label %while.loop
 
-while.loop:                                       ; preds = %while.cond
-  %4 = load i32, i32* %i, align 4
-  %5 = load i32, i32* %sum, align 4
-  %6 = add i32 %5, %4
-  store i32 %6, i32* %sum, align 4
-  %7 = load i32, i32* %sum, align 4
-  %8 = load i32, i32* %i, align 4
-  %9 = add i32 %8, 1
-  store i32 %9, i32* %i, align 4
-  %10 = load i32, i32* %i, align 4
-  br label %while.cond
+while.loop:                                       ; preds = %while.loop.preheader, %while.loop
+  %i.08 = phi i32 [ %2, %while.loop ], [ 1, %while.loop.preheader ]
+  %sum.07 = phi i32 [ %1, %while.loop ], [ 0, %while.loop.preheader ]
+  %1 = add i32 %i.08, %sum.07
+  %2 = add i32 %i.08, 1
+  %.not = icmp sgt i32 %2, %0
+  br i1 %.not, label %while.end, label %while.loop
 
-while.end:                                        ; preds = %while.cond
-  %11 = load i32, i32* %sum, align 4
-  ret i32 %11
+while.end:                                        ; preds = %while.loop, %entry
+  %sum.0.lcssa = phi i32 [ 0, %entry ], [ %1, %while.loop ]
+  ret i32 %sum.0.lcssa
 }
 
-define i32 @countSum2(i32 %0) {
+; Function Attrs: nofree norecurse nosync nounwind readnone
+define i32 @countSum2(i32 %0) local_unnamed_addr #0 {
 entry:
-  %i = alloca i32, align 4
-  %sum = alloca i32, align 4
-  %n = alloca i32, align 4
-  store i32 %0, i32* %n, align 4
-  store i32 0, i32* %sum, align 4
-  store i32 0, i32* %i, align 4
   br label %do.loop
 
 do.loop:                                          ; preds = %do.loop, %entry
-  %1 = load i32, i32* %i, align 4
-  %2 = load i32, i32* %sum, align 4
-  %3 = add i32 %2, %1
-  store i32 %3, i32* %sum, align 4
-  %4 = load i32, i32* %sum, align 4
-  %5 = load i32, i32* %i, align 4
-  %6 = add i32 %5, 1
-  store i32 %6, i32* %i, align 4
-  %7 = load i32, i32* %i, align 4
-  %8 = load i32, i32* %i, align 4
-  %9 = load i32, i32* %n, align 4
-  %10 = icmp sle i32 %8, %9
-  br i1 %10, label %do.loop, label %do.end
+  %sum.0 = phi i32 [ 0, %entry ], [ %1, %do.loop ]
+  %i.0 = phi i32 [ 0, %entry ], [ %2, %do.loop ]
+  %1 = add i32 %i.0, %sum.0
+  %2 = add i32 %i.0, 1
+  %.not = icmp sgt i32 %2, %0
+  br i1 %.not, label %do.end, label %do.loop
 
 do.end:                                           ; preds = %do.loop
-  %11 = load i32, i32* %sum, align 4
-  ret i32 %11
+  ret i32 %1
 }
 
-define i32 @main() {
-entry:
-  %err = alloca i32, align 4
-  store i32 0, i32* %err, align 4
-  %0 = call i32 @countSum(i32 100)
-  %1 = icmp ne i32 %0, 5050
-  br i1 %1, label %then, label %if.end
-
-then:                                             ; preds = %entry
-  store i32 1, i32* %err, align 4
-  %2 = load i32, i32* %err, align 4
-  br label %if.end
-
-if.end:                                           ; preds = %entry, %then
-  %3 = call i32 @countSum2(i32 100)
-  %4 = icmp ne i32 %3, 5050
-  br i1 %4, label %then1, label %if.end3
-
-then1:                                            ; preds = %if.end
-  store i32 1, i32* %err, align 4
-  %5 = load i32, i32* %err, align 4
-  br label %if.end3
-
-if.end3:                                          ; preds = %if.end, %then1
-  %6 = call i32 @countSum(i32 0)
-  %7 = icmp ne i32 %6, 0
-  br i1 %7, label %then4, label %if.end6
-
-then4:                                            ; preds = %if.end3
-  store i32 1, i32* %err, align 4
-  %8 = load i32, i32* %err, align 4
-  br label %if.end6
-
-if.end6:                                          ; preds = %if.end3, %then4
-  %9 = call i32 @countSum2(i32 0)
-  %10 = icmp ne i32 %9, 0
-  br i1 %10, label %then7, label %if.end9
-
-then7:                                            ; preds = %if.end6
-  store i32 1, i32* %err, align 4
-  %11 = load i32, i32* %err, align 4
-  br label %if.end9
-
-if.end9:                                          ; preds = %if.end6, %then7
-  %12 = load i32, i32* %err, align 4
-  %13 = icmp eq i32 %12, 0
-  %. = select i1 %13, i8* getelementptr inbounds ([20 x i8], [20 x i8]* @0, i32 0, i32 0), i8* getelementptr inbounds ([20 x i8], [20 x i8]* @1, i32 0, i32 0)
-  %14 = call i32 (i8*, ...) @printf(i8* %.)
-  %15 = load i32, i32* %err, align 4
-  ret i32 %15
+; Function Attrs: nofree nounwind
+define i32 @main() local_unnamed_addr #1 {
+if.end12:
+  %puts21 = tail call i32 @puts(i8* nonnull dereferenceable(1) getelementptr inbounds ([19 x i8], [19 x i8]* @str.1, i64 0, i64 0))
+  ret i32 0
 }
+
+; Function Attrs: nofree nounwind
+declare noundef i32 @puts(i8* nocapture noundef readonly) local_unnamed_addr #1
+
+attributes #0 = { nofree norecurse nosync nounwind readnone }
+attributes #1 = { nofree nounwind }

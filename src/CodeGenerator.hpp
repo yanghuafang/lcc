@@ -4,6 +4,7 @@
 #include <llvm/IR/LLVMContext.h>
 
 #include <map>
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -13,6 +14,7 @@ class Program;
 class StructType;
 class UnionType;
 class VarType;
+struct SourceLoc;
 
 }  // namespace AST
 
@@ -24,11 +26,15 @@ class Value;
 class StructType;
 class Function;
 class BasicBlock;
+class AllocaInst;
+class DIScope;
 
 class Module;
 class DataLayout;
 
 }  // namespace llvm
+
+class DebugInfoBuilder;
 
 // Owns one translation unit's LLVM state: Context, Module, IRBuilder, and
 // symbol tables. AST nodes call back here for name lookup and for builder
@@ -155,7 +161,26 @@ class CodeGenerator {
   void switchInsertPointToCurrentBlock();
 
   // Take AST as input to generate IR code.
-  void genIrCode(AST::Program* root, const std::string& optimizationLevel = "");
+  void genIrCode(AST::Program* root, const std::string& optimizationLevel = "",
+                 bool generateDebugInfo = false,
+                 const std::string& sourcePath = "");
+
+  bool isDebugInfoEnabled() const { return debugInfo_ != nullptr; }
+  DebugInfoBuilder* debugInfo() { return debugInfo_.get(); }
+
+  // Attach the node's source line to the next IR instructions (-g, inside a
+  // function).
+  void setDebugLocation(const AST::SourceLoc& loc);
+
+  // Nested { } scopes for DWARF lexical blocks (used by Block::genCode).
+  void pushDebugLexicalBlock(const AST::SourceLoc& loc);
+  void popDebugLexicalBlock();
+  llvm::DIScope* getCurrentDebugScope();
+
+  void declareDebugAlloca(
+      llvm::AllocaInst* alloca, const std::string& name, llvm::Type* llvmType,
+      AST::VarType* varType, const AST::SourceLoc& loc,
+      unsigned paramArgNo = 0);  // 1-based for params; 0 = local
 
   // Generate object code for target architecture.
   void genObjectCode(const std::string& fileName);
@@ -247,4 +272,7 @@ class CodeGenerator {
 
   std::map<std::string, AST::VarType*> funcRetTypes_;
   std::map<std::string, std::vector<AST::VarType*>> funcParamTypes_;
+
+  std::unique_ptr<DebugInfoBuilder> debugInfo_;
+  std::vector<llvm::DIScope*> debugScopeStack_;
 };

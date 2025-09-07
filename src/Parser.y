@@ -254,23 +254,29 @@ TypedefDecl: TYPEDEF VarType IDENTIFIER SEMICOLON
 
 FuncDecl:   STATIC VarType IDENTIFIER LPARENTHESES ParamList RPARENTHESES SEMICOLON
                                 { $$ = new AST::FuncDecl($2, *$3, $5);
-                                  $$->isStatic_ = true; }
+                                  $$->isStatic_ = true;
+                                  $$->setLoc(@3.first_line, @3.first_column); }
             | STATIC VarType IDENTIFIER LPARENTHESES ParamList RPARENTHESES FuncBody
                                 { $$ = new AST::FuncDecl($2, *$3, $5, $7);
-                                  $$->isStatic_ = true; }
+                                  $$->isStatic_ = true;
+                                  $$->setLoc(@3.first_line, @3.first_column); }
             | VarType IDENTIFIER LPARENTHESES ParamList RPARENTHESES SEMICOLON
-                                { $$ = new AST::FuncDecl($1, *$2, $4); }
+                                { $$ = new AST::FuncDecl($1, *$2, $4);
+                                  $$->setLoc(@2.first_line, @2.first_column); }
             | VarType IDENTIFIER LPARENTHESES ParamList RPARENTHESES FuncBody
-                                { $$ = new AST::FuncDecl($1, *$2, $4, $6); }
+                                { $$ = new AST::FuncDecl($1, *$2, $4, $6);
+                                  $$->setLoc(@2.first_line, @2.first_column); }
             ;
 
 FuncBody:   LBRACE Stmts RBRACE { $$ = new AST::FuncBody($2); }
             ;
 
 VarDecl:    STATIC VarType VarList SEMICOLON
-                                { $$ = new AST::VarDecl($2, $3); $$->isStatic_ = true; }
+                                { $$ = new AST::VarDecl($2, $3); $$->isStatic_ = true;
+                                  $$->setLoc(@2.first_line, @2.first_column); }
             | VarType VarList SEMICOLON
-                                { $$ = new AST::VarDecl($1, $2); }
+                                { $$ = new AST::VarDecl($1, $2);
+                                  $$->setLoc(@1.first_line, @1.first_column); }
             ;
 
 TypeDecl:   _VarType SEMICOLON  { $$ = new AST::TypeDecl($1); }
@@ -426,7 +432,7 @@ Stmts:      Stmts Stmt          { $$ = $1; if ($2 != nullptr) $$->push_back($2);
             |                   { $$ = new AST::Stmts(); }
             ;
 
-Stmt:       Expr SEMICOLON      { $$ = $1; }
+Stmt:       Expr SEMICOLON      { $$ = $1; $$->setLoc(@1.first_line, @1.first_column); }
             | IfStmt            { $$ = $1; }
             | SwitchStmt        { $$ = $1; }
             | ForStmt           { $$ = $1; }
@@ -442,15 +448,18 @@ Stmt:       Expr SEMICOLON      { $$ = $1; }
             ;
 
 IfStmt:     IF LPARENTHESES Expr RPARENTHESES Stmt ELSE Stmt
-                                { $$ = new AST::IfStmt($3, $5, $7); }
+                                { $$ = new AST::IfStmt($3, $5, $7);
+                                  $$->setLoc(@1.first_line, @1.first_column); }
             | IF LPARENTHESES Expr RPARENTHESES Stmt
-                                { $$ = new AST::IfStmt($3, $5); }
+                                { $$ = new AST::IfStmt($3, $5);
+                                  $$->setLoc(@1.first_line, @1.first_column); }
             ;
 
  /* SwitchStmt */
 
 SwitchStmt: SWITCH LPARENTHESES Expr RPARENTHESES LBRACE CaseStmtList RBRACE
-                                { $$ = new AST::SwitchStmt($3, $6); }
+                                { $$ = new AST::SwitchStmt($3, $6);
+                                  $$->setLoc(@1.first_line, @1.first_column); }
             ;
 
 CaseStmtList:
@@ -460,40 +469,52 @@ CaseStmtList:
             ;
 
 CaseStmt:   CASE Expr COLON Stmts
-                                { $$ = new AST::CaseStmt($2, $4); }
+                                { $$ = new AST::CaseStmt($2, $4);
+                                  $$->setLoc(@1.first_line, @1.first_column); }
             | DEFAULT COLON Stmts
-                                { $$ = new AST::CaseStmt(nullptr, $3); }
+                                { $$ = new AST::CaseStmt(nullptr, $3);
+                                  $$->setLoc(@1.first_line, @1.first_column); }
             ;
 
 ForStmt:    FOR LPARENTHESES Expr SEMICOLON Expr SEMICOLON Expr RPARENTHESES Stmt
-                                { $$ = new AST::ForStmt($3, $5, $7, $9); }
+                                { $$ = new AST::ForStmt($3, $5, $7, $9);
+                                  $$->setLoc(@1.first_line, @1.first_column); }
             | FOR LPARENTHESES SEMICOLON Expr SEMICOLON Expr RPARENTHESES Stmt
-                                { $$ = new AST::ForStmt(nullptr, $4, $6, $8); }
+                                { $$ = new AST::ForStmt(nullptr, $4, $6, $8);
+                                  $$->setLoc(@1.first_line, @1.first_column); }
             | FOR LPARENTHESES VarDecl Expr SEMICOLON Expr RPARENTHESES Stmt
-                                { $$ = new AST::ForStmt($3, $4, $6, $8); }
+                                { $$ = new AST::ForStmt($3, $4, $6, $8);
+                                  $$->setLoc(@1.first_line, @1.first_column); }
             ;
 
 DoStmt:     DO Stmt WHILE LPARENTHESES Expr RPARENTHESES SEMICOLON
-                                { $$ = new AST::DoStmt($2, $5); }
+                                { $$ = new AST::DoStmt($2, $5);
+                                  $$->setLoc(@1.first_line, @1.first_column); }
             ;
 
 WhileStmt:  WHILE LPARENTHESES Expr RPARENTHESES Stmt
-                                { $$ = new AST::WhileStmt($3, $5); }
+                                { $$ = new AST::WhileStmt($3, $5);
+                                  $$->setLoc(@1.first_line, @1.first_column); }
             ;
 
 ContinueStmt:
-            CONTINUE SEMICOLON  { $$ = new AST::ContinueStmt(); }
+            CONTINUE SEMICOLON  { $$ = new AST::ContinueStmt();
+                                  $$->setLoc(@1.first_line, @1.first_column); }
             ;
 
-BreakStmt:  BREAK SEMICOLON     { $$ = new AST::BreakStmt(); }
+BreakStmt:  BREAK SEMICOLON     { $$ = new AST::BreakStmt();
+                                  $$->setLoc(@1.first_line, @1.first_column); }
             ;
 
-ReturnStmt: RETURN SEMICOLON    { $$ = new AST::ReturnStmt(); }
+ReturnStmt: RETURN SEMICOLON    { $$ = new AST::ReturnStmt();
+                                  $$->setLoc(@1.first_line, @1.first_column); }
             | RETURN Expr SEMICOLON
-                                { $$ = new AST::ReturnStmt($2); }
+                                { $$ = new AST::ReturnStmt($2);
+                                  $$->setLoc(@1.first_line, @1.first_column); }
             ;
 
-Block:      LBRACE Stmts RBRACE { $$ = new AST::Block($2); }
+Block:      LBRACE Stmts RBRACE { $$ = new AST::Block($2);
+                                  $$->setLoc(@1.first_line, @1.first_column); }
             ;
 
  /* Expr */
