@@ -15,6 +15,9 @@
 # changes the caller's shell too. Each of the callers sets its own, and this
 # file runs under whichever one sourced it.
 
+script_dir="$(cd "$(dirname "$0")" && pwd)"
+source "${script_dir}/build-env.sh" || exit 1
+
 tests=(
   "0.hello_world.c"
   "1.builtin_types.c"
@@ -87,11 +90,11 @@ compileC2Obj() {
   local obj=$2
   local ir=$3
   local graph=$4
-  if ! ../../lcc-build/lcc ${lcc_debug_flags} ${lcc_opt_flags} \
-    -i ../tests/${source} -o ../../lcc-build/${obj} \
+  if ! ${LCC_BUILD_DIR}/lcc ${lcc_debug_flags} ${lcc_opt_flags} \
+    -i ../tests/${source} -o ${LCC_BUILD_DIR}/${obj} \
     -l ../debug/${ir} -v ../debug/${graph}; then
     echo "Failed to compile ${source}" >&2
-    rm -f ../../lcc-build/${obj}
+    rm -f ${LCC_BUILD_DIR}/${obj}
     return 1
   fi
 }
@@ -122,21 +125,35 @@ compile() {
   graph2Image ${source}
 }
 
+# The flag array is empty on macOS, and bash 3.2 counts an empty
+# "${arr[@]}" as unbound under `set -u`, so the expansion is guarded.
 linkObj2Bin() {
   local obj=$1
   local bin=$2
-  clang ../../lcc-build/${obj} -o ../../lcc-build/${bin}
+  local link_flags=()
+  if [[ "$(uname -s)" == Linux ]]; then
+    # lcc emits non-PIC objects; Ubuntu defaults to PIE executables.
+    link_flags=(-no-pie)
+  fi
+  if ! "${LCC_LINKER}" ${LCC_BUILD_DIR}/${obj} -o ${LCC_BUILD_DIR}/${bin} \
+    ${link_flags[@]+"${link_flags[@]}"}; then
+    echo "Failed to link ${obj} with ${LCC_LINKER}" >&2
+    return 1
+  fi
 }
 
 link() {
   local source=$1
   local obj=${source%.c}.o
   local bin=${source%.c}
-  linkObj2Bin $obj $bin
+  if ! linkObj2Bin "$obj" "$bin"; then
+    echo "Failed while linking ${source}" >&2
+    return 1
+  fi
 }
 
 runBin() {
-  ../../lcc-build/${bin}
+  ${LCC_BUILD_DIR}/${bin}
 }
 
 run() {

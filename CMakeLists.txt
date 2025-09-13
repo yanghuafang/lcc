@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.31)
+cmake_minimum_required(VERSION 3.22)
 
 project(lcc)
 
@@ -22,9 +22,20 @@ execute_process(WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/src
 execute_process(WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/src
     COMMAND bison -d Parser.y -v)
 
-# Config argparse
-
-find_package(argparse REQUIRED)
+# argparse: prefer libargparse-dev (Ubuntu apt); FetchContent fallback otherwise.
+find_package(argparse QUIET)
+if(argparse_FOUND)
+  message(STATUS "Using system argparse")
+else()
+  include(FetchContent)
+  FetchContent_Declare(
+    argparse
+    GIT_REPOSITORY https://github.com/p-ranav/argparse.git
+    GIT_TAG v2.9
+  )
+  FetchContent_MakeAvailable(argparse)
+  message(STATUS "Using FetchContent argparse (v2.9)")
+endif()
 
 # Config LLVM
 
@@ -45,7 +56,25 @@ file(GLOB SOURCES ${CMAKE_SOURCE_DIR}/src/*.hpp ${CMAKE_SOURCE_DIR}/src/*.cpp)
 
 add_executable(${CMAKE_PROJECT_NAME} ${SOURCES})
 
-# Link
-
-message(STATUS "Available LLVM libraries: ${LLVM_AVAILABLE_LIBS}")
-target_link_libraries(${CMAKE_PROJECT_NAME} argparse::argparse ${LLVM_AVAILABLE_LIBS})
+# Link only the LLVM pieces lcc uses. LLVM_AVAILABLE_LIBS links every archive
+# twice on Homebrew (static list + libLLVM.dylib); map components instead.
+if(LLVM_LINK_LLVM_DYLIB)
+  target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE argparse::argparse LLVM)
+else()
+  llvm_map_components_to_libnames(llvm_libs
+    all-targets
+    analysis
+    ipo
+    scalaropts
+    instcombine
+    aggressiveinstcombine
+    transformutils
+    vectorize
+    coroutines
+    cfguard
+    objcarcopts
+    instrumentation
+  )
+  llvm_expand_dependencies(llvm_libs ${llvm_libs})
+  target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE argparse::argparse ${llvm_libs})
+endif()

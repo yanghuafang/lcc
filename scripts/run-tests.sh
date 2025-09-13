@@ -8,12 +8,14 @@
 
 set -euo pipefail
 
+set -eo pipefail
+
 source ./tests-compile-link-run.sh
 
 runAll() {
   for source in "${tests[@]}"
   do
-    run $source
+    run "$source"
   done
 }
 

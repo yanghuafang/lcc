@@ -50,7 +50,7 @@ fi
 
 set -e
 
-mkdir -p ../../lcc-build/debug
+mkdir -p ${LCC_BUILD_DIR}/debug
 
 if [ ${#remaining[@]} -eq 0 ]; then
   compileAll
