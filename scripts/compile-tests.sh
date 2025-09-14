@@ -11,7 +11,7 @@
 #
 #   ./compile-tests.sh                 # whole suite
 #   ./compile-tests.sh 0.hello_world.c # just one
-#   ./compile-tests.sh --release       # -O2 instead of -g
+#   ./compile-tests.sh --release       # -O2 instead of -g; see docs/Testing.md
 
 set -euo pipefail
 

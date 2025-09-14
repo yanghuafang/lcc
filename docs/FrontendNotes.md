@@ -1,6 +1,6 @@
 # lcc extension roadmap
 
-This document prioritizes the features listed in the [README TODO](../README.md#todo). The order here follows **dependencies**, **learning value**, and **risk** — not the bullet order in the README.
+This document prioritizes future language and codegen work for lcc. The order follows **dependencies**, **learning value**, and **risk**.
 
 lcc is a teaching compiler: each step should add one clear idea (grammar, AST, codegen, or LLVM metadata) without rewriting the whole pipeline.
 
@@ -35,11 +35,12 @@ See [ParserConflicts.md](ParserConflicts.md) for parser ambiguities that some ro
 | Priority | Feature | Effort | Why this order |
 |----------|---------|--------|----------------|
 | **—** | [Array declarators](#array-extension-plan) (done) | Small | Unified `VarInit` + `ArrayBoundList`; foundation for init and multidim |
-| **1** | [1D array initialization](#1d-array-initialization) (done) | Medium | Brace init, inferred `[]`, string literals |
-| **2** | [`typedef` and `size_t`](#4-typedef-and-size_t) (done) | Medium–large | 4a + 4b complete |
+| **1** | [1D array initialization](#1-1d-array-initialization) (done) | Medium | Brace init, inferred `[]`, string literals |
+| **2** | [2D arrays](#2-2d-and-3d-arrays) (done) | Medium | 2a declaration + 2b initialization; reuses 1D init helpers |
+| **3** | [`typedef` and `size_t`](#3-typedef-and-size_t) (done) | Medium–large | 3a + 3b complete; cleaner API-style tests after arrays |
 | **—** | [3D arrays](#3d-arrays-declaration-done-initializer-deferred) | — | Declaration done; only the brace initializer stays deferred |
-| **3** | [`static`](#5-static) (done) | Medium | 4a + 4b complete |
-| **4** | [`-g` debug info](#6--g-debug-info) | Medium–large | LLVM `DIBuilder` |
+| **4** | [`static`](#4-static) (done) | Medium | 4a + 4b complete |
+| **5** | [`-g` debug info](#5--g-debug-info) | Medium–large | LLVM `DIBuilder` |
 
 **Optional timing:** Step 5 is independent of language features. If you are debugging many new test programs with LLDB, consider implementing `-g` right after step 1 — it does not require new grammar rules.
 
@@ -57,16 +58,17 @@ flowchart TD
   td3a[3a. typedef VarType aliases]
   td3b[3b. typedef struct and disambiguation]
   md3[3D array initializers - deferred]
-  stat[5. static]
-  dbg[6. -g debug info]
+  stat[4. static]
+  dbg[5. -g debug info]
 
   done --> init1a --> init1b
+  done --> md2a
   init1b --> md2b
-  done --> md2a --> md2b
+  md2a --> md2b
+  md2b --> td3a --> td3b
+  td3b --> stat
   md2b -.-> md3
-  init1b --> td4a --> td4b
-  stat
-  dbg
+  stat -.-> dbg
 
   init1a -.->|optional| dbg
 ```
@@ -108,7 +110,7 @@ Grammar symbols: `VarInit`, `ArrayBound`, `ArrayBoundList` (see `Parser.y`). `Va
 
 ---
 
-## 1D array initialization
+## 1. 1D array initialization
 
 Steps **1a** and **1b** are done. See [Array extension plan](#array-extension-plan).
 
@@ -144,7 +146,42 @@ char s2[6] = "hello";
 
 ---
 
-## 4. `typedef` and `size_t`
+## 2. 2D and 3D arrays
+
+Covers steps **2a** and **2b** (done). 3D declaration works as well — see [3D arrays](#3d-arrays-declaration-done-initializer-deferred).
+
+### 2a — 2D declaration (done)
+
+```c
+int matrix[8][5];
+```
+
+Nested `ArrayType` layout and double subscript codegen were verified; `buildVarType` now maps declarator bounds to LLVM dimensions in outside-in order.
+
+### 2b — 2D initialization (done)
+
+```c
+int a[8][5] = { {0,1,2}, {3,4,5} };
+int a[8][5] = {0, 1, 2, 3, 4, 5 };
+int a[][5] = { {1}, {2,3} };
+```
+
+- `InitElement` supports nested `InitList` in the parser; flatten row-major with zero-fill.
+- Only the first dimension may be inferred (`int a[][5]`); reject `int a[][]` and `int b[8][]`.
+
+### 3D arrays (declaration done, initializer deferred)
+
+`int a[2][8][5];`, subscripting and `sizeof` work at any depth: nested `ArrayBoundList` already parsed three bounds, and the GEP lowering needed nothing new.
+
+The **brace initializer** is what stops at two dimensions, and stays deferred — the 2D flatten helper would have to generalize, and a third rank teaches nothing the second has not.
+
+### Why before typedef
+
+2D builds directly on 1D initializer machinery (nested `InitList`, row-major flattening). It is the natural end of the **array** track before starting a separate **type-alias** track. Typedef is not required for 2D codegen — tests 33–34 use builtin types only.
+
+---
+
+## 3. `typedef` and `size_t`
 
 Split into **4a** (grammar + alias table + `VarType` spellings) and **4b** (defined-type typedefs + expression disambiguation). `size_t` ships in **4a** via `typedef unsigned long size_t;`.
 
@@ -179,7 +216,7 @@ IntPtr p;
 
 **In scope:** any type already parsed by `_VarType` (builtins, `const`, pointers, struct/union/enum tags that already exist).
 
-**Out of scope for 4a:** typedef-as-declarator edge cases; fixing all State 96 identifier conflicts.
+**Out of scope for 4a:** typedef-as-declarator edge cases; fixing all State 133 identifier conflicts.
 
 ### 4b — defined-type typedefs and disambiguation — **done**
 
@@ -197,7 +234,7 @@ unsigned long strlen(const char* s);
 |-------|---------|
 | **Parser / AST** | Combined typedef patterns where helpful (`typedef struct S { … } S;`) if needed |
 | **Symbol table** | Typedef names visible in type positions; document expression-position limits |
-| **Disambiguation** | Reduce wrong parses when a typedef name could be a variable (State 96 — see [ParserConflicts.md](ParserConflicts.md)) |
+| **Disambiguation** | Reduce wrong parses when a typedef name could be a variable (State 133 — see [ParserConflicts.md](ParserConflicts.md)) |
 | **Tests** | Struct tag alias, pointer typedef, real API-style `size_t` / `malloc` / `strlen` declarations |
 
 **Errors / limits:** typedef name used as a variable in the same scope; shadowing — document or reject explicitly.
@@ -207,44 +244,13 @@ unsigned long strlen(const char* s);
 - **4a** is one grammar rule plus alias lookup — enough for `size_t` and most numeric/pointer typedefs.
 - **4b** touches struct tags, API conventions, and the hardest parser conflicts — better as a focused follow-up.
 
-### Why before 3D and `static`
+### Why after 2D (and before 3D / `static`)
 
-Typedef improves readability of array and API tests (`size_t buf[N]`) without another dimension of initializer complexity. 3D arrays are deferred; 2D init reuse does not require 3D.
-
----
-
-## 2D and 3D arrays
-
-Covers steps **2a** and **2b** (done). 3D declaration works as well — see [3D arrays](#3d-arrays-declaration-done-initializer-deferred).
-
-### 2a — 2D declaration (done)
-
-```c
-int matrix[8][5];
-```
-
-Nested `ArrayType` layout and double subscript codegen were verified; `buildVarType` now maps declarator bounds to LLVM dimensions in outside-in order.
-
-### 2b — 2D initialization (done)
-
-```c
-int a[8][5] = { {0,1,2}, {3,4,5} };
-int a[8][5] = {0, 1, 2, 3, 4, 5 };
-int a[][5] = { {1}, {2,3} };
-```
-
-- `InitElement` supports nested `InitList` in the parser; flatten row-major with zero-fill.
-- Only the first dimension may be inferred (`int a[][5]`); reject `int a[][]` and `int b[8][]`.
-
-### 3D arrays (declaration done, initializer deferred)
-
-`int a[2][8][5];`, subscripting and `sizeof` work at any depth: nested `ArrayBoundList` already parsed three bounds, and the GEP lowering needed nothing new.
-
-The **brace initializer** is what stops at two dimensions, and stays deferred — the 2D flatten helper would have to generalize, and a third rank teaches nothing the second has not.
+Typedef improves readability of array and API tests (`size_t buf[N]`, `malloc`/`strlen` declarations) once multidimensional init is in place. It does not unblock 2D work. 3D arrays remain deferred.
 
 ---
 
-## 5. `static`
+## 4. `static`
 
 Split into **5a** (file-scope linkage) and **5b** (function-local static variables).
 
@@ -304,7 +310,7 @@ Orthogonal to types and initializers. Teaches linkage and lifetime without block
 
 ---
 
-## 6. `-g` debug info
+## 5. `-g` debug info
 
 **Goal:** `lcc -g` embeds DWARF (or equivalent) in the object file so LLDB can single-step **generated** C programs.
 
@@ -320,15 +326,15 @@ Orthogonal to types and initializers. Teaches linkage and lifetime without block
 | **LLVM** | `DIBuilder`: compile unit, subprograms, `DebugLoc`, `dbg.declare`, struct/union `DICompositeType`, `DILexicalBlock` |
 | **AST / codegen** | `SourceLoc` on functions and statements; param/local `declareAlloca`; `Block` pushes lexical scopes |
 
-### Why fifth in the language roadmap
+### Why last in the language roadmap
 
-Pure infrastructure — no new C syntax. Valuable for debugging, but does not unlock new language tests. Reasonable to pull earlier if tooling pain is high during steps 1–4.
+Pure infrastructure — no new C syntax. Valuable for debugging, but does not unlock new language tests. Reasonable to pull earlier if tooling pain is high during steps 1–3.
 
 ---
 
 ## Explicitly out of scope (for now)
 
-These appear under “Except” in the README and are **not** on the near-term roadmap:
+These appear under **Not supported** in [Language.md](Language.md) and are **not** on the near-term roadmap:
 
 | Feature | Reason to defer |
 |---------|-----------------|
@@ -347,12 +353,14 @@ For each roadmap item:
 1. Add one or more tests under `tests/`.
 2. Extend `Parser.y` / AST / codegen in that order (or AST first if grammar is obvious).
 3. Run `./scripts/compile-tests.sh`, `link-tests.sh`, `run-tests.sh`.
-4. Update README “supports” / “except” lists when the feature is done.
+4. Update [Language.md](Language.md) and the README summary when the feature is done.
 5. If parser conflicts change, note counts in [ParserConflicts.md](ParserConflicts.md).
 
 ---
 
 ## Related docs
 
-- [README.md](../README.md) — supported features, TODO list, build and test commands
+- [README.md](../README.md) — project overview and quick start
+- [Language.md](Language.md) — supported C subset and limitations
+- [Install.md](Install.md), [Testing.md](Testing.md) — build and test commands
 - [ParserConflicts.md](ParserConflicts.md) — Bison conflict analysis (relevant before `typedef`)

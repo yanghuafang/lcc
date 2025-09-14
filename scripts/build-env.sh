@@ -65,7 +65,7 @@ EXT_LDFLAGS="${EXT_LDFLAGS:-}"
 case "$(uname -s)" in
   Darwin)
     if ! command -v brew >/dev/null 2>&1; then
-      lcc_fail_env "Homebrew is required on macOS. See README.md."
+      lcc_fail_env "Homebrew is required on macOS. See docs/Install.md."
       return 1
     fi
     if [[ -n "${LCC_LLVM_DIR_PRESET}" ]]; then

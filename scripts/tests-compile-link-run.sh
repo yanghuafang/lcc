@@ -8,7 +8,7 @@
 #
 # Compile modes (setCompileMode) decide which lcc flags each test gets:
 # --debug adds -g, --release adds -O2. The debug/ artifacts are named after the
-# mode, which is why the goldens do not collide.
+# mode, which is why the goldens do not collide — see docs/Testing.md.
 #
 # No `set -euo pipefail` here, unlike every script that runs directly: shell
 # options are not scoped to a file, so setting them in something sourced
