@@ -23,8 +23,8 @@ lcc_fail_env() {
 
 lcc_detect_linker() {
   # Link with the distro toolchain, not LLVM's clang from PATH (build-env prepends
-  # llvm-14/bin). On macOS, Homebrew clang mishandles lcc .o files; on Linux,
-  # llvm-14's driver often defaults to lld and rejects non-PIC relocations in PIE
+  # llvm-20/bin). On macOS, Homebrew clang mishandles lcc .o files; on Linux,
+  # LLVM's driver often defaults to lld and rejects non-PIC relocations in PIE
   # links unless objects were built with -fPIC/-fPIE.
   if [[ "$(uname -s)" == Darwin ]] && [[ -x /usr/bin/clang ]]; then
     echo /usr/bin/clang
@@ -71,8 +71,8 @@ case "$(uname -s)" in
     if [[ -n "${LCC_LLVM_DIR_PRESET}" ]]; then
       LLVM_PREFIX="$(cd "${LCC_LLVM_DIR_PRESET}/../../.." && pwd)"
     else
-      LLVM_PREFIX="$(brew --prefix llvm@14 2>/dev/null)" || {
-        lcc_fail_env "Install LLVM 14: brew install llvm@14"
+      LLVM_PREFIX="$(brew --prefix llvm@20 2>/dev/null)" || {
+        lcc_fail_env "Install LLVM 20: brew install llvm@20"
         return 1
       }
     fi
@@ -86,17 +86,16 @@ case "$(uname -s)" in
 
     EXT_CPPFLAGS="${EXT_CPPFLAGS:-} -I${FLEX_DIR}/include"
     EXT_CPPFLAGS="${EXT_CPPFLAGS:-} -I${LLVM_PREFIX}/include"
-    # Homebrew llvm@14 ships libLLVM.dylib; do not add lib/unwind (often absent).
     ;;
   Linux)
     if [[ -n "${LCC_LLVM_DIR_PRESET}" ]]; then
       LLVM_PREFIX="$(cd "${LCC_LLVM_DIR_PRESET}/../../.." && pwd)"
-    elif [[ -d /usr/lib/llvm-14/lib/cmake/llvm ]]; then
-      LLVM_PREFIX=/usr/lib/llvm-14
-    elif command -v llvm-config-14 >/dev/null 2>&1; then
-      LLVM_PREFIX="$(llvm-config-14 --prefix)"
+    elif [[ -d /usr/lib/llvm-20/lib/cmake/llvm ]]; then
+      LLVM_PREFIX=/usr/lib/llvm-20
+    elif command -v llvm-config-20 >/dev/null 2>&1; then
+      LLVM_PREFIX="$(llvm-config-20 --prefix)"
     else
-      lcc_fail_env "LLVM 14 not found. On Ubuntu run: ./install-deps-ubuntu.sh"
+      lcc_fail_env "LLVM 20 not found. On Ubuntu run: ./install-deps-ubuntu.sh"
       return 1
     fi
 

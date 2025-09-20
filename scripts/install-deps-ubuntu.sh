@@ -23,7 +23,7 @@ fi
 
 sudo apt-get update
 
-for pkg in llvm-14-dev libargparse-dev; do
+for pkg in llvm-20-dev libargparse-dev; do
   if ! apt-cache show "${pkg}" >/dev/null 2>&1; then
     echo "Package ${pkg} is not available. Use Ubuntu LTS." >&2
     exit 1
@@ -38,9 +38,9 @@ sudo apt-get install -y \
   graphviz \
   clang \
   git \
-  llvm-14 \
-  llvm-14-dev \
-  llvm-14-tools \
+  llvm-20 \
+  llvm-20-dev \
+  llvm-20-tools \
   libargparse-dev
 
 echo "Ubuntu dependencies installed. Build with: ./build-lcc.sh"

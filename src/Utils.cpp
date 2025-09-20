@@ -155,17 +155,21 @@ BuiltinTypeId Utils::varTypeToTypeId(AST::VarType* varType) {
   return BuiltinTypeId::UNKNOWN;
 }
 
+// Follow typedef aliases on DefinedType nodes. Stop when unmapped or when the
+// alias is the same node (e.g. "typedef struct Employee Employee") so getType()
+// can resolve the struct tag instead of looping forever.
 AST::VarType* Utils::resolveTypedefVarType(AST::VarType* varType,
                                            CodeGenerator& generator) {
   if (varType == nullptr) {
     return nullptr;
   }
 
-  if (varType->isDefinedType()) {
+  while (varType != nullptr && varType->isDefinedType()) {
     AST::VarType* alias = generator.findTypedefAlias(varType->typeName_);
-    if (alias != nullptr) {
-      return resolveTypedefVarType(alias, generator);
+    if (alias == nullptr || alias == varType) {
+      break;
     }
+    varType = alias;
   }
 
   return varType;
@@ -174,6 +178,54 @@ AST::VarType* Utils::resolveTypedefVarType(AST::VarType* varType,
 BuiltinTypeId Utils::resolvedVarTypeToTypeId(AST::VarType* varType,
                                              CodeGenerator& generator) {
   return varTypeToTypeId(resolveTypedefVarType(varType, generator));
+}
+
+llvm::Type* Utils::opaquePointerType(llvm::LLVMContext& context,
+                                     unsigned addressSpace) {
+  return llvm::PointerType::get(context, addressSpace);
+}
+
+llvm::Type* Utils::pointerArithmeticElementType(AST::VarType* ptrExprVarType,
+                                                CodeGenerator& generator) {
+  AST::VarType* resolved = resolveTypedefVarType(ptrExprVarType, generator);
+  if (resolved == nullptr) {
+    throw std::logic_error(
+        "Pointer arithmetic requires a known expression type.");
+  }
+
+  if (resolved->isPointerType()) {
+    return static_cast<AST::PointerType*>(resolved)->baseType_->getType(
+        generator);
+  }
+  if (resolved->isArrayType()) {
+    return static_cast<AST::ArrayType*>(resolved)->baseType_->getType(
+        generator);
+  }
+  if (resolved->isStructType() || resolved->isUnionType()) {
+    return resolved->getType(generator);
+  }
+
+  throw std::logic_error("Pointer arithmetic requires pointer or array type.");
+}
+
+// Load/store element type from AST. Pointer lvalues use opaque ptr in IR;
+// concrete struct/scalar types are returned for direct allocas and non-pointer
+// locations.
+llvm::Type* Utils::memoryAccessType(AST::VarType* lvalueVarType,
+                                    CodeGenerator& generator) {
+  AST::VarType* resolved = resolveTypedefVarType(lvalueVarType, generator);
+  if (resolved == nullptr) {
+    throw std::logic_error("Load/store requires a known lvalue type.");
+  }
+
+  if (resolved->isArrayType()) {
+    return resolved->getType(generator);
+  }
+  if (resolved->isPointerType()) {
+    return opaquePointerType(generator.getContext());
+  }
+
+  return resolved->getType(generator);
 }
 
 llvm::Value* Utils::typeCast(llvm::IRBuilder<>& builder, llvm::Value* value,
@@ -349,6 +401,8 @@ llvm::Value* Utils::createCmpEq(llvm::IRBuilder<>& builder, llvm::Value* lhs,
     }
   }
 
+  // Pointer and mixed pointer/integer equality: compare as i64 via ptrtoint so
+  // both sides are plain integers regardless of the (opaque) pointer types.
   if (lhs->getType()->isPointerTy() && lhs->getType() == rhs->getType()) {
     return builder.CreateICmpEQ(
         builder.CreatePtrToInt(lhs, builder.getInt64Ty()),
@@ -368,26 +422,32 @@ llvm::Value* Utils::createCmpEq(llvm::IRBuilder<>& builder, llvm::Value* lhs,
   throw std::domain_error("Unsupported types for \"==\" comparision!");
 }
 
-// lhs is a pointer from genCodePtr(); load the pointee (arrays decay to element
-// ptr).
-llvm::Value* Utils::createLoad(llvm::IRBuilder<>& builder, llvm::Value* lhs) {
-  if (lhs->getType()->getNonOpaquePointerElementType()->isArrayTy()) {
-    return builder.CreatePointerCast(lhs, lhs->getType()
-                                              ->getNonOpaquePointerElementType()
-                                              ->getArrayElementType()
-                                              ->getPointerTo());
+// ptr is from genCodePtr(); lvalueVarType is the C type of that location.
+llvm::Value* Utils::createLoad(llvm::IRBuilder<>& builder, llvm::Value* ptr,
+                               AST::VarType* lvalueVarType,
+                               CodeGenerator& generator) {
+  AST::VarType* resolved = resolveTypedefVarType(lvalueVarType, generator);
+  if (resolved == nullptr) {
+    throw std::logic_error("Load requires a known lvalue type.");
   }
 
-  return builder.CreateLoad(lhs->getType()->getNonOpaquePointerElementType(),
-                            lhs);
+  // Array rvalue: decay storage pointer to opaque pointer-to-element (no load).
+  if (resolved->isArrayType()) {
+    return builder.CreatePointerCast(ptr,
+                                     opaquePointerType(generator.getContext()));
+  }
+
+  llvm::Type* pointeeTy = memoryAccessType(resolved, generator);
+  return builder.CreateLoad(pointeeTy, ptr);
 }
 
 llvm::Value* Utils::createAssign(llvm::IRBuilder<>& builder, llvm::Value* lhs,
-                                 llvm::Value* rhs, BuiltinTypeId srcTypeId,
+                                 llvm::Value* rhs, AST::VarType* lhsVarType,
+                                 CodeGenerator& generator,
+                                 BuiltinTypeId srcTypeId,
                                  BuiltinTypeId dstTypeId) {
-  rhs = Utils::typeCast(builder, rhs,
-                        lhs->getType()->getNonOpaquePointerElementType(),
-                        srcTypeId, dstTypeId);
+  llvm::Type* storeTy = memoryAccessType(lhsVarType, generator);
+  rhs = Utils::typeCast(builder, rhs, storeTy, srcTypeId, dstTypeId);
   if (rhs == nullptr) {
     throw std::domain_error(
         "Assign with values that can not be cast to the target type!");
@@ -397,17 +457,22 @@ llvm::Value* Utils::createAssign(llvm::IRBuilder<>& builder, llvm::Value* lhs,
   return lhs;
 }
 
+// ptr + int is lowered to a GEP whose element type comes from the AST pointer/
+// array type (pointerArithmeticElementType), since IR pointers are opaque; int
+// + ptr is handled commutatively. Otherwise fall back to integer/float add.
 llvm::Value* Utils::createAdd(llvm::IRBuilder<>& builder, llvm::Value* lhs,
-                              llvm::Value* rhs, BuiltinTypeId lhsTypeId,
+                              llvm::Value* rhs, AST::VarType* lhsVarType,
+                              AST::VarType* rhsVarType,
+                              CodeGenerator& generator, BuiltinTypeId lhsTypeId,
                               BuiltinTypeId rhsTypeId) {
   if (lhs->getType()->isPointerTy() && rhs->getType()->isIntegerTy()) {
-    return builder.CreateGEP(lhs->getType()->getNonOpaquePointerElementType(),
-                             lhs, rhs);
+    llvm::Type* elementTy = pointerArithmeticElementType(lhsVarType, generator);
+    return builder.CreateGEP(elementTy, lhs, rhs);
   }
 
   if (lhs->getType()->isIntegerTy() && rhs->getType()->isPointerTy()) {
-    return builder.CreateGEP(rhs->getType()->getNonOpaquePointerElementType(),
-                             rhs, lhs);
+    llvm::Type* elementTy = pointerArithmeticElementType(rhsVarType, generator);
+    return builder.CreateGEP(elementTy, rhs, lhs);
   }
 
   bool isUnsigned = false;
@@ -424,17 +489,21 @@ llvm::Value* Utils::createAdd(llvm::IRBuilder<>& builder, llvm::Value* lhs,
   throw std::logic_error("Add with unsupported types!");
 }
 
+// Mirrors createAdd. ptr - ptr uses CreatePtrDiff, which returns an element
+// count, not a byte offset.
 llvm::Value* Utils::createSub(llvm::IRBuilder<>& builder, llvm::Value* lhs,
-                              llvm::Value* rhs, BuiltinTypeId lhsTypeId,
+                              llvm::Value* rhs, AST::VarType* lhsVarType,
+                              AST::VarType* rhsVarType,
+                              CodeGenerator& generator, BuiltinTypeId lhsTypeId,
                               BuiltinTypeId rhsTypeId) {
   if (lhs->getType()->isPointerTy() && rhs->getType()->isIntegerTy()) {
-    return builder.CreateGEP(lhs->getType()->getNonOpaquePointerElementType(),
-                             lhs, builder.CreateNeg(rhs));
+    llvm::Type* elementTy = pointerArithmeticElementType(lhsVarType, generator);
+    return builder.CreateGEP(elementTy, lhs, builder.CreateNeg(rhs));
   }
 
-  if (lhs->getType()->isPointerTy() && lhs->getType() == rhs->getType()) {
-    return builder.CreatePtrDiff(
-        lhs->getType()->getNonOpaquePointerElementType(), lhs, rhs);
+  if (lhs->getType()->isPointerTy() && rhs->getType()->isPointerTy()) {
+    llvm::Type* elementTy = pointerArithmeticElementType(lhsVarType, generator);
+    return builder.CreatePtrDiff(elementTy, lhs, rhs);
   }
 
   bool isUnsigned = false;

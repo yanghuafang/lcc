@@ -61,7 +61,8 @@ tests=(
   "39.break_continue_hierarchy.c"
 )
 
-# lcc flags for test compilation; set via setCompileMode() from compile-tests.sh.
+# lcc flags for test compilation; set via setCompileMode() from compile-tests.sh
+# (defaults to --debug when compile-tests.sh is run with no mode flag).
 lcc_debug_flags=""
 lcc_opt_flags=""
 compile_mode=""
@@ -110,7 +111,8 @@ compile() {
   local source=$1
   local base=${source%.c}
   local obj=${base}.o
-  local ir_suffix=".release.ll"
+  # IR suffix matches compile mode (.debug.ll, .release.ll, .relwithdebinfo.ll).
+  local ir_suffix=".debug.ll"
   case "$compile_mode" in
     --debug)
       ir_suffix=".debug.ll"

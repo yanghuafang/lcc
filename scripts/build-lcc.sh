@@ -1,9 +1,25 @@
 #!/bin/bash
 
-# build-lcc.sh — configure and build lcc into ../../lcc-build.
+# build-lcc.sh — configure and build the lcc compiler.
 #
-# Sources build-env.sh first, so the Homebrew flex, bison and LLVM are found
-# ahead of the ones macOS ships; the system bison is too old for this grammar.
+# Wraps CMake so a learner needs one command rather than the right cmake
+# invocation. Sources build-env.sh for the LLVM 20 / flex / bison paths, then
+# configures into ../../lcc-build (a sibling of the repo, so the source tree
+# stays clean) and builds across all cores.
+#
+# Modes:
+#   --debug | --release | --relwithdebinfo   CMAKE_BUILD_TYPE (default Release)
+#   --parse                                  also regenerate
+#                                            src/generated/Parser.counterexamples,
+#                                            bison's explanation of each grammar
+#                                            conflict — see docs/ParserConflicts.md
+#   --asan                                   build lcc with AddressSanitizer
+#   --ubsan                                  build lcc with
+#                                            UndefinedBehaviorSanitizer;
+#                                            combinable with --asan
+#   --werror                                 fail the build on any warning
+#
+# Override the job count with LCC_BUILD_JOBS=N.
 
 set -euo pipefail
 
