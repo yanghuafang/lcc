@@ -419,7 +419,7 @@ llvm::Value* Utils::createCmpEq(llvm::IRBuilder<>& builder, llvm::Value* lhs,
         builder.CreatePtrToInt(rhs, builder.getInt64Ty()));
   }
 
-  throw std::domain_error("Unsupported types for \"==\" comparision!");
+  throw std::domain_error("Unsupported types for \"==\" comparison!");
 }
 
 // ptr is from genCodePtr(); lvalueVarType is the C type of that location.

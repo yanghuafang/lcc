@@ -128,8 +128,8 @@ uint_35 [label = uint]
 VarInit_35 -> uint_35
 VarInit_35 -> Constant_36
 Constant_36 [label = Constant]
-uint_36 [label = "180150000"]
-Constant_36 -> uint_36
+int_36 [label = "180150000"]
+Constant_36 -> int_36
 FuncBody_8 -> VarDecl_37
 VarDecl_37 [label = VarDecl]
 VarDecl_37 -> BuiltinType_38
@@ -320,8 +320,8 @@ uint_94 [label = uint]
 Variable_94 -> uint_94
 LogicNotEq_93 -> Constant_95
 Constant_95 [label = Constant]
-uint_95 [label = "180150000"]
-Constant_95 -> uint_95
+int_95 [label = "180150000"]
+Constant_95 -> int_95
 IfStmt_92 -> Assign_96
 Assign_96 [label = Assign]
 Assign_96 -> Variable_97

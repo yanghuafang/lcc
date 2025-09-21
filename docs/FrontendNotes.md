@@ -41,7 +41,7 @@ See [ParserConflicts.md](ParserConflicts.md) for parser ambiguities that some ro
 | **3** | [`typedef` and `size_t`](#3-typedef-and-size_t) (done) | Medium–large | 3a + 3b complete; cleaner API-style tests after arrays |
 | **—** | [3D arrays](#3d-arrays-declaration-done-initializer-deferred) | — | Declaration done; only the brace initializer stays deferred |
 | **4** | [`static`](#4-static) (done) | Medium | 4a + 4b complete |
-| **5** | [`-g` debug info](#5--g-debug-info) | Medium–large | LLVM `DIBuilder` |
+| **5** | [`-g` debug info](#5--g-debug-info) (done) | Medium–large | LLVM `DIBuilder` |
 
 **Optional timing:** Step 5 is independent of language features. If you are debugging many new test programs with LLDB, consider implementing `-g` right after step 1 — it does not require new grammar rules.
 
@@ -56,11 +56,11 @@ flowchart TD
   init1b[1b. inferred size and strings - done]
   md2a[2a. 2D declaration - done]
   md2b[2b. 2D initialization - done]
-  td3a[3a. typedef VarType aliases]
-  td3b[3b. typedef struct and disambiguation]
+  td3a[3a. typedef VarType aliases - done]
+  td3b[3b. typedef struct and disambiguation - done]
   md3[3D array initializers - deferred]
-  stat[4. static]
-  dbg[5. -g debug info]
+  stat[4. static - done]
+  dbg[5. -g debug info - done]
 
   done --> init1a --> init1b
   done --> md2a
@@ -186,11 +186,9 @@ The **brace initializer** is what stops at two dimensions, and stays deferred �
 
 Split into **4a** (grammar + alias table + `VarType` spellings) and **4b** (defined-type typedefs + expression disambiguation). `size_t` ships in **4a** via `typedef unsigned long size_t;`.
 
-### Gap today
+### Status (4a / 4b complete)
 
-- No `typedef` keyword or typedef declaration rule.
-- `IDENTIFIER` as a type only resolves through `DefinedType` for struct/union/enum tags already registered in the type table.
-- README workaround: use `unsigned long` wherever `size_t` would appear.
+Delivered in `tests/35.typedef_builtin.c` and `tests/36.typedef_struct.c`. Remaining limits (State 133, typedef-as-variable in the same scope) are documented in [Language.md](Language.md) and [ParserConflicts.md](ParserConflicts.md).
 
 ### 4a — `typedef` of `VarType` spellings (including `size_t`) — **done**
 
@@ -281,7 +279,7 @@ int bump(void) {
 
 **Tests:** `tests/37.static_file.c` — persistent file-static state, static helper function.
 
-**Out of scope for 5a:** block-scope `static` (rejected at codegen with a clear error).
+**Out of scope for 5a:** block-scope `static` (delivered in 5b).
 
 ### 5b — block-scope `static` — **done**
 
@@ -300,14 +298,13 @@ void f(void) {
 
 **Tests:** `tests/38.static_local.c` — zero-init persistence, constant initializer, runtime declaration initializer.
 
-### Gap before 5a
+### Status (5a / 5b complete)
 
-- Globals used `ExternalLinkage`; locals were always stack `alloca`s.
-- README workaround: use global variables instead of `static`.
+Delivered in `tests/37.static_file.c` and `tests/38.static_local.c`.
 
 ### Why after typedef
 
-Orthogonal to types and initializers. Teaches linkage and lifetime without blocking typedef work. README workarounds remain acceptable until this lands.
+Orthogonal to types and initializers. Teaches linkage and lifetime without blocking typedef work.
 
 ---
 
@@ -325,7 +322,7 @@ Orthogonal to types and initializers. Teaches linkage and lifetime without block
 | **LLVM** | `DIBuilder`: compile unit, subprograms, `DebugLoc`, `dbg.declare`, struct/union `DICompositeType`, `DILexicalBlock` — **done** |
 | **AST / codegen** | `SourceLoc` on functions and statements; param/local `declareAlloca`; `Block` pushes lexical scopes — **done** |
 
-### Why last in the language roadmap
+### Why it was last in the language roadmap
 
 Pure infrastructure — no new C syntax. Valuable for debugging, but does not unlock new language tests. Reasonable to pull earlier if tooling pain is high during steps 1–3.
 

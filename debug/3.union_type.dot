@@ -110,8 +110,8 @@ ip_29[ label = ip]
 StructRef_29 -> ip_29
 Assign_28 -> Constant_31
 Constant_31 [label = Constant]
-uint_31 [label = "313249076"]
-Constant_31 -> uint_31
+int_31 [label = "313249076"]
+Constant_31 -> int_31
 FuncBody_14 -> Assign_32
 Assign_32 [label = Assign]
 Assign_32 -> Variable_33
@@ -150,8 +150,8 @@ ip_42 [label = ip]
 Variable_42 -> ip_42
 LogicNotEq_41 -> Constant_43
 Constant_43 [label = Constant]
-uint_43 [label = "313249076"]
-Constant_43 -> uint_43
+int_43 [label = "313249076"]
+Constant_43 -> int_43
 IfStmt_40 -> Assign_44
 Assign_44 [label = Assign]
 Assign_44 -> Variable_45
@@ -172,8 +172,8 @@ byte_49 [label = byte]
 Variable_49 -> byte_49
 LogicNotEq_48 -> Constant_50
 Constant_50 [label = Constant]
-uint_50 [label = "52"]
-Constant_50 -> uint_50
+int_50 [label = "52"]
+Constant_50 -> int_50
 IfStmt_47 -> Assign_51
 Assign_51 [label = Assign]
 Assign_51 -> Variable_52
@@ -196,8 +196,8 @@ c_55[ label = c]
 StructRef_55 -> c_55
 Assign_54 -> Constant_57
 Constant_57 [label = Constant]
-uint_57 [label = "86"]
-Constant_57 -> uint_57
+int_57 [label = "86"]
+Constant_57 -> int_57
 FuncBody_14 -> Assign_58
 Assign_58 [label = Assign]
 Assign_58 -> Variable_59
@@ -236,8 +236,8 @@ ip_68 [label = ip]
 Variable_68 -> ip_68
 LogicNotEq_67 -> Constant_69
 Constant_69 [label = Constant]
-uint_69 [label = "313249110"]
-Constant_69 -> uint_69
+int_69 [label = "313249110"]
+Constant_69 -> int_69
 IfStmt_66 -> Assign_70
 Assign_70 [label = Assign]
 Assign_70 -> Variable_71
@@ -258,8 +258,8 @@ byte_75 [label = byte]
 Variable_75 -> byte_75
 LogicNotEq_74 -> Constant_76
 Constant_76 [label = Constant]
-uint_76 [label = "86"]
-Constant_76 -> uint_76
+int_76 [label = "86"]
+Constant_76 -> int_76
 IfStmt_73 -> Assign_77
 Assign_77 [label = Assign]
 Assign_77 -> Variable_78

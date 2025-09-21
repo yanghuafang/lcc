@@ -31,6 +31,13 @@ settings set target.source-map /Users/you/study-projects/lcc-build /Users/you/st
 
 Adjust paths for your checkout layout.
 
+Example `launch.json` args for a smoke compile (IR and AST under `lcc/debug/`, object under `lcc-build/`):
+
+```json
+"-l", "${workspaceFolder}/debug/0.hello_world.debug.ll",
+"-v", "${workspaceFolder}/debug/0.hello_world.dot"
+```
+
 ## Related docs
 
 - [Install.md](Install.md) — build modes, manual CMake, regenerating lexer/parser
