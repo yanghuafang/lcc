@@ -56,7 +56,20 @@ Unlike industrial compilers (clang, gcc) that use recursive-descent parsing, `lc
 - Expression/type disambiguation (State 133 in `Parser.output`; see [ParserConflicts.md](ParserConflicts.md)): typedef names in expression positions may still parse as types; lcc rejects typedef names used as variables in the same scope.
 - `extern`: `lcc` requires function declaration for linkage; extern variables are not allowed.
 
-For planned extensions and test coverage per feature, see [FrontendNotes.md](FrontendNotes.md).
+- A parenthesized expression whose first token is a bare identifier, when the
+  next token is `)` or `*`:
+
+  ```c
+  r = (a);            /* error — redundant parentheses around a variable */
+  r = (a * 7) + 1;    /* error — identifier immediately followed by `*` */
+  ```
+
+  Any other operator after the identifier parses fine (`(a + 7)`, `(a == 3)`),
+  as does a parenthesis that does not begin with a bare identifier (`(7 * a)`,
+  `(*p * 7)`, `(arr[0] * 7)`). Reorder the operands, drop the parentheses, or
+  assign to a temporary. Root cause: [ParserConflicts.md](ParserConflicts.md#4-identifier-type-name-or-expression-4-reducereduce).
+
+For front-end feature history and test coverage per language item, see [FrontendNotes.md](FrontendNotes.md). For the active middle-end, optimization, and back-end track, see [LearningPlan.md](LearningPlan.md).
 
 ## Manual linkage declarations
 

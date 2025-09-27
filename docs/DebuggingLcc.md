@@ -42,5 +42,6 @@ Example `launch.json` args for a smoke compile (IR and AST under `lcc/debug/`, o
 
 - [Install.md](Install.md) — build modes, manual CMake, regenerating lexer/parser
 - [ParserConflicts.md](ParserConflicts.md) — parser conflict reports and `Parser.output`
-- [FrontendNotes.md](FrontendNotes.md) — planned language and codegen extensions
+- [LearningPlan.md](LearningPlan.md) — active learning path (IR, optimization, backend; M0–M18)
+- [FrontendNotes.md](FrontendNotes.md) — front-end language features (complete; historical detail)
 - [Usage.md](Usage.md) — debugging **programs compiled by** `lcc` (not `lcc` itself)

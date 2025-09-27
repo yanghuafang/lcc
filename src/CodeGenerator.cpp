@@ -1,15 +1,11 @@
 #include "CodeGenerator.hpp"
 
-#include <llvm/Analysis/LoopAnalysisManager.h>
 #include <llvm/IR/DebugInfoMetadata.h>
 #include <llvm/IR/Function.h>
 #include <llvm/IR/Instructions.h>
 #include <llvm/IR/LegacyPassManager.h>
-#include <llvm/IR/PassManager.h>
 #include <llvm/IR/Verifier.h>
 #include <llvm/MC/TargetRegistry.h>
-#include <llvm/Passes/PassBuilder.h>
-#include <llvm/Passes/PassPlugin.h>
 #include <llvm/Support/CodeGen.h>
 #include <llvm/Support/FileSystem.h>
 #include <llvm/Support/TargetSelect.h>
@@ -25,6 +21,7 @@
 
 #include "AbstractSyntaxTree.hpp"
 #include "DebugInfoBuilder.hpp"
+#include "IrOptimizer.hpp"
 
 CodeGenerator::CodeGenerator()
     : context_(),
@@ -519,7 +516,9 @@ void CodeGenerator::declareDebugAlloca(
 void CodeGenerator::genIrCode(AST::Program* root,
                               const std::string& optimizationLevel,
                               bool generateDebugInfo,
-                              const std::string& sourcePath) {
+                              const std::string& sourcePath,
+                              const std::string& preOptIrPath,
+                              const std::string& postOptIrPath) {
   if (root == nullptr) {
     std::cerr << "AST root is nullptr!" << std::endl;
     return;
@@ -549,6 +548,13 @@ void CodeGenerator::genIrCode(AST::Program* root,
   // Pop top level symbol table, and destroy it.
   popSymbolTable();
 
+  // Middle-end snapshots: raw frontend IR, then the module after optimizeCode()
+  // or debug finalization (-g). main's -l dumps later (post-genObjectCode) with
+  // target triple/data layout for compile-tests.sh golden files.
+  if (!preOptIrPath.empty()) {
+    dumpIrCode(preOptIrPath);
+  }
+
   // -g skips LLVM optimizations so dbg.declare allocas survive; dbg.value
   // salvage for -O1+ is out of scope for this teaching compiler.
   if (generateDebugInfo) {
@@ -559,7 +565,11 @@ void CodeGenerator::genIrCode(AST::Program* root,
     }
     debugInfo_->finalize();
   } else {
-    optimizeCode(optimizationLevel);
+    IrOptimizer{}.run(*module_, optimizationLevel);
+  }
+
+  if (!postOptIrPath.empty()) {
+    dumpIrCode(postOptIrPath);
   }
 }
 
@@ -622,43 +632,4 @@ void CodeGenerator::dumpIrCode(const std::string& fileName) {
   if (llvm::verifyModule(*module_, &irFileStream) != 0) {
     std::cout << "Errors in IR code!" << std::endl;
   }
-}
-
-void CodeGenerator::optimizeCode(const std::string& optimizationLevel) {
-  if (optimizationLevel.empty()) {
-    return;
-  }
-
-  llvm::LoopAnalysisManager lam;
-  llvm::FunctionAnalysisManager fam;
-  llvm::CGSCCAnalysisManager cgam;
-  llvm::ModuleAnalysisManager mam;
-
-  llvm::PassBuilder pb;
-  pb.registerModuleAnalyses(mam);
-  pb.registerCGSCCAnalyses(cgam);
-  pb.registerFunctionAnalyses(fam);
-  pb.registerLoopAnalyses(lam);
-  pb.crossRegisterProxies(lam, fam, cgam, mam);
-
-  const llvm::OptimizationLevel* level;
-  if (optimizationLevel == "O0") {
-    level = &llvm::OptimizationLevel::O0;
-  } else if (optimizationLevel == "O1") {
-    level = &llvm::OptimizationLevel::O1;
-  } else if (optimizationLevel == "O2") {
-    level = &llvm::OptimizationLevel::O2;
-  } else if (optimizationLevel == "O3") {
-    level = &llvm::OptimizationLevel::O3;
-  } else if (optimizationLevel == "Os") {
-    level = &llvm::OptimizationLevel::Os;
-  } else if (optimizationLevel == "Oz") {
-    level = &llvm::OptimizationLevel::Oz;
-  } else {
-    std::cout << "Default optimization level -O0." << std::endl;
-    level = &llvm::OptimizationLevel::O0;
-  }
-
-  llvm::ModulePassManager mpm = pb.buildPerModuleDefaultPipeline(*level);
-  mpm.run(*module_, mam);
 }
