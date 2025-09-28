@@ -49,7 +49,7 @@ Full index (grouped by learning path, how-to, and reference): [docs/README.md](d
 | [docs/DebuggingLcc.md](docs/DebuggingLcc.md) | Debug `lcc` in VS Code / LLDB |
 | [docs/Language.md](docs/Language.md) | Full feature list and limitations |
 | [docs/FrontendNotes.md](docs/FrontendNotes.md) | Front-end language features (complete) |
-| [docs/LlvmTools.md](docs/LlvmTools.md) | Pipeline overview & LLVM tools (stub until M18) |
+| [docs/LlvmTools.md](docs/LlvmTools.md) | Pipeline overview, LLVM tools, classical opt study (M9) |
 | [docs/ParserConflicts.md](docs/ParserConflicts.md) | Bison parser conflicts |
 
 ## Requirements
