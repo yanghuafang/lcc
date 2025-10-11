@@ -10,7 +10,7 @@ All commands below assume `cd lcc/scripts`.
 | `install-deps-ubuntu.sh` | Install apt packages on Ubuntu LTS |
 | `install-deps-macos.sh` | Install Homebrew packages on macOS |
 | `build-lcc.sh` | Configure and build the `lcc` compiler — see [Install.md](Install.md) |
-| `compile-tests.sh` | Compile unit tests to `../../lcc-build/*.o`; writes AST/IR under `../debug/` |
+| `compile-tests.sh` | Compile unit tests to `../../lcc-build/*.o`; writes AST/IR/asm under `../debug/` |
 | `link-tests.sh` | Link `../../lcc-build/*.o` to executables with `LCC_LINKER` |
 | `run-tests.sh` | Run linked test binaries |
 | `check-debug-info.sh` | Smoke test: compile with `-g -O0`, verify `llvm-dwarfdump` output |
@@ -48,11 +48,11 @@ Each test prints `PASS` or `FAIL` on stdout. Scripts exit non-zero on the first 
 
 Optional compile mode (at most one; applies to all tests or the single named test):
 
-| Flag | `lcc` flags | IR suffix |
-|------|-------------|-----------|
-| *(none)* | `-g -O0` | `.debug.ll` (same as `--debug`) |
-| `--debug` | `-g -O0` | `.debug.ll` |
-| `--release` | `-O2` | `.release.ll` |
+| Flag | `lcc` flags | IR / asm suffix |
+|------|-------------|-----------------|
+| *(none)* | `-g -O0` | `.debug.ll` / `.debug.s` (same as `--debug`) |
+| `--debug` | `-g -O0` | `.debug.ll` / `.debug.s` |
+| `--release` | `-O2` | `.release.ll` / `.release.s` |
 
 ¹ `-g` disables LLVM optimization in `lcc`; `-O2` is passed but ignored (warning printed). DWARF is still emitted; IR differs from `--debug` mainly in the checked-in snapshot name.
 
@@ -63,7 +63,7 @@ Examples:
 ./compile-tests.sh --release 25.quick_sort.c
 ```
 
-`compile-tests.sh` always passes `-v` and `-l` so AST (`.dot`, `.png`) and IR land in `lcc/debug/`. The repo keeps reference IR for all three modes: `*.debug.ll`, `*.release.ll`, and `*.relwithdebinfo.ll` (40 tests × 3 modes).
+`compile-tests.sh` always passes `-v`, `-l`, and `-S` so AST (`.dot`, `.png`), IR, and assembly land in `lcc/debug/`. The repo keeps reference IR for all three modes: `*.debug.ll`, `*.release.ll`, and `*.relwithdebinfo.ll` (40 tests × 3 modes). Assembly uses the same basename and mode suffix with `.s` instead of `.ll`.
 
 ### Debug-info smoke test
 
