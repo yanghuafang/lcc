@@ -48,13 +48,18 @@ Each test prints `PASS` or `FAIL` on stdout. Scripts exit non-zero on the first 
 
 Optional compile mode (at most one; applies to all tests or the single named test):
 
-| Flag | `lcc` flags | IR / asm suffix |
-|------|-------------|-----------------|
-| *(none)* | `-g -O0` | `.debug.ll` / `.debug.s` (same as `--debug`) |
-| `--debug` | `-g -O0` | `.debug.ll` / `.debug.s` |
-| `--release` | `-O2` | `.release.ll` / `.release.s` |
+| Flag | `lcc` flags | IR / asm artifacts (under `debug/`) |
+|------|-------------|-------------------------------------|
+| *(none)* | `-g -O0` | same as `--debug` |
+| `--debug` | `-g -O0` | `*.debug.pre.ll`, `*.debug.post.ll`, `*.debug.ll`, `*.debug.s` |
+| `--release` | `-O2` | `*.release.pre.ll`, `*.release.post.ll`, `*.release.ll`, `*.release.s` |
 
-¹ `-g` disables LLVM optimization in `lcc`; `-O2` is passed but ignored (warning printed). DWARF is still emitted; IR differs from `--debug` mainly in the checked-in snapshot name.
+| Suffix | When captured | Contents |
+|--------|---------------|----------|
+| `.pre.ll` | After codegen, before `IrOptimizer` | Raw frontend IR |
+| `.post.ll` | After `IrOptimizer` and debug finalization (`-g`) | Middle-end IR (no target metadata) |
+| `.debug.ll` / `.release.ll` | After object emission (`-l`) | Final IR with `target triple` / `datalayout` |
+| `.debug.s` / `.release.s` | After object emission (`-S`) | Machine assembly |
 
 Examples:
 
@@ -63,7 +68,7 @@ Examples:
 ./compile-tests.sh --release 25.quick_sort.c
 ```
 
-`compile-tests.sh` always passes `-v`, `-l`, and `-S` so AST (`.dot`, `.png`), IR, and assembly land in `lcc/debug/`. The repo keeps reference IR for all three modes: `*.debug.ll`, `*.release.ll`, and `*.relwithdebinfo.ll` (40 tests × 3 modes). Assembly uses the same basename and mode suffix with `.s` instead of `.ll`.
+`compile-tests.sh` always passes `-v`, `-l-pre-opt`, `-l-post-opt`, `-l`, and `-S` so AST (`.dot`, `.png`), middle-end IR, final IR, and assembly land in `lcc/debug/`. The repo keeps reference snapshots for both modes (every test × 2 modes × 4 IR/asm types for pre/post/final/asm).
 
 ### Debug-info smoke test
 
