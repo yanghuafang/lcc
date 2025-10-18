@@ -1,0 +1,21 @@
+{
+  "C_Cpp.default.compilerPath": "/usr/bin/clang",
+  "[cpp]": {
+    "editor.defaultFormatter": "xaver.clang-format"
+  },
+  "[c]": {
+    "editor.defaultFormatter": "xaver.clang-format"
+  },
+  "clang-format.executable": "/opt/homebrew/bin/clang-format",
+  "clang-format.fallbackStyle": "Google",
+  "clang-format.language.c.enable": true,
+  "clang-format.language.cpp.enable": true,
+  "clang-format.style": "file",
+  "editor.formatOnSave": true,
+  "editor.minimap.enabled": false,
+  "editor.renderWhitespace": "all",
+  "editor.rulers": [
+    80
+  ],
+  "editor.tabSize": 2,
+}

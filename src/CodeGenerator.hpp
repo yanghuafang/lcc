@@ -8,6 +8,8 @@
 #include <string>
 #include <vector>
 
+#include "TargetBackend.hpp"
+
 namespace AST {
 
 class Program;
@@ -192,6 +194,8 @@ class CodeGenerator {
   // Generate assembly for target architecture (-S).
   void genAssemblyCode(const std::string& fileName);
 
+  void setTargetBackendOptions(const TargetBackendOptions& options);
+
   // Dump LLVM IR to file.
   void dumpIrCode(const std::string& fileName);
 
@@ -278,4 +282,6 @@ class CodeGenerator {
 
   std::unique_ptr<DebugInfoBuilder> debugInfo_;
   std::vector<llvm::DIScope*> debugScopeStack_;
+
+  TargetBackendOptions targetBackendOptions_;
 };
