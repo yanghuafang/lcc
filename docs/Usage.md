@@ -17,10 +17,23 @@ lcc -i <input.c> -o <output.o> [-S <asm.s>] [-v <ast.dot>] [-l <ir.ll>] [-l-pre-
 | `-l-post-opt` | no | LLVM IR right after optimization, or after debug finalization when `-g` |
 | `-ir-stats` | no | Write load/store/call counts to `file` (`-` = stderr); counts raw IR before LLVM opts |
 | `-g` | no | Embed DWARF in the object file (use without `-O` for reliable stepping and variables) |
-| `-O0` … `-Oz` | no | LLVM optimization level (mutually exclusive) |
+| `-O0` … `-Oz` | no | LLVM optimization level (mutually exclusive); also sets backend `CodeGenOptLevel` for `-o`/`-S` |
 | `--target` | no | LLVM target triple (default: host) |
 | `-mcpu` | no | Target CPU for codegen (default: `generic`) |
 | `-mattr` | no | Target features, e.g. `+avx2,-sse4.1` (default: none) |
+
+### Optimization levels (`-O`)
+
+| Flag | Middle-end (`IrOptimizer`) | Back-end (`TargetBackend`) |
+|------|----------------------------|----------------------------|
+| *(none)* | No IR passes | `CodeGenOptLevel::None` |
+| `-O0` | O0 pipeline | None |
+| `-O1` | O1 pipeline | Less |
+| `-O2` | O2 pipeline | Default |
+| `-O3` | O3 pipeline (includes vectorizers) | Aggressive |
+| `-Os` / `-Oz` | Size-focused IR pipeline | Default |
+
+With **`-g`**, middle-end LLVM opts are **skipped** (DWARF `dbg.declare` allocas must survive); the CLI `-O` level is still passed to the back-end. See [LlvmTools.md](LlvmTools.md) for IR/asm study recipes (M9, M12, M14).
 
 ### Target flags
 
@@ -125,3 +138,11 @@ lldb ../../lcc-build/0.hello_world
 On Linux, add `-no-pie` to the `clang` link line if you link by hand.
 
 Supported DWARF under `-g`/`-O0`-style builds: subprograms, line stepping, locals and parameters, struct members, and lexical blocks. Optimized debugging (`dbg.value` salvage) is out of scope.
+
+## Related docs
+
+| Document | Topics |
+|----------|--------|
+| [LlvmTools.md](LlvmTools.md) | LLVM tool recipes (`opt`, `llc`, `objdump`, `mca`), M9/M12/M14 study notes |
+| [Testing.md](Testing.md) | Regression scripts, compile modes, CI smoke tests |
+| [LearningPlan.md](LearningPlan.md) | Full milestone path M0–M18 |

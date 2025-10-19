@@ -11,7 +11,7 @@ Implementation details for [LearningPlan.md](LearningPlan.md) milestones **M4–
 | IR emission | `CodeGenerator::genIrCode`, `AbstractSyntaxTree.cpp`, `Utils.cpp` | AST walk → raw `llvm::Module` |
 | IR optimization | `IrOptimizer::run` | `PassBuilder::buildPerModuleDefaultPipeline` |
 | IR instrumentation | `IrInstructionStatsPass` (`-ir-stats`) | New PM function pass; no IR change |
-| Object emission | `TargetBackend::emitObject` via `CodeGenerator::genObjectCode` | Host triple (or `--target`), `-mcpu`/`-mattr`, legacy PM → `.o` |
+| Object emission | `TargetBackend::emitObject` via `CodeGenerator::genObjectCode` | Host triple (or `--target`), `-mcpu`/`-mattr`, CLI `-O` → `CodeGenOptLevel`, legacy PM → `.o` |
 | Assembly emission | `TargetBackend::emitAssembly` via `-S` | Same `TargetBackendOptions` as object emission |
 | Debug info | `DebugInfoBuilder` | `-g` skips IR opts |
 | Reference IR | `debug/*.{debug,release}.{pre,post}.ll`, `*.debug.ll`, `*.release.ll` | every test × 2 modes |
@@ -248,11 +248,30 @@ Use `llvm::CodeGenFileType::AssemblyFile` in `addPassesToEmitFile`.
 
 ## M12: Codegen opt level & asm diff
 
+**Status:** done
+
 **Acceptance criteria**
 
-- [ ] `TargetMachine` codegen opt level matches CLI `-O` (see `CodeGenOpt::Level`)
-- [ ] Saved asm for `25.quick_sort.c` at `-O0` and `-O2` under `debug/` (optional, gitignored or one golden)
-- [ ] Written comparison: instruction count or loop structure in hot function
+- [x] `TargetMachine` codegen opt level matches CLI `-O` (see `CodeGenOptLevel` in `TargetBackend.cpp`)
+- [x] Saved asm for `25.quick_sort.c` at `-O0` and `-O2` under `debug/` (`*.debug.s` / `*.release.s` from `compile-tests.sh`)
+- [x] Written comparison: instruction count and loop structure in hot function ([LlvmTools.md § M12](LlvmTools.md#codegen-opt-level--asm-diff-m12))
+
+**Mapping** (LLVM 20 `CodeGenOptLevel`):
+
+| CLI | Codegen opt |
+|-----|-------------|
+| *(none)* / `-O0` | `None` |
+| `-O1` | `Less` |
+| `-O2`, `-Os`, `-Oz` | `Default` |
+| `-O3` | `Aggressive` |
+
+**Verify asm diff**
+
+```bash
+# From lcc/scripts after compile-tests.sh (--debug = -g -O0, --release = -O2)
+wc -l ../debug/25.quick_sort.debug.s ../debug/25.quick_sort.release.s
+diff -u ../debug/25.quick_sort.debug.s ../debug/25.quick_sort.release.s | head
+```
 
 ---
 
@@ -273,12 +292,14 @@ llc -stop-before=registerizer -print-machineinstrs post.ll -o /dev/null 2>&1 | l
 
 ## M14: Vectorization study
 
-**Acceptance**
+**Status:** done
 
-- [ ] Loop-heavy test compiled at `-O3`
-- [ ] Asm inspected for SIMD ops (platform-dependent)
-- [ ] Short write-up: vectorized or not, and LLVM reason (trip count, alias, etc.)
-- [ ] Optional: `llvm-mca` on inner loop
+**Acceptance criteria**
+
+- [x] Loop-heavy test compiled at `-O3` (`tests/40.array_sum.c`; study-only, not in compile-tests.sh)
+- [x] Asm inspected for SIMD ops (platform-dependent; see [LlvmTools.md § M14](LlvmTools.md#auto-vectorization-study-m14))
+- [x] Short write-up: vectorized or not, and LLVM reason (cost model without TM in IrOptimizer; quick_sort control flow)
+- [x] Optional: `llvm-mca` recipe on scalar loop asm in LlvmTools.md
 
 **Not required:** custom vectorization pass. LLVM `LoopVectorizer` / `SLPVectorizer` run via `-O3` pipeline.
 
@@ -362,6 +383,19 @@ flowchart TD
 ```
 
 M10 can start after M4 (parallel with M5–M9 if IR dumps exist).
+
+---
+
+## M18: Documentation & CI smoke
+
+**Status:** done
+
+**Acceptance criteria**
+
+- [x] [Usage.md](Usage.md) documents all CLI flags (IR dumps, `-ir-stats`, `-S`, target flags, `-O` middle/back-end split)
+- [x] [LlvmTools.md](LlvmTools.md) — LLVM tool reference (`opt`, `llc`, `llvm-objdump`, `llvm-mca`, `llvm-dwarfdump`)
+- [x] CI: `check-asm-smoke.sh` in `.github/workflows/build.yml`
+- [x] [docs/README.md](README.md) links all plan docs and milestone index
 
 ---
 

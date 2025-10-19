@@ -10,10 +10,6 @@ declare i32 @printf(ptr, ...)
 
 define i32 @main() !dbg !2 {
 entry:
-  %const30 = bitcast i64 -1234567890 to i64
-  %const29 = bitcast i64 9876043210 to i64
-  %const28 = bitcast i32 -12345678 to i32
-  %const = bitcast i32 180150000 to i32
   %bf = alloca i1, align 1
     #dbg_declare(ptr %bf, !7, !DIExpression(), !9)
   %bt = alloca i1, align 1
@@ -41,11 +37,11 @@ entry:
   store i32 0, ptr %err, align 4, !dbg !39
   store i8 65, ptr %ch, align 1, !dbg !37
   store i16 -1024, ptr %sh, align 2, !dbg !34
-  store i32 %const28, ptr %in, align 4, !dbg !31
-  store i64 %const30, ptr %ln, align 4, !dbg !29
+  store i32 -12345678, ptr %in, align 4, !dbg !31
+  store i64 -1234567890, ptr %ln, align 4, !dbg !29
   store i8 -6, ptr %uch, align 1, !dbg !26
-  store i32 %const, ptr %uint, align 4, !dbg !23
-  store i64 %const29, ptr %uln, align 4, !dbg !20
+  store i32 180150000, ptr %uint, align 4, !dbg !23
+  store i64 9876043210, ptr %uln, align 4, !dbg !20
   store float 0x400921FB40000000, ptr %fl, align 4, !dbg !17
   store double 0x400921FB54442D11, ptr %db, align 8, !dbg !14
   store i1 true, ptr %bt, align 1, !dbg !11
@@ -53,104 +49,140 @@ entry:
   %0 = load i8, ptr %ch, align 1, !dbg !40
   %1 = sext i8 %0 to i32, !dbg !40
   %2 = icmp ne i32 %1, 65, !dbg !40
-  br i1 %2, label %then, label %if.end, !dbg !40
+  br i1 %2, label %then, label %else, !dbg !40
 
 then:                                             ; preds = %entry
   store i32 1, ptr %err, align 4, !dbg !41
   %3 = load i32, ptr %err, align 4, !dbg !41
   br label %if.end, !dbg !41
 
-if.end:                                           ; preds = %entry, %then
+else:                                             ; preds = %entry
+  br label %if.end, !dbg !41
+
+if.end:                                           ; preds = %else, %then
   %4 = load i16, ptr %sh, align 2, !dbg !42
   %5 = sext i16 %4 to i32, !dbg !42
   %6 = icmp ne i32 %5, -1024, !dbg !42
-  br i1 %6, label %then1, label %if.end3, !dbg !42
+  br i1 %6, label %then1, label %else2, !dbg !42
 
 then1:                                            ; preds = %if.end
   store i32 1, ptr %err, align 4, !dbg !43
   %7 = load i32, ptr %err, align 4, !dbg !43
   br label %if.end3, !dbg !43
 
-if.end3:                                          ; preds = %if.end, %then1
+else2:                                            ; preds = %if.end
+  br label %if.end3, !dbg !43
+
+if.end3:                                          ; preds = %else2, %then1
   %8 = load i32, ptr %in, align 4, !dbg !44
-  %9 = icmp ne i32 %8, %const28, !dbg !44
-  br i1 %9, label %then4, label %if.end6, !dbg !44
+  %9 = icmp ne i32 %8, -12345678, !dbg !44
+  br i1 %9, label %then4, label %else5, !dbg !44
 
 then4:                                            ; preds = %if.end3
   store i32 1, ptr %err, align 4, !dbg !45
   %10 = load i32, ptr %err, align 4, !dbg !45
   br label %if.end6, !dbg !45
 
-if.end6:                                          ; preds = %if.end3, %then4
+else5:                                            ; preds = %if.end3
+  br label %if.end6, !dbg !45
+
+if.end6:                                          ; preds = %else5, %then4
   %11 = load i64, ptr %ln, align 4, !dbg !46
-  %12 = icmp ne i64 %11, %const30, !dbg !46
-  br i1 %12, label %then7, label %if.end9, !dbg !46
+  %12 = icmp ne i64 %11, -1234567890, !dbg !46
+  br i1 %12, label %then7, label %else8, !dbg !46
 
 then7:                                            ; preds = %if.end6
   store i32 1, ptr %err, align 4, !dbg !47
   %13 = load i32, ptr %err, align 4, !dbg !47
   br label %if.end9, !dbg !47
 
-if.end9:                                          ; preds = %if.end6, %then7
+else8:                                            ; preds = %if.end6
+  br label %if.end9, !dbg !47
+
+if.end9:                                          ; preds = %else8, %then7
   %14 = load i8, ptr %uch, align 1, !dbg !48
   %15 = zext i8 %14 to i32, !dbg !48
   %16 = icmp ne i32 %15, 250, !dbg !48
-  br i1 %16, label %then10, label %if.end12, !dbg !48
+  br i1 %16, label %then10, label %else11, !dbg !48
 
 then10:                                           ; preds = %if.end9
   store i32 1, ptr %err, align 4, !dbg !49
   %17 = load i32, ptr %err, align 4, !dbg !49
   br label %if.end12, !dbg !49
 
-if.end12:                                         ; preds = %if.end9, %then10
+else11:                                           ; preds = %if.end9
+  br label %if.end12, !dbg !49
+
+if.end12:                                         ; preds = %else11, %then10
   %18 = load i32, ptr %uint, align 4, !dbg !50
-  %19 = icmp ne i32 %18, %const, !dbg !50
-  br i1 %19, label %then13, label %if.end15, !dbg !50
+  %19 = icmp ne i32 %18, 180150000, !dbg !50
+  br i1 %19, label %then13, label %else14, !dbg !50
 
 then13:                                           ; preds = %if.end12
   store i32 1, ptr %err, align 4, !dbg !51
   %20 = load i32, ptr %err, align 4, !dbg !51
   br label %if.end15, !dbg !51
 
-if.end15:                                         ; preds = %if.end12, %then13
+else14:                                           ; preds = %if.end12
+  br label %if.end15, !dbg !51
+
+if.end15:                                         ; preds = %else14, %then13
   %21 = load i64, ptr %uln, align 4, !dbg !52
-  %22 = icmp ne i64 %21, %const29, !dbg !52
-  br i1 %22, label %then16, label %if.end18, !dbg !52
+  %22 = icmp ne i64 %21, 9876043210, !dbg !52
+  br i1 %22, label %then16, label %else17, !dbg !52
 
 then16:                                           ; preds = %if.end15
   store i32 1, ptr %err, align 4, !dbg !53
   %23 = load i32, ptr %err, align 4, !dbg !53
   br label %if.end18, !dbg !53
 
-if.end18:                                         ; preds = %if.end15, %then16
+else17:                                           ; preds = %if.end15
+  br label %if.end18, !dbg !53
+
+if.end18:                                         ; preds = %else17, %then16
   %24 = load i1, ptr %bt, align 1, !dbg !54
   %25 = zext i1 %24 to i32, !dbg !54
   %26 = icmp ne i32 %25, 1, !dbg !54
-  br i1 %26, label %then19, label %if.end21, !dbg !54
+  br i1 %26, label %then19, label %else20, !dbg !54
 
 then19:                                           ; preds = %if.end18
   store i32 1, ptr %err, align 4, !dbg !55
   %27 = load i32, ptr %err, align 4, !dbg !55
   br label %if.end21, !dbg !55
 
-if.end21:                                         ; preds = %if.end18, %then19
+else20:                                           ; preds = %if.end18
+  br label %if.end21, !dbg !55
+
+if.end21:                                         ; preds = %else20, %then19
   %28 = load i1, ptr %bf, align 1, !dbg !56
   %29 = zext i1 %28 to i32, !dbg !56
   %30 = icmp ne i32 %29, 0, !dbg !56
-  br i1 %30, label %then22, label %if.end24, !dbg !56
+  br i1 %30, label %then22, label %else23, !dbg !56
 
 then22:                                           ; preds = %if.end21
   store i32 1, ptr %err, align 4, !dbg !57
   %31 = load i32, ptr %err, align 4, !dbg !57
   br label %if.end24, !dbg !57
 
-if.end24:                                         ; preds = %if.end21, %then22
+else23:                                           ; preds = %if.end21
+  br label %if.end24, !dbg !57
+
+if.end24:                                         ; preds = %else23, %then22
   %32 = load i32, ptr %err, align 4, !dbg !58
   %33 = icmp eq i32 %32, 0, !dbg !58
-  %. = select i1 %33, ptr @0, ptr @1, !dbg !59
-  %34 = call i32 (ptr, ...) @printf(ptr %.), !dbg !59
-  %35 = load i32, ptr %err, align 4, !dbg !60
-  ret i32 %35, !dbg !60
+  br i1 %33, label %then25, label %else26, !dbg !58
+
+then25:                                           ; preds = %if.end24
+  %34 = call i32 (ptr, ...) @printf(ptr @0), !dbg !59
+  br label %if.end27, !dbg !59
+
+else26:                                           ; preds = %if.end24
+  %35 = call i32 (ptr, ...) @printf(ptr @1), !dbg !61
+  br label %if.end27, !dbg !61
+
+if.end27:                                         ; preds = %else26, %then25
+  %36 = load i32, ptr %err, align 4, !dbg !63
+  ret i32 %36, !dbg !63
 }
 
 !llvm.dbg.cu = !{!0}
@@ -214,5 +246,8 @@ if.end24:                                         ; preds = %if.end21, %then22
 !56 = !DILocation(line: 28, column: 3, scope: !2)
 !57 = !DILocation(line: 28, column: 16, scope: !2)
 !58 = !DILocation(line: 30, column: 3, scope: !2)
-!59 = !DILocation(line: 0, scope: !2)
-!60 = !DILocation(line: 35, column: 3, scope: !2)
+!59 = !DILocation(line: 31, column: 5, scope: !60)
+!60 = distinct !DILexicalBlock(scope: !2, file: !1, line: 30, column: 17)
+!61 = !DILocation(line: 33, column: 5, scope: !62)
+!62 = distinct !DILexicalBlock(scope: !2, file: !1, line: 32, column: 10)
+!63 = !DILocation(line: 35, column: 3, scope: !2)

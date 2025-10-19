@@ -14,6 +14,7 @@ All commands below assume `cd lcc/scripts`.
 | `link-tests.sh` | Link `../../lcc-build/*.o` to executables with `LCC_LINKER` |
 | `run-tests.sh` | Run linked test binaries |
 | `check-debug-info.sh` | Smoke test: compile with `-g -O0`, verify `llvm-dwarfdump` output |
+| `check-asm-smoke.sh` | Smoke test: `-O2 -S` on one test; verify non-empty asm (M18 CI) |
 
 `tests-compile-link-run.sh` is not run directly; it defines the test list and shared `compile` / `link` / `run` helpers used by the three `*-tests.sh` scripts.
 
@@ -43,6 +44,12 @@ Single test:
 ```
 
 Each test prints `PASS` or `FAIL` on stdout. Scripts exit non-zero on the first compile, link, or run failure.
+
+### Study fixtures (not in the regression suite)
+
+| File | Purpose |
+|------|---------|
+| `tests/40.array_sum.c` | M14 vectorization study — compile manually with `-O3`; see [LlvmTools.md](LlvmTools.md#auto-vectorization-study-m14) |
 
 ### `compile-tests.sh` modes
 
@@ -78,6 +85,14 @@ Examples:
 
 Validates `DW_TAG_subprogram`, local variables, lexical blocks, and struct debug types via `llvm-dwarfdump`.
 
+### Assembly smoke test
+
+```bash
+./check-asm-smoke.sh
+```
+
+Compiles `12.arithmetic.c` with `-O2 -S` and checks that assembly is non-empty and defines `main`. CI runs this after the full suite and `check-debug-info.sh`.
+
 ## CI
 
-GitHub Actions (`.github/workflows/build.yml`) runs a matrix on `ubuntu-latest` and `macos-latest`: install, build, compile, link, run, and `check-debug-info.sh`. See [Install.md](Install.md) for dependencies.
+GitHub Actions (`.github/workflows/build.yml`) runs a matrix on `ubuntu-latest` and `macos-latest`: install, build, compile, link, run, `check-debug-info.sh`, and `check-asm-smoke.sh`. See [Install.md](Install.md) for dependencies.

@@ -59,217 +59,257 @@ entry:
   %8 = sub i32 %7, 1, !dbg !22
   store i32 %8, ptr %i, align 4, !dbg !22
   %9 = load i32, ptr %low, align 4, !dbg !20
+  store i32 %9, ptr %j, align 4, !dbg !20
   br label %for.cond, !dbg !20
 
 for.cond:                                         ; preds = %for.update, %entry
-  %.sink = phi i32 [ %29, %for.update ], [ %9, %entry ]
-  store i32 %.sink, ptr %j, align 4, !dbg !29
   %10 = load i32, ptr %j, align 4, !dbg !20
   %11 = load i32, ptr %high, align 4, !dbg !20
   %12 = sub i32 %11, 1, !dbg !20
   %13 = icmp sle i32 %10, %12, !dbg !20
-  %14 = load ptr, ptr %arr, align 8, !dbg !29
   br i1 %13, label %for.loop, label %for.end, !dbg !20
 
 for.loop:                                         ; preds = %for.cond
-  %15 = load i32, ptr %j, align 4, !dbg !30
-  %16 = getelementptr i32, ptr %14, i32 %15, !dbg !30
-  %17 = load i32, ptr %16, align 4, !dbg !30
-  %18 = load i32, ptr %pivot, align 4, !dbg !30
-  %19 = icmp sle i32 %17, %18, !dbg !30
-  br i1 %19, label %then, label %for.update, !dbg !30
+  %14 = load ptr, ptr %arr, align 8, !dbg !29
+  %15 = load i32, ptr %j, align 4, !dbg !29
+  %16 = getelementptr i32, ptr %14, i32 %15, !dbg !29
+  %17 = load i32, ptr %16, align 4, !dbg !29
+  %18 = load i32, ptr %pivot, align 4, !dbg !29
+  %19 = icmp sle i32 %17, %18, !dbg !29
+  br i1 %19, label %then, label %else, !dbg !29
 
 then:                                             ; preds = %for.loop
-  %20 = load i32, ptr %i, align 4, !dbg !32
-  %21 = add i32 %20, 1, !dbg !32
-  store i32 %21, ptr %i, align 4, !dbg !32
-  %22 = load ptr, ptr %arr, align 8, !dbg !34
-  %23 = load i32, ptr %i, align 4, !dbg !34
-  %24 = getelementptr i32, ptr %22, i32 %23, !dbg !34
-  %25 = load ptr, ptr %arr, align 8, !dbg !34
-  %26 = load i32, ptr %j, align 4, !dbg !34
-  %27 = getelementptr i32, ptr %25, i32 %26, !dbg !34
-  call void @swap(ptr %24, ptr %27), !dbg !34
-  br label %for.update, !dbg !34
+  %20 = load i32, ptr %i, align 4, !dbg !31
+  %21 = add i32 %20, 1, !dbg !31
+  store i32 %21, ptr %i, align 4, !dbg !31
+  %22 = load ptr, ptr %arr, align 8, !dbg !33
+  %23 = load i32, ptr %i, align 4, !dbg !33
+  %24 = getelementptr i32, ptr %22, i32 %23, !dbg !33
+  %25 = load ptr, ptr %arr, align 8, !dbg !33
+  %26 = load i32, ptr %j, align 4, !dbg !33
+  %27 = getelementptr i32, ptr %25, i32 %26, !dbg !33
+  call void @swap(ptr %24, ptr %27), !dbg !33
+  br label %if.end, !dbg !33
 
-for.update:                                       ; preds = %then, %for.loop
-  %28 = load i32, ptr %j, align 4, !dbg !34
-  %29 = add i32 %28, 1, !dbg !34
-  br label %for.cond, !dbg !34
+else:                                             ; preds = %for.loop
+  br label %if.end, !dbg !33
+
+if.end:                                           ; preds = %else, %then
+  br label %for.update, !dbg !33
+
+for.update:                                       ; preds = %if.end
+  %28 = load i32, ptr %j, align 4, !dbg !33
+  %29 = add i32 %28, 1, !dbg !33
+  store i32 %29, ptr %j, align 4, !dbg !33
+  br label %for.cond, !dbg !33
 
 for.end:                                          ; preds = %for.cond
-  %30 = load i32, ptr %i, align 4, !dbg !35
-  %31 = add i32 %30, 1, !dbg !35
-  %32 = getelementptr i32, ptr %14, i32 %31, !dbg !35
-  %33 = load ptr, ptr %arr, align 8, !dbg !35
-  %34 = load i32, ptr %high, align 4, !dbg !35
-  %35 = getelementptr i32, ptr %33, i32 %34, !dbg !35
-  call void @swap(ptr %32, ptr %35), !dbg !35
-  %36 = load i32, ptr %i, align 4, !dbg !36
-  %37 = add i32 %36, 1, !dbg !36
-  ret i32 %37, !dbg !36
+  %30 = load ptr, ptr %arr, align 8, !dbg !34
+  %31 = load i32, ptr %i, align 4, !dbg !34
+  %32 = add i32 %31, 1, !dbg !34
+  %33 = getelementptr i32, ptr %30, i32 %32, !dbg !34
+  %34 = load ptr, ptr %arr, align 8, !dbg !34
+  %35 = load i32, ptr %high, align 4, !dbg !34
+  %36 = getelementptr i32, ptr %34, i32 %35, !dbg !34
+  call void @swap(ptr %33, ptr %36), !dbg !34
+  %37 = load i32, ptr %i, align 4, !dbg !35
+  %38 = add i32 %37, 1, !dbg !35
+  ret i32 %38, !dbg !35
 }
 
-define void @quickSort(ptr %0, i32 %1, i32 %2) !dbg !37 {
+define void @quickSort(ptr %0, i32 %1, i32 %2) !dbg !36 {
 entry:
   %pi = alloca i32, align 4
-    #dbg_declare(ptr %pi, !40, !DIExpression(), !42)
+    #dbg_declare(ptr %pi, !39, !DIExpression(), !41)
   %high = alloca i32, align 4
-    #dbg_declare(ptr %high, !43, !DIExpression(), !44)
+    #dbg_declare(ptr %high, !42, !DIExpression(), !43)
   %low = alloca i32, align 4
-    #dbg_declare(ptr %low, !45, !DIExpression(), !44)
+    #dbg_declare(ptr %low, !44, !DIExpression(), !43)
   %arr = alloca ptr, align 8
-    #dbg_declare(ptr %arr, !46, !DIExpression(), !44)
-  store ptr %0, ptr %arr, align 8, !dbg !44
-  store i32 %1, ptr %low, align 4, !dbg !44
-  store i32 %2, ptr %high, align 4, !dbg !44
-  %3 = load i32, ptr %low, align 4, !dbg !47
-  %4 = load i32, ptr %high, align 4, !dbg !47
-  %5 = icmp slt i32 %3, %4, !dbg !47
-  br i1 %5, label %then, label %if.end, !dbg !47
+    #dbg_declare(ptr %arr, !45, !DIExpression(), !43)
+  store ptr %0, ptr %arr, align 8, !dbg !43
+  store i32 %1, ptr %low, align 4, !dbg !43
+  store i32 %2, ptr %high, align 4, !dbg !43
+  %3 = load i32, ptr %low, align 4, !dbg !46
+  %4 = load i32, ptr %high, align 4, !dbg !46
+  %5 = icmp slt i32 %3, %4, !dbg !46
+  br i1 %5, label %then, label %else, !dbg !46
 
 then:                                             ; preds = %entry
-  %6 = load ptr, ptr %arr, align 8, !dbg !42
-  %7 = load i32, ptr %low, align 4, !dbg !42
-  %8 = load i32, ptr %high, align 4, !dbg !42
-  %9 = call i32 @partition(ptr %6, i32 %7, i32 %8), !dbg !42
-  store i32 %9, ptr %pi, align 4, !dbg !42
-  %10 = load ptr, ptr %arr, align 8, !dbg !48
-  %11 = load i32, ptr %low, align 4, !dbg !48
-  %12 = load i32, ptr %pi, align 4, !dbg !48
-  %13 = sub i32 %12, 1, !dbg !48
-  call void @quickSort(ptr %10, i32 %11, i32 %13), !dbg !48
-  %14 = load ptr, ptr %arr, align 8, !dbg !49
-  %15 = load i32, ptr %pi, align 4, !dbg !49
-  %16 = add i32 %15, 1, !dbg !49
-  %17 = load i32, ptr %high, align 4, !dbg !49
-  call void @quickSort(ptr %14, i32 %16, i32 %17), !dbg !49
-  br label %if.end, !dbg !49
+  %6 = load ptr, ptr %arr, align 8, !dbg !41
+  %7 = load i32, ptr %low, align 4, !dbg !41
+  %8 = load i32, ptr %high, align 4, !dbg !41
+  %9 = call i32 @partition(ptr %6, i32 %7, i32 %8), !dbg !41
+  store i32 %9, ptr %pi, align 4, !dbg !41
+  %10 = load ptr, ptr %arr, align 8, !dbg !47
+  %11 = load i32, ptr %low, align 4, !dbg !47
+  %12 = load i32, ptr %pi, align 4, !dbg !47
+  %13 = sub i32 %12, 1, !dbg !47
+  call void @quickSort(ptr %10, i32 %11, i32 %13), !dbg !47
+  %14 = load ptr, ptr %arr, align 8, !dbg !48
+  %15 = load i32, ptr %pi, align 4, !dbg !48
+  %16 = add i32 %15, 1, !dbg !48
+  %17 = load i32, ptr %high, align 4, !dbg !48
+  call void @quickSort(ptr %14, i32 %16, i32 %17), !dbg !48
+  br label %if.end, !dbg !48
 
-if.end:                                           ; preds = %entry, %then
-  ret void, !dbg !49
+else:                                             ; preds = %entry
+  br label %if.end, !dbg !48
+
+if.end:                                           ; preds = %else, %then
+  ret void, !dbg !48
 }
 
-define i32 @main() !dbg !50 {
+define i32 @main() !dbg !49 {
 entry:
   %single = alloca [1 x i32], align 4
-    #dbg_declare(ptr %single, !53, !DIExpression(), !57)
+    #dbg_declare(ptr %single, !52, !DIExpression(), !56)
   %n = alloca i32, align 4
-    #dbg_declare(ptr %n, !58, !DIExpression(), !59)
+    #dbg_declare(ptr %n, !57, !DIExpression(), !58)
   %arr = alloca [6 x i32], align 4
-    #dbg_declare(ptr %arr, !60, !DIExpression(), !64)
+    #dbg_declare(ptr %arr, !59, !DIExpression(), !63)
   %err = alloca i32, align 4
-    #dbg_declare(ptr %err, !65, !DIExpression(), !66)
-  store i32 0, ptr %err, align 4, !dbg !66
-  %0 = bitcast ptr %arr to ptr, !dbg !67
-  store i32 10, ptr %0, align 4, !dbg !67
-  %1 = load i32, ptr %0, align 4, !dbg !67
-  %2 = getelementptr i32, ptr %arr, i32 1, !dbg !68
-  store i32 7, ptr %2, align 4, !dbg !68
-  %3 = load i32, ptr %2, align 4, !dbg !68
-  %4 = getelementptr i32, ptr %arr, i32 2, !dbg !69
-  store i32 8, ptr %4, align 4, !dbg !69
-  %5 = load i32, ptr %4, align 4, !dbg !69
-  %6 = getelementptr i32, ptr %arr, i32 3, !dbg !70
-  store i32 9, ptr %6, align 4, !dbg !70
-  %7 = load i32, ptr %6, align 4, !dbg !70
-  %8 = getelementptr i32, ptr %arr, i32 4, !dbg !71
-  store i32 1, ptr %8, align 4, !dbg !71
-  %9 = load i32, ptr %8, align 4, !dbg !71
-  %10 = getelementptr i32, ptr %arr, i32 5, !dbg !72
-  store i32 5, ptr %10, align 4, !dbg !72
-  %11 = load i32, ptr %10, align 4, !dbg !72
-  store i32 6, ptr %n, align 4, !dbg !59
-  %12 = load i32, ptr %n, align 4, !dbg !73
-  %13 = sub i32 %12, 1, !dbg !73
-  call void @quickSort(ptr %arr, i32 0, i32 %13), !dbg !73
-  %14 = bitcast ptr %arr to ptr, !dbg !74
-  %15 = load i32, ptr %14, align 4, !dbg !74
-  %16 = icmp ne i32 %15, 1, !dbg !74
-  br i1 %16, label %then, label %if.end, !dbg !74
+    #dbg_declare(ptr %err, !64, !DIExpression(), !65)
+  store i32 0, ptr %err, align 4, !dbg !65
+  %0 = getelementptr i32, ptr %arr, i32 0, !dbg !66
+  store i32 10, ptr %0, align 4, !dbg !66
+  %1 = load i32, ptr %0, align 4, !dbg !66
+  %2 = getelementptr i32, ptr %arr, i32 1, !dbg !67
+  store i32 7, ptr %2, align 4, !dbg !67
+  %3 = load i32, ptr %2, align 4, !dbg !67
+  %4 = getelementptr i32, ptr %arr, i32 2, !dbg !68
+  store i32 8, ptr %4, align 4, !dbg !68
+  %5 = load i32, ptr %4, align 4, !dbg !68
+  %6 = getelementptr i32, ptr %arr, i32 3, !dbg !69
+  store i32 9, ptr %6, align 4, !dbg !69
+  %7 = load i32, ptr %6, align 4, !dbg !69
+  %8 = getelementptr i32, ptr %arr, i32 4, !dbg !70
+  store i32 1, ptr %8, align 4, !dbg !70
+  %9 = load i32, ptr %8, align 4, !dbg !70
+  %10 = getelementptr i32, ptr %arr, i32 5, !dbg !71
+  store i32 5, ptr %10, align 4, !dbg !71
+  %11 = load i32, ptr %10, align 4, !dbg !71
+  store i32 6, ptr %n, align 4, !dbg !58
+  %12 = load i32, ptr %n, align 4, !dbg !72
+  %13 = sub i32 %12, 1, !dbg !72
+  call void @quickSort(ptr %arr, i32 0, i32 %13), !dbg !72
+  %14 = getelementptr i32, ptr %arr, i32 0, !dbg !73
+  %15 = load i32, ptr %14, align 4, !dbg !73
+  %16 = icmp ne i32 %15, 1, !dbg !73
+  br i1 %16, label %then, label %else, !dbg !73
 
 then:                                             ; preds = %entry
-  store i32 1, ptr %err, align 4, !dbg !75
-  %17 = load i32, ptr %err, align 4, !dbg !75
-  br label %if.end, !dbg !75
+  store i32 1, ptr %err, align 4, !dbg !74
+  %17 = load i32, ptr %err, align 4, !dbg !74
+  br label %if.end, !dbg !74
 
-if.end:                                           ; preds = %entry, %then
-  %18 = getelementptr i32, ptr %arr, i32 1, !dbg !76
-  %19 = load i32, ptr %18, align 4, !dbg !76
-  %20 = icmp ne i32 %19, 5, !dbg !76
-  br i1 %20, label %then1, label %if.end3, !dbg !76
+else:                                             ; preds = %entry
+  br label %if.end, !dbg !74
+
+if.end:                                           ; preds = %else, %then
+  %18 = getelementptr i32, ptr %arr, i32 1, !dbg !75
+  %19 = load i32, ptr %18, align 4, !dbg !75
+  %20 = icmp ne i32 %19, 5, !dbg !75
+  br i1 %20, label %then1, label %else2, !dbg !75
 
 then1:                                            ; preds = %if.end
-  store i32 1, ptr %err, align 4, !dbg !77
-  %21 = load i32, ptr %err, align 4, !dbg !77
-  br label %if.end3, !dbg !77
+  store i32 1, ptr %err, align 4, !dbg !76
+  %21 = load i32, ptr %err, align 4, !dbg !76
+  br label %if.end3, !dbg !76
 
-if.end3:                                          ; preds = %if.end, %then1
-  %22 = getelementptr i32, ptr %arr, i32 2, !dbg !78
-  %23 = load i32, ptr %22, align 4, !dbg !78
-  %24 = icmp ne i32 %23, 7, !dbg !78
-  br i1 %24, label %then4, label %if.end6, !dbg !78
+else2:                                            ; preds = %if.end
+  br label %if.end3, !dbg !76
+
+if.end3:                                          ; preds = %else2, %then1
+  %22 = getelementptr i32, ptr %arr, i32 2, !dbg !77
+  %23 = load i32, ptr %22, align 4, !dbg !77
+  %24 = icmp ne i32 %23, 7, !dbg !77
+  br i1 %24, label %then4, label %else5, !dbg !77
 
 then4:                                            ; preds = %if.end3
-  store i32 1, ptr %err, align 4, !dbg !79
-  %25 = load i32, ptr %err, align 4, !dbg !79
-  br label %if.end6, !dbg !79
+  store i32 1, ptr %err, align 4, !dbg !78
+  %25 = load i32, ptr %err, align 4, !dbg !78
+  br label %if.end6, !dbg !78
 
-if.end6:                                          ; preds = %if.end3, %then4
-  %26 = getelementptr i32, ptr %arr, i32 3, !dbg !80
-  %27 = load i32, ptr %26, align 4, !dbg !80
-  %28 = icmp ne i32 %27, 8, !dbg !80
-  br i1 %28, label %then7, label %if.end9, !dbg !80
+else5:                                            ; preds = %if.end3
+  br label %if.end6, !dbg !78
+
+if.end6:                                          ; preds = %else5, %then4
+  %26 = getelementptr i32, ptr %arr, i32 3, !dbg !79
+  %27 = load i32, ptr %26, align 4, !dbg !79
+  %28 = icmp ne i32 %27, 8, !dbg !79
+  br i1 %28, label %then7, label %else8, !dbg !79
 
 then7:                                            ; preds = %if.end6
-  store i32 1, ptr %err, align 4, !dbg !81
-  %29 = load i32, ptr %err, align 4, !dbg !81
-  br label %if.end9, !dbg !81
+  store i32 1, ptr %err, align 4, !dbg !80
+  %29 = load i32, ptr %err, align 4, !dbg !80
+  br label %if.end9, !dbg !80
 
-if.end9:                                          ; preds = %if.end6, %then7
-  %30 = getelementptr i32, ptr %arr, i32 4, !dbg !82
-  %31 = load i32, ptr %30, align 4, !dbg !82
-  %32 = icmp ne i32 %31, 9, !dbg !82
-  br i1 %32, label %then10, label %if.end12, !dbg !82
+else8:                                            ; preds = %if.end6
+  br label %if.end9, !dbg !80
+
+if.end9:                                          ; preds = %else8, %then7
+  %30 = getelementptr i32, ptr %arr, i32 4, !dbg !81
+  %31 = load i32, ptr %30, align 4, !dbg !81
+  %32 = icmp ne i32 %31, 9, !dbg !81
+  br i1 %32, label %then10, label %else11, !dbg !81
 
 then10:                                           ; preds = %if.end9
-  store i32 1, ptr %err, align 4, !dbg !83
-  %33 = load i32, ptr %err, align 4, !dbg !83
-  br label %if.end12, !dbg !83
+  store i32 1, ptr %err, align 4, !dbg !82
+  %33 = load i32, ptr %err, align 4, !dbg !82
+  br label %if.end12, !dbg !82
 
-if.end12:                                         ; preds = %if.end9, %then10
-  %34 = getelementptr i32, ptr %arr, i32 5, !dbg !84
-  %35 = load i32, ptr %34, align 4, !dbg !84
-  %36 = icmp ne i32 %35, 10, !dbg !84
-  br i1 %36, label %then13, label %if.end15, !dbg !84
+else11:                                           ; preds = %if.end9
+  br label %if.end12, !dbg !82
+
+if.end12:                                         ; preds = %else11, %then10
+  %34 = getelementptr i32, ptr %arr, i32 5, !dbg !83
+  %35 = load i32, ptr %34, align 4, !dbg !83
+  %36 = icmp ne i32 %35, 10, !dbg !83
+  br i1 %36, label %then13, label %else14, !dbg !83
 
 then13:                                           ; preds = %if.end12
-  store i32 1, ptr %err, align 4, !dbg !85
-  %37 = load i32, ptr %err, align 4, !dbg !85
-  br label %if.end15, !dbg !85
+  store i32 1, ptr %err, align 4, !dbg !84
+  %37 = load i32, ptr %err, align 4, !dbg !84
+  br label %if.end15, !dbg !84
 
-if.end15:                                         ; preds = %if.end12, %then13
-  %38 = bitcast ptr %single to ptr, !dbg !86
-  store i32 42, ptr %38, align 4, !dbg !86
-  %39 = load i32, ptr %38, align 4, !dbg !86
-  call void @quickSort(ptr %single, i32 0, i32 0), !dbg !87
-  %40 = bitcast ptr %single to ptr, !dbg !88
-  %41 = load i32, ptr %40, align 4, !dbg !88
-  %42 = icmp ne i32 %41, 42, !dbg !88
-  br i1 %42, label %then16, label %if.end18, !dbg !88
+else14:                                           ; preds = %if.end12
+  br label %if.end15, !dbg !84
+
+if.end15:                                         ; preds = %else14, %then13
+  %38 = getelementptr i32, ptr %single, i32 0, !dbg !85
+  store i32 42, ptr %38, align 4, !dbg !85
+  %39 = load i32, ptr %38, align 4, !dbg !85
+  call void @quickSort(ptr %single, i32 0, i32 0), !dbg !86
+  %40 = getelementptr i32, ptr %single, i32 0, !dbg !87
+  %41 = load i32, ptr %40, align 4, !dbg !87
+  %42 = icmp ne i32 %41, 42, !dbg !87
+  br i1 %42, label %then16, label %else17, !dbg !87
 
 then16:                                           ; preds = %if.end15
-  store i32 1, ptr %err, align 4, !dbg !89
-  %43 = load i32, ptr %err, align 4, !dbg !89
-  br label %if.end18, !dbg !89
+  store i32 1, ptr %err, align 4, !dbg !88
+  %43 = load i32, ptr %err, align 4, !dbg !88
+  br label %if.end18, !dbg !88
 
-if.end18:                                         ; preds = %if.end15, %then16
-  %44 = load i32, ptr %err, align 4, !dbg !90
-  %45 = icmp eq i32 %44, 0, !dbg !90
-  %. = select i1 %45, ptr @0, ptr @1, !dbg !91
-  %46 = call i32 (ptr, ...) @printf(ptr %.), !dbg !91
-  %47 = load i32, ptr %err, align 4, !dbg !92
-  ret i32 %47, !dbg !92
+else17:                                           ; preds = %if.end15
+  br label %if.end18, !dbg !88
+
+if.end18:                                         ; preds = %else17, %then16
+  %44 = load i32, ptr %err, align 4, !dbg !89
+  %45 = icmp eq i32 %44, 0, !dbg !89
+  br i1 %45, label %then19, label %else20, !dbg !89
+
+then19:                                           ; preds = %if.end18
+  %46 = call i32 (ptr, ...) @printf(ptr @0), !dbg !90
+  br label %if.end21, !dbg !90
+
+else20:                                           ; preds = %if.end18
+  %47 = call i32 (ptr, ...) @printf(ptr @1), !dbg !92
+  br label %if.end21, !dbg !92
+
+if.end21:                                         ; preds = %else20, %then19
+  %48 = load i32, ptr %err, align 4, !dbg !94
+  ret i32 %48, !dbg !94
 }
 
 !llvm.dbg.cu = !{!0}
@@ -303,67 +343,69 @@ if.end18:                                         ; preds = %if.end15, %then16
 !26 = !DILocation(line: 12, column: 5, scope: !16)
 !27 = !DILocalVariable(name: "low", arg: 2, scope: !16, file: !1, line: 12, type: !7)
 !28 = !DILocalVariable(name: "arr", arg: 1, scope: !16, file: !1, line: 12, type: !6)
-!29 = !DILocation(line: 0, scope: !16)
-!30 = !DILocation(line: 16, column: 5, scope: !31)
-!31 = distinct !DILexicalBlock(scope: !16, file: !1, line: 15, column: 41)
-!32 = !DILocation(line: 17, column: 7, scope: !33)
-!33 = distinct !DILexicalBlock(scope: !31, file: !1, line: 16, column: 26)
-!34 = !DILocation(line: 18, column: 7, scope: !33)
-!35 = !DILocation(line: 21, column: 3, scope: !16)
-!36 = !DILocation(line: 22, column: 3, scope: !16)
-!37 = distinct !DISubprogram(name: "quickSort", linkageName: "quickSort", scope: null, file: !1, line: 25, type: !38, scopeLine: 25, spFlags: DISPFlagDefinition, unit: !0, retainedNodes: !8)
-!38 = !DISubroutineType(types: !39)
-!39 = !{!5, !6, !7, !7}
-!40 = !DILocalVariable(name: "pi", scope: !41, file: !1, line: 27, type: !7)
-!41 = distinct !DILexicalBlock(scope: !37, file: !1, line: 26, column: 19)
-!42 = !DILocation(line: 27, column: 5, scope: !41)
-!43 = !DILocalVariable(name: "high", arg: 3, scope: !37, file: !1, line: 25, type: !7)
-!44 = !DILocation(line: 25, column: 6, scope: !37)
-!45 = !DILocalVariable(name: "low", arg: 2, scope: !37, file: !1, line: 25, type: !7)
-!46 = !DILocalVariable(name: "arr", arg: 1, scope: !37, file: !1, line: 25, type: !6)
-!47 = !DILocation(line: 26, column: 3, scope: !37)
-!48 = !DILocation(line: 28, column: 5, scope: !41)
-!49 = !DILocation(line: 29, column: 5, scope: !41)
-!50 = distinct !DISubprogram(name: "main", linkageName: "main", scope: null, file: !1, line: 33, type: !51, scopeLine: 33, spFlags: DISPFlagDefinition, unit: !0, retainedNodes: !8)
-!51 = !DISubroutineType(types: !52)
-!52 = !{!7}
-!53 = !DILocalVariable(name: "single", scope: !50, file: !1, line: 53, type: !54)
-!54 = !DICompositeType(tag: DW_TAG_array_type, baseType: !7, size: 32, align: 32, elements: !55)
-!55 = !{!56}
-!56 = !DISubrange(count: 1, lowerBound: 0)
-!57 = !DILocation(line: 53, column: 3, scope: !50)
-!58 = !DILocalVariable(name: "n", scope: !50, file: !1, line: 42, type: !7)
-!59 = !DILocation(line: 42, column: 3, scope: !50)
-!60 = !DILocalVariable(name: "arr", scope: !50, file: !1, line: 35, type: !61)
-!61 = !DICompositeType(tag: DW_TAG_array_type, baseType: !7, size: 192, align: 32, elements: !62)
-!62 = !{!63}
-!63 = !DISubrange(count: 6, lowerBound: 0)
-!64 = !DILocation(line: 35, column: 3, scope: !50)
-!65 = !DILocalVariable(name: "err", scope: !50, file: !1, line: 34, type: !7)
-!66 = !DILocation(line: 34, column: 3, scope: !50)
-!67 = !DILocation(line: 36, column: 3, scope: !50)
-!68 = !DILocation(line: 37, column: 3, scope: !50)
-!69 = !DILocation(line: 38, column: 3, scope: !50)
-!70 = !DILocation(line: 39, column: 3, scope: !50)
-!71 = !DILocation(line: 40, column: 3, scope: !50)
-!72 = !DILocation(line: 41, column: 3, scope: !50)
-!73 = !DILocation(line: 44, column: 3, scope: !50)
-!74 = !DILocation(line: 46, column: 3, scope: !50)
-!75 = !DILocation(line: 46, column: 20, scope: !50)
-!76 = !DILocation(line: 47, column: 3, scope: !50)
-!77 = !DILocation(line: 47, column: 20, scope: !50)
-!78 = !DILocation(line: 48, column: 3, scope: !50)
-!79 = !DILocation(line: 48, column: 20, scope: !50)
-!80 = !DILocation(line: 49, column: 3, scope: !50)
-!81 = !DILocation(line: 49, column: 20, scope: !50)
-!82 = !DILocation(line: 50, column: 3, scope: !50)
-!83 = !DILocation(line: 50, column: 20, scope: !50)
-!84 = !DILocation(line: 51, column: 3, scope: !50)
-!85 = !DILocation(line: 51, column: 21, scope: !50)
-!86 = !DILocation(line: 54, column: 3, scope: !50)
-!87 = !DILocation(line: 55, column: 3, scope: !50)
-!88 = !DILocation(line: 56, column: 3, scope: !50)
-!89 = !DILocation(line: 56, column: 24, scope: !50)
-!90 = !DILocation(line: 58, column: 3, scope: !50)
-!91 = !DILocation(line: 0, scope: !50)
-!92 = !DILocation(line: 63, column: 3, scope: !50)
+!29 = !DILocation(line: 16, column: 5, scope: !30)
+!30 = distinct !DILexicalBlock(scope: !16, file: !1, line: 15, column: 41)
+!31 = !DILocation(line: 17, column: 7, scope: !32)
+!32 = distinct !DILexicalBlock(scope: !30, file: !1, line: 16, column: 26)
+!33 = !DILocation(line: 18, column: 7, scope: !32)
+!34 = !DILocation(line: 21, column: 3, scope: !16)
+!35 = !DILocation(line: 22, column: 3, scope: !16)
+!36 = distinct !DISubprogram(name: "quickSort", linkageName: "quickSort", scope: null, file: !1, line: 25, type: !37, scopeLine: 25, spFlags: DISPFlagDefinition, unit: !0, retainedNodes: !8)
+!37 = !DISubroutineType(types: !38)
+!38 = !{!5, !6, !7, !7}
+!39 = !DILocalVariable(name: "pi", scope: !40, file: !1, line: 27, type: !7)
+!40 = distinct !DILexicalBlock(scope: !36, file: !1, line: 26, column: 19)
+!41 = !DILocation(line: 27, column: 5, scope: !40)
+!42 = !DILocalVariable(name: "high", arg: 3, scope: !36, file: !1, line: 25, type: !7)
+!43 = !DILocation(line: 25, column: 6, scope: !36)
+!44 = !DILocalVariable(name: "low", arg: 2, scope: !36, file: !1, line: 25, type: !7)
+!45 = !DILocalVariable(name: "arr", arg: 1, scope: !36, file: !1, line: 25, type: !6)
+!46 = !DILocation(line: 26, column: 3, scope: !36)
+!47 = !DILocation(line: 28, column: 5, scope: !40)
+!48 = !DILocation(line: 29, column: 5, scope: !40)
+!49 = distinct !DISubprogram(name: "main", linkageName: "main", scope: null, file: !1, line: 33, type: !50, scopeLine: 33, spFlags: DISPFlagDefinition, unit: !0, retainedNodes: !8)
+!50 = !DISubroutineType(types: !51)
+!51 = !{!7}
+!52 = !DILocalVariable(name: "single", scope: !49, file: !1, line: 53, type: !53)
+!53 = !DICompositeType(tag: DW_TAG_array_type, baseType: !7, size: 32, align: 32, elements: !54)
+!54 = !{!55}
+!55 = !DISubrange(count: 1, lowerBound: 0)
+!56 = !DILocation(line: 53, column: 3, scope: !49)
+!57 = !DILocalVariable(name: "n", scope: !49, file: !1, line: 42, type: !7)
+!58 = !DILocation(line: 42, column: 3, scope: !49)
+!59 = !DILocalVariable(name: "arr", scope: !49, file: !1, line: 35, type: !60)
+!60 = !DICompositeType(tag: DW_TAG_array_type, baseType: !7, size: 192, align: 32, elements: !61)
+!61 = !{!62}
+!62 = !DISubrange(count: 6, lowerBound: 0)
+!63 = !DILocation(line: 35, column: 3, scope: !49)
+!64 = !DILocalVariable(name: "err", scope: !49, file: !1, line: 34, type: !7)
+!65 = !DILocation(line: 34, column: 3, scope: !49)
+!66 = !DILocation(line: 36, column: 3, scope: !49)
+!67 = !DILocation(line: 37, column: 3, scope: !49)
+!68 = !DILocation(line: 38, column: 3, scope: !49)
+!69 = !DILocation(line: 39, column: 3, scope: !49)
+!70 = !DILocation(line: 40, column: 3, scope: !49)
+!71 = !DILocation(line: 41, column: 3, scope: !49)
+!72 = !DILocation(line: 44, column: 3, scope: !49)
+!73 = !DILocation(line: 46, column: 3, scope: !49)
+!74 = !DILocation(line: 46, column: 20, scope: !49)
+!75 = !DILocation(line: 47, column: 3, scope: !49)
+!76 = !DILocation(line: 47, column: 20, scope: !49)
+!77 = !DILocation(line: 48, column: 3, scope: !49)
+!78 = !DILocation(line: 48, column: 20, scope: !49)
+!79 = !DILocation(line: 49, column: 3, scope: !49)
+!80 = !DILocation(line: 49, column: 20, scope: !49)
+!81 = !DILocation(line: 50, column: 3, scope: !49)
+!82 = !DILocation(line: 50, column: 20, scope: !49)
+!83 = !DILocation(line: 51, column: 3, scope: !49)
+!84 = !DILocation(line: 51, column: 21, scope: !49)
+!85 = !DILocation(line: 54, column: 3, scope: !49)
+!86 = !DILocation(line: 55, column: 3, scope: !49)
+!87 = !DILocation(line: 56, column: 3, scope: !49)
+!88 = !DILocation(line: 56, column: 24, scope: !49)
+!89 = !DILocation(line: 58, column: 3, scope: !49)
+!90 = !DILocation(line: 59, column: 5, scope: !91)
+!91 = distinct !DILexicalBlock(scope: !49, file: !1, line: 58, column: 17)
+!92 = !DILocation(line: 61, column: 5, scope: !93)
+!93 = distinct !DILexicalBlock(scope: !49, file: !1, line: 60, column: 10)
+!94 = !DILocation(line: 63, column: 3, scope: !49)

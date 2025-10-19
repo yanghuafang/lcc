@@ -13,22 +13,47 @@ Lfunc_begin0:
 	.cfi_offset w30, -8
 	.cfi_offset w29, -16
 Ltmp0:
-	.loc	1 0 0 is_stmt 0
-Lloh0:
-	adrp	x0, l___unnamed_1@PAGE
-Lloh1:
-	add	x0, x0, l___unnamed_1@PAGEOFF
-	.loc	1 8 3 prologue_end is_stmt 1
+	.loc	1 8 3 prologue_end
+	mov	w8, wzr
 	str	wzr, [sp, #12]
-	.loc	1 0 0 is_stmt 0
+	.loc	1 9 3
+	tbz	w8, #0, LBB0_2
+	b	LBB0_1
+LBB0_1:
+	.loc	1 9 15 is_stmt 0
+	mov	w8, #1
+	str	w8, [sp, #12]
+	b	LBB0_3
+LBB0_2:
+	b	LBB0_3
+LBB0_3:
+	.loc	1 10 3 is_stmt 1
+	ldr	w8, [sp, #12]
+	cbnz	w8, LBB0_5
+	b	LBB0_4
+LBB0_4:
+Ltmp1:
+	.loc	1 11 5
+	adrp	x0, l___unnamed_1@PAGE
+	add	x0, x0, l___unnamed_1@PAGEOFF
 	bl	_printf
-	.loc	1 15 3 epilogue_begin is_stmt 1
-	ldp	x29, x30, [sp, #16]
+	b	LBB0_6
+Ltmp2:
+LBB0_5:
+	.loc	1 13 5
+	adrp	x0, l___unnamed_2@PAGE
+	add	x0, x0, l___unnamed_2@PAGEOFF
+	bl	_printf
+	b	LBB0_6
+Ltmp3:
+LBB0_6:
+	.loc	1 15 3
 	ldr	w0, [sp, #12]
+	.loc	1 15 3 epilogue_begin is_stmt 0
+	ldp	x29, x30, [sp, #16]
 	add	sp, sp, #32
 	ret
-Ltmp1:
-	.loh AdrpAdd	Lloh0, Lloh1
+Ltmp4:
 Lfunc_end0:
 	.cfi_endproc
 

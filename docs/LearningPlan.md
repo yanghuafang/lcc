@@ -271,6 +271,8 @@ Skip if M6 satisfies your learning goals.
 
 ## M12: Codegen opt level & asm diff
 
+**Status:** done
+
 **Goal:** Relate IR `-O` to backend output.
 
 | Step | Action |
@@ -297,6 +299,8 @@ Skip if M6 satisfies your learning goals.
 ---
 
 ## M14: Vectorization study (LLVM)
+
+**Status:** done
 
 **Goal:** Study **auto-vectorization** via LLVM — not a custom vector pass in the base plan.
 
@@ -351,6 +355,8 @@ Full register allocator: **out of scope**.
 ---
 
 ## M18: Documentation & CI smoke
+
+**Status:** done
 
 **Goal:** Keep the repo teachable for the next reader.
 

@@ -24,6 +24,27 @@ void initializeAllTargets() {
   llvm::InitializeAllAsmPrinters();
 }
 
+// Map CLI -O to TargetMachine codegen opt (legacy PM). Separate from
+// IrOptimizer IR passes. empty/O0 must be None — createTargetMachine
+// otherwise defaults to Default (~O2 machine opts). See LlvmTools.md.
+llvm::CodeGenOptLevel resolveCodeGenOptLevel(
+    const std::string& optimizationLevel) {
+  if (optimizationLevel.empty() || optimizationLevel == "O0") {
+    return llvm::CodeGenOptLevel::None;
+  }
+  if (optimizationLevel == "O1") {
+    return llvm::CodeGenOptLevel::Less;
+  }
+  if (optimizationLevel == "O2" || optimizationLevel == "Os" ||
+      optimizationLevel == "Oz") {
+    return llvm::CodeGenOptLevel::Default;
+  }
+  if (optimizationLevel == "O3") {
+    return llvm::CodeGenOptLevel::Aggressive;
+  }
+  return llvm::CodeGenOptLevel::None;
+}
+
 }  // namespace
 
 void emit(llvm::Module& module, const std::string& path,
@@ -42,9 +63,12 @@ void emit(llvm::Module& module, const std::string& path,
 
   llvm::TargetOptions targetOptions;
   std::optional<llvm::Reloc::Model> optionalModel;
+  const llvm::CodeGenOptLevel codegenLevel =
+      resolveCodeGenOptLevel(options.optimizationLevel);
   std::unique_ptr<llvm::TargetMachine> targetMachine(
       target->createTargetMachine(targetTriple, options.cpu, options.features,
-                                  targetOptions, optionalModel));
+                                  targetOptions, optionalModel, std::nullopt,
+                                  codegenLevel));
 
   module.setDataLayout(targetMachine->createDataLayout());
   module.setTargetTriple(targetTriple);

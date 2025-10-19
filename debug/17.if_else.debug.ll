@@ -18,7 +18,7 @@ entry:
   store i32 0, ptr %flags, align 4, !dbg !8
   %1 = load i32, ptr %n, align 4, !dbg !11
   %2 = icmp slt i32 %1, 0, !dbg !11
-  br i1 %2, label %then, label %if.end, !dbg !11
+  br i1 %2, label %then, label %else, !dbg !11
 
 then:                                             ; preds = %entry
   %3 = load i32, ptr %flags, align 4, !dbg !12
@@ -27,198 +27,302 @@ then:                                             ; preds = %entry
   %5 = load i32, ptr %flags, align 4, !dbg !12
   br label %if.end, !dbg !12
 
-if.end:                                           ; preds = %entry, %then
+else:                                             ; preds = %entry
+  br label %if.end, !dbg !12
+
+if.end:                                           ; preds = %else, %then
   %6 = load i32, ptr %n, align 4, !dbg !14
   %7 = icmp eq i32 %6, 0, !dbg !14
-  %8 = load i32, ptr %flags, align 4, !dbg !15
-  %. = select i1 %7, i32 2, i32 4, !dbg !15
-  %9 = add i32 %8, %., !dbg !15
-  store i32 %9, ptr %flags, align 4, !dbg !15
-  %10 = load i32, ptr %flags, align 4, !dbg !15
-  %11 = load i32, ptr %n, align 4, !dbg !16
-  %12 = icmp sgt i32 %11, 10, !dbg !16
-  br i1 %12, label %then4, label %if.end6, !dbg !16
-
-then4:                                            ; preds = %if.end
-  %13 = load i32, ptr %flags, align 4, !dbg !17
-  %14 = add i32 %13, 8, !dbg !17
-  store i32 %14, ptr %flags, align 4, !dbg !17
-  %15 = load i32, ptr %flags, align 4, !dbg !17
-  br label %if.end6, !dbg !17
-
-if.end6:                                          ; preds = %if.end, %then4
-  %16 = load i32, ptr %flags, align 4, !dbg !19
-  ret i32 %16, !dbg !19
-}
-
-define i32 @signBucket(i32 %0) !dbg !20 {
-entry:
-  %bucket = alloca i32, align 4
-    #dbg_declare(ptr %bucket, !21, !DIExpression(), !22)
-  %n = alloca i32, align 4
-    #dbg_declare(ptr %n, !23, !DIExpression(), !24)
-  store i32 %0, ptr %n, align 4, !dbg !24
-  %1 = load i32, ptr %n, align 4, !dbg !25
-  %2 = icmp slt i32 %1, 0, !dbg !25
-  %3 = load i32, ptr %n, align 4, !dbg !25
-  %4 = icmp eq i32 %3, 0, !dbg !25
-  %. = select i1 %4, i32 2, i32 3, !dbg !25
-  %.sink.sink = select i1 %2, i32 1, i32 %., !dbg !25
-  store i32 %.sink.sink, ptr %bucket, align 4, !dbg !26
-  %5 = load i32, ptr %bucket, align 4, !dbg !26
-  %6 = load i32, ptr %bucket, align 4, !dbg !27
-  ret i32 %6, !dbg !27
-}
-
-define i32 @decadeBucket(i32 %0) !dbg !28 {
-entry:
-  %bucket = alloca i32, align 4
-    #dbg_declare(ptr %bucket, !29, !DIExpression(), !30)
-  %n = alloca i32, align 4
-    #dbg_declare(ptr %n, !31, !DIExpression(), !32)
-  store i32 %0, ptr %n, align 4, !dbg !32
-  %1 = load i32, ptr %n, align 4, !dbg !33
-  %2 = icmp sle i32 %1, 9, !dbg !33
-  br i1 %2, label %if.end6, label %else, !dbg !33
-
-else:                                             ; preds = %entry
-  %3 = load i32, ptr %n, align 4, !dbg !34
-  %4 = icmp sle i32 %3, 19, !dbg !34
-  %5 = load i32, ptr %n, align 4, !dbg !34
-  %6 = icmp sle i32 %5, 29, !dbg !34
-  %. = select i1 %6, i32 2, i32 3, !dbg !34
-  %.sink.sink = select i1 %4, i32 1, i32 %., !dbg !34
-  br label %if.end6, !dbg !35
-
-if.end6:                                          ; preds = %entry, %else
-  %.sink.sink.sink = phi i32 [ %.sink.sink, %else ], [ 0, %entry ]
-  store i32 %.sink.sink.sink, ptr %bucket, align 4, !dbg !37
-  %7 = load i32, ptr %bucket, align 4, !dbg !37
-  %8 = load i32, ptr %bucket, align 4, !dbg !38
-  ret i32 %8, !dbg !38
-}
-
-define i32 @main() !dbg !39 {
-entry:
-  %err = alloca i32, align 4
-    #dbg_declare(ptr %err, !42, !DIExpression(), !43)
-  store i32 0, ptr %err, align 4, !dbg !43
-  %0 = call i32 @accumulateFlags(i32 -5), !dbg !44
-  %1 = icmp ne i32 %0, 5, !dbg !44
-  br i1 %1, label %then, label %if.end, !dbg !44
-
-then:                                             ; preds = %entry
-  store i32 1, ptr %err, align 4, !dbg !45
-  %2 = load i32, ptr %err, align 4, !dbg !45
-  br label %if.end, !dbg !45
-
-if.end:                                           ; preds = %entry, %then
-  %3 = call i32 @accumulateFlags(i32 0), !dbg !46
-  %4 = icmp ne i32 %3, 2, !dbg !46
-  br i1 %4, label %then1, label %if.end3, !dbg !46
+  br i1 %7, label %then1, label %else2, !dbg !14
 
 then1:                                            ; preds = %if.end
-  store i32 1, ptr %err, align 4, !dbg !47
-  %5 = load i32, ptr %err, align 4, !dbg !47
-  br label %if.end3, !dbg !47
+  %8 = load i32, ptr %flags, align 4, !dbg !15
+  %9 = add i32 %8, 2, !dbg !15
+  store i32 %9, ptr %flags, align 4, !dbg !15
+  %10 = load i32, ptr %flags, align 4, !dbg !15
+  br label %if.end3, !dbg !15
 
-if.end3:                                          ; preds = %if.end, %then1
-  %6 = call i32 @accumulateFlags(i32 5), !dbg !48
-  %7 = icmp ne i32 %6, 4, !dbg !48
-  br i1 %7, label %then4, label %if.end6, !dbg !48
+else2:                                            ; preds = %if.end
+  %11 = load i32, ptr %flags, align 4, !dbg !17
+  %12 = add i32 %11, 4, !dbg !17
+  store i32 %12, ptr %flags, align 4, !dbg !17
+  %13 = load i32, ptr %flags, align 4, !dbg !17
+  br label %if.end3, !dbg !17
+
+if.end3:                                          ; preds = %else2, %then1
+  %14 = load i32, ptr %n, align 4, !dbg !19
+  %15 = icmp sgt i32 %14, 10, !dbg !19
+  br i1 %15, label %then4, label %else5, !dbg !19
 
 then4:                                            ; preds = %if.end3
-  store i32 1, ptr %err, align 4, !dbg !49
-  %8 = load i32, ptr %err, align 4, !dbg !49
-  br label %if.end6, !dbg !49
+  %16 = load i32, ptr %flags, align 4, !dbg !20
+  %17 = add i32 %16, 8, !dbg !20
+  store i32 %17, ptr %flags, align 4, !dbg !20
+  %18 = load i32, ptr %flags, align 4, !dbg !20
+  br label %if.end6, !dbg !20
 
-if.end6:                                          ; preds = %if.end3, %then4
-  %9 = call i32 @accumulateFlags(i32 15), !dbg !50
-  %10 = icmp ne i32 %9, 12, !dbg !50
-  br i1 %10, label %then7, label %if.end9, !dbg !50
+else5:                                            ; preds = %if.end3
+  br label %if.end6, !dbg !20
+
+if.end6:                                          ; preds = %else5, %then4
+  %19 = load i32, ptr %flags, align 4, !dbg !22
+  ret i32 %19, !dbg !22
+}
+
+define i32 @signBucket(i32 %0) !dbg !23 {
+entry:
+  %bucket = alloca i32, align 4
+    #dbg_declare(ptr %bucket, !24, !DIExpression(), !25)
+  %n = alloca i32, align 4
+    #dbg_declare(ptr %n, !26, !DIExpression(), !27)
+  store i32 %0, ptr %n, align 4, !dbg !27
+  %1 = load i32, ptr %n, align 4, !dbg !28
+  %2 = icmp slt i32 %1, 0, !dbg !28
+  br i1 %2, label %then, label %else, !dbg !28
+
+then:                                             ; preds = %entry
+  store i32 1, ptr %bucket, align 4, !dbg !29
+  %3 = load i32, ptr %bucket, align 4, !dbg !29
+  br label %if.end3, !dbg !29
+
+else:                                             ; preds = %entry
+  %4 = load i32, ptr %n, align 4, !dbg !31
+  %5 = icmp eq i32 %4, 0, !dbg !31
+  br i1 %5, label %then1, label %else2, !dbg !31
+
+then1:                                            ; preds = %else
+  store i32 2, ptr %bucket, align 4, !dbg !32
+  %6 = load i32, ptr %bucket, align 4, !dbg !32
+  br label %if.end, !dbg !32
+
+else2:                                            ; preds = %else
+  store i32 3, ptr %bucket, align 4, !dbg !34
+  %7 = load i32, ptr %bucket, align 4, !dbg !34
+  br label %if.end, !dbg !34
+
+if.end:                                           ; preds = %else2, %then1
+  br label %if.end3, !dbg !34
+
+if.end3:                                          ; preds = %if.end, %then
+  %8 = load i32, ptr %bucket, align 4, !dbg !36
+  ret i32 %8, !dbg !36
+}
+
+define i32 @decadeBucket(i32 %0) !dbg !37 {
+entry:
+  %bucket = alloca i32, align 4
+    #dbg_declare(ptr %bucket, !38, !DIExpression(), !39)
+  %n = alloca i32, align 4
+    #dbg_declare(ptr %n, !40, !DIExpression(), !41)
+  store i32 %0, ptr %n, align 4, !dbg !41
+  %1 = load i32, ptr %n, align 4, !dbg !42
+  %2 = icmp sle i32 %1, 9, !dbg !42
+  br i1 %2, label %then, label %else, !dbg !42
+
+then:                                             ; preds = %entry
+  store i32 0, ptr %bucket, align 4, !dbg !43
+  %3 = load i32, ptr %bucket, align 4, !dbg !43
+  br label %if.end6, !dbg !43
+
+else:                                             ; preds = %entry
+  %4 = load i32, ptr %n, align 4, !dbg !45
+  %5 = icmp sle i32 %4, 19, !dbg !45
+  br i1 %5, label %then1, label %else2, !dbg !45
+
+then1:                                            ; preds = %else
+  store i32 1, ptr %bucket, align 4, !dbg !46
+  %6 = load i32, ptr %bucket, align 4, !dbg !46
+  br label %if.end5, !dbg !46
+
+else2:                                            ; preds = %else
+  %7 = load i32, ptr %n, align 4, !dbg !48
+  %8 = icmp sle i32 %7, 29, !dbg !48
+  br i1 %8, label %then3, label %else4, !dbg !48
+
+then3:                                            ; preds = %else2
+  store i32 2, ptr %bucket, align 4, !dbg !49
+  %9 = load i32, ptr %bucket, align 4, !dbg !49
+  br label %if.end, !dbg !49
+
+else4:                                            ; preds = %else2
+  store i32 3, ptr %bucket, align 4, !dbg !51
+  %10 = load i32, ptr %bucket, align 4, !dbg !51
+  br label %if.end, !dbg !51
+
+if.end:                                           ; preds = %else4, %then3
+  br label %if.end5, !dbg !51
+
+if.end5:                                          ; preds = %if.end, %then1
+  br label %if.end6, !dbg !51
+
+if.end6:                                          ; preds = %if.end5, %then
+  %11 = load i32, ptr %bucket, align 4, !dbg !53
+  ret i32 %11, !dbg !53
+}
+
+define i32 @main() !dbg !54 {
+entry:
+  %err = alloca i32, align 4
+    #dbg_declare(ptr %err, !57, !DIExpression(), !58)
+  store i32 0, ptr %err, align 4, !dbg !58
+  %0 = call i32 @accumulateFlags(i32 -5), !dbg !59
+  %1 = icmp ne i32 %0, 5, !dbg !59
+  br i1 %1, label %then, label %else, !dbg !59
+
+then:                                             ; preds = %entry
+  store i32 1, ptr %err, align 4, !dbg !60
+  %2 = load i32, ptr %err, align 4, !dbg !60
+  br label %if.end, !dbg !60
+
+else:                                             ; preds = %entry
+  br label %if.end, !dbg !60
+
+if.end:                                           ; preds = %else, %then
+  %3 = call i32 @accumulateFlags(i32 0), !dbg !61
+  %4 = icmp ne i32 %3, 2, !dbg !61
+  br i1 %4, label %then1, label %else2, !dbg !61
+
+then1:                                            ; preds = %if.end
+  store i32 1, ptr %err, align 4, !dbg !62
+  %5 = load i32, ptr %err, align 4, !dbg !62
+  br label %if.end3, !dbg !62
+
+else2:                                            ; preds = %if.end
+  br label %if.end3, !dbg !62
+
+if.end3:                                          ; preds = %else2, %then1
+  %6 = call i32 @accumulateFlags(i32 5), !dbg !63
+  %7 = icmp ne i32 %6, 4, !dbg !63
+  br i1 %7, label %then4, label %else5, !dbg !63
+
+then4:                                            ; preds = %if.end3
+  store i32 1, ptr %err, align 4, !dbg !64
+  %8 = load i32, ptr %err, align 4, !dbg !64
+  br label %if.end6, !dbg !64
+
+else5:                                            ; preds = %if.end3
+  br label %if.end6, !dbg !64
+
+if.end6:                                          ; preds = %else5, %then4
+  %9 = call i32 @accumulateFlags(i32 15), !dbg !65
+  %10 = icmp ne i32 %9, 12, !dbg !65
+  br i1 %10, label %then7, label %else8, !dbg !65
 
 then7:                                            ; preds = %if.end6
-  store i32 1, ptr %err, align 4, !dbg !51
-  %11 = load i32, ptr %err, align 4, !dbg !51
-  br label %if.end9, !dbg !51
+  store i32 1, ptr %err, align 4, !dbg !66
+  %11 = load i32, ptr %err, align 4, !dbg !66
+  br label %if.end9, !dbg !66
 
-if.end9:                                          ; preds = %if.end6, %then7
-  %12 = call i32 @signBucket(i32 -1), !dbg !52
-  %13 = icmp ne i32 %12, 1, !dbg !52
-  br i1 %13, label %then10, label %if.end12, !dbg !52
+else8:                                            ; preds = %if.end6
+  br label %if.end9, !dbg !66
+
+if.end9:                                          ; preds = %else8, %then7
+  %12 = call i32 @signBucket(i32 -1), !dbg !67
+  %13 = icmp ne i32 %12, 1, !dbg !67
+  br i1 %13, label %then10, label %else11, !dbg !67
 
 then10:                                           ; preds = %if.end9
-  store i32 1, ptr %err, align 4, !dbg !53
-  %14 = load i32, ptr %err, align 4, !dbg !53
-  br label %if.end12, !dbg !53
+  store i32 1, ptr %err, align 4, !dbg !68
+  %14 = load i32, ptr %err, align 4, !dbg !68
+  br label %if.end12, !dbg !68
 
-if.end12:                                         ; preds = %if.end9, %then10
-  %15 = call i32 @signBucket(i32 0), !dbg !54
-  %16 = icmp ne i32 %15, 2, !dbg !54
-  br i1 %16, label %then13, label %if.end15, !dbg !54
+else11:                                           ; preds = %if.end9
+  br label %if.end12, !dbg !68
+
+if.end12:                                         ; preds = %else11, %then10
+  %15 = call i32 @signBucket(i32 0), !dbg !69
+  %16 = icmp ne i32 %15, 2, !dbg !69
+  br i1 %16, label %then13, label %else14, !dbg !69
 
 then13:                                           ; preds = %if.end12
-  store i32 1, ptr %err, align 4, !dbg !55
-  %17 = load i32, ptr %err, align 4, !dbg !55
-  br label %if.end15, !dbg !55
+  store i32 1, ptr %err, align 4, !dbg !70
+  %17 = load i32, ptr %err, align 4, !dbg !70
+  br label %if.end15, !dbg !70
 
-if.end15:                                         ; preds = %if.end12, %then13
-  %18 = call i32 @signBucket(i32 7), !dbg !56
-  %19 = icmp ne i32 %18, 3, !dbg !56
-  br i1 %19, label %then16, label %if.end18, !dbg !56
+else14:                                           ; preds = %if.end12
+  br label %if.end15, !dbg !70
+
+if.end15:                                         ; preds = %else14, %then13
+  %18 = call i32 @signBucket(i32 7), !dbg !71
+  %19 = icmp ne i32 %18, 3, !dbg !71
+  br i1 %19, label %then16, label %else17, !dbg !71
 
 then16:                                           ; preds = %if.end15
-  store i32 1, ptr %err, align 4, !dbg !57
-  %20 = load i32, ptr %err, align 4, !dbg !57
-  br label %if.end18, !dbg !57
+  store i32 1, ptr %err, align 4, !dbg !72
+  %20 = load i32, ptr %err, align 4, !dbg !72
+  br label %if.end18, !dbg !72
 
-if.end18:                                         ; preds = %if.end15, %then16
-  %21 = call i32 @decadeBucket(i32 5), !dbg !58
-  %22 = icmp ne i32 %21, 0, !dbg !58
-  br i1 %22, label %then19, label %if.end21, !dbg !58
+else17:                                           ; preds = %if.end15
+  br label %if.end18, !dbg !72
+
+if.end18:                                         ; preds = %else17, %then16
+  %21 = call i32 @decadeBucket(i32 5), !dbg !73
+  %22 = icmp ne i32 %21, 0, !dbg !73
+  br i1 %22, label %then19, label %else20, !dbg !73
 
 then19:                                           ; preds = %if.end18
-  store i32 1, ptr %err, align 4, !dbg !59
-  %23 = load i32, ptr %err, align 4, !dbg !59
-  br label %if.end21, !dbg !59
+  store i32 1, ptr %err, align 4, !dbg !74
+  %23 = load i32, ptr %err, align 4, !dbg !74
+  br label %if.end21, !dbg !74
 
-if.end21:                                         ; preds = %if.end18, %then19
-  %24 = call i32 @decadeBucket(i32 15), !dbg !60
-  %25 = icmp ne i32 %24, 1, !dbg !60
-  br i1 %25, label %then22, label %if.end24, !dbg !60
+else20:                                           ; preds = %if.end18
+  br label %if.end21, !dbg !74
+
+if.end21:                                         ; preds = %else20, %then19
+  %24 = call i32 @decadeBucket(i32 15), !dbg !75
+  %25 = icmp ne i32 %24, 1, !dbg !75
+  br i1 %25, label %then22, label %else23, !dbg !75
 
 then22:                                           ; preds = %if.end21
-  store i32 1, ptr %err, align 4, !dbg !61
-  %26 = load i32, ptr %err, align 4, !dbg !61
-  br label %if.end24, !dbg !61
+  store i32 1, ptr %err, align 4, !dbg !76
+  %26 = load i32, ptr %err, align 4, !dbg !76
+  br label %if.end24, !dbg !76
 
-if.end24:                                         ; preds = %if.end21, %then22
-  %27 = call i32 @decadeBucket(i32 25), !dbg !62
-  %28 = icmp ne i32 %27, 2, !dbg !62
-  br i1 %28, label %then25, label %if.end27, !dbg !62
+else23:                                           ; preds = %if.end21
+  br label %if.end24, !dbg !76
+
+if.end24:                                         ; preds = %else23, %then22
+  %27 = call i32 @decadeBucket(i32 25), !dbg !77
+  %28 = icmp ne i32 %27, 2, !dbg !77
+  br i1 %28, label %then25, label %else26, !dbg !77
 
 then25:                                           ; preds = %if.end24
-  store i32 1, ptr %err, align 4, !dbg !63
-  %29 = load i32, ptr %err, align 4, !dbg !63
-  br label %if.end27, !dbg !63
+  store i32 1, ptr %err, align 4, !dbg !78
+  %29 = load i32, ptr %err, align 4, !dbg !78
+  br label %if.end27, !dbg !78
 
-if.end27:                                         ; preds = %if.end24, %then25
-  %30 = call i32 @decadeBucket(i32 35), !dbg !64
-  %31 = icmp ne i32 %30, 3, !dbg !64
-  br i1 %31, label %then28, label %if.end30, !dbg !64
+else26:                                           ; preds = %if.end24
+  br label %if.end27, !dbg !78
+
+if.end27:                                         ; preds = %else26, %then25
+  %30 = call i32 @decadeBucket(i32 35), !dbg !79
+  %31 = icmp ne i32 %30, 3, !dbg !79
+  br i1 %31, label %then28, label %else29, !dbg !79
 
 then28:                                           ; preds = %if.end27
-  store i32 1, ptr %err, align 4, !dbg !65
-  %32 = load i32, ptr %err, align 4, !dbg !65
-  br label %if.end30, !dbg !65
+  store i32 1, ptr %err, align 4, !dbg !80
+  %32 = load i32, ptr %err, align 4, !dbg !80
+  br label %if.end30, !dbg !80
 
-if.end30:                                         ; preds = %if.end27, %then28
-  %33 = load i32, ptr %err, align 4, !dbg !66
-  %34 = icmp eq i32 %33, 0, !dbg !66
-  %. = select i1 %34, ptr @0, ptr @1, !dbg !67
-  %35 = call i32 (ptr, ...) @printf(ptr %.), !dbg !67
-  %36 = load i32, ptr %err, align 4, !dbg !68
-  ret i32 %36, !dbg !68
+else29:                                           ; preds = %if.end27
+  br label %if.end30, !dbg !80
+
+if.end30:                                         ; preds = %else29, %then28
+  %33 = load i32, ptr %err, align 4, !dbg !81
+  %34 = icmp eq i32 %33, 0, !dbg !81
+  br i1 %34, label %then31, label %else32, !dbg !81
+
+then31:                                           ; preds = %if.end30
+  %35 = call i32 (ptr, ...) @printf(ptr @0), !dbg !82
+  br label %if.end33, !dbg !82
+
+else32:                                           ; preds = %if.end30
+  %36 = call i32 (ptr, ...) @printf(ptr @1), !dbg !84
+  br label %if.end33, !dbg !84
+
+if.end33:                                         ; preds = %else32, %then31
+  %37 = load i32, ptr %err, align 4, !dbg !86
+  ret i32 %37, !dbg !86
 }
 
 !llvm.dbg.cu = !{!0}
@@ -238,57 +342,75 @@ if.end30:                                         ; preds = %if.end27, %then28
 !12 = !DILocation(line: 9, column: 5, scope: !13)
 !13 = distinct !DILexicalBlock(scope: !2, file: !1, line: 8, column: 14)
 !14 = !DILocation(line: 11, column: 3, scope: !2)
-!15 = !DILocation(line: 0, scope: !2)
-!16 = !DILocation(line: 16, column: 3, scope: !2)
-!17 = !DILocation(line: 17, column: 5, scope: !18)
-!18 = distinct !DILexicalBlock(scope: !2, file: !1, line: 16, column: 15)
-!19 = !DILocation(line: 19, column: 3, scope: !2)
-!20 = distinct !DISubprogram(name: "signBucket", linkageName: "signBucket", scope: null, file: !1, line: 23, type: !3, scopeLine: 23, spFlags: DISPFlagDefinition, unit: !0, retainedNodes: !6)
-!21 = !DILocalVariable(name: "bucket", scope: !20, file: !1, line: 24, type: !5)
-!22 = !DILocation(line: 24, column: 3, scope: !20)
-!23 = !DILocalVariable(name: "n", arg: 1, scope: !20, file: !1, line: 23, type: !5)
-!24 = !DILocation(line: 23, column: 5, scope: !20)
-!25 = !DILocation(line: 25, column: 3, scope: !20)
-!26 = !DILocation(line: 0, scope: !20)
-!27 = !DILocation(line: 32, column: 3, scope: !20)
-!28 = distinct !DISubprogram(name: "decadeBucket", linkageName: "decadeBucket", scope: null, file: !1, line: 36, type: !3, scopeLine: 36, spFlags: DISPFlagDefinition, unit: !0, retainedNodes: !6)
-!29 = !DILocalVariable(name: "bucket", scope: !28, file: !1, line: 37, type: !5)
-!30 = !DILocation(line: 37, column: 3, scope: !28)
-!31 = !DILocalVariable(name: "n", arg: 1, scope: !28, file: !1, line: 36, type: !5)
-!32 = !DILocation(line: 36, column: 5, scope: !28)
-!33 = !DILocation(line: 38, column: 3, scope: !28)
-!34 = !DILocation(line: 40, column: 10, scope: !28)
-!35 = !DILocation(line: 45, column: 5, scope: !36)
-!36 = distinct !DILexicalBlock(scope: !28, file: !1, line: 44, column: 10)
-!37 = !DILocation(line: 0, scope: !28)
-!38 = !DILocation(line: 47, column: 3, scope: !28)
-!39 = distinct !DISubprogram(name: "main", linkageName: "main", scope: null, file: !1, line: 50, type: !40, scopeLine: 50, spFlags: DISPFlagDefinition, unit: !0, retainedNodes: !6)
-!40 = !DISubroutineType(types: !41)
-!41 = !{!5}
-!42 = !DILocalVariable(name: "err", scope: !39, file: !1, line: 51, type: !5)
-!43 = !DILocation(line: 51, column: 3, scope: !39)
-!44 = !DILocation(line: 53, column: 3, scope: !39)
-!45 = !DILocation(line: 53, column: 33, scope: !39)
-!46 = !DILocation(line: 54, column: 3, scope: !39)
-!47 = !DILocation(line: 54, column: 32, scope: !39)
-!48 = !DILocation(line: 55, column: 3, scope: !39)
-!49 = !DILocation(line: 55, column: 32, scope: !39)
-!50 = !DILocation(line: 56, column: 3, scope: !39)
-!51 = !DILocation(line: 56, column: 34, scope: !39)
-!52 = !DILocation(line: 58, column: 3, scope: !39)
-!53 = !DILocation(line: 58, column: 28, scope: !39)
-!54 = !DILocation(line: 59, column: 3, scope: !39)
-!55 = !DILocation(line: 59, column: 27, scope: !39)
-!56 = !DILocation(line: 60, column: 3, scope: !39)
-!57 = !DILocation(line: 60, column: 27, scope: !39)
-!58 = !DILocation(line: 62, column: 3, scope: !39)
-!59 = !DILocation(line: 62, column: 29, scope: !39)
-!60 = !DILocation(line: 63, column: 3, scope: !39)
-!61 = !DILocation(line: 63, column: 30, scope: !39)
-!62 = !DILocation(line: 64, column: 3, scope: !39)
-!63 = !DILocation(line: 64, column: 30, scope: !39)
-!64 = !DILocation(line: 65, column: 3, scope: !39)
-!65 = !DILocation(line: 65, column: 30, scope: !39)
-!66 = !DILocation(line: 67, column: 3, scope: !39)
-!67 = !DILocation(line: 0, scope: !39)
-!68 = !DILocation(line: 72, column: 3, scope: !39)
+!15 = !DILocation(line: 12, column: 5, scope: !16)
+!16 = distinct !DILexicalBlock(scope: !2, file: !1, line: 11, column: 15)
+!17 = !DILocation(line: 14, column: 5, scope: !18)
+!18 = distinct !DILexicalBlock(scope: !2, file: !1, line: 13, column: 10)
+!19 = !DILocation(line: 16, column: 3, scope: !2)
+!20 = !DILocation(line: 17, column: 5, scope: !21)
+!21 = distinct !DILexicalBlock(scope: !2, file: !1, line: 16, column: 15)
+!22 = !DILocation(line: 19, column: 3, scope: !2)
+!23 = distinct !DISubprogram(name: "signBucket", linkageName: "signBucket", scope: null, file: !1, line: 23, type: !3, scopeLine: 23, spFlags: DISPFlagDefinition, unit: !0, retainedNodes: !6)
+!24 = !DILocalVariable(name: "bucket", scope: !23, file: !1, line: 24, type: !5)
+!25 = !DILocation(line: 24, column: 3, scope: !23)
+!26 = !DILocalVariable(name: "n", arg: 1, scope: !23, file: !1, line: 23, type: !5)
+!27 = !DILocation(line: 23, column: 5, scope: !23)
+!28 = !DILocation(line: 25, column: 3, scope: !23)
+!29 = !DILocation(line: 26, column: 5, scope: !30)
+!30 = distinct !DILexicalBlock(scope: !23, file: !1, line: 25, column: 14)
+!31 = !DILocation(line: 27, column: 10, scope: !23)
+!32 = !DILocation(line: 28, column: 5, scope: !33)
+!33 = distinct !DILexicalBlock(scope: !23, file: !1, line: 27, column: 22)
+!34 = !DILocation(line: 30, column: 5, scope: !35)
+!35 = distinct !DILexicalBlock(scope: !23, file: !1, line: 29, column: 10)
+!36 = !DILocation(line: 32, column: 3, scope: !23)
+!37 = distinct !DISubprogram(name: "decadeBucket", linkageName: "decadeBucket", scope: null, file: !1, line: 36, type: !3, scopeLine: 36, spFlags: DISPFlagDefinition, unit: !0, retainedNodes: !6)
+!38 = !DILocalVariable(name: "bucket", scope: !37, file: !1, line: 37, type: !5)
+!39 = !DILocation(line: 37, column: 3, scope: !37)
+!40 = !DILocalVariable(name: "n", arg: 1, scope: !37, file: !1, line: 36, type: !5)
+!41 = !DILocation(line: 36, column: 5, scope: !37)
+!42 = !DILocation(line: 38, column: 3, scope: !37)
+!43 = !DILocation(line: 39, column: 5, scope: !44)
+!44 = distinct !DILexicalBlock(scope: !37, file: !1, line: 38, column: 15)
+!45 = !DILocation(line: 40, column: 10, scope: !37)
+!46 = !DILocation(line: 41, column: 5, scope: !47)
+!47 = distinct !DILexicalBlock(scope: !37, file: !1, line: 40, column: 23)
+!48 = !DILocation(line: 42, column: 10, scope: !37)
+!49 = !DILocation(line: 43, column: 5, scope: !50)
+!50 = distinct !DILexicalBlock(scope: !37, file: !1, line: 42, column: 23)
+!51 = !DILocation(line: 45, column: 5, scope: !52)
+!52 = distinct !DILexicalBlock(scope: !37, file: !1, line: 44, column: 10)
+!53 = !DILocation(line: 47, column: 3, scope: !37)
+!54 = distinct !DISubprogram(name: "main", linkageName: "main", scope: null, file: !1, line: 50, type: !55, scopeLine: 50, spFlags: DISPFlagDefinition, unit: !0, retainedNodes: !6)
+!55 = !DISubroutineType(types: !56)
+!56 = !{!5}
+!57 = !DILocalVariable(name: "err", scope: !54, file: !1, line: 51, type: !5)
+!58 = !DILocation(line: 51, column: 3, scope: !54)
+!59 = !DILocation(line: 53, column: 3, scope: !54)
+!60 = !DILocation(line: 53, column: 33, scope: !54)
+!61 = !DILocation(line: 54, column: 3, scope: !54)
+!62 = !DILocation(line: 54, column: 32, scope: !54)
+!63 = !DILocation(line: 55, column: 3, scope: !54)
+!64 = !DILocation(line: 55, column: 32, scope: !54)
+!65 = !DILocation(line: 56, column: 3, scope: !54)
+!66 = !DILocation(line: 56, column: 34, scope: !54)
+!67 = !DILocation(line: 58, column: 3, scope: !54)
+!68 = !DILocation(line: 58, column: 28, scope: !54)
+!69 = !DILocation(line: 59, column: 3, scope: !54)
+!70 = !DILocation(line: 59, column: 27, scope: !54)
+!71 = !DILocation(line: 60, column: 3, scope: !54)
+!72 = !DILocation(line: 60, column: 27, scope: !54)
+!73 = !DILocation(line: 62, column: 3, scope: !54)
+!74 = !DILocation(line: 62, column: 29, scope: !54)
+!75 = !DILocation(line: 63, column: 3, scope: !54)
+!76 = !DILocation(line: 63, column: 30, scope: !54)
+!77 = !DILocation(line: 64, column: 3, scope: !54)
+!78 = !DILocation(line: 64, column: 30, scope: !54)
+!79 = !DILocation(line: 65, column: 3, scope: !54)
+!80 = !DILocation(line: 65, column: 30, scope: !54)
+!81 = !DILocation(line: 67, column: 3, scope: !54)
+!82 = !DILocation(line: 68, column: 5, scope: !83)
+!83 = distinct !DILexicalBlock(scope: !54, file: !1, line: 67, column: 17)
+!84 = !DILocation(line: 70, column: 5, scope: !85)
+!85 = distinct !DILexicalBlock(scope: !54, file: !1, line: 69, column: 10)
+!86 = !DILocation(line: 72, column: 3, scope: !54)

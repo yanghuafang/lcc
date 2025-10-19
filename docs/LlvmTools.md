@@ -1,6 +1,6 @@
 # Compiler pipeline & LLVM tools
 
-**Status:** M9 classical-optimization study notes live here; M18 may add CI recipes and more examples.
+**Status:** Complete tool reference and study notes (M9, M12, M14); CI smoke recipes below.
 
 Middle/back-end implementation milestones: [MiddleBackendNotes.md](MiddleBackendNotes.md). Full learning path: [LearningPlan.md](LearningPlan.md).
 
@@ -49,6 +49,90 @@ llc /tmp/q.post.ll -o /tmp/out.s
 # Disassemble object file
 llvm-objdump -d ../../lcc-build/25.quick_sort.o
 ```
+
+---
+
+## LLVM tool reference
+
+Run from `lcc/scripts` after `source ./build-env.sh` (LLVM 20 on `PATH`). Use committed `debug/*.ll` artifacts or fresh dumps from `lcc -l-pre-opt` / `-l-post-opt` / `-l`.
+
+| Tool | Role | Typical input | Example |
+|------|------|---------------|---------|
+| **`lcc`** | Full pipeline: C → IR → opt → `.o` / `.s` | `.c` | `../../lcc-build/lcc -O2 -i ../tests/25.quick_sort.c -o /tmp/q.o -S /tmp/q.s` |
+| **`opt`** | IR passes (same pipelines as `IrOptimizer`) | `.ll` | `opt -passes='default<O2>' ../debug/25.quick_sort.release.pre.ll -S -o /tmp/q-opt.ll` |
+| **`llc`** | IR → machine asm (external backend) | `.ll` | `llc -O2 ../debug/25.quick_sort.release.post.ll -o /tmp/out.s` |
+| **`llvm-objdump`** | Disassemble `.o` / inspect sections | `.o` | `llvm-objdump -d ../../lcc-build/25.quick_sort.o` |
+| **`llvm-mca`** | Throughput / port analysis on asm snippets | `.s` | `llvm-mca -mtriple=arm64-apple-darwin -iterations=100 loop.s` |
+| **`llvm-dwarfdump`** | Inspect DWARF in objects | `.o` | `llvm-dwarfdump --name=main ../../lcc-build/0.hello_world.o` |
+| **`dot`** | Render AST graphs | `.dot` | `dot ../debug/0.hello_world.dot -T png -o /tmp/ast.png` |
+
+### `opt` — middle-end IR
+
+```bash
+# List passes in the O2 default pipeline (LLVM 20)
+opt --print-pipeline-passes -passes='default<O2>' \
+  ../debug/25.quick_sort.release.pre.ll -disable-output
+
+# Run O3 with target triple (vectorizer cost model) on lcc pre-opt IR
+../../lcc-build/lcc -O3 -i ../tests/40.array_sum.c -o /tmp/s.o -l-pre-opt /tmp/s.pre.ll
+opt -passes='default<O3>' -mtriple=arm64-apple-darwin /tmp/s.pre.ll -S -o /tmp/s.vec.ll
+
+# Pass remarks (why loop-vectorizer skipped or ran)
+opt -passes='default<O3>' /tmp/s.pre.ll -disable-output \
+  -pass-remarks-missed=loop-vectorize 2>&1 | head
+```
+
+`-S` on `opt` writes **LLVM IR text**, not machine assembly. For machine asm from IR, use **`lcc -S`** or **`llc`**.
+
+### `llc` — IR to assembly (study)
+
+```bash
+# Lower post-opt IR to asm (host default triple)
+llc -O2 ../debug/25.quick_sort.release.post.ll -o /tmp/q.s
+
+# Cross-target / feature study (x86 AVX2 example)
+llc -O3 -mtriple=x86_64-unknown-linux-gnu -mattr=+avx2 /tmp/s.vec.ll -o /tmp/s.avx.s
+
+# MIR inspection (optional M13): stop before register allocation
+llc -stop-before=registerizer -print-machineinstrs \
+  ../debug/25.quick_sort.release.post.ll -o /dev/null 2>&1 | less
+```
+
+### `llvm-objdump` — object files
+
+```bash
+# Full disassembly of a test object
+llvm-objdump -d ../../lcc-build/12.arithmetic.o
+
+# Compare with lcc -S output for the same test
+../../lcc-build/lcc -O2 -i ../tests/12.arithmetic.c -o /tmp/a.o -S /tmp/a.s
+diff -u <(grep -v '^\s*\.' /tmp/a.s | head -40) \
+        <(llvm-objdump -d --no-show-raw-insn /tmp/a.o | head -40) || true
+```
+
+### `llvm-mca` — asm throughput (optional)
+
+Extract a hot loop from `lcc -S` or `llc` output into a standalone `.s` snippet, then:
+
+```bash
+llvm-mca -mtriple=arm64-apple-darwin -mcpu=generic -iterations=200 loop.s
+```
+
+See [M14 vectorization study](#auto-vectorization-study-m14) for scalar vs vector loop examples.
+
+### CI smoke checks
+
+CI (`.github/workflows/build.yml`, matrix over Ubuntu and macOS) runs, in order: build → full compile/link/run suite → `check-debug-info.sh` → **`check-asm-smoke.sh`**.
+
+Local equivalents:
+
+```bash
+./compile-tests.sh && ./link-tests.sh && ./run-tests.sh
+./check-debug-info.sh
+./check-asm-smoke.sh
+```
+
+`check-asm-smoke.sh` compiles `12.arithmetic.c` with `-O2 -S` and verifies non-empty asm containing `main`. `compile-tests.sh` already emits `debug/*.s` for every test; the smoke script is a fast explicit `-S` gate.
 
 ---
 
@@ -154,9 +238,196 @@ This is a compact example of **mem2reg** (remove allocas), **instcombine** (simp
 
 ---
 
+## Codegen opt level & asm diff (M12)
+
+IR `-O` runs in `IrOptimizer` (middle-end). The same CLI level is forwarded to `TargetBackend` as LLVM **`CodeGenOptLevel`** for `-o` and `-S` emission. Middle-end and backend opt are independent layers: even with `-O0` IR you can request `-O2` codegen (unusual), and `-O2` IR with `-O0` codegen is also possible — `compile-tests.sh` uses matching pairs (`--debug` = `-g -O0`, `--release` = `-O2`).
+
+### Mapping (LLVM 20)
+
+| CLI | `CodeGenOptLevel` | Backend effect (summary) |
+|-----|-------------------|--------------------------|
+| *(none)* / `-O0` | `None` | Minimal machine peepholes; stack spills for all locals |
+| `-O1` | `Less` | Light machine opts |
+| `-O2`, `-Os`, `-Oz` | `Default` | Standard regalloc, peepholes, branch folding |
+| `-O3` | `Aggressive` | More aggressive machine passes |
+
+Implementation: `resolveCodeGenOptLevel()` in `src/TargetBackend.cpp`, wired from `main` via `TargetBackendOptions::optimizationLevel`.
+
+### Case study: `25.quick_sort.c` asm (`-O0` vs `-O2`)
+
+`compile-tests.sh` writes `debug/25.quick_sort.debug.s` (`-g -O0`) and `debug/25.quick_sort.release.s` (`-O2`). On a typical ARM64 host:
+
+```bash
+wc -l ../debug/25.quick_sort.debug.s ../debug/25.quick_sort.release.s
+# 890 debug.s  vs  149 release.s  (whole file)
+```
+
+**`-O0` `@partition`** (`debug/25.quick_sort.debug.s`): parameters and locals live on the stack; each use is a `str`/`ldr` pair; `@swap` is called from the loop:
+
+```asm
+_partition:
+    sub sp, sp, #48
+    str x0, [sp]          ; spill array pointer
+    str w1, [sp, #12]     ; spill low
+    ...
+    bl _swap              ; call helper every swap
+```
+
+**`-O2` `@partition`** (`debug/25.quick_sort.release.s`): SSA-style values in registers; pivot in `w9`, indices in `w1`/`w11`; swaps inlined with `ldr`/`str` (no `@swap` call in the hot loop):
+
+```asm
+_partition:
+    sub w10, w2, #1
+    ldr w9, [x0, w2, sxtw #2]    ; pivot in register
+    ...
+    ldr w13, [x8, w1, sxtw #2]
+    cmp w13, w9
+    ...
+    str w13, [x8, w11, sxtw #2]  ; inline swap
+    str w14, [x8, x12, lsl #2]
+```
+
+The release build combines **IR opts** (mem2reg, instcombine, inlining) with **backend opts** (better regalloc, dead block elimination, tail-call / call elimination). Compare with:
+
+```bash
+diff -u ../debug/25.quick_sort.debug.s ../debug/25.quick_sort.release.s | less
+llvm-objdump -d ../../lcc-build/25.quick_sort.o   # after --release compile
+```
+
+### Verify M12 yourself
+
+1. Run `./compile-tests.sh --debug 25.quick_sort.c && ./compile-tests.sh --release 25.quick_sort.c`.
+2. Confirm `@partition` in `.release.s` is shorter and avoids stack spills / `@swap` calls in the loop.
+3. Full suite: `./compile-tests.sh && ./link-tests.sh && ./run-tests.sh`.
+
+---
+
+## Auto-vectorization study (M14)
+
+LLVM **`loop-vectorizer`** and **`slp-vectorizer`** run at `-O3` inside `IrOptimizer` (same as `opt -passes='default<O3>'`). lcc does **not** implement a custom vector pass — you observe LLVM’s on real loops.
+
+### Study fixture
+
+`tests/40.array_sum.c` — a simple `sum_array` reduction. **Not** in `compile-tests.sh` (study-only; avoids expanding the regression suite). For element-wise loops (often easier to vectorize), use the `add_arrays` snippet in the commands below.
+
+### How lcc runs the vectorizers today
+
+`IrOptimizer` builds a `PassBuilder` **without** a `TargetMachine`. The loop vectorizer’s **cost model** therefore uses generic defaults during `-l-post-opt` emission. CLI **`-mcpu` / `-mattr` / `--target`** apply only in `TargetBackend` (codegen), **after** IR opts — they do **not** steer `loop-vectorizer` inside lcc.
+
+Practical effect on this host: `lcc -O3` often leaves loops **scalar in IR and asm**, even with `-mcpu native` or `-mattr +avx2`.
+
+### Case study A: `sum_array` — lcc `-O3` (scalar)
+
+From `lcc/scripts`:
+
+```bash
+../../lcc-build/lcc -O3 -i ../tests/40.array_sum.c -o /tmp/sum.o \
+  -l-pre-opt /tmp/sum.pre.ll -l-post-opt /tmp/sum.post.ll -S /tmp/sum.s
+
+# Post-opt IR: plain i32 phi/add loop — no <N x i32>
+grep '<.* x ' /tmp/sum.post.ll || echo "no vector types"
+
+# Asm (ARM64 example): scalar ldr/add reduction
+grep -E 'ldr|add' /tmp/sum.s | head
+```
+
+**Post-opt IR** (abbreviated): a counted loop with `load i32` / `add i32` / `phi` — no `<4 x i32>`.
+
+**Why no vector IR from lcc:** `opt` pass remarks on the same pre-opt module report *“the cost-model indicates that vectorization is not beneficial”* when no target triple is supplied (matching lcc’s `IrOptimizer` setup).
+
+### Case study B: same IR, target-aware `opt` (vectorized)
+
+Feed lcc’s **pre-opt** IR to `opt` with an explicit triple — vectorizers use a real cost model:
+
+```bash
+# ARM64: 4-wide i32 vectors
+opt -passes='default<O3>' -mtriple=arm64-apple-darwin /tmp/sum.pre.ll -S -o /tmp/sum.arm.ll
+grep '<4 x i32>' /tmp/sum.arm.ll | head
+
+# x86_64 + AVX2: 8-wide i32 vectors (study on any host)
+opt -passes='default<O3>' -mtriple=x86_64-apple-darwin -mcpu=core-avx2 \
+  /tmp/sum.pre.ll -S -o /tmp/sum.avx.ll
+grep '<8 x i32>' /tmp/sum.avx.ll | head
+```
+
+Then lower to asm with `llc` and look for SIMD opcodes:
+
+```bash
+llc -O3 -mtriple=arm64-apple-darwin /tmp/sum.arm.ll -o /tmp/sum.arm.s
+grep -E 'add\.4s|ld1|st1' /tmp/sum.arm.s | head
+
+llc -O3 -mtriple=x86_64-apple-darwin -mattr=+avx2 /tmp/sum.avx.ll -o /tmp/sum.avx.s
+grep -E 'vpaddd|ymm|vmovdqu' /tmp/sum.avx.s | head
+```
+
+On ARM64, vectorized `@sum_array` uses **`add.4s`** (NEON 4×i32). On x86 with AVX2, **`vpaddd`** on **`ymm`** registers (8×i32).
+
+### Case study C: element-wise `add_arrays` (1024 elements)
+
+Copy to `/tmp/add_arrays.c` (or paste into a scratch file):
+
+```c
+int add_arrays(int* c, int* a, int* b, int n) {
+  for (int i = 0; i < n; i += 1) c[i] = a[i] + b[i];
+  return 0;
+}
+/* main initializes a[1024], b[1024] and calls add_arrays(c,a,b,1024) */
+```
+
+| Step | `lcc -O3` | `opt -O3 -mtriple=…` on `-l-pre-opt` |
+|------|-----------|----------------------------------------|
+| Post-opt IR | scalar load/store/add | `<4 x i32>` (ARM) or `<8 x i32>` (AVX2) |
+| Asm | scalar `ldr`/`str` loop | `add.4s` / `vpaddd` |
+
+### Case study D: `25.quick_sort.c` — not vectorizable
+
+Even at `-O3`, quicksort’s `@partition` / `@quickSort` have **irregular control flow**, **in-loop calls** (`@swap`), and **data-dependent branches**. The vectorizers correctly no-op:
+
+```bash
+../../lcc-build/lcc -O3 -i ../tests/25.quick_sort.c -o /tmp/q.o -l-post-opt /tmp/q.post.ll
+grep '<.* x ' /tmp/q.post.ll || echo "no vectors (expected)"
+```
+
+This contrasts with regular stride-1 array loops in case studies A–C.
+
+### Pass remarks (why vectorize or not)
+
+```bash
+opt -passes='default<O3>' /tmp/sum.pre.ll -disable-output \
+  -pass-remarks-missed=loop-vectorize 2>&1 | head
+
+opt -passes='default<O3>' -mtriple=arm64-apple-darwin /tmp/sum.pre.ll -disable-output \
+  -pass-remarks-analysis=loop-vectorize 2>&1 | head
+```
+
+Common reasons LLVM skips vectorization: **cost model** (generic TM), **small trip count** (constant-folded in `main`), **reduction** profitability, **control flow**, **calls in loop**, **possible aliasing**.
+
+### Optional: `llvm-mca` on scalar asm
+
+Isolate a loop body in a `.s` snippet and profile throughput (teaching-only; not wired into lcc):
+
+```bash
+llvm-mca -mtriple=arm64-apple-darwin -mcpu=apple-m1 -iterations=100 /tmp/sum_scalar_mca.s
+```
+
+Use vectorized asm from case study B for a before/after comparison.
+
+### Verify M14 yourself
+
+1. Compile `tests/40.array_sum.c` at `-O3`; confirm post-opt IR and `-S` asm are **scalar**.
+2. Run `opt -passes='default<O3>' -mtriple=<host>` on `-l-pre-opt` IR; confirm **`<N x i32>`** appears.
+3. Inspect asm for **NEON** (`add.4s`, …) or **AVX2** (`vpaddd`, `ymm`, …) per platform.
+4. Confirm `25.quick_sort.c` at `-O3` has **no** vector IR.
+5. Read pass remarks for at least one loop.
+
+**Out of scope:** custom loop vectorizer in lcc; wiring `TargetMachine` into `IrOptimizer` (future enhancement, not required for M14).
+
+---
+
 ## Related docs
 
 - [LearningPlan.md](LearningPlan.md) — full learning path (M0–M18)
-- [Usage.md](Usage.md) — `lcc` CLI flags (`-l-pre-opt`, `-l-post-opt`, `-ir-stats`, `-S`, `--target`, `-mcpu`, `-mattr`, `-O2`)
-- [Testing.md](Testing.md) — compile modes and `debug/*.ll` artifacts
-- [MiddleBackendNotes.md](MiddleBackendNotes.md) — M9 acceptance criteria
+- [Usage.md](Usage.md) — `lcc` CLI flags (`-l-pre-opt`, `-l-post-opt`, `-ir-stats`, `-S`, `--target`, `-mcpu`, `-mattr`, `-O0`…`-O3`)
+- [Testing.md](Testing.md) — compile modes, `debug/*.ll` artifacts, CI smoke scripts
+- [MiddleBackendNotes.md](MiddleBackendNotes.md) — middle/back-end milestone acceptance criteria
+- [DebuggingLcc.md](DebuggingLcc.md) — debug `lcc` in LLDB

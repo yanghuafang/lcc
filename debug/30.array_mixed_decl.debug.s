@@ -12,74 +12,92 @@ Lfunc_begin0:
 	.cfi_def_cfa_offset 48
 	.cfi_offset w30, -8
 	.cfi_offset w29, -16
-	mov	x8, #10
-	mov	w9, #10
 Ltmp0:
 	.loc	1 7 3 prologue_end
 	str	wzr, [sp, #8]
-	movk	x8, #20, lsl #32
-	.loc	1 13 3
-	cmp	w9, #10
+	mov	w8, #10
 	.loc	1 9 3
-	stur	x8, [sp, #12]
-	mov	w8, #30
+	str	w8, [sp, #12]
+	.loc	1 10 3
+	mov	w8, #20
+	str	w8, [sp, #16]
 	.loc	1 11 3
+	mov	w8, #30
 	str	w8, [sp, #28]
 	.loc	1 13 3
+	ldr	w8, [sp, #12]
+	subs	w8, w8, #10
 	b.eq	LBB0_2
-	.loc	1 0 3 is_stmt 0
+	b	LBB0_1
+LBB0_1:
+	.loc	1 13 19 is_stmt 0
 	mov	w8, #1
-	.loc	1 13 19
 	str	w8, [sp, #8]
+	b	LBB0_3
 LBB0_2:
+	b	LBB0_3
+LBB0_3:
 	.loc	1 14 3 is_stmt 1
 	ldr	w8, [sp, #16]
-	cmp	w8, #20
-	b.eq	LBB0_4
-	.loc	1 0 3 is_stmt 0
-	mov	w8, #1
-	.loc	1 14 19
-	str	w8, [sp, #8]
+	subs	w8, w8, #20
+	b.eq	LBB0_5
+	b	LBB0_4
 LBB0_4:
+	.loc	1 14 19 is_stmt 0
+	mov	w8, #1
+	str	w8, [sp, #8]
+	b	LBB0_6
+LBB0_5:
+	b	LBB0_6
+LBB0_6:
 	.loc	1 15 3 is_stmt 1
 	ldr	w8, [sp, #28]
-	cmp	w8, #30
-	b.eq	LBB0_6
-	.loc	1 0 3 is_stmt 0
+	subs	w8, w8, #30
+	b.eq	LBB0_8
+	b	LBB0_7
+LBB0_7:
+	.loc	1 15 16 is_stmt 0
 	mov	w8, #1
-	.loc	1 15 16
 	str	w8, [sp, #8]
-LBB0_6:
+	b	LBB0_9
+LBB0_8:
+	b	LBB0_9
+LBB0_9:
 	.loc	1 17 3 is_stmt 1
 	ldr	w8, [sp, #8]
-	.loc	1 0 0 is_stmt 0
-Lloh0:
-	adrp	x9, l___unnamed_1@PAGE
-Lloh1:
-	add	x9, x9, l___unnamed_1@PAGEOFF
-	cmp	w8, #0
-Lloh2:
-	adrp	x8, l___unnamed_2@PAGE
-Lloh3:
-	add	x8, x8, l___unnamed_2@PAGEOFF
-	csel	x0, x8, x9, eq
+	cbnz	w8, LBB0_11
+	b	LBB0_10
+LBB0_10:
+Ltmp1:
+	.loc	1 18 5
+	adrp	x0, l___unnamed_1@PAGE
+	add	x0, x0, l___unnamed_1@PAGEOFF
 	bl	_printf
-	.loc	1 22 3 epilogue_begin is_stmt 1
-	ldp	x29, x30, [sp, #32]
+	b	LBB0_12
+Ltmp2:
+LBB0_11:
+	.loc	1 20 5
+	adrp	x0, l___unnamed_2@PAGE
+	add	x0, x0, l___unnamed_2@PAGEOFF
+	bl	_printf
+	b	LBB0_12
+Ltmp3:
+LBB0_12:
+	.loc	1 22 3
 	ldr	w0, [sp, #8]
+	.loc	1 22 3 epilogue_begin is_stmt 0
+	ldp	x29, x30, [sp, #32]
 	add	sp, sp, #48
 	ret
-Ltmp1:
-	.loh AdrpAdd	Lloh2, Lloh3
-	.loh AdrpAdd	Lloh0, Lloh1
+Ltmp4:
 Lfunc_end0:
 	.cfi_endproc
 
 	.section	__TEXT,__cstring,cstring_literals
-l___unnamed_2:
+l___unnamed_1:
 	.asciz	"30.array_mixed_decl.c PASS\n"
 
-l___unnamed_1:
+l___unnamed_2:
 	.asciz	"30.array_mixed_decl.c FAIL\n"
 
 	.section	__DWARF,__debug_abbrev,regular,debug

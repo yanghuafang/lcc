@@ -73,86 +73,116 @@ entry:
   store i32 4, ptr %r, align 4, !dbg !32
   %0 = call i32 @sum(i32 1, i32 2), !dbg !39
   %1 = icmp ne i32 %0, 3, !dbg !39
-  br i1 %1, label %then, label %if.end, !dbg !39
+  br i1 %1, label %then, label %else, !dbg !39
 
 then:                                             ; preds = %entry
   store i32 1, ptr %err, align 4, !dbg !40
   %2 = load i32, ptr %err, align 4, !dbg !40
   br label %if.end, !dbg !40
 
-if.end:                                           ; preds = %entry, %then
+else:                                             ; preds = %entry
+  br label %if.end, !dbg !40
+
+if.end:                                           ; preds = %else, %then
   %3 = call i32 @sum(i32 3, i32 4), !dbg !41
   %4 = icmp ne i32 %3, 7, !dbg !41
-  br i1 %4, label %then1, label %if.end3, !dbg !41
+  br i1 %4, label %then1, label %else2, !dbg !41
 
 then1:                                            ; preds = %if.end
   store i32 1, ptr %err, align 4, !dbg !42
   %5 = load i32, ptr %err, align 4, !dbg !42
   br label %if.end3, !dbg !42
 
-if.end3:                                          ; preds = %if.end, %then1
+else2:                                            ; preds = %if.end
+  br label %if.end3, !dbg !42
+
+if.end3:                                          ; preds = %else2, %then1
   %6 = load i32, ptr %l, align 4, !dbg !43
   %7 = load i32, ptr %r, align 4, !dbg !43
   %8 = call i32 @sum(i32 %6, i32 %7), !dbg !43
   %9 = icmp ne i32 %8, 7, !dbg !43
-  br i1 %9, label %then4, label %if.end6, !dbg !43
+  br i1 %9, label %then4, label %else5, !dbg !43
 
 then4:                                            ; preds = %if.end3
   store i32 1, ptr %err, align 4, !dbg !44
   %10 = load i32, ptr %err, align 4, !dbg !44
   br label %if.end6, !dbg !44
 
-if.end6:                                          ; preds = %if.end3, %then4
+else5:                                            ; preds = %if.end3
+  br label %if.end6, !dbg !44
+
+if.end6:                                          ; preds = %else5, %then4
   %11 = call i32 @sum2(ptr %l, ptr %r), !dbg !45
   %12 = icmp ne i32 %11, 7, !dbg !45
-  br i1 %12, label %then7, label %if.end9, !dbg !45
+  br i1 %12, label %then7, label %else8, !dbg !45
 
 then7:                                            ; preds = %if.end6
   store i32 1, ptr %err, align 4, !dbg !46
   %13 = load i32, ptr %err, align 4, !dbg !46
   br label %if.end9, !dbg !46
 
-if.end9:                                          ; preds = %if.end6, %then7
+else8:                                            ; preds = %if.end6
+  br label %if.end9, !dbg !46
+
+if.end9:                                          ; preds = %else8, %then7
   call void @sum3(i32 3, i32 4, ptr %i), !dbg !47
   %14 = load i32, ptr %i, align 4, !dbg !48
   %15 = icmp ne i32 %14, 7, !dbg !48
-  br i1 %15, label %then10, label %if.end12, !dbg !48
+  br i1 %15, label %then10, label %else11, !dbg !48
 
 then10:                                           ; preds = %if.end9
   store i32 1, ptr %err, align 4, !dbg !49
   %16 = load i32, ptr %err, align 4, !dbg !49
   br label %if.end12, !dbg !49
 
-if.end12:                                         ; preds = %if.end9, %then10
+else11:                                           ; preds = %if.end9
+  br label %if.end12, !dbg !49
+
+if.end12:                                         ; preds = %else11, %then10
   %17 = load i32, ptr %l, align 4, !dbg !50
   %18 = load i32, ptr %r, align 4, !dbg !50
   call void @sum3(i32 %17, i32 %18, ptr %i), !dbg !50
   %19 = load i32, ptr %i, align 4, !dbg !51
   %20 = icmp ne i32 %19, 7, !dbg !51
-  br i1 %20, label %then13, label %if.end15, !dbg !51
+  br i1 %20, label %then13, label %else14, !dbg !51
 
 then13:                                           ; preds = %if.end12
   store i32 1, ptr %err, align 4, !dbg !52
   %21 = load i32, ptr %err, align 4, !dbg !52
   br label %if.end15, !dbg !52
 
-if.end15:                                         ; preds = %if.end12, %then13
+else14:                                           ; preds = %if.end12
+  br label %if.end15, !dbg !52
+
+if.end15:                                         ; preds = %else14, %then13
   %22 = call i32 @sum(i32 1000000, i32 2000000), !dbg !53
   %23 = icmp ne i32 %22, 3000000, !dbg !53
-  br i1 %23, label %then16, label %if.end18, !dbg !53
+  br i1 %23, label %then16, label %else17, !dbg !53
 
 then16:                                           ; preds = %if.end15
   store i32 1, ptr %err, align 4, !dbg !54
   %24 = load i32, ptr %err, align 4, !dbg !54
   br label %if.end18, !dbg !54
 
-if.end18:                                         ; preds = %if.end15, %then16
+else17:                                           ; preds = %if.end15
+  br label %if.end18, !dbg !54
+
+if.end18:                                         ; preds = %else17, %then16
   %25 = load i32, ptr %err, align 4, !dbg !55
   %26 = icmp eq i32 %25, 0, !dbg !55
-  %. = select i1 %26, ptr @0, ptr @1, !dbg !56
-  %27 = call i32 (ptr, ...) @printf(ptr %.), !dbg !56
-  %28 = load i32, ptr %err, align 4, !dbg !57
-  ret i32 %28, !dbg !57
+  br i1 %26, label %then19, label %else20, !dbg !55
+
+then19:                                           ; preds = %if.end18
+  %27 = call i32 (ptr, ...) @printf(ptr @0), !dbg !56
+  br label %if.end21, !dbg !56
+
+else20:                                           ; preds = %if.end18
+  %28 = call i32 (ptr, ...) @printf(ptr @1), !dbg !58
+  br label %if.end21, !dbg !58
+
+if.end21:                                         ; preds = %else20, %then19
+  %29 = load i32, ptr %err, align 4, !dbg !60
+  ret i32 %29, !dbg !60
 }
 
 !llvm.dbg.cu = !{!0}
@@ -213,5 +243,8 @@ if.end18:                                         ; preds = %if.end15, %then16
 !53 = !DILocation(line: 27, column: 3, scope: !28)
 !54 = !DILocation(line: 27, column: 41, scope: !28)
 !55 = !DILocation(line: 29, column: 3, scope: !28)
-!56 = !DILocation(line: 0, scope: !28)
-!57 = !DILocation(line: 34, column: 3, scope: !28)
+!56 = !DILocation(line: 30, column: 5, scope: !57)
+!57 = distinct !DILexicalBlock(scope: !28, file: !1, line: 29, column: 17)
+!58 = !DILocation(line: 32, column: 5, scope: !59)
+!59 = distinct !DILexicalBlock(scope: !28, file: !1, line: 31, column: 10)
+!60 = !DILocation(line: 34, column: 3, scope: !28)
