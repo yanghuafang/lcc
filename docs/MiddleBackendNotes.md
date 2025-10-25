@@ -11,6 +11,7 @@ Implementation details for [LearningPlan.md](LearningPlan.md) milestones **M4–
 | IR emission | `CodeGenerator::genIrCode`, `AbstractSyntaxTree.cpp`, `Utils.cpp` | AST walk → raw `llvm::Module` |
 | IR optimization | `IrOptimizer::run` | `PassBuilder::buildPerModuleDefaultPipeline` |
 | IR instrumentation | `IrInstructionStatsPass` (`-ir-stats`) | New PM function pass; no IR change |
+| IR transform (optional) | `FoldAddZeroPass` (`-fold-add-zero`) | New PM function pass; M7 teaching peephole |
 | Object emission | `TargetBackend::emitObject` via `CodeGenerator::genObjectCode` | Host triple (or `--target`), `-mcpu`/`-mattr`, CLI `-O` → `CodeGenOptLevel`, legacy PM → `.o` |
 | Assembly emission | `TargetBackend::emitAssembly` via `-S` | Same `TargetBackendOptions` as object emission |
 | Debug info | `DebugInfoBuilder` | `-g` skips IR opts |
@@ -24,6 +25,7 @@ src/
   TargetBackend.hpp / TargetBackend.cpp   ← M10 (done)
   passes/
     IrInstructionStatsPass.cpp              ← M6 (done)
+    FoldAddZeroPass.cpp                     ← M7 (done)
 ```
 
 ---
@@ -101,11 +103,13 @@ diff -u /tmp/pre.ll /tmp/post.ll | head
 - [x] `CodeGenerator.cpp` shrinks; IR opt logic in `IrOptimizer.cpp`
 - [x] Full test suite PASS
 
-**API** (current; M8 may add `runWithPasses`):
+**API** (current):
 
 ```cpp
 struct IrOptimizerOptions {
-  std::string irStatsPath;  // non-empty enables IrInstructionStatsPass; "-" = stderr
+  std::string irStatsPath;     // non-empty enables IrInstructionStatsPass; "-" = stderr
+  bool foldAddZero = false;    // M7
+  std::string customPipeline;  // M8: PassBuilder pipeline text or preset (e.g. O2-peephole)
 };
 
 class IrOptimizer {
@@ -145,32 +149,31 @@ class IrOptimizer {
 
 ## M7: Custom New PM pass — simple transform (optional)
 
+**Status:** done
+
 **Acceptance criteria**
 
-- [ ] Pass removes or folds a narrow class of redundant IR
-- [ ] All tests PASS (behavior preserved)
-- [ ] Post-opt IR diff documented for `12.arithmetic.c`
+- [x] Pass removes or folds a narrow class of redundant IR (`FoldAddZeroPass`: `add iN %x, 0` → `%x`)
+- [x] All tests PASS (behavior preserved; flag disabled by default in `compile-tests.sh`)
+- [x] Post-opt IR diff documented for `12.arithmetic.c` ([LlvmTools.md § M7](LlvmTools.md#custom-transform-pass-m7))
 - [ ] Optional: M15 benchmark shows no regression (or improvement)
 
-**Example ideas**
-
-| Pass | Idea |
-|------|------|
-| `FoldAddZeroPass` | `add i32 %x, 0` → `%x` |
-| `EraseUnusedAllocaPass` | Remove allocas with no loads (careful with lifetimes) |
-| `StripLifetimePass` | Teaching-only metadata strip |
-
-Start smaller than LLVM’s `instcombine`.
+**Implementation:** `FoldAddZeroPass` (`src/passes/`), enabled with `-fold-add-zero` before the default LLVM pipeline.
 
 ---
 
 ## M8: Pipeline control (optional)
 
+**Status:** done
+
 **Acceptance criteria**
 
-- [ ] `-O-passes=mem2reg,instcombine,simplifycfg` runs named pipeline
-- [ ] Invalid pass name → clear error
-- [ ] Document interaction with `-O0`…`-O3` (mutually exclusive or override rules)
+- [x] `-O-passes mem2reg,instcombine,simplifycfg` runs named pipeline via `PassBuilder::parsePassPipeline`
+- [x] Preset `O2-peephole` maps to the same three passes
+- [x] Invalid pass name → clear error (`Invalid -O-passes pipeline "…": unknown pass name …`)
+- [x] Documented interaction with `-O0`…`-O3` (mutually exclusive; `-g` skips both)
+
+**Implementation:** `IrOptimizerOptions::customPipeline`; `-O-passes` / `--optimization-passes` in `main.cpp`.
 
 ---
 
@@ -277,16 +280,21 @@ diff -u ../debug/25.quick_sort.debug.s ../debug/25.quick_sort.release.s | head
 
 ## M13: MIR inspection (optional)
 
+**Status:** done
+
 **No lcc code required.**
 
 ```bash
-llc -stop-before=registerizer -print-machineinstrs post.ll -o /dev/null 2>&1 | less
+# From lcc/scripts (LLVM 20)
+source ./build-env.sh
+./mir-study.sh
+llc -O2 --stop-before=greedy ../debug/25.quick_sort.release.post.ll -o /tmp/q.pre-regalloc.mir
 ```
 
 **Acceptance**
 
-- [ ] Screenshot or notes: virtual registers before regalloc
-- [ ] Can name where MIR sits in pipeline (after ISel, before asm)
+- [x] Notes: virtual registers (`%15:gpr64common`) before `greedy`; physical (`$w9`) after `prologepilog` — [LlvmTools.md § M13](LlvmTools.md#mir-inspection-m13)
+- [x] Can name where MIR sits in pipeline (after ISel, before asm; regalloc = `greedy` pass)
 
 ---
 

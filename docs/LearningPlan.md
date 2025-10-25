@@ -205,6 +205,8 @@ Details: [MiddleBackendNotes.md § M4](MiddleBackendNotes.md#m4-prepost-ir-dumps
 
 ## M7: Custom New PM pass — simple transform (optional)
 
+**Status:** done
+
 **Goal:** Implement one classical idea on IR yourself.
 
 | Step | Action |
@@ -218,11 +220,13 @@ Skip if M6 satisfies your learning goals.
 
 ## M8: Pipeline control & `-O-passes` (optional)
 
+**Status:** done
+
 **Goal:** Compose LLVM passes explicitly.
 
 | Step | Action |
 |------|--------|
-| Implement | `-O-passes=mem2reg,instcombine,simplifycfg` or named presets |
+| Implement | `-O-passes mem2reg,instcombine,simplifycfg` or named presets |
 | Verify | Preset reproduces subset of `-O2` on a small test |
 
 ---
@@ -285,14 +289,16 @@ Skip if M6 satisfies your learning goals.
 
 ## M13: MIR inspection (optional)
 
+**Status:** done
+
 **Goal:** See machine IR and register allocation stage.
 
 | Step | Action |
 |------|--------|
-| Study | `llc -stop-before=registerizer`, `-print-machineinstrs` on `.release.ll` |
-| Study | Identify virtual vs physical registers before/after regalloc |
+| Study | `llc --print-before=greedy`, `--stop-before=greedy` on `.release.post.ll` (LLVM 20) |
+| Study | Identify virtual (`%N:regbank`) vs physical (`$w9`) registers before/after regalloc |
 | Implement | None required in lcc |
-| Verify | Can point to regalloc in LLVM’s pipeline diagram |
+| Verify | Can point to regalloc (`greedy`) in LLVM’s codegen pipeline — see [LlvmTools.md](LlvmTools.md#mir-inspection-m13) |
 
 **Note:** MIR is used for **all** targets (x86_64, ARM64), not only “new hardware.”
 
@@ -392,8 +398,10 @@ Optional future **language** work (preprocessor, 3D array initializers, `extern`
 | `lcc -S <file>` | Machine assembly (host target; independent codegen pass) |
 | `lcc --target`, `-mcpu`, `-mattr` | `TargetMachine` triple/CPU/features (see [Usage.md](Usage.md)) |
 | `lcc -ir-stats <file>` | Load/store/call counts on raw IR (`-` = stderr) |
+| `lcc -fold-add-zero` | Fold `add iN %x, 0` before LLVM opts (M7) |
+| `lcc -O-passes …` | Explicit New PM pipeline (`opt -passes` syntax; preset `O2-peephole`) |
 | `opt --print-pipeline-passes -passes='default<O2>'` | List O2 passes (LLVM 20) — see [LlvmTools.md](LlvmTools.md) |
-| `llc` | IR → asm; MIR dumps with stop flags |
+| `llc` | IR → asm; MIR via `--print-before=greedy`, `--stop-before=greedy` (M13) |
 | `llvm-objdump -d` | Disassemble `.o` |
 | `llvm-mca` | Analyze asm throughput (vectorization) |
 | `llvm-dwarfdump` | Debug info ([check-debug-info.sh](../scripts/check-debug-info.sh)) |

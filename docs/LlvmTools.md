@@ -93,8 +93,11 @@ llc -O2 ../debug/25.quick_sort.release.post.ll -o /tmp/q.s
 # Cross-target / feature study (x86 AVX2 example)
 llc -O3 -mtriple=x86_64-unknown-linux-gnu -mattr=+avx2 /tmp/s.vec.ll -o /tmp/s.avx.s
 
-# MIR inspection (optional M13): stop before register allocation
-llc -stop-before=registerizer -print-machineinstrs \
+# MIR inspection (LLVM 20): stop before regalloc or print around greedy
+llc -O2 --stop-before=greedy /tmp/q.post.ll -o /tmp/q.pre-regalloc.mir
+
+llc -O2 --filter-print-funcs=partition \
+  --print-before=greedy --print-after=greedy \
   ../debug/25.quick_sort.release.post.ll -o /dev/null 2>&1 | less
 ```
 
@@ -133,6 +136,93 @@ Local equivalents:
 ```
 
 `check-asm-smoke.sh` compiles `12.arithmetic.c` with `-O2 -S` and verifies non-empty asm containing `main`. `compile-tests.sh` already emits `debug/*.s` for every test; the smoke script is a fast explicit `-S` gate.
+
+---
+
+## Custom transform pass (M7)
+
+`FoldAddZeroPass` is a **New PM function pass** that rewrites integer `add` with a zero constant:
+
+| Before | After |
+|--------|-------|
+| `%t = add i32 %x, 0` | uses `%x` directly; `add` erased |
+| `%t = add i32 0, %x` | same |
+
+Enable with **`-fold-add-zero`** (disabled by default so `compile-tests.sh` goldens stay unchanged). Runs in `IrOptimizer` **before** optional `-ir-stats` output and before the LLVM default pipeline.
+
+### Case study: `tests/12.arithmetic.c`
+
+The test includes `if (a + 0 != 37) err = 1;` so raw IR contains a foldable `add`.
+
+```bash
+../../lcc-build/lcc -fold-add-zero -i ../tests/12.arithmetic.c -o /tmp/a.o \
+  -l-pre-opt /tmp/a.pre.ll -l-post-opt /tmp/a.post.ll
+```
+
+**Pre-opt** (`@main`):
+
+```llvm
+  %55 = load i32, ptr %a, align 4
+  %56 = add i32 %55, 0
+  %57 = icmp ne i32 %56, 37
+```
+
+**Post-opt** (after `FoldAddZeroPass` only — no `-O`):
+
+```llvm
+  %55 = load i32, ptr %a, align 4
+  %56 = icmp ne i32 %55, 37
+```
+
+With **`-O2 -fold-add-zero`**, LLVM’s `instcombine` would also fold this; use **`-fold-add-zero` alone** (no `-O`) to see only the custom pass effect. Semantics unchanged — full suite PASS.
+
+### Verify M7 yourself
+
+1. Run the commands above; confirm `add …, 0` disappears from post-opt IR.
+2. `./compile-tests.sh && ./link-tests.sh && ./run-tests.sh` (pass runs **off** by default).
+3. Read `src/passes/FoldAddZeroPass.cpp` — compare with `IrInstructionStatsPass` (M6).
+
+---
+
+## Explicit pipeline control (M8)
+
+`-O-passes` uses LLVM **`PassBuilder::parsePassPipeline`** — the same pass names and comma syntax as `opt -passes='…'`. It replaces `default<O*>` for the middle-end; it does **not** change backend codegen unless you also pass a separate `-O` level (but `-O-passes` and `-O0`…`-Oz` cannot appear on the same command line).
+
+| Flag | Middle-end | Backend |
+|------|------------|---------|
+| `-O2` | `default<O2>` pipeline | `CodeGenOptLevel::Default` |
+| `-O-passes O2-peephole` | `mem2reg,instcombine,simplifycfg` only | `CodeGenOptLevel::None` (no `-O` on CLI) |
+| `-O-passes …` + `-O2` | **Error** (mutually exclusive) | — |
+
+Preset **`O2-peephole`** is a teaching subset of `-O2`: SSA formation (`mem2reg`), peephole cleanup (`instcombine`), and CFG cleanup (`simplifycfg`). It omits interprocedural, loop, and vector passes that full `-O2` runs afterward.
+
+### Case study: `25.quick_sort.c`
+
+From `lcc/scripts`:
+
+```bash
+# Explicit pass list
+../../lcc-build/lcc -O-passes mem2reg,instcombine,simplifycfg -i ../tests/25.quick_sort.c -o /tmp/q.o
+
+# Preset (same three passes)
+../../lcc-build/lcc -O-passes O2-peephole -i ../tests/25.quick_sort.c -o /tmp/q.o \
+  -l-pre-opt /tmp/q.pre.ll -l-post-opt /tmp/q.peephole.ll
+
+# Compare with full -O2
+../../lcc-build/lcc -O2 -i ../tests/25.quick_sort.c -o /tmp/q2.o -l-post-opt /tmp/q.o2.ll
+```
+
+Typical line counts: pre ≈ 294, **peephole ≈ 146**, full **O2 ≈ 174**. The preset removes most stack `alloca`s (mem2reg) and simplifies `@swap` / `@partition`, but does not run loop opts or inlining — so peephole IR can be **smaller** than full O2 on some tests while still doing less work.
+
+Verify SSA on `@partition`: peephole post-opt IR should show `phi` nodes for loop indices (same family of change as M9, but without later GVN/licm).
+
+### Verify M8 yourself
+
+1. `-O-passes mem2reg,instcombine,simplifycfg` on `25.quick_sort.c` — post-opt IR differs from pre-opt; program still runs correctly.
+2. `-O-passes O2-peephole` vs `-O2` — compare `-l-post-opt` line counts and `@partition` shape.
+3. `-O-passes not-a-real-pass` — expect clear error.
+4. `-O2 -O-passes mem2reg` — expect mutual-exclusivity error.
+5. Full suite without `-O-passes`: `./compile-tests.sh && ./link-tests.sh && ./run-tests.sh`.
 
 ---
 
@@ -299,6 +389,98 @@ llvm-objdump -d ../../lcc-build/25.quick_sort.o   # after --release compile
 1. Run `./compile-tests.sh --debug 25.quick_sort.c && ./compile-tests.sh --release 25.quick_sort.c`.
 2. Confirm `@partition` in `.release.s` is shorter and avoids stack spills / `@swap` calls in the loop.
 3. Full suite: `./compile-tests.sh && ./link-tests.sh && ./run-tests.sh`.
+
+---
+
+## MIR inspection (M13)
+
+**No lcc code required.** MIR (Machine IR) is LLVM’s target-specific representation **after** instruction selection and **before** final assembly text. Every backend (x86_64, ARM64, …) lowers through MIR; register names differ by target (`$w9` on ARM64, `$eax` on x86_64) but the concepts are the same.
+
+### Where MIR sits
+
+```text
+LLVM IR (.ll)          lcc IrOptimizer / opt
+       ↓
+   llc (codegen)
+       ↓
+Instruction selection  →  MIR basic blocks (bb.N), virtual regs (%0, %15, …)
+       ↓
+Machine SSA opts       →  peephole, scheduling, CFI, …
+       ↓
+Greedy regalloc        →  map virtual regs to physical ($x0, $w9, …)
+       ↓
+Prolog/epilog, asm     →  .s / .o
+```
+
+`TargetBackend` in lcc calls the same legacy codegen path as **`llc`**: `addPassesToEmitFile` runs the full machine pipeline. Use **`llc`** on committed `-l-post-opt` IR (or `debug/*.release.post.ll`) to inspect MIR without changing lcc.
+
+### LLVM 20 commands
+
+Older recipes used `-print-machineinstrs` and `-stop-before=registerizer`; those flags are **gone** in LLVM 20. Use `--print-before` / `--print-after` with pass name **`greedy`** (Greedy Register Allocator), or `--stop-before=greedy` to write a YAML `.mir` file.
+
+From `lcc/scripts` (requires `llc` on `PATH` via `build-env.sh`):
+
+```bash
+source ./build-env.sh
+
+# Write MIR stopped before register allocation
+llc -O2 --stop-before=greedy /tmp/q.post.ll -o /tmp/q.pre-regalloc.mir
+
+# Print MIR before/after regalloc for one function (stderr)
+llc -O2 --filter-print-funcs=partition \
+  --print-before=greedy --print-after=greedy \
+  ../debug/25.quick_sort.release.post.ll -o /dev/null 2>&1 | less
+
+# Right after instruction selection (@swap is small)
+llc -O2 --filter-print-funcs=swap --print-after-isel \
+  ../debug/25.quick_sort.release.post.ll -o /dev/null 2>&1 | less
+
+# Convenience wrapper (same dumps, truncated)
+./mir-study.sh
+./mir-study.sh ../debug/25.quick_sort.release.post.ll swap
+```
+
+### Virtual vs physical registers
+
+| Stage | What to look for | `@partition` example (ARM64 host) |
+|-------|------------------|-----------------------------------|
+| After isel | Virtual regs `%N:regbank`; args copied from `$phys` | `%15:gpr64common = COPY $x0` |
+| Before `greedy` | Most operands still `%28:gpr32`, `%15:gpr64common` | `%28:gpr32 = LDRWroW %15:gpr64common, …` |
+| After `greedy` | Live-in mapping updated; some `$phys` for returns | `$w0 = COPY %25.sub_32:gpr64common` (return) |
+| After `prologepilog` | Operand names are physical | `renamable $w9 = LDRWroW $x0, renamable $w2, …` |
+
+**Virtual register:** `%15:gpr64common` — numbered `%` operand, unlimited SSA names, no fixed hardware slot yet.
+
+**Physical register:** `$x0`, `$w9` — real machine register from the target’s ABI / allocator.
+
+MIR also keeps **`:: (load … from %ir.4)`** annotations linking machine ops back to LLVM IR values — useful when diffing against `-l-post-opt`.
+
+### Case study: `@partition` loop body
+
+**Before greedy** (excerpt):
+
+```text
+%28:gpr32 = LDRWroW %15:gpr64common, %25.sub_32:gpr64common, 1, 1 :: (load (s32) from %ir.9)
+dead $wzr = SUBSWrr %28:gpr32, %43:gpr32, implicit-def $nzcv
+Bcc 13, %bb.3, implicit killed $nzcv
+```
+
+**After prolog/epilog** (same logic, physical names):
+
+```text
+renamable $w9 = LDRWroW $x0, renamable $w2, 1, 1 :: (load (s32) from %ir.9)
+dead $wzr = SUBSWrr renamable $w9, renamable $w10, implicit-def $nzcv
+Bcc 13, %bb.3, implicit killed $nzcv
+```
+
+Compare with **M12 asm** (`debug/25.quick_sort.release.s`): the release `@partition` loop uses `$w9`/`$w10` directly — the end state of this pipeline.
+
+### Verify M13 yourself
+
+1. Run `./mir-study.sh` — confirm virtual `%…` before `greedy`, physical `$…` after `prologepilog`.
+2. Open `/tmp/q.pre-regalloc.mir` — find `body:` for `@partition`; locate `bb.N` blocks and `successors:` edges (MIR CFG).
+3. Sketch the codegen pipeline on paper: IR → isel → MIR → regalloc → asm (regalloc = **`greedy`** pass in LLVM 20).
+4. On x86_64 Linux, repeat with the same IR; register names change but MIR structure is the same.
 
 ---
 

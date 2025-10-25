@@ -11,7 +11,7 @@ Start with the [README](../README.md) for a quick clone-and-run path, then [Lear
 | [LearningPlan.md](LearningPlan.md) | **Start here** — milestones M0–M18 (front-end study, IR, opts, backend, docs/CI) |
 | [MiddleBackendNotes.md](MiddleBackendNotes.md) | Implementation details & acceptance criteria for middle/back-end milestones (M4–M17) |
 | [FrontendNotes.md](FrontendNotes.md) | Front-end language extension plan (complete; deferrals listed) |
-| [LlvmTools.md](LlvmTools.md) | Compiler pipeline, LLVM tool reference (`opt`, `llc`, `objdump`, `mca`), study notes (M9, M12, M14) |
+| [LlvmTools.md](LlvmTools.md) | Compiler pipeline, LLVM tool reference (`opt`, `llc`, `objdump`, `mca`), study notes (M9, M12–M14) |
 
 ## How-to
 
@@ -34,10 +34,12 @@ Start with the [README](../README.md) for a quick clone-and-run path, then [Lear
 | Milestone | Topic | Primary doc |
 |-----------|-------|-------------|
 | M0–M3 | Build, tour, IR generation study | [LearningPlan.md](LearningPlan.md), [Testing.md](Testing.md) |
-| M4–M6 | IR dumps, `IrOptimizer`, `-ir-stats` pass | [MiddleBackendNotes.md](MiddleBackendNotes.md), [Usage.md](Usage.md) |
+| M4–M5 | IR dumps, `IrOptimizer` | [MiddleBackendNotes.md](MiddleBackendNotes.md), [Usage.md](Usage.md) |
+| M6–M8 | `-ir-stats`, `-fold-add-zero`, `-O-passes` | [MiddleBackendNotes.md](MiddleBackendNotes.md), [LlvmTools.md](LlvmTools.md#explicit-pipeline-control-m8) |
 | M9 | Classical LLVM opts on `-O2` | [LlvmTools.md](LlvmTools.md#classical-optimization-study-m9) |
 | M10–M12 | `TargetBackend`, `-S`, codegen opt level | [MiddleBackendNotes.md](MiddleBackendNotes.md), [LlvmTools.md](LlvmTools.md#codegen-opt-level--asm-diff-m12) |
+| M13 | MIR inspection (`llc`, `mir-study.sh`) | [LlvmTools.md](LlvmTools.md#mir-inspection-m13) |
 | M14 | Auto-vectorization study | [LlvmTools.md](LlvmTools.md#auto-vectorization-study-m14) |
 | M18 | Tool recipes & CI smoke | [LlvmTools.md](LlvmTools.md#llvm-tool-reference), [Testing.md](Testing.md) |
 
-Optional milestones (M7, M8, M13, M15–M17) are documented in [LearningPlan.md](LearningPlan.md) and [MiddleBackendNotes.md](MiddleBackendNotes.md).
+Optional milestones (M15–M17) are documented in [LearningPlan.md](LearningPlan.md) and [MiddleBackendNotes.md](MiddleBackendNotes.md).
