@@ -58,3 +58,7 @@ jobs:
       - name: Assembly emission smoke test
         working-directory: scripts
         run: ./check-asm-smoke.sh
+
+      - name: Benchmark smoke test
+        working-directory: scripts
+        run: ./bench.sh --smoke

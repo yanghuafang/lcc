@@ -156,7 +156,7 @@ class IrOptimizer {
 - [x] Pass removes or folds a narrow class of redundant IR (`FoldAddZeroPass`: `add iN %x, 0` → `%x`)
 - [x] All tests PASS (behavior preserved; flag disabled by default in `compile-tests.sh`)
 - [x] Post-opt IR diff documented for `12.arithmetic.c` ([LlvmTools.md § M7](LlvmTools.md#custom-transform-pass-m7))
-- [ ] Optional: M15 benchmark shows no regression (or improvement)
+- [x] Optional: M15 benchmark shows no regression (or improvement) — `bench.sh --smoke`
 
 **Implementation:** `FoldAddZeroPass` (`src/passes/`), enabled with `-fold-add-zero` before the default LLVM pipeline.
 
@@ -317,29 +317,41 @@ llc -O2 --stop-before=greedy ../debug/25.quick_sort.release.post.ll -o /tmp/q.pr
 
 ## M15: Benchmark harness (optional)
 
-**Script:** `scripts/bench-opt.sh`
+**Status:** done
+
+**Script:** `scripts/bench.sh` — compile time, IR count, and runtime on `benchmarks/` workloads
+
+**Docs:** [Benchmarks.md](Benchmarks.md) — programs, variants, usage, results log
 
 | Variant | Purpose |
 |---------|---------|
-| `-O0` vs `-O2` | LLVM opt impact |
-| With vs without M7 pass | Custom transform impact |
-| `-mcpu native` vs `generic` | Backend impact |
+| `-O0` vs `-O2` | LLVM opt impact (compile time, IR count, runtime) |
+| With vs without `-fold-add-zero` | Custom transform impact on benchmark workloads |
 
-**Metrics**
+No `-mcpu` variant: lcc defaults to LLVM's `generic` CPU, so `-mcpu generic` matches plain `-O2`. Host-specific CPUs are a manual study (see [Benchmarks.md](Benchmarks.md)).
 
-- Wall time (`hyperfine --min-runs 10`)
-- Optional: IR instruction count from `opt -O2` output
+**Metrics** (see [Benchmarks.md](Benchmarks.md))
 
-**CI:** do not gate on timing; gate on PASS only.
+- Compile and runtime wall time — averaged over `--runs` (default 10) via `/usr/bin/time`
+- Post-opt IR instruction count from `-l-post-opt`
+
+**CI:** `./bench.sh --smoke` — compile/link/run each variant; **no timing gate**.
 
 ---
 
 ## M16: IR opt regression script (optional)
 
-**Script:** `scripts/check-ir-opt.sh`
+**Status:** done
 
-- Count instructions in post-opt IR per test
-- Or diff against committed `debug/*.release.ll` when `--release` mode used
+**Script:** `scripts/check-ir-opt.sh` — recompiles each test at `-O2` into a temp dir and compares the IR against committed `debug/` goldens.
+
+**Acceptance criteria**
+
+- [x] Count mode (default): post-opt IR instruction count vs `debug/*.release.post.ll`
+- [x] `--diff`: full textual diff of post-opt IR vs `debug/*.release.post.ll` (host-portable; no target metadata)
+- [x] `--release`: full diff of final IR vs `debug/*.release.ll`, ignoring `target datalayout` / `target triple`
+- [x] Detects a deliberate IR change and exits non-zero; single-test argument supported
+- [x] Documented in [Testing.md](Testing.md#ir-optimization-regression-check-m16)
 
 ---
 

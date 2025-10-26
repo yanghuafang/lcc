@@ -125,7 +125,7 @@ See [M14 vectorization study](#auto-vectorization-study-m14) for scalar vs vecto
 
 ### CI smoke checks
 
-CI (`.github/workflows/build.yml`, matrix over Ubuntu and macOS) runs, in order: build → full compile/link/run suite → `check-debug-info.sh` → **`check-asm-smoke.sh`**.
+CI (`.github/workflows/build.yml`, matrix over Ubuntu and macOS) runs, in order: build → full compile/link/run suite → `check-debug-info.sh` → **`check-asm-smoke.sh`** → `bench.sh --smoke`.
 
 Local equivalents:
 
@@ -481,6 +481,20 @@ Compare with **M12 asm** (`debug/25.quick_sort.release.s`): the release `@partit
 2. Open `/tmp/q.pre-regalloc.mir` — find `body:` for `@partition`; locate `bb.N` blocks and `successors:` edges (MIR CFG).
 3. Sketch the codegen pipeline on paper: IR → isel → MIR → regalloc → asm (regalloc = **`greedy`** pass in LLVM 20).
 4. On x86_64 Linux, repeat with the same IR; register names change but MIR structure is the same.
+
+---
+
+## Benchmark harness (M15)
+
+**No lcc code required.** See **[Benchmarks.md](Benchmarks.md)** for workloads, `bench.sh` usage, variants, CI smoke, and a results log for future optimization comparisons.
+
+Quick commands from `lcc/scripts`:
+
+```bash
+./bench.sh --smoke          # CI: compile/link/run all benchmarks × variants
+./bench.sh                  # compile time + IR count + runtime tables
+./bench.sh --runs 5 matrix_mul_large.c
+```
 
 ---
 

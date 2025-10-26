@@ -46,6 +46,7 @@ Full index (grouped by learning path, how-to, and reference): [docs/README.md](d
 | [docs/Install.md](docs/Install.md) | Dependencies, build `lcc`, CMake options |
 | [docs/Usage.md](docs/Usage.md) | CLI flags, link, debug compiled programs |
 | [docs/Testing.md](docs/Testing.md) | Scripts, unit tests, compile modes |
+| [docs/Benchmarks.md](docs/Benchmarks.md) | Benchmark harness, workloads, recording opt results (M15) |
 | [docs/DebuggingLcc.md](docs/DebuggingLcc.md) | Debug `lcc` in VS Code / LLDB |
 | [docs/Language.md](docs/Language.md) | Full feature list and limitations |
 | [docs/FrontendNotes.md](docs/FrontendNotes.md) | Front-end language features (complete) |
