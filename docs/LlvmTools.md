@@ -125,7 +125,7 @@ See [M14 vectorization study](#auto-vectorization-study-m14) for scalar vs vecto
 
 ### CI smoke checks
 
-CI (`.github/workflows/build.yml`, matrix over Ubuntu and macOS) runs, in order: build → full compile/link/run suite → `check-debug-info.sh` → **`check-asm-smoke.sh`** → `bench.sh --smoke`.
+CI (`.github/workflows/build.yml`, matrix over Ubuntu and macOS) runs, in order: build → full compile/link/run suite → `check-debug-info.sh` → **`check-asm-smoke.sh`** → `check-machine-pass-smoke.sh` → `bench.sh --smoke`.
 
 Local equivalents:
 
@@ -412,7 +412,7 @@ Greedy regalloc        →  map virtual regs to physical ($x0, $w9, …)
 Prolog/epilog, asm     →  .s / .o
 ```
 
-`TargetBackend` in lcc calls the same legacy codegen path as **`llc`**: `addPassesToEmitFile` runs the full machine pipeline. Use **`llc`** on committed `-l-post-opt` IR (or `debug/*.release.post.ll`) to inspect MIR without changing lcc.
+`TargetBackend` in lcc calls the same legacy codegen path as **`llc`**: `addPassesToEmitFile` runs the full machine pipeline. Use **`llc`** on committed `-l-post-opt` IR (or `debug/*.release.post.ll`) to inspect MIR without changing lcc. To run lcc's *own* machine pass inside that pipeline, see [Machine function pass (M17)](#machine-function-pass-m17).
 
 ### LLVM 20 commands
 
@@ -481,6 +481,70 @@ Compare with **M12 asm** (`debug/25.quick_sort.release.s`): the release `@partit
 2. Open `/tmp/q.pre-regalloc.mir` — find `body:` for `@partition`; locate `bb.N` blocks and `successors:` edges (MIR CFG).
 3. Sketch the codegen pipeline on paper: IR → isel → MIR → regalloc → asm (regalloc = **`greedy`** pass in LLVM 20).
 4. On x86_64 Linux, repeat with the same IR; register names change but MIR structure is the same.
+
+---
+
+## Machine function pass (M17)
+
+Where M13 only *inspected* MIR with `llc`, M17 adds lcc's own **`MachineFunctionPass`** to the codegen pipeline. `MachineInstrStatsPass` (`src/passes/MachineInstrStatsPass.cpp`) walks fully lowered MIR — after register allocation and prologue/epilogue insertion — and reports machine-instruction counts per function. It is **analysis only** (`runOnMachineFunction` returns `false`, `getAnalysisUsage` sets `setPreservesAll`), so the emitted `.o`/`.s` is byte-for-byte identical whether or not the pass runs.
+
+Enable it with `-machine-stats <file>` (`-` = stderr):
+
+```bash
+../../lcc-build/lcc -O2 -i ../tests/25.quick_sort.c -o /tmp/q.o -machine-stats -
+# lcc machine-instr-stats (final MIR, host target):
+#   swap: 5 machine instructions
+#   partition: 26 machine instructions
+#   quickSort: 40 machine instructions
+#   main: 36 machine instructions
+#   total: functions=4 machine_instructions=107   (ARM64 host; x86_64 differs)
+```
+
+Each emitted file runs its own codegen pipeline, so passing both `-o` and `-S` reports the stats **twice** (identical counts); a `<file>` target is overwritten by the last emission. `-g` is unaffected — the object stays byte-identical with or without the flag.
+
+### Registration: machine pass vs New PM IR pass
+
+This is the key learning point — a machine pass registers **completely differently** from the New PM IR passes (`IrInstructionStatsPass`, `FoldAddZeroPass`) that live in the same directory:
+
+| | IR pass (M6/M7) | Machine pass (M17) |
+|--|-----------------|--------------------|
+| Base class | `PassInfoMixin<T>` (New PM) | `MachineFunctionPass` (legacy PM) |
+| Unit | `llvm::Function` / `Module` IR | `llvm::MachineFunction` (MIR) |
+| Manager | `PassBuilder` / `ModulePassManager` in `IrOptimizer` | `legacy::PassManager` + `TargetPassConfig` in `TargetBackend` |
+| Where it runs | Before object emission (middle-end) | Inside codegen, after regalloc, before AsmPrinter |
+| Identity | none needed | `static char ID;` |
+
+### How lcc splices it in
+
+`TargetBackend` normally calls `TargetMachine::addPassesToEmitFile`, which builds the whole codegen pipeline internally with no injection point. When `-machine-stats` is set, lcc instead drives that pipeline by hand (`addEmitPassesWithMachineStats` in `TargetBackend.cpp`), mirroring LLVM's own `addPassesToEmitFile`:
+
+```text
+createPassConfig(PM)          # target's TargetPassConfig
+  → addISelPasses()           # IR → MIR (instruction selection)
+  → addMachinePasses()        # machine SSA opts, greedy regalloc, prolog/epilog
+  → PM.add(MachineInstrStatsPass)   # ← our pass, on final MIR
+  → addAsmPrinter(...)        # MIR → .s / .o
+  → createFreeMachineFunctionPass()
+```
+
+The default path (no `-machine-stats`) still uses the stock `addPassesToEmitFile`, so committed `debug/*.s` and `.o` goldens are untouched.
+
+### Verify M17 yourself
+
+```bash
+# 1. Stats print on final MIR
+../../lcc-build/lcc -O2 -i ../tests/25.quick_sort.c -o /tmp/q.o -machine-stats -
+
+# 2. The pass cannot change codegen (analysis only): object is byte-identical
+../../lcc-build/lcc -O2 -i ../tests/25.quick_sort.c -o /tmp/with.o -machine-stats /tmp/m.txt
+../../lcc-build/lcc -O2 -i ../tests/25.quick_sort.c -o /tmp/without.o
+cmp /tmp/with.o /tmp/without.o && echo "object byte-identical"
+
+# 3. Machine counts are target-specific — compare with the IR-layer counts
+../../lcc-build/lcc -O2 -i ../tests/25.quick_sort.c -o /tmp/q.o -ir-stats -
+```
+
+**Out of scope:** custom register allocator or a transforming machine pass — M17 is one small, safe analysis pass to learn the codegen-layer registration path.
 
 ---
 

@@ -52,6 +52,8 @@ flowchart LR
 
 ## Milestone checklist
 
+**Status: all milestones M0–M18 are complete**, including the optional ones (M7, M8, M13, M15, M16, M17).
+
 Track progress here. Do not start the next milestone until **Verify** passes for the current one.
 
 | ID | Milestone | Layer | Required? |
@@ -352,13 +354,17 @@ Instrument-only passes (M6): benchmark optional.
 
 ## M17: Machine pass (advanced, optional)
 
+**Status:** done
+
 **Goal:** One `MachineFunctionPass` on host target — **not** custom regalloc.
 
 | Step | Action |
 |------|--------|
-| Study | LLVM backend pass registration (separate from IR New PM) |
-| Implement | Trivial machine peephole or counter on MIR |
-| Verify | Asm/object still correct on one test |
+| Study | LLVM backend pass registration (legacy PM + `TargetPassConfig`, separate from IR New PM) |
+| Implement | `MachineInstrStatsPass` — counts machine instructions on final MIR; enable with `-machine-stats` |
+| Verify | Object/asm byte-identical with vs without the flag (analysis-only); full suite PASS |
+
+Details: [MiddleBackendNotes.md § M17](MiddleBackendNotes.md#m17-machine-pass-advanced-optional), [LlvmTools.md § M17](LlvmTools.md#machine-function-pass-m17).
 
 Full register allocator: **out of scope**.
 
@@ -402,6 +408,7 @@ Optional future **language** work (preprocessor, 3D array initializers, `extern`
 | `lcc -S <file>` | Machine assembly (host target; independent codegen pass) |
 | `lcc --target`, `-mcpu`, `-mattr` | `TargetMachine` triple/CPU/features (see [Usage.md](Usage.md)) |
 | `lcc -ir-stats <file>` | Load/store/call counts on raw IR (`-` = stderr) |
+| `lcc -machine-stats <file>` | Machine-instruction counts on final MIR via a legacy `MachineFunctionPass` (`-` = stderr; M17) |
 | `lcc -fold-add-zero` | Fold `add iN %x, 0` before LLVM opts (M7) |
 | `lcc -O-passes …` | Explicit New PM pipeline (`opt -passes` syntax; preset `O2-peephole`) |
 | `opt --print-pipeline-passes -passes='default<O2>'` | List O2 passes (LLVM 20) — see [LlvmTools.md](LlvmTools.md) |

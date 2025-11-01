@@ -15,6 +15,7 @@ All commands below assume `cd lcc/scripts`.
 | `run-tests.sh` | Run linked test binaries |
 | `check-debug-info.sh` | Smoke test: compile with `-g -O0`, verify `llvm-dwarfdump` output |
 | `check-asm-smoke.sh` | Smoke test: `-O2 -S` on one test; verify non-empty asm (M18 CI) |
+| `check-machine-pass-smoke.sh` | Smoke test: `-machine-stats` emits a summary and leaves the object byte-identical (M17 CI) |
 | `check-ir-opt.sh` | IR opt regression: recompile `-O2`, compare IR vs committed `debug/` goldens (M16) |
 | `mir-study.sh` | Study helper: print MIR before/after regalloc via `llc` (M13) |
 | `bench.sh` | Benchmark `benchmarks/*` (compile time, IR count, runtime); `--smoke` for CI — see [Benchmarks.md](Benchmarks.md) |
@@ -96,6 +97,14 @@ Validates `DW_TAG_subprogram`, local variables, lexical blocks, and struct debug
 
 Compiles `12.arithmetic.c` with `-O2 -S` and checks that assembly is non-empty and defines `main`. CI runs this after the full suite and `check-debug-info.sh`.
 
+### Machine pass smoke test
+
+```bash
+./check-machine-pass-smoke.sh
+```
+
+Compiles `25.quick_sort.c` with `-machine-stats` and checks that (1) the legacy `MachineFunctionPass` emits a `machine_instructions=` summary, and (2) the object is **byte-identical** with vs without the flag (the pass is analysis-only). This is the only CI coverage of `TargetBackend`'s hand-rolled codegen pipeline (`addEmitPassesWithMachineStats`), since the regular suite never passes `-machine-stats`. Machine-instruction counts are host-specific, so the check asserts the summary exists rather than an exact number.
+
 ### IR optimization regression check (M16)
 
 Catches unintended middle-end IR changes after a compiler edit. It recompiles every test at `-O2` into a temp directory and compares the result against the committed goldens under `debug/`.
@@ -133,4 +142,6 @@ See [Benchmarks.md](Benchmarks.md) for workloads, timed runs, and recording resu
 
 ## CI
 
-GitHub Actions (`.github/workflows/build.yml`) runs a matrix on `ubuntu-latest` and `macos-latest`: install, build, compile, link, run, `check-debug-info.sh`, `check-asm-smoke.sh`, and `bench.sh --smoke`. See [Install.md](Install.md) for dependencies.
+GitHub Actions (`.github/workflows/build.yml`) runs a matrix on `ubuntu-latest` and `macos-latest`: install, build, compile, link, run, `check-debug-info.sh`, `check-asm-smoke.sh`, `check-machine-pass-smoke.sh`, and `bench.sh --smoke`. See [Install.md](Install.md) for dependencies.
+
+`check-ir-opt.sh` (M16) is **not** in CI: its `debug/` goldens are host-specific, so it is a local pre-commit guard run on the host that generated them.

@@ -11,14 +11,14 @@ Start with the [README](../README.md) for a quick clone-and-run path, then [Lear
 | [LearningPlan.md](LearningPlan.md) | **Start here** — milestones M0–M18 (front-end study, IR, opts, backend, docs/CI) |
 | [MiddleBackendNotes.md](MiddleBackendNotes.md) | Implementation details & acceptance criteria for middle/back-end milestones (M4–M17) |
 | [FrontendNotes.md](FrontendNotes.md) | Front-end language extension plan (complete; deferrals listed) |
-| [LlvmTools.md](LlvmTools.md) | Compiler pipeline, LLVM tool reference (`opt`, `llc`, `objdump`, `mca`), study notes (M9, M12–M15) |
+| [LlvmTools.md](LlvmTools.md) | Compiler pipeline, LLVM tool reference (`opt`, `llc`, `objdump`, `mca`), study notes (M9, M12–M15, M17) |
 
 ## How-to
 
 | Document | Contents |
 |----------|----------|
 | [Install.md](Install.md) | Dependencies (macOS, Ubuntu), build `lcc`, `build-lcc.sh` options, manual CMake |
-| [Usage.md](Usage.md) | `lcc` CLI flags (`-l-pre-opt`, `-l-post-opt`, `-ir-stats`, `-S`, target flags, `-O0`…`-O3`) |
+| [Usage.md](Usage.md) | `lcc` CLI flags (`-l-pre-opt`, `-l-post-opt`, `-ir-stats`, `-machine-stats`, `-S`, target flags, `-O0`…`-O3`) |
 | [Testing.md](Testing.md) | Scripts in `lcc/scripts`, unit tests, compile modes, CI smoke checks |
 | [Benchmarks.md](Benchmarks.md) | **Benchmark harness** — `bench.sh`, `benchmarks/`, opt variants, results log (M15) |
 | [DebuggingLcc.md](DebuggingLcc.md) | Debug `lcc` itself in VS Code / LLDB |
@@ -42,6 +42,8 @@ Start with the [README](../README.md) for a quick clone-and-run path, then [Lear
 | M13 | MIR inspection (`llc`, `mir-study.sh`) | [LlvmTools.md](LlvmTools.md#mir-inspection-m13) |
 | M14 | Auto-vectorization study | [LlvmTools.md](LlvmTools.md#auto-vectorization-study-m14) |
 | M15 | Benchmark harness (`bench.sh`, `benchmarks/`) | [Benchmarks.md](Benchmarks.md) |
+| M16 | IR opt regression (`check-ir-opt.sh`) | [Testing.md](Testing.md#ir-optimization-regression-check-m16) |
+| M17 | Machine pass (`-machine-stats`, `MachineInstrStatsPass`) | [LlvmTools.md](LlvmTools.md#machine-function-pass-m17) |
 | M18 | Tool recipes & CI smoke | [LlvmTools.md](LlvmTools.md#llvm-tool-reference), [Testing.md](Testing.md) |
 
-Optional milestones (M16–M17) are documented in [LearningPlan.md](LearningPlan.md) and [MiddleBackendNotes.md](MiddleBackendNotes.md).
+All milestones **M0–M18 are complete**, including the optional ones (M7, M8, M13, M15, M16, M17). Implementation detail for M4–M17 lives in [MiddleBackendNotes.md](MiddleBackendNotes.md).

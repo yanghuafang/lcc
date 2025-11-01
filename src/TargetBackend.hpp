@@ -14,6 +14,10 @@ struct TargetBackendOptions {
   std::string features;
   // CLI -O for backend codegen (see TargetBackend::resolveCodeGenOptLevel).
   std::string optimizationLevel;
+  // When non-empty, splice MachineInstrStatsPass into the codegen pipeline and
+  // write machine-instruction counts here ("-" = stderr);
+  // empty keeps the stock addPassesToEmitFile path (goldens unchanged).
+  std::string machineStatsPath;
 };
 
 // LLVM backend: TargetMachine setup and object/asm emission via legacy PM.
