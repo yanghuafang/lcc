@@ -60,3 +60,5 @@ LLVM **20**, flex, bison, argparse, graphviz, CMake **3.22+**, **C++17**, and a 
 ## Roadmap
 
 Front-end language work (arrays through `-g` debug info) is **complete**; see [docs/FrontendNotes.md](docs/FrontendNotes.md). Middle/back-end milestones **M0–M18 are complete**, including the optional ones (M7, M8, M13, M15, M16, M17); see [docs/LearningPlan.md](docs/LearningPlan.md).
+
+Exploratory ideas for later — real diagnostics, more C language features, and deeper optimization/back-end passes — are recorded as **unscheduled Future directions** (no milestones attached) in [docs/FrontendNotes.md](docs/FrontendNotes.md#future-directions-no-milestones) and [docs/MiddleBackendNotes.md](docs/MiddleBackendNotes.md#future-directions-no-milestones).
