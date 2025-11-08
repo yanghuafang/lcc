@@ -1425,7 +1425,11 @@ llvm::Value* VarDecl::genCode(CodeGenerator& generator) {
         generator.switchInsertPointToCurrentBlock();
         initializer = asConstant(initialExpr, "Global variable initializer");
       } else {
-        initializer = llvm::UndefValue::get(llvmVarType);
+        // C static-storage objects with no initializer are zero-initialized
+        // (C11 6.7.9/10). lcc is single-TU, so a zeroinitializer strong
+        // definition matches the final tentative definition; undef would let
+        // the optimizer read garbage from untouched globals.
+        initializer = llvm::Constant::getNullValue(llvmVarType);
       }
 
       llvm::GlobalValue::LinkageTypes linkage =

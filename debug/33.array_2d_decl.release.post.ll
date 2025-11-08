@@ -1,7 +1,7 @@
 ; ModuleID = 'lcc'
 source_filename = "lcc"
 
-@gm = local_unnamed_addr global [3 x [4 x i32]] undef
+@gm = local_unnamed_addr global [3 x [4 x i32]] zeroinitializer
 @str = private unnamed_addr constant [24 x i8] c"33.array_2d_decl.c FAIL\00", align 1
 @str.1 = private unnamed_addr constant [24 x i8] c"33.array_2d_decl.c PASS\00", align 1
 

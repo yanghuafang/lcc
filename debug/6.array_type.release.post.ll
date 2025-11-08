@@ -1,10 +1,10 @@
 ; ModuleID = 'lcc'
 source_filename = "lcc"
 
-@gs = local_unnamed_addr global [16 x i8] undef
+@gs = local_unnamed_addr global [16 x i8] zeroinitializer
 @0 = private unnamed_addr constant [13 x i8] c"hello world!\00", align 1
 @gps = local_unnamed_addr global ptr @0
-@gi = local_unnamed_addr global [4 x i32] undef
+@gi = local_unnamed_addr global [4 x i32] zeroinitializer
 @str.1 = private unnamed_addr constant [20 x i8] c"6.array_type.c PASS\00", align 1
 
 ; Function Attrs: nofree nounwind
