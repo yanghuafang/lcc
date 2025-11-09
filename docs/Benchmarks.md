@@ -59,9 +59,19 @@ Sources live in [`benchmarks/`](../benchmarks/). They are **not** in `compile-te
 |------|----------|----------------|
 | [`array_add_large.c`](../benchmarks/array_add_large.c) | 65536 element-wise adds, 1000 reps | Stride-1 loop; candidate for `-O3` / vectorization study ([M14](LlvmTools.md#auto-vectorization-study-m14)) |
 | [`matrix_mul_large.c`](../benchmarks/matrix_mul_large.c) | 128×128 matmul, 40 reps | Triple-nested loop; strong O0 vs O2 runtime gap on compute-bound workloads |
+| [`matrix_mul_tiled_large.c`](../benchmarks/matrix_mul_tiled_large.c) | 128×128 matmul in 32×32 tiles, 40 reps | Cache-blocked variant of `matrix_mul_large.c` (same size/inputs/reps); compare IR size and runtime of blocking vs the naive triple loop |
+| [`matrix_mul_huge.c`](../benchmarks/matrix_mul_huge.c) | 512×512 matmul, 4 reps | Cache-**spilling** naive baseline (1 MB/matrix); pairs with the tiled huge version to show blocking's win at scale |
+| [`matrix_mul_tiled_huge.c`](../benchmarks/matrix_mul_tiled_huge.c) | 512×512 matmul in 32×32 tiles, 4 reps | Tiled version of `matrix_mul_huge.c` (same size/inputs/reps); ~40% faster at `-O2` here because the matrices exceed cache |
 | [`quick_sort_large.c`](../benchmarks/quick_sort_large.c) | 8192 ints, 100 sorts | Irregular control flow, calls in loop — like `tests/25.quick_sort.c` but large enough to time |
 
 **Language notes:** Benchmarks use literal array sizes (no preprocessor). Matrices use flat row-major 1D arrays because lcc has no 2D array parameters. Reduction-style loops are covered by the M14 study fixture [`tests/40.array_sum.c`](../tests/40.array_sum.c), not duplicated here.
+
+**Tiling note:** the tiled kernels block the loops into 32×32 tiles and zero `C` up front (the naive kernel overwrites `C[i][j]`, the blocked one accumulates into it across `kk` tiles); both produce a bit-identical result to their naive counterpart. They form **two matched pairs** — 128×128 (`matrix_mul_large.c` vs `matrix_mul_tiled_large.c`) and 512×512 (`matrix_mul_huge.c` vs `matrix_mul_tiled_huge.c`) — sized so one working set stays in cache and the other does not. The 512 pair uses far fewer reps because each matmul is ~64× heavier.
+
+- **128×128** (`matrix_mul_large.c` vs `matrix_mul_tiled_large.c`) — the 192 KB working set is cache-resident, so blocking is roughly **runtime-neutral** and merely adds IR and compile time.
+- **512×512** (`matrix_mul_huge.c` vs `matrix_mul_tiled_huge.c`) — the 1 MB matrices **spill cache**, so blocking is markedly faster (~40% at `-O2` on the host below). This is the pair that demonstrates the win.
+
+The 512 pair uses far fewer reps than the 128 pair because each matmul is ~64× heavier.
 
 ---
 
@@ -111,38 +121,47 @@ Host: Darwin arm64
 === array_add_large ===
 Variant                  compile(s)   IR insts   runtime(s)
 ---------------------- ------------ ---------- ------------
-O0                            0.010        116        0.157
-O2                            0.018         94        0.082
-O2+fold-add-zero              0.019         94        0.083
+O0                            0.010        116        0.158
+O2                            0.020         94        0.088
+O2+fold-add-zero              0.020         94        0.088
+
+=== matrix_mul_huge ===
+Variant                  compile(s)   IR insts   runtime(s)
+---------------------- ------------ ---------- ------------
+O0                            0.020        183        1.013
+O2                            0.020        163        0.450
+O2+fold-add-zero              0.023        163        0.451
 
 === matrix_mul_large ===
 Variant                  compile(s)   IR insts   runtime(s)
 ---------------------- ------------ ---------- ------------
-O0                            0.021        183        0.124
-O2                            0.041        163        0.054
-O2+fold-add-zero              0.020        163        0.052
+O0                            0.010        183        0.129
+O2                            0.039        163        0.060
+O2+fold-add-zero              0.037        163        0.060
+
+=== matrix_mul_tiled_huge ===
+Variant                  compile(s)   IR insts   runtime(s)
+---------------------- ------------ ---------- ------------
+O0                            0.021        261        0.996
+O2                            0.033        203        0.250
+O2+fold-add-zero              0.020        203        0.249
+
+=== matrix_mul_tiled_large ===
+Variant                  compile(s)   IR insts   runtime(s)
+---------------------- ------------ ---------- ------------
+O0                            0.030        261        0.149
+O2                            0.023        203        0.058
+O2+fold-add-zero              0.020        203        0.058
 
 === quick_sort_large ===
 Variant                  compile(s)   IR insts   runtime(s)
 ---------------------- ------------ ---------- ------------
-O0                            0.042        188        0.084
-O2                            0.020        115        0.076
-O2+fold-add-zero              0.020        115        0.060
+O0                            0.010        188        0.089
+O2                            0.020        115        0.059
+O2+fold-add-zero              0.036        115        0.059
+
+Note: timing is host-dependent; CI does not gate on runtime numbers.
 ```
-
-**How to read this baseline**
-
-Workloads at commit time: `array_add_large` **1000 reps**, `matrix_mul_large` **40 reps**, `quick_sort_large` **100 sorts**. Each `runtime(s)` value is the mean of **10** `./bench.sh` runs (default `--runs`).
-
-| Benchmark | Reps | O0 runtime | O2 runtime | O0→O2 |
-|-----------|------|------------|------------|-------|
-| `array_add_large` | 1000 | 0.157 s | 0.082 s | ~48% |
-| `matrix_mul_large` | 40 | 0.124 s | 0.054 s | ~56% |
-| `quick_sort_large` | 100 | 0.084 s | 0.076 s | ~10% |
-
-- **IR insts:** `-O2` lowers post-opt IR vs `-O0` on every workload (e.g. `quick_sort_large` 188 → 115; `matrix_mul_large` 183 → 163).
-- **Runtime:** O0 per-run times are 84–157 ms — well above launch noise. Largest gap is **`matrix_mul_large`** (~56%); `quick_sort_large` shows the smallest (~10%, call-heavy recursion).
-- **O2+fold-add-zero:** IR matches plain `-O2` (no `add x, 0` to fold on these workloads); runtime matches O2 within noise (the lower `quick_sort_large` value is run-to-run jitter, not a real speedup).
 
 ### 2025-06-29 — Linux x86_64 (Ubuntu), LLVM 20
 
@@ -155,38 +174,74 @@ Host: Linux x86_64
 === array_add_large ===
 Variant                  compile(s)   IR insts   runtime(s)
 ---------------------- ------------ ---------- ------------
-O0                            0.010        116        0.153
-O2                            0.010         94        0.040
-O2+fold-add-zero              0.011         94        0.040
+O0                            0.040        116        0.343
+O2                            0.068         94        0.139
+O2+fold-add-zero              0.071         94        0.135
+
+=== matrix_mul_huge ===
+Variant                  compile(s)   IR insts   runtime(s)
+---------------------- ------------ ---------- ------------
+O0                            0.040        183        2.508
+O2                            0.079        163        1.041
+O2+fold-add-zero              0.082        163        1.011
 
 === matrix_mul_large ===
 Variant                  compile(s)   IR insts   runtime(s)
 ---------------------- ------------ ---------- ------------
-O0                            0.010        183        0.090
-O2                            0.020        163        0.030
-O2+fold-add-zero              0.020        163        0.030
+O0                            0.040        183        0.251
+O2                            0.080        163        0.118
+O2+fold-add-zero              0.077        163        0.124
+
+=== matrix_mul_tiled_huge ===
+Variant                  compile(s)   IR insts   runtime(s)
+---------------------- ------------ ---------- ------------
+O0                            0.040        261        1.596
+O2                            0.099        203        0.497
+O2+fold-add-zero              0.092        203        0.489
+
+=== matrix_mul_tiled_large ===
+Variant                  compile(s)   IR insts   runtime(s)
+---------------------- ------------ ---------- ------------
+O0                            0.040        261        0.269
+O2                            0.095        203        0.112
+O2+fold-add-zero              0.092        203        0.103
 
 === quick_sort_large ===
 Variant                  compile(s)   IR insts   runtime(s)
 ---------------------- ------------ ---------- ------------
-O0                            0.009        188        0.050
-O2                            0.011        115        0.020
-O2+fold-add-zero              0.015        115        0.020
+O0                            0.040        188        0.163
+O2                            0.073        115        0.089
+O2+fold-add-zero              0.070        115        0.088
+
+Note: timing is host-dependent; CI does not gate on runtime numbers.
 ```
 
-**How to read this baseline**
+**How to read these baselines**
 
-Same workloads and `--runs 10` as the macOS entry above.
+Full-suite `./bench.sh` (default **10 runs**) on both reference hosts. Reps per workload: `array_add_large` 1000, `matrix_mul_large` / `matrix_mul_tiled_large` 40, `matrix_mul_huge` / `matrix_mul_tiled_huge` 4, `quick_sort_large` 100. `IR insts` is host-independent (identical on both hosts).
 
-| Benchmark | Reps | O0 runtime | O2 runtime | O0→O2 |
-|-----------|------|------------|------------|-------|
-| `array_add_large` | 1000 | 0.153 s | 0.040 s | ~74% |
-| `matrix_mul_large` | 40 | 0.090 s | 0.030 s | ~67% |
-| `quick_sort_large` | 100 | 0.050 s | 0.020 s | ~60% |
+**O0 → O2 (runtime):**
 
-- **IR insts:** Same post-opt counts as macOS arm64 — IR metrics are host-independent.
-- **Runtime:** Faster CPU than M2 Pro; O0 times are 50–153 ms, O2 times 20–40 ms. All three workloads show strong O0→O2 gaps; largest is **`array_add_large`** (~74%, likely auto-vectorized at `-O2` on x86).
-- **O2+fold-add-zero:** IR matches plain `-O2`; runtime within noise on this host.
+| Benchmark | macOS O0 → O2 | Linux O0 → O2 |
+|-----------|---------------|---------------|
+| `array_add_large` | 0.158 → 0.088 s (~44%) | 0.343 → 0.139 s (~59%) |
+| `matrix_mul_large` | 0.129 → 0.060 s (~53%) | 0.251 → 0.118 s (~53%) |
+| `matrix_mul_huge` | 1.013 → 0.450 s (~56%) | 2.508 → 1.041 s (~58%) |
+| `quick_sort_large` | 0.089 → 0.059 s (~34%) | 0.163 → 0.089 s (~45%) |
+
+**Naive vs tiled matmul (the M15 tiling study):**
+
+| Size | naive O2 | tiled O2 | tiled speedup |
+|------|----------|----------|---------------|
+| 128×128 (cache-resident), macOS | 0.060 | 0.058 | ~neutral |
+| 128×128, Linux | 0.118 | 0.112 | ~neutral |
+| 512×512 (cache-spilling), macOS | 0.450 | 0.250 | **~44%** |
+| 512×512, Linux | 1.041 | 0.497 | **~52%** |
+
+- **Tiling pays off only once the working set exceeds cache.** At 128×128 (192 KB, cache-resident) tiled ≈ naive at `-O2` and is even slightly *slower* at `-O0` (0.149 vs 0.129 s on macOS) from the extra loop nest and `C`-zeroing. At 512×512 (1 MB/matrix, cache-spilling) blocking wins big at `-O2` on both hosts.
+- **Host nuance at `-O0`:** the 512 tiling win shows on Linux x86_64 even without opts (2.508 → 1.596 s, ~36%) but is ~neutral on macOS arm64 (1.013 → 0.996 s) — unoptimized codegen overhead masks the locality gain more on the arm64 host.
+- **IR insts:** `-O2` lowers post-opt IR on every workload; the tiled kernels carry more IR than their naive twins (183 → 261 at O0, 163 → 203 at O2) from the extra loops and the `C`-zeroing pass. Counts are identical across hosts.
+- **O2+fold-add-zero:** matches plain `-O2` in IR and runtime (no `add x, 0` to fold on these workloads); small differences are run-to-run jitter.
 
 ---
 
