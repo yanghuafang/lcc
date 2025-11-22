@@ -91,7 +91,7 @@ Save it as `/tmp/sum.c`, then from `lcc/scripts` (after `./build-lcc.sh`):
 # 1. Compile C -> object with lcc (-i and -o are both required)
 ../../lcc-build/lcc -i /tmp/sum.c -o /tmp/sum.o
 
-# 2. Link the object with the system toolchain (on Linux, add -no-pie)
+# 2. Link the object with the system toolchain
 clang /tmp/sum.o -o /tmp/sum
 
 # 3. Run it
@@ -99,7 +99,7 @@ clang /tmp/sum.o -o /tmp/sum
 # -> sum(1..10) = 55
 ```
 
-`lcc` emits non-PIC objects, so on Linux the link step is `clang /tmp/sum.o -o /tmp/sum -no-pie`. Add `-O2` to optimize, `-S /tmp/sum.s` to also emit assembly, `-g` for a debuggable build, or `-v /tmp/sum.dot` to dump the AST graph. Full flag reference: [docs/Usage.md](docs/Usage.md).
+`lcc` emits position-independent objects, so the same link step works on macOS and Linux without `-no-pie`. Add `-O2` to optimize, `-S /tmp/sum.s` to also emit assembly, `-g` for a debuggable build, or `-v /tmp/sum.dot` to dump the AST graph. Full flag reference: [docs/Usage.md](docs/Usage.md).
 
 ## What it supports (summary)
 

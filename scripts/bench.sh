@@ -116,11 +116,8 @@ compile_variant() {
 link_variant() {
   local obj="$1"
   local bin="$2"
-  local link_flags=()
-  if [[ "$(uname -s)" == Linux ]]; then
-    link_flags=(-no-pie)
-  fi
-  "${LCC_LINKER}" "${obj}" -o "${bin}" ${link_flags[@]+"${link_flags[@]}"}
+  # lcc emits PIC objects (Reloc::PIC_), so no -no-pie is needed on Linux.
+  "${LCC_LINKER}" "${obj}" -o "${bin}"
 }
 
 # Average wall time (seconds) of a command over min_runs via /usr/bin/time -p.

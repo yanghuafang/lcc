@@ -135,18 +135,12 @@ compile() {
   graph2Image ${source}
 }
 
-# The flag array is empty on macOS, and bash 3.2 counts an empty
-# "${arr[@]}" as unbound under `set -u`, so the expansion is guarded.
 linkObj2Bin() {
   local obj=$1
   local bin=$2
-  local link_flags=()
-  if [[ "$(uname -s)" == Linux ]]; then
-    # lcc emits non-PIC objects; Ubuntu defaults to PIE executables.
-    link_flags=(-no-pie)
-  fi
-  if ! "${LCC_LINKER}" ${LCC_BUILD_DIR}/${obj} -o ${LCC_BUILD_DIR}/${bin} \
-    ${link_flags[@]+"${link_flags[@]}"}; then
+  # lcc emits position-independent objects (TargetBackend uses Reloc::PIC_), so
+  # they link into Ubuntu's default PIE executables without -no-pie.
+  if ! "${LCC_LINKER}" ${LCC_BUILD_DIR}/${obj} -o ${LCC_BUILD_DIR}/${bin}; then
     echo "Failed to link ${obj} with ${LCC_LINKER}" >&2
     return 1
   fi

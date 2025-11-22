@@ -23,9 +23,8 @@ lcc_fail_env() {
 
 lcc_detect_linker() {
   # Link with the distro toolchain, not LLVM's clang from PATH (build-env prepends
-  # llvm-20/bin). On macOS, Homebrew clang mishandles lcc .o files; on Linux,
-  # LLVM's driver often defaults to lld and rejects non-PIC relocations in PIE
-  # links unless objects were built with -fPIC/-fPIE.
+  # llvm-20/bin). On macOS, Homebrew clang mishandles lcc .o files; on Linux we
+  # prefer the system clang/gcc for a stock PIE link of lcc's PIC objects.
   if [[ "$(uname -s)" == Darwin ]] && [[ -x /usr/bin/clang ]]; then
     echo /usr/bin/clang
     return
