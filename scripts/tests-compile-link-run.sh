@@ -110,7 +110,16 @@ graph2Image() {
   local source=$1
   local graph=${source%.c}.dot
   local image=${source%.c}.png
-  dot -T png -o ../debug/${image} ../debug/${graph}
+  # A large AST (e.g. 15.logic.c) can exceed Cairo's PNG bitmap size limit; dot
+  # then downscales the image and warns. The PNG is still valid, so drop only
+  # that benign warning while keeping real errors and dot's exit status.
+  local dot_err rc
+  dot_err="$(dot -T png -o ../debug/${image} ../debug/${graph} 2>&1 1>/dev/null)"
+  rc=$?
+  if [[ -n "$dot_err" ]]; then
+    grep -v 'too large for cairo-renderer bitmaps' <<<"$dot_err" >&2 || true
+  fi
+  return $rc
 }
 
 compile() {
@@ -131,6 +140,9 @@ compile() {
   local ir="${base}${mode_suffix}.ll"
   local asm="${base}${mode_suffix}.s"
   local graph=${base}.dot
+  # Per-file banner so each test's lcc output is easy to separate visually and
+  # grep for when compiling the whole suite (see compile-tests.sh).
+  printf '\n========== [%s] %s ==========\n' "${compile_mode#--}" "${source}"
   compileC2Obj ${source} ${obj} ${ir_pre} ${ir_post} ${ir} ${graph} ${asm}
   graph2Image ${source}
 }
