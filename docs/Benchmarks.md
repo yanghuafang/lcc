@@ -1,6 +1,6 @@
 # Benchmarks
 
-lcc ships a **benchmark harness** and large workloads under [`benchmarks/`](../benchmarks/) so you can measure the effect of middle-end and back-end optimizations on **compile time**, **IR size**, and **runtime**. Benchmarks are separate from the PASS/FAIL suite in [`tests/`](../tests/): unit tests stay small and deterministic; benchmarks are sized for meaningful timing.
+lcc ships a **benchmark harness** and large workloads under [`benchmarks/`](../benchmarks/) so you can measure the effect of middle-end and back-end optimizations on **compile time**, **IR size**, and **runtime**. Benchmarks are separate from the PASS/FAIL suite in [`tests/`](../tests/): the tests stay small and deterministic; benchmarks are sized for meaningful timing.
 
 **Milestone:** M15 ([LearningPlan.md](LearningPlan.md)). **Script:** [`scripts/bench.sh`](../scripts/bench.sh).
 
@@ -66,12 +66,7 @@ Sources live in [`benchmarks/`](../benchmarks/). They are **not** in `compile-te
 
 **Language notes:** Benchmarks use literal array sizes (no preprocessor). Matrices use flat row-major 1D arrays because lcc has no 2D array parameters. Reduction-style loops are covered by the M14 study fixture [`tests/40.array_sum.c`](../tests/40.array_sum.c), not duplicated here.
 
-**Tiling note:** the tiled kernels block the loops into 32×32 tiles and zero `C` up front (the naive kernel overwrites `C[i][j]`, the blocked one accumulates into it across `kk` tiles); both produce a bit-identical result to their naive counterpart. They form **two matched pairs** — 128×128 (`matrix_mul_large.c` vs `matrix_mul_tiled_large.c`) and 512×512 (`matrix_mul_huge.c` vs `matrix_mul_tiled_huge.c`) — sized so one working set stays in cache and the other does not. The 512 pair uses far fewer reps because each matmul is ~64× heavier.
-
-- **128×128** (`matrix_mul_large.c` vs `matrix_mul_tiled_large.c`) — the 192 KB working set is cache-resident, so blocking is roughly **runtime-neutral** and merely adds IR and compile time.
-- **512×512** (`matrix_mul_huge.c` vs `matrix_mul_tiled_huge.c`) — the 1 MB matrices **spill cache**, so blocking is markedly faster (~40% at `-O2` on the host below). This is the pair that demonstrates the win.
-
-The 512 pair uses far fewer reps than the 128 pair because each matmul is ~64× heavier.
+**Tiling note:** the tiled kernels block the loops into 32×32 tiles and zero `C` up front (the naive kernel overwrites `C[i][j]`, the blocked one accumulates into it across `kk` tiles); both produce a bit-identical result to their naive counterpart. They form **two matched pairs** — 128×128 (`matrix_mul_large.c` vs `matrix_mul_tiled_large.c`) and 512×512 (`matrix_mul_huge.c` vs `matrix_mul_tiled_huge.c`) — sized so that one working set stays in cache and the other does not. What that costs and buys is in the [Results log](#results-log). The 512 pair uses far fewer reps because each matmul is ~64× heavier.
 
 ---
 
@@ -91,7 +86,7 @@ Smoke mode only checks that every variant **builds and runs correctly**; it does
 
 When you add optimizations (custom passes, new `-O-passes` presets, backend tuning):
 
-1. **Add a workload** under `benchmarks/` if existing programs do not stress the new behavior (follow the same style: self-check, no `#define`, and avoid a parenthesis that starts with a bare identifier followed by `)` or `*` — write `v % 32768` or `(7 * a)` rather than `(a * 7)` — see [Language.md](Language.md)).
+1. **Add a workload** under `benchmarks/` if existing programs do not stress the new behavior (follow the same style: self-check, no `#define`, and avoid parentheses that start with a bare identifier followed by `)` or `*` — write `v % 32768` or `(7 * a)` rather than `(a * 7)`; see [Language.md](Language.md#not-supported-yet)).
 2. **Extend `bench.sh`** `variants=(…)` if you want a new flag combination in the default table.
 3. **Record results** in this doc (see [Results log](#results-log) below) or in commit/PR notes so GitHub readers can see before/after trends.
 
@@ -249,7 +244,7 @@ Full-suite `./bench.sh` (default **10 runs**) on both reference hosts. Reps per 
 
 | Doc | Topic |
 |-----|--------|
-| [Testing.md](Testing.md) | Unit tests vs benchmarks; other scripts |
+| [Testing.md](Testing.md) | Regression suite vs benchmarks; other scripts |
 | [LlvmTools.md](LlvmTools.md#benchmark-harness-m15) | M15 in the compiler pipeline context |
 | [Usage.md](Usage.md) | `-O0`…`-O3`, `-fold-add-zero`, `-O-passes`, `-mcpu` |
 | [MiddleBackendNotes.md](MiddleBackendNotes.md) | M15 acceptance criteria |

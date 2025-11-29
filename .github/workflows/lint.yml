@@ -1,0 +1,46 @@
+name: Lint
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+
+jobs:
+  # Cheap and platform-independent, so it stands apart from the build rather
+  # than in front of it: a formatting slip fails in seconds instead of after a
+  # full LLVM link, and it reports whether or not the build got that far.
+  clang-format:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # format.sh sources build-env.sh, which needs an LLVM 20 to point at.
+      - name: Install dependencies
+        working-directory: scripts
+        run: ./install-deps-ubuntu.sh
+
+      - name: Formatting check
+        working-directory: scripts
+        run: ./format.sh --check
+
+  # clang-tidy needs the compile database a build produces, so this job builds
+  # lcc of its own rather than reaching into Build's. One platform only: the
+  # findings are host-independent, so a macOS copy would pay for another full
+  # build to say the same thing.
+  clang-tidy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install dependencies
+        working-directory: scripts
+        run: ./install-deps-ubuntu.sh
+
+      - name: Build lcc
+        working-directory: scripts
+        run: ./build-lcc.sh
+
+      - name: clang-tidy check
+        working-directory: scripts
+        run: ./tidy.sh

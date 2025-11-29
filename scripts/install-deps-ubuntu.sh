@@ -23,7 +23,7 @@ fi
 
 sudo apt-get update
 
-for pkg in llvm-20-dev libargparse-dev; do
+for pkg in llvm-20-dev libargparse-dev clang-format-20 clang-tidy-20; do
   if ! apt-cache show "${pkg}" >/dev/null 2>&1; then
     echo "Package ${pkg} is not available. Use Ubuntu LTS." >&2
     exit 1
@@ -41,6 +41,8 @@ sudo apt-get install -y \
   llvm-20 \
   llvm-20-dev \
   llvm-20-tools \
+  clang-format-20 \
+  clang-tidy-20 \
   libargparse-dev
 
 echo "Ubuntu dependencies installed. Build with: ./build-lcc.sh"

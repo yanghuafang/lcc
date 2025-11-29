@@ -1,63 +1,36 @@
 # lcc compiler learning & implementation plan
 
-This is the **master plan** for studying and extending **lcc** across the full compiler stack:
+The master plan for studying and extending **lcc** across the full compiler stack.
 
 | Layer | lcc today | This plan |
-|-------|-----------|-----------|
-| **Front-end** | flex/bison, AST, single-pass `genCode()` | Study track (complete); optional language deferrals in [FrontendNotes.md](FrontendNotes.md) |
+| ------- | ----------- | ----------- |
+| **Front-end** | flex/bison, AST, single-pass `genCode()` | Study track; language deferrals live in [Language.md](Language.md#not-supported-yet) |
 | **Middle-end (IR)** | Raw IR via `IRBuilder`; `-O` via `IrOptimizer` | Observability, custom New PM passes, pipeline control |
-| **Back-end** | `TargetBackend` → `.o` / `.s` on the selected target | Asm via `-S`, target flags (M11 done), MIR inspection |
-| **Optimization** | LLVM default pipelines | Study classical opts, vectorization, optional benchmarks |
+| **Back-end** | `TargetBackend` → `.o` / `.s` on the host target | Asm via `-S`, target flags, MIR inspection |
+| **Optimization** | LLVM default pipelines | Study classical opts and vectorization; optional benchmarks |
 
-**How to use:** work through milestones **M0 → M18** in order. Each milestone has **Study**, **Implement**, and **Verify** steps. Skip optional milestones unless you want that depth.
-
-Detailed middle/back-end acceptance criteria: [MiddleBackendNotes.md](MiddleBackendNotes.md).
-
-Language-feature history (arrays, typedef, static, `-g`): [FrontendNotes.md](FrontendNotes.md) — **frontend roadmap complete**.
+**How to use:** work through milestones **M0 → M18** in order; each has **Study**, **Implement**, and **Verify** steps. All milestones are **already implemented**, so the plan doubles as a guided tour of the code — follow it to learn, or skim a milestone to find out why something exists.
 
 ---
 
 ## Pipeline overview
 
-```mermaid
-flowchart LR
-  subgraph fe [Front-end — lcc src/]
-    C[".c"] --> Lex["Lexer.l"]
-    Lex --> Parse["Parser.y"]
-    Parse --> AST["AST genCode"]
-  end
+[Architecture.md](Architecture.md#stages) carries the stage diagram and the map from stages to `src/` files — read it before M1 if you have not already.
 
-  subgraph mid [Middle-end — IrOptimizer]
-    Raw["Raw Module"]
-    Stats["IrInstructionStatsPass optional"]
-    Opt["LLVM default pipeline"]
-  end
+**Key idea:** IR **generation** is `genCode()` + `IRBuilder`; LLVM only ever sees IR that lcc already built. `IrOptimizer` runs the custom passes first, then the LLVM pipeline. `-l-pre-opt` / `-l-post-opt` bracket the middle-end; `-l` dumps after `pipeline::emitObject()`, with target metadata attached.
 
-  subgraph meta [Debug metadata]
-    Dbg["DebugInfoBuilder finalize if -g"]
-  end
+The committed goldens make the `-g` branch concrete: at `-O2`, `25.quick_sort.release.pre.ll` → `.post.ll` drops 294 → 174 lines, while under `-g` the same file goes 408 → 409 — a single line of DWARF, because `-g` skips the LLVM pipeline entirely ([Usage.md](Usage.md#optimization-levels--o)).
 
-  subgraph be [Back-end — TargetBackend]
-    Obj[".o via -o"]
-    Asm[".s via -S optional"]
-  end
-
-  AST --> Raw --> Stats --> Opt --> Dbg --> Obj
-  Obj --> Asm
-```
-
-**Key idea:** IR **generation** is `genCode()` + `IRBuilder`. `IrOptimizer` runs optional instrumentation (`-ir-stats`) then LLVM `-O` passes. `-g` finalizes DWARF after the middle-end. `-l-pre-opt` / `-l-post-opt` bracket that sequence; `-l` in `main` dumps right after `genObjectCode()` (with target metadata; before optional `-S`).
+Acceptance criteria for M4–M18: [MiddleBackendNotes.md](MiddleBackendNotes.md). Front-end language history: [FrontendNotes.md](FrontendNotes.md).
 
 ---
 
 ## Milestone checklist
 
-**Status: all milestones M0–M18 are complete**, including the optional ones (M7, M8, M13, M15, M16, M17).
-
-Track progress here. Do not start the next milestone until **Verify** passes for the current one.
+If you are working through the plan yourself, do not start a milestone until the previous **Verify** step passes.
 
 | ID | Milestone | Layer | Required? |
-|----|-----------|-------|-----------|
+| ---- | ----------- | ------- | ----------- |
 | **M0** | [Environment & full test run](#m0-environment--full-test-run) | — | Yes |
 | **M1** | [Compiler tour (one program)](#m1-compiler-tour-one-program) | Front-end | Yes |
 | **M2** | [Pipeline map & LLVM tools](#m2-pipeline-map--llvm-tools) | All | Yes |
@@ -78,20 +51,22 @@ Track progress here. Do not start the next milestone until **Verify** passes for
 | **M17** | [Machine pass (advanced)](#m17-machine-pass-advanced-optional) | Back-end | Optional |
 | **M18** | [Documentation & CI smoke](#m18-documentation--ci-smoke) | All | Yes |
 
-**Estimated pace:** ~1–2 weeks per required milestone if part-time; M0–M2 can be done in a few days.
+**Pace, if you work through it:** roughly 1–2 weeks per required milestone part-time, with M0–M2 taking a few days.
 
 ---
 
 ## Global rules (every milestone)
 
-1. **Correctness first:** after any lcc code change, run the full suite:
+1. **Correctness first** — after any lcc code change, run the full suite:
+
    ```bash
    cd scripts
    ./compile-tests.sh && ./link-tests.sh && ./run-tests.sh
    ```
-2. **Freeze the front-end** during M4–M15 unless a tiny new test file is needed (no grammar changes).
-3. **One idea per milestone** — small PR-sized commits.
-4. **Artifacts:** store IR/asm under `debug/` only when intentional; avoid noisy bulk diffs in git.
+
+2. **Freeze the front-end** while working the middle/back-end milestones — no grammar changes; add a small test file only if a milestone needs one.
+3. **One idea per milestone**, in PR-sized commits.
+4. **Artifacts** — commit IR/asm under `debug/` only when the change is intentional; avoid noisy bulk diffs.
 5. **Host target only** — x86_64 or ARM64 on your machine; no new hardware required.
 
 ---
@@ -101,74 +76,77 @@ Track progress here. Do not start the next milestone until **Verify** passes for
 **Goal:** Confirm the build and the regression suite.
 
 | Step | Action |
-|------|--------|
+| ------ | -------- |
 | Study | [Install.md](Install.md), [Testing.md](Testing.md) |
-| Implement | `./build-lcc.sh`; full `./compile-tests.sh && ./link-tests.sh && ./run-tests.sh` |
+| Implement | `./build-lcc.sh`, then `./compile-tests.sh && ./link-tests.sh && ./run-tests.sh` |
 | Verify | All tests `PASS`; `../../lcc-build/lcc` exists |
 
 ---
 
 ## M1: Compiler tour (one program)
 
-**Goal:** Trace C → tokens → AST → IR for one file.
+**Goal:** Trace C → tokens → AST → IR for a single file.
 
 | Step | Action |
-|------|--------|
+| ------ | -------- |
 | Study | Read `tests/0.hello_world.c` or `tests/12.arithmetic.c` |
-| Study | `Lexer.l` (keywords), `Parser.y` (start symbol), `main.cpp` (pipeline) |
-| Study | Open `debug/0.hello_world.dot` and `.debug.ll` |
+| Study | `Lexer.l` (keywords), `Parser.y` (start symbol), `driver/main.cpp` (pipeline) |
+| Study | Open `debug/0.hello_world.dot` and `debug/0.hello_world.debug.ll` |
 | Implement | None (study only) |
-| Verify | Can explain path: `yyparse` → `g_root` → `genIrCode` → `genObjectCode` |
+| Verify | Can explain the path `yyparse` → `g_root` → `pipeline::genIr` → `pipeline::emitObject` |
 
-**Recommended deep-dive files:** `AbstractSyntaxTree.hpp` (header comment), `VarDecl::genCode`, `FuncDecl::genCode`.
+**Deep-dive files:** `ast/Nodes.hpp` (header comment), `VarDecl::genCode`, `FuncDecl::genCode`.
 
 ---
 
 ## M2: Pipeline map & LLVM tools
 
-**Goal:** Use external LLVM tools on lcc output (independent of lcc changes).
+**Goal:** Use external LLVM tools on lcc output, without changing lcc.
 
 | Step | Action |
-|------|--------|
+| ------ | -------- |
 | Study | Compare `debug/25.quick_sort.debug.ll` vs `.release.ll` |
-| Study | `docs/Usage.md` compile modes |
-| Implement | Run on host (adjust paths):
-   ```bash
-   opt -passes='default<O2>' debug/25.quick_sort.debug.ll -S -o /tmp/opt.ll
-   llc debug/25.quick_sort.release.ll -o /tmp/out.s
-   llvm-objdump -d ../../lcc-build/25.quick_sort.o
-   ```
+| Study | Compile modes in [Usage.md](Usage.md) |
+| Implement | Run the commands below on the host |
 | Verify | Can name three differences between debug and release IR |
+
+Run from `lcc/scripts` (adjust paths for your checkout):
+
+```bash
+opt -passes='default<O2>' ../debug/25.quick_sort.debug.ll -S -o /tmp/opt.ll
+llc ../debug/25.quick_sort.release.ll -o /tmp/out.s
+llvm-objdump -d ../../lcc-build/25.quick_sort.o
+```
 
 ---
 
 ## M3: IR generation study
 
-**Goal:** Understand how lcc emits IR (not LLVM passes).
+**Goal:** Understand how lcc emits IR (not what LLVM passes do to it).
 
 | Step | Action |
-|------|--------|
-| Study | `Utils.hpp` — casts, load/store, GEP, arithmetic |
-| Study | Trace `ForStmt`, `IfStmt`, `Subscript` in `AbstractSyntaxTree.cpp` |
-| Study | Opaque pointers: pointee types on `VarType`, not on `llvm::Type*` |
-| Implement | Hand-write LLVM IR for `0.hello_world.c`; diff vs `.debug.ll` |
-| Verify | Every instruction in `.debug.ll` maps to an AST `genCode()` path |
+| ------ | -------- |
+| Study | `irgen/TypeConversion.hpp` — conversions; `irgen/IrIdioms.hpp` — load/store, allocas; `irgen/Operators.hpp` — arithmetic, bitwise, comparison, GEP; `types/TypeRules.hpp` — the C type rules behind them |
+| Study | Trace `ForStmt` / `IfStmt` in `irgen/StmtToIr.cpp` and `Subscript` in `irgen/ExprToIr.cpp` |
+| Study | Opaque pointers: pointee types live on `VarType`, not on `llvm::Type*` — see `types/VarTypeQuery.hpp` |
+| Implement | Hand-write LLVM IR for `0.hello_world.c` in a scratch file (e.g. `/tmp/hello.ll`), then diff it against `debug/0.hello_world.debug.ll` |
+| Verify | Every instruction in `debug/0.hello_world.debug.ll` maps to an AST `genCode()` path |
 
 **Key tests:** `12.arithmetic.c`, `25.quick_sort.c`, `33.array_2d_decl.c`.
+
+Everything under `debug/` is lcc output written by `compile-tests.sh`, so your hand-written IR is a study baseline — nothing to commit.
 
 ---
 
 ## M4: Pre/post IR dumps in lcc
 
-**Status:** done
-
-**Goal:** See exactly what lcc emits vs what LLVM optimizes.
+**Goal:** See exactly what lcc emits versus what LLVM optimizes.
 
 | Step | Action |
-|------|--------|
-| Implement | CLI flags, e.g. `-l-pre-opt` and `-l-post-opt` (or extend `-l` naming) |
-| Implement | Dump raw IR **before** `IrOptimizer::run()`; dump **after** `IrOptimizer` and debug finalization (`-g`) |
-| Verify | Full test suite PASS; `debug/<test>.<mode>.pre.ll` and `.post.ll` differ for `-O2` on `25.quick_sort.c` |
+| ------ | -------- |
+| Implement | `-l-pre-opt <file>` and `-l-post-opt <file>` CLI flags |
+| Implement | Dump raw IR **before** `IrOptimizer::run()`, and again **after** the optimizer and `-g` finalization |
+| Verify | Suite PASS; `debug/<test>.<mode>.pre.ll` and `.post.ll` differ at `-O2` for `25.quick_sort.c` |
 
 Details: [MiddleBackendNotes.md § M4](MiddleBackendNotes.md#m4-prepost-ir-dumps).
 
@@ -176,289 +154,264 @@ Details: [MiddleBackendNotes.md § M4](MiddleBackendNotes.md#m4-prepost-ir-dumps
 
 ## M5: Extract `IrOptimizer`
 
-**Status:** done
-
-**Goal:** Separate middle-end from `CodeGenerator`.
+**Goal:** Separate the middle-end from `CodeGenerator`.
 
 | Step | Action |
-|------|--------|
-| Implement | `src/IrOptimizer.hpp` / `IrOptimizer.cpp`; move `optimizeCode()` |
-| Implement | `CodeGenerator::genIrCode` calls `IrOptimizer::run(...)` |
-| Verify | Same IR behavior as before; full test suite PASS |
+| ------ | -------- |
+| Implement | `src/opt/IrOptimizer.hpp` / `.cpp`; move `optimizeCode()` out of `CodeGenerator` |
+| Implement | `pipeline::genIr` calls `IrOptimizer::run(...)` |
+| Verify | IR behavior unchanged; suite PASS |
 
 ---
 
 ## M6: Custom New PM pass — instrumentation
 
-**Status:** done
-
 **Goal:** Learn pass registration and the New Pass Manager.
 
 | Step | Action |
-|------|--------|
+| ------ | -------- |
 | Study | LLVM docs: Writing an LLVM Pass (New PM) |
-| Implement | `IrInstructionStatsPass` in `src/passes/`; enable with `-ir-stats` |
+| Implement | `IrInstructionStatsPass` in `src/opt/passes/`; enable with `-ir-stats <file>` (`-` = stderr) |
 | Implement | Register via `createModuleToFunctionPassAdaptor` **before** the default LLVM pipeline |
-| Verify | Stats appear with `-ir-stats`; full suite PASS with flag omitted (no stderr noise) |
+| Verify | Stats appear with the flag; suite PASS without it (no stderr noise) |
 
-**Purpose:** microscope, not replacement optimizer.
+**Purpose:** a microscope, not a replacement optimizer.
 
 ---
 
 ## M7: Custom New PM pass — simple transform (optional)
 
-**Status:** done
-
 **Goal:** Implement one classical idea on IR yourself.
 
 | Step | Action |
-|------|--------|
-| Implement | e.g. local constant fold, trivial dead instruction removal, or `-instcombine`-like micro-pass on a subset |
-| Verify | Suite PASS; post-opt IR differs; document what changed on `12.arithmetic.c` |
+| ------ | -------- |
+| Implement | `FoldAddZeroPass` in `src/opt/passes/` — rewrites `add iN %x, 0` to `%x`; enable with `-fold-add-zero` |
+| Implement | Run it before the default pipeline, like the M6 stats pass |
+| Verify | Suite PASS; post-opt IR changes on `12.arithmetic.c` — see [LlvmTools.md § M7](LlvmTools.md#custom-transform-pass-m7) |
 
-Skip if M6 satisfies your learning goals.
+Skip if M6 already satisfies your learning goals.
 
 ---
 
 ## M8: Pipeline control & `-O-passes` (optional)
 
-**Status:** done
-
-**Goal:** Compose LLVM passes explicitly.
+**Goal:** Compose LLVM passes explicitly instead of taking `default<O*>`.
 
 | Step | Action |
-|------|--------|
-| Implement | `-O-passes mem2reg,instcombine,simplifycfg` or named presets |
-| Verify | Preset reproduces subset of `-O2` on a small test |
+| ------ | -------- |
+| Implement | `-O-passes <pipeline>` in `opt -passes` syntax; preset `O2-peephole` = `mem2reg,instcombine,simplifycfg` |
+| Implement | Reject `-O-passes` combined with `-O0`…`-Oz` (the custom pipeline replaces the default one) |
+| Verify | The preset reproduces a subset of `-O2` on a small test — see [LlvmTools.md § M8](LlvmTools.md#explicit-pipeline-control-m8) |
 
 ---
 
 ## M9: Classical opts study (LLVM)
 
-**Status:** done
-
-**Goal:** Know what `-O2` does without reimplementing it.
+**Goal:** Know what `-O2` does, without reimplementing it.
 
 | Step | Action |
-|------|--------|
-| Study | Run `opt --print-pipeline-passes -passes='default<O2>'` on pre-opt IR |
-| Study | Identify mem2reg, instcombine, GVN, loop passes on `25.quick_sort.c` |
-| Implement | Notes in [LlvmTools.md](LlvmTools.md); pointer comment in `IrOptimizer.cpp` |
-| Verify | Explain SSA formation (`mem2reg`) on `@partition` in pre/post IR dumps |
+| ------ | -------- |
+| Study | `opt --print-pipeline-passes -passes='default<O2>'` on pre-opt IR |
+| Study | Spot mem2reg, instcombine, GVN, and the loop passes on `25.quick_sort.c` |
+| Implement | Write the notes up in [LlvmTools.md](LlvmTools.md); leave a pointer comment in `opt/IrOptimizer.cpp` |
+| Verify | Explain SSA formation (`mem2reg`) on `@partition` across the pre/post dumps — see [LlvmTools.md § M9](LlvmTools.md#classical-optimization-study-m9) |
 
 ---
 
 ## M10: Extract `TargetBackend`; emit asm
 
-**Status:** done
-
-**Goal:** See machine code from lcc.
+**Goal:** Get machine code out of lcc itself.
 
 | Step | Action |
-|------|--------|
-| Implement | `src/TargetBackend.hpp` / `TargetBackend.cpp`; move `genObjectCode()` |
-| Implement | `-S` / `--emit-assembly` → `.s` file |
+| ------ | -------- |
+| Implement | `src/backend/TargetBackend.hpp` / `.cpp`; move `pipeline::emitObject()` out of `CodeGenerator` |
+| Implement | `-S <file>` / `--emit-assembly` — note it takes a **path**, unlike clang's boolean `-S` |
 | Verify | Asm generated for `12.arithmetic.c`; suite PASS |
 
 ---
 
 ## M11: Target CLI flags
 
-**Status:** done
-
-**Goal:** Control triple, CPU, features on **host** target.
+**Goal:** Control triple, CPU, and features on the host target.
 
 | Step | Action |
 |------|--------|
-| Implement | `--target`, `-mcpu`, `-mattr` wired to `TargetMachine` |
-| Verify | Asm changes when attrs change; suite PASS |
+| Implement | `--target`, `-mcpu`, `-mattr` wired into `TargetMachine` |
+| Verify | Asm changes when features change; suite PASS |
+
+These flags reach **codegen only**. They do not steer the IR vectorizers inside `IrOptimizer` — see [M14](#m14-vectorization-study-llvm).
 
 ---
 
 ## M12: Codegen opt level & asm diff
 
-**Status:** done
-
-**Goal:** Relate IR `-O` to backend output.
+**Goal:** Relate the IR `-O` level to backend output.
 
 | Step | Action |
-|------|--------|
-| Implement | Pass optimization level to `TargetMachine` codegen opt |
-| Study | Diff asm: `-O0` vs `-O2` on `25.quick_sort.c` hot function |
-| Verify | `-O2` asm is shorter or uses better instructions; suite PASS |
+| ------ | -------- |
+| Implement | Pass the optimization level through to `TargetMachine` codegen opt |
+| Study | Diff asm at `-O0` vs `-O2` on a `25.quick_sort.c` hot function |
+| Verify | `-O2` asm is shorter or picks better instructions — see [LlvmTools.md § M12](LlvmTools.md#codegen-opt-level--asm-diff-m12) |
 
 ---
 
 ## M13: MIR inspection (optional)
 
-**Status:** done
-
-**Goal:** See machine IR and register allocation stage.
+**Goal:** See machine IR and the register allocation stage.
 
 | Step | Action |
-|------|--------|
-| Study | `llc --print-before=greedy`, `--stop-before=greedy` on `.release.post.ll` (LLVM 20) |
-| Study | Identify virtual (`%N:regbank`) vs physical (`$w9`) registers before/after regalloc |
-| Implement | None required in lcc |
-| Verify | Can point to regalloc (`greedy`) in LLVM’s codegen pipeline — see [LlvmTools.md](LlvmTools.md#mir-inspection-m13) |
+| ------ | -------- |
+| Study | `llc --print-before=greedy` and `--stop-before=greedy` on `.release.post.ll` (LLVM 20) |
+| Study | Tell virtual (`%N:regbank`) from physical (`$w9`) registers, before and after regalloc |
+| Implement | None required in lcc (`scripts/mir-study.sh` wraps the commands) |
+| Verify | Can point to `greedy` in LLVM's codegen pipeline — see [LlvmTools.md § M13](LlvmTools.md#mir-inspection-m13) |
 
-**Note:** MIR is used for **all** targets (x86_64, ARM64), not only “new hardware.”
+**Note:** MIR exists for **every** target (x86_64, ARM64), not only for new hardware ports.
 
 ---
 
 ## M14: Vectorization study (LLVM)
 
-**Status:** done
-
-**Goal:** Study **auto-vectorization** via LLVM — not a custom vector pass in the base plan.
+**Goal:** Study LLVM's **auto-vectorization** — the base plan writes no vector pass.
 
 | Step | Action |
-|------|--------|
-| Study | Add or use loop-heavy test (e.g. array sum); compile `-O3` |
-| Study | Compare asm with/without SIMD attrs (`-mattr +avx2` on x86; NEON default on ARM64) |
-| Study | Optional: `llvm-mca` on hot loop asm |
-| Verify | Document whether LLVM vectorized and why/why not |
+| ------ | -------- |
+| Study | Compile `tests/40.array_sum.c` at `-O3` (a study fixture, deliberately outside the regression suite) |
+| Study | Compare asm with and without SIMD features (`-mattr +avx2` on x86; NEON is default on ARM64) |
+| Study | Optional: `llvm-mca` on the hot loop |
+| Verify | Document whether LLVM vectorized and why — see [LlvmTools.md § M14](LlvmTools.md#auto-vectorization-study-m14) |
 
-Custom loop vectorizer pass: **out of scope** unless you extend to M7-style research.
+**Main finding:** `IrOptimizer` builds its pipeline without a `TargetMachine`, so the vectorizer's cost model is generic and lcc's own `-O3` usually leaves loops scalar. Feed the `-l-pre-opt` dump to `opt -mtriple=…` to see the same loops vectorize.
 
 ---
 
 ## M15: Benchmark harness (optional)
 
-**Status:** done
-
 **Goal:** Compare opt levels and transforms where performance matters.
 
 | Step | Action |
-|------|--------|
-| Implement | `scripts/bench.sh` — compile time, IR count, and runtime on `benchmarks/` workloads |
-| Implement | Average wall time via `/usr/bin/time` (`--runs`, default 10); post-opt IR instruction count |
-| Verify | [Benchmarks.md](Benchmarks.md); CI runs `./bench.sh --smoke` only (correctness) |
+| ------ | -------- |
+| Implement | `scripts/bench.sh` — compile time, IR instruction count, and runtime over `benchmarks/` workloads |
+| Implement | Average wall time via `/usr/bin/time` (`--runs`, default 10) |
+| Verify | Results recorded in [Benchmarks.md](Benchmarks.md); CI runs `./bench.sh --smoke` for correctness only |
 
-Instrument-only passes (M6): benchmark optional.
+Instrument-only passes (M6) need no benchmark.
 
 ---
 
 ## M16: IR opt regression script (optional)
 
-**Status:** done
-
 **Goal:** Catch unintended IR changes.
 
 | Step | Action |
 |------|--------|
-| Implement | `scripts/check-ir-opt.sh` — post-opt IR instruction counts (default), `--diff` post-opt IR, or `--release` diff vs golden `.release.ll` |
-| Verify | Detects deliberate IR change (count + diff flag it and exit non-zero); documented in [Testing.md](Testing.md#ir-optimization-regression-check-m16) |
+| Implement | `scripts/check-ir-opt.sh` — post-opt instruction counts (default), `--diff` for post-opt IR, `--release` to diff against golden `.release.ll` |
+| Verify | A deliberate IR change is flagged and exits non-zero — see [Testing.md § M16](Testing.md#ir-optimization-regression-check-m16) |
 
 ---
 
 ## M17: Machine pass (advanced, optional)
 
-**Status:** done
-
-**Goal:** One `MachineFunctionPass` on host target — **not** custom regalloc.
+**Goal:** Add one `MachineFunctionPass` on the host target — **not** a custom register allocator.
 
 | Step | Action |
-|------|--------|
-| Study | LLVM backend pass registration (legacy PM + `TargetPassConfig`, separate from IR New PM) |
-| Implement | `MachineInstrStatsPass` — counts machine instructions on final MIR; enable with `-machine-stats` |
-| Verify | Object/asm byte-identical with vs without the flag (analysis-only); full suite PASS |
+| ------ | -------- |
+| Study | Backend pass registration: legacy PM + `TargetPassConfig`, separate from the IR New PM |
+| Implement | `MachineInstrStatsPass` — counts machine instructions on final MIR; enable with `-machine-stats <file>` |
+| Verify | Object and asm byte-identical with and without the flag (analysis-only); suite PASS |
 
 Details: [MiddleBackendNotes.md § M17](MiddleBackendNotes.md#m17-machine-pass-advanced-optional), [LlvmTools.md § M17](LlvmTools.md#machine-function-pass-m17).
-
-Full register allocator: **out of scope**.
 
 ---
 
 ## M18: Documentation & CI smoke
 
-**Status:** done
-
 **Goal:** Keep the repo teachable for the next reader.
 
 | Step | Action |
-|------|--------|
-| Implement | Update [Usage.md](Usage.md) with new flags |
-| Implement | Expand [LlvmTools.md](LlvmTools.md) — full tool recipes (`opt`, `llc`, `objdump`, `mca`) |
-| Implement | CI: smoke `-S` on one test (extend `.github/workflows/build.yml`) |
-| Verify | [docs/README.md](README.md) links all plan docs |
+| ------ | -------- |
+| Implement | Document every new flag in [Usage.md](Usage.md) |
+| Implement | Expand [LlvmTools.md](LlvmTools.md) with tool recipes (`opt`, `llc`, `llvm-objdump`, `llvm-mca`) |
+| Implement | CI: smoke-check `-S` on one test in `.github/workflows/build.yml` |
+| Verify | [docs/README.md](README.md) links every plan doc |
 
 ---
 
-## Front-end study track (existing codebase)
+## Front-end study track
 
-The **implementation** front-end roadmap is **complete** ([FrontendNotes.md](FrontendNotes.md)). New learners should still study:
+The front-end is feature-complete ([FrontendNotes.md](FrontendNotes.md) records how it got there), but it is still worth studying:
 
 | Topic | Where |
-|-------|--------|
+| ------- | -------- |
 | LALR grammar | `Parser.y`, [ParserConflicts.md](ParserConflicts.md) |
-| AST ownership | `AbstractSyntaxTree.hpp` header |
-| Single-pass types | `getExprTypeId`, `getExprVarType` during `genCode()` |
-| Debug info | `DebugInfoBuilder.cpp`, `-g` path |
+| AST ownership | `ast/Nodes.hpp` header comment |
+| Single-pass typing | `getExprTypeId`, `getExprVarType` during `genCode()` |
+| Debug info | `irgen/DebugInfoBuilder.cpp`, the `-g` path |
 
-Optional future **language** work (preprocessor, 3D array initializers, `extern`) stays in [FrontendNotes.md](FrontendNotes.md) — **not** part of M0–M18.
+Future **language** work (preprocessor, 3D array initializers, `extern`) is listed in [Language.md § Not supported](Language.md#not-supported-yet) — it is not part of M0–M18.
 
 ---
 
 ## Tools reference
 
-| Tool | Use |
-|------|-----|
-| `lcc -l-pre-opt` / `-l-post-opt` | Raw vs middle-end IR (see [Usage.md](Usage.md)) |
-| `lcc -S <file>` | Machine assembly (host target; independent codegen pass) |
-| `lcc --target`, `-mcpu`, `-mattr` | `TargetMachine` triple/CPU/features (see [Usage.md](Usage.md)) |
-| `lcc -ir-stats <file>` | Load/store/call counts on raw IR (`-` = stderr) |
-| `lcc -machine-stats <file>` | Machine-instruction counts on final MIR via a legacy `MachineFunctionPass` (`-` = stderr; M17) |
-| `lcc -fold-add-zero` | Fold `add iN %x, 0` before LLVM opts (M7) |
-| `lcc -O-passes …` | Explicit New PM pipeline (`opt -passes` syntax; preset `O2-peephole`) |
-| `opt --print-pipeline-passes -passes='default<O2>'` | List O2 passes (LLVM 20) — see [LlvmTools.md](LlvmTools.md) |
-| `llc` | IR → asm; MIR via `--print-before=greedy`, `--stop-before=greedy` (M13) |
-| `llvm-objdump -d` | Disassemble `.o` |
-| `llvm-mca` | Analyze asm throughput (vectorization) |
-| `llvm-dwarfdump` | Debug info ([check-debug-info.sh](../scripts/check-debug-info.sh)) |
-| `dot` | Render AST graphs |
+**lcc flags** added by this plan (full CLI reference in [Usage.md](Usage.md)):
+
+| Flag | Milestone | Use |
+| ------ | ----------- | ----- |
+| `-l-pre-opt <file>` / `-l-post-opt <file>` | M4 | Raw vs middle-end IR |
+| `-ir-stats <file>` | M6 | Load/store/call counts on raw IR (`-` = stderr) |
+| `-fold-add-zero` | M7 | Fold `add iN %x, 0` before the LLVM pipeline |
+| `-O-passes <pipeline>` | M8 | Explicit New PM pipeline (`opt -passes` syntax; preset `O2-peephole`) |
+| `-S <file>` | M10 | Machine assembly via its own codegen pass |
+| `--target`, `-mcpu`, `-mattr` | M11 | `TargetMachine` triple, CPU, features |
+| `-machine-stats <file>` | M17 | Machine-instruction counts on final MIR (`-` = stderr) |
+
+**External LLVM tools** — recipes in [LlvmTools.md § LLVM tool reference](LlvmTools.md#llvm-tool-reference): `opt` (pipelines, M9), `llc` (asm and MIR, M13), `llvm-objdump` (disassembly), `llvm-mca` (throughput, M14), `llvm-dwarfdump` (debug info, via [check-debug-info.sh](../scripts/check-debug-info.sh)), `dot` (AST graphs).
 
 ---
 
 ## Suggested reading
 
 | Resource | Topic |
-|----------|--------|
+| ---------- | -------- |
 | [LLVM Language Reference](https://llvm.org/docs/LangRef.html) | IR instructions |
 | [Writing an LLVM Pass (New PM)](https://llvm.org/docs/NewPassManager.html) | Custom passes (M6–M8) |
 | [LLVM Target Triple](https://llvm.org/docs/LangRef.html#target-triple) | Backend flags (M11) |
-| `AbstractSyntaxTree.hpp` comment block | lcc single-pass architecture |
+| `ast/Nodes.hpp` comment block | lcc's single-pass architecture |
 | [ParserConflicts.md](ParserConflicts.md) | Parser ambiguities |
 
 ---
 
 ## Out of scope (all milestones)
 
+This page is the index for scope questions. The table below is work lcc will **never** take on; [Future directions](#future-directions-no-milestones) links to everything that is merely unscheduled.
+
 | Item | Why |
-|------|-----|
-| New CPU / new LLVM backend target | Port project |
-| Custom greedy register allocator | Research-scale |
-| Full loop vectorizer implementation | Use LLVM’s |
-| Preprocessor / 3D array initializers | [FrontendNotes.md](FrontendNotes.md) deferrals |
-| Merge `-g` with aggressive IR opts blindly | Breaks debuggability; see [Usage.md](Usage.md) |
+| ------ | ----- |
+| New CPU or new LLVM backend target | A port, not a milestone |
+| Custom greedy register allocator | Research-scale (see [M17](#m17-machine-pass-advanced-optional)) |
+| Full loop vectorizer implementation | Use LLVM's (see [M14](#m14-vectorization-study-llvm)) |
+| Preprocessor, 3D array initializers | Front-end deferrals, listed in [Language.md § Not supported](Language.md#not-supported-yet) |
+| Optimized debugging (`dbg.value` salvage) | Why `-g` skips IR opts instead of mixing them; see [Usage.md](Usage.md) |
 
 ---
 
 ## Future directions (no milestones)
 
-M0–M18 are complete and sufficient for lcc's teaching goals. Ideas that could be explored later — **deliberately unscheduled and carrying no milestones** (distinct from the *never*-planned items in [Out of scope](#out-of-scope-all-milestones) above) — are recorded, not planned near-term, in:
+M0–M18 cover lcc's teaching goals. Ideas beyond them are recorded but deliberately unscheduled — unlike the items above, which are never planned:
 
-- [FrontendNotes.md § Future directions](FrontendNotes.md#future-directions-no-milestones) — real diagnostics and additional C language features (`goto`, function pointers, more scalar types, bit-fields, …).
-- [MiddleBackendNotes.md § Future directions](MiddleBackendNotes.md#future-directions-no-milestones) — deeper optimization and codegen passes (transforming IR/MIR passes, vectorization-candidate reporter, opt remarks).
+- [FrontendNotes.md § Future directions](FrontendNotes.md#future-directions-no-milestones) — real diagnostics and more C features (`goto`, function pointers, bit-fields, …).
+- [MiddleBackendNotes.md § Future directions](MiddleBackendNotes.md#future-directions-no-milestones) — deeper IR/MIR passes, a vectorization-candidate reporter, opt remarks.
 
 ---
 
 ## Related docs
 
 | Document | Role |
-|----------|------|
-| [MiddleBackendNotes.md](MiddleBackendNotes.md) | Detailed implement/verify for M4–M17 |
-| [FrontendNotes.md](FrontendNotes.md) | Front-end language features (done) |
-| [Testing.md](Testing.md) | Scripts and compile modes |
-| [DebuggingLcc.md](DebuggingLcc.md) | Debug lcc in LLDB |
-| [LlvmTools.md](LlvmTools.md) | Tool cookbook + classical opt study (M9); expand at M18 |
+| ---------- | ------ |
+| [MiddleBackendNotes.md](MiddleBackendNotes.md) | Acceptance criteria and API sketches for M4–M18 |
+| [FrontendNotes.md](FrontendNotes.md) | Front-end language features (complete) |
+| [LlvmTools.md](LlvmTools.md) | Tool cookbook and per-milestone case studies |
+| [Usage.md](Usage.md) | Full CLI reference |
+| [Testing.md](Testing.md) | Scripts, compile modes, CI |
+| [DebuggingLcc.md](DebuggingLcc.md) | Debug lcc in VS Code / LLDB |

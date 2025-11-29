@@ -1,10 +1,10 @@
-# lcc extension roadmap (front-end & language)
+# Front-end & language notes
 
-This document covers **C language and front-end** extensions for lcc. The order follows **dependencies**, **learning value**, and **risk**.
+This document is a **completed record** of how lcc's **C language and front-end** support was built, ordered by **dependencies**, **learning value**, and **risk**. Read it for background on why the front-end looks the way it does; for what the compiler accepts today, see [Language.md](Language.md).
 
 **Status:** priorities 1–5 below are **complete** (arrays through `-g` debug info). Deferred language work (3D arrays, preprocessor, `extern`) stays under [Explicitly out of scope](#explicitly-out-of-scope-for-now).
 
-**Next track — middle-end, optimization, back-end:** follow the numbered milestones in [LearningPlan.md](LearningPlan.md) (implementation details in [MiddleBackendNotes.md](MiddleBackendNotes.md)). That plan covers IR dumps, custom New PM passes, backend/asm flags, vectorization study, and optional benchmarks — on your **host** target (x86_64 / ARM64), no new hardware required.
+**The middle-end, optimization, and back-end track** that followed this one is likewise complete: milestones M0–M18 in [LearningPlan.md](LearningPlan.md), implementation details in [MiddleBackendNotes.md](MiddleBackendNotes.md).
 
 lcc is a teaching compiler: each step should add one clear idea (grammar, AST, codegen, or LLVM metadata) without rewriting the whole pipeline.
 
@@ -13,7 +13,7 @@ lcc is a teaching compiler: each step should add one clear idea (grammar, AST, c
 Before extending, it helps to know what the current codebase already supports:
 
 | Area | Status |
-|------|--------|
+| ------ | -------- |
 | 1D array declaration | `int a[10];` through `VarType` + `VarList`; bounds on each `VarInit` (`ArrayBoundList`) |
 | Mixed array/scalar lists | `int a[4], b;` in one declaration (`tests/30.array_mixed_decl.c`) |
 | Array indexing | `arr[i]` via `Subscript` and `ArrayType` |
@@ -28,17 +28,17 @@ Before extending, it helps to know what the current codebase already supports:
 | Block-scope `static` | Mangled module globals, one-time init (`tests/38.static_local.c`) |
 | User-defined types | `struct`, `union`, `enum` with tag names (`DefinedType` lookup) |
 | Type names in expressions | `_VarType: IDENTIFIER` for registered tags and typedef aliases |
-| `-g` CLI flag | Parsed in `main.cpp`; passed to `CodeGenerator` — emits compile unit, stepping, locals/params, struct members, and lexical blocks; skips LLVM opts when set |
-| **LLVM 20** toolchain | Opaque pointers in IR; pointee types tracked on AST `VarType` (`Utils::memoryAccessType`, etc.); requires C++17 |
+| `-g` CLI flag | Parsed in `driver/main.cpp`; passed to `CodeGenerator` — emits compile unit, stepping, locals/params, struct members, and lexical blocks; skips LLVM opts when set |
+| **LLVM 20** toolchain | Opaque pointers in IR; pointee types tracked on AST `VarType` (`vartype::memoryAccessType`, etc.); requires C++17 |
 
-See [ParserConflicts.md](ParserConflicts.md) for parser ambiguities that some roadmap items will touch (especially `typedef`).
+See [ParserConflicts.md](ParserConflicts.md) for parser ambiguities that several of these steps had to work around (especially `typedef`).
 
 ---
 
 ## Recommended order (summary)
 
 | Priority | Feature | Effort | Why this order |
-|----------|---------|--------|----------------|
+| ---------- | --------- | -------- | ---------------- |
 | **—** | [Array declarators](#array-extension-plan) (done) | Small | Unified `VarInit` + `ArrayBoundList`; foundation for init and multidim |
 | **1** | [1D array initialization](#1-1d-array-initialization) (done) | Medium | Brace init, inferred `[]`, string literals |
 | **2** | [2D arrays](#2-2d-and-3d-arrays) (done) | Medium | 2a declaration + 2b initialization; reuses 1D init helpers |
@@ -47,7 +47,7 @@ See [ParserConflicts.md](ParserConflicts.md) for parser ambiguities that some ro
 | **4** | [`static`](#4-static) (done) | Medium | 4a + 4b complete |
 | **5** | [`-g` debug info](#5--g-debug-info) (done) | Medium–large | LLVM `DIBuilder` |
 
-**Optional timing:** Step 5 is independent of language features. If you are debugging many new test programs with LLDB, consider implementing `-g` right after step 1 — it does not require new grammar rules.
+Sub-steps are lettered within their priority: **1a/1b** under priority 1, **2a/2b** under priority 2, and so on.
 
 ---
 
@@ -85,33 +85,21 @@ flowchart TD
 C array initialization is intentionally split into small merges. **2D is complete; the 3D brace initializer is deferred.** Support legal forms in tiers; reject illegal forms (e.g. `char s[5] = "hello"`, `int a[][]`) once the matching feature is in scope.
 
 | Step | Delivers | Tests (examples) |
-|------|----------|------------------|
+| ------ | ---------- | ------------------ |
 | **Declarators** (done) | `ArrayBound` / `ArrayBoundList` on `VarInit`; one `VarDecl` path; `int a[4], b;` | `tests/30.array_mixed_decl.c` |
 | **1a** (done) | `int a[4] = {1,2,3};` — zero-fill, global/local | `tests/31.array_1d_brace_init.c` |
 | **1b** (done) | `int a[] = {…};`, `char s[] = "hello";`, `char s[6] = "hello";` | `tests/32.array_1d_inferred_string_init.c`; reject `char s[5] = "hello"` |
 | **2a** (done) | `int a[8][5];`, subscript `a[i][j]` | `tests/33.array_2d_decl.c` |
 | **2b** (done) | nested/flat init, `int a[][5] = {…}`, partial rows | `tests/34.array_2d_brace_init.c`; reject `int a[][]`, `int b[8][]` |
-| **3a / 3b** | *deferred* | 3D declaration and initialization — not planned near-term |
+| **3D arrays** (declaration done) | `int a[2][8][5];`, subscript and `sizeof` at any depth; brace initializer deferred | — |
 
 Grammar symbols: `VarInit`, `ArrayBound`, `ArrayBoundList` (see `Parser.y`). `VarInit::buildVarType()` nests `ArrayType` for each bound (innermost bound last in the declarator list).
 
-### Status: 2D declaration (done)
-
-- `buildVarType` applies `ArrayBoundList` outside-in so `int m[2][3]` becomes LLVM `[2 x [3 x T]]`.
-- Nested `Subscript` and `CreateGEP` in `Utils::createAdd` / `createLoad` handle `a[i][j]` on locals, globals, and struct element grids.
-- `tests/33.array_2d_decl.c`.
-
-### Status: declarator unification (done)
+### Declarator unification (done)
 
 - Removed the special-case `VarDecl` production that parsed `VarType IDENTIFIER [ INTEGER ] ;` alone.
 - Array bounds live on each `VarInit`; `VarDecl::genCode` builds the effective type per variable.
 - Scalar `= Expr` on arrays is rejected; use brace initialization for arrays.
-
-### Status: fixed-size brace initialization (done)
-
-- `InitList` on `VarInit`; `= { … }` and `= {}` in `Parser.y` (`%prec COMMA` so commas are not parsed as the comma operator).
-- `buildGlobalArrayInitializer` / `storeLocalArrayInitializer` in `VarDecl::genCode`; zero-fill; reject too many elements and multidimensional brace init.
-- `tests/31.array_1d_brace_init.c`.
 
 ---
 
@@ -128,7 +116,9 @@ int arr[4] = {10, 7, 8, 9};   /* unspecified elements are zero */
 int buf[3] = {1, 2, 3};
 ```
 
-Delivered as described in [Array extension plan](#array-extension-plan) step 1a.
+- `InitList` on `VarInit`; `= { … }` and `= {}` in `Parser.y` (`%prec COMMA` so commas are not parsed as the comma operator).
+- `buildGlobalArrayInitializer` for globals, `storeBraceArrayInitializer` for locals; zero-fill; reject too many elements.
+- `tests/31.array_1d_brace_init.c`.
 
 ### 1b — inferred size and string literals (done)
 
@@ -153,7 +143,7 @@ char s2[6] = "hello";
 
 ## 2. 2D and 3D arrays
 
-Covers steps **2a** and **2b** (done). 3D declaration works as well — see [3D arrays](#3d-arrays-declaration-done-initializer-deferred).
+Covers steps **2a** and **2b** (done); 3D declaration works as well — see [3D arrays](#3d-arrays-declaration-done-initializer-deferred).
 
 ### 2a — 2D declaration (done)
 
@@ -161,7 +151,9 @@ Covers steps **2a** and **2b** (done). 3D declaration works as well — see [3D 
 int matrix[8][5];
 ```
 
-Nested `ArrayType` layout and double subscript codegen were verified; `buildVarType` now maps declarator bounds to LLVM dimensions in outside-in order.
+- `buildVarType` applies `ArrayBoundList` outside-in, so `int m[2][3]` becomes LLVM `[2 x [3 x T]]`.
+- `Subscript::genCodePtr` nests through `ops::createAdd` (which emits the `CreateGEP`), handling `a[i][j]` on locals, globals, and struct element grids.
+- `tests/33.array_2d_decl.c`.
 
 ### 2b — 2D initialization (done)
 
@@ -188,13 +180,9 @@ The **brace initializer** is what stops at two dimensions, and stays deferred �
 
 ## 3. `typedef` and `size_t`
 
-Split into **4a** (grammar + alias table + `VarType` spellings) and **4b** (defined-type typedefs + expression disambiguation). `size_t` ships in **4a** via `typedef unsigned long size_t;`.
+Split into **3a** (grammar + alias table + `VarType` spellings) and **3b** (defined-type typedefs + expression disambiguation). `size_t` ships in **3a** via `typedef unsigned long size_t;`. Remaining limits (State 133, typedef-as-variable in the same scope) are documented in [Language.md](Language.md) and [ParserConflicts.md](ParserConflicts.md).
 
-### Status (4a / 4b complete)
-
-Delivered in `tests/35.typedef_builtin.c` and `tests/36.typedef_struct.c`. Remaining limits (State 133, typedef-as-variable in the same scope) are documented in [Language.md](Language.md) and [ParserConflicts.md](ParserConflicts.md).
-
-### 4a — `typedef` of `VarType` spellings (including `size_t`) — **done**
+### 3a — `typedef` of `VarType` spellings (including `size_t`) — **done**
 
 **Goal:**
 
@@ -209,7 +197,7 @@ IntPtr p;
 ```
 
 | Layer | Changes |
-|-------|---------|
+| ------- | --------- |
 | **Lexer** | `TYPEDEF` token |
 | **Parser** | `TypedefDecl: TYPEDEF VarType IDENTIFIER SEMICOLON` |
 | **AST** | `TypedefDecl` (alias name + underlying `VarType*`) |
@@ -219,9 +207,9 @@ IntPtr p;
 
 **In scope:** any type already parsed by `_VarType` (builtins, `const`, pointers, struct/union/enum tags that already exist).
 
-**Out of scope for 4a:** typedef-as-declarator edge cases; fixing all State 133 identifier conflicts.
+**Out of scope for 3a:** typedef-as-declarator edge cases; fixing all State 133 identifier conflicts.
 
-### 4b — defined-type typedefs and disambiguation — **done**
+### 3b — defined-type typedefs and disambiguation — **done**
 
 **Goal:**
 
@@ -234,30 +222,31 @@ unsigned long strlen(const char* s);
 ```
 
 | Layer | Changes |
-|-------|---------|
-| **Parser / AST** | Combined typedef patterns where helpful (`typedef struct S { … } S;`) if needed |
-| **Symbol table** | Typedef names visible in type positions; document expression-position limits |
-| **Disambiguation** | Reduce wrong parses when a typedef name could be a variable (State 133 — see [ParserConflicts.md](ParserConflicts.md)) |
-| **Tests** | Struct tag alias, pointer typedef, real API-style `size_t` / `malloc` / `strlen` declarations |
+| ------- | --------- |
+| **Parser / AST** | Combined typedef patterns (`typedef struct S { … } S;`) |
+| **Symbol table** | Typedef names visible in type positions; expression-position limits documented |
+| **Disambiguation** | Fewer wrong parses when a typedef name could be a variable (State 133 — see [ParserConflicts.md](ParserConflicts.md)) |
 
-**Errors / limits:** typedef name used as a variable in the same scope; shadowing — document or reject explicitly.
+**Tests:** `tests/36.typedef_struct.c` — struct tag alias, pointer typedef, real API-style `size_t` / `malloc` / `strlen` declarations.
 
-### Why split 4a / 4b
+**Errors / limits:** a typedef name used as a variable in the same scope is rejected; see [Language.md](Language.md).
 
-- **4a** is one grammar rule plus alias lookup — enough for `size_t` and most numeric/pointer typedefs.
-- **4b** touches struct tags, API conventions, and the hardest parser conflicts — better as a focused follow-up.
+### Why split 3a / 3b
 
-### Why after 2D (and before 3D / `static`)
+- **3a** is one grammar rule plus alias lookup — enough for `size_t` and most numeric/pointer typedefs.
+- **3b** touches struct tags, API conventions, and the hardest parser conflicts — better as a focused follow-up.
 
-Typedef improves readability of array and API tests (`size_t buf[N]`, `malloc`/`strlen` declarations) once multidimensional init is in place. It does not unblock 2D work. 3D arrays remain deferred.
+### Why after 2D
+
+Typedef improves readability of array and API tests (`size_t buf[N]`, `malloc`/`strlen` declarations) once multidimensional init is in place. It does not unblock 2D work.
 
 ---
 
 ## 4. `static`
 
-Split into **5a** (file-scope linkage) and **5b** (function-local static variables).
+Split into **4a** (file-scope linkage) and **4b** (function-local static variables).
 
-### 5a — file-scope `static` — **done**
+### 4a — file-scope `static` — **done**
 
 **Goal:**
 
@@ -275,7 +264,7 @@ int bump(void) {
 ```
 
 | Layer | Changes |
-|-------|---------|
+| ------- | --------- |
 | **Lexer** | `STATIC` token |
 | **Parser** | `STATIC` prefix on `VarDecl` and `FuncDecl` |
 | **AST** | `isStatic_` on `VarDecl` and `FuncDecl` |
@@ -283,9 +272,9 @@ int bump(void) {
 
 **Tests:** `tests/37.static_file.c` — persistent file-static state, static helper function.
 
-**Out of scope for 5a:** block-scope `static` (delivered in 5b).
+**Out of scope for 4a:** block-scope `static` (delivered in 4b).
 
-### 5b — block-scope `static` — **done**
+### 4b — block-scope `static` — **done**
 
 **Goal:**
 
@@ -302,10 +291,6 @@ void f(void) {
 
 **Tests:** `tests/38.static_local.c` — zero-init persistence, constant initializer, runtime declaration initializer.
 
-### Status (5a / 5b complete)
-
-Delivered in `tests/37.static_file.c` and `tests/38.static_local.c`.
-
 ### Why after typedef
 
 Orthogonal to types and initializers. Teaches linkage and lifetime without blocking typedef work.
@@ -318,15 +303,15 @@ Orthogonal to types and initializers. Teaches linkage and lifetime without block
 
 ### Status
 
-**6a–6d (done):** compile unit and subprograms; statement `DebugLoc`; `dbg.declare` for params/locals; `DICompositeType` for structs/unions; `DILexicalBlock` for `{ ... }`; `-g` disables LLVM optimization (warn if `-O1+` is also passed).
+**5a–5d (done):** compile unit and subprograms; statement `DebugLoc`; `dbg.declare` for params/locals; `DICompositeType` for structs/unions; `DILexicalBlock` for `{ ... }`; `-g` disables LLVM optimization (warn if `-O1+` is also passed).
 
 | Layer | Changes |
-|-------|---------|
-| **Driver** | Pass debug flag from `main.cpp` into `CodeGenerator` — **done (6a)** |
+| ------- | --------- |
+| **Driver** | Pass debug flag from `driver/main.cpp` into `CodeGenerator` — **done (5a)** |
 | **LLVM** | `DIBuilder`: compile unit, subprograms, `DebugLoc`, `dbg.declare`, struct/union `DICompositeType`, `DILexicalBlock` — **done** |
 | **AST / codegen** | `SourceLoc` on functions and statements; param/local `declareAlloca`; `Block` pushes lexical scopes — **done** |
 
-### Why it was last in the language roadmap
+### Why it came last
 
 Pure infrastructure — no new C syntax. Valuable for debugging, but does not unlock new language tests. Reasonable to pull earlier if tooling pain is high during steps 1–3.
 
@@ -334,21 +319,20 @@ Pure infrastructure — no new C syntax. Valuable for debugging, but does not un
 
 ## Explicitly out of scope (for now)
 
-These are **deliberately deferred** — larger subsystems or architectural non-goals, each with a reason not to pursue it near-term (they also appear under **Not supported** in [Language.md](Language.md)). Smaller, self-contained language extensions and diagnostics are catalogued under [Future directions](#future-directions-no-milestones) below.
+These are **deliberately deferred** — architectural non-goals, each with a reason not to pursue it near-term. Language features `lcc` does not accept are listed in [Language.md § Not supported](Language.md#not-supported-yet), each with its own reason. Smaller, self-contained ideas live under [Future directions](#future-directions-no-milestones) below.
 
 | Feature | Reason to defer |
-|---------|-----------------|
-| Preprocessing (`#include`, `#define`) | Separate pipeline stage; very large |
-| `extern` variables | Linkage + multi-TU model; manual decls work today |
-| Separate semantic-analysis pass | Add only when a feature requires it (e.g. heavy typedef disambiguation) — see architecture notes in `AbstractSyntaxTree.hpp` |
+| --------- | ----------------- |
+
+| Separate semantic-analysis pass | Add only when a feature requires it (e.g. heavy typedef disambiguation) — see architecture notes in `ast/Nodes.hpp` |
 | Split `Expr` from `Stmt` | Large churn; low ROI unless rewriting the frontend for pedagogy |
-| 3D arrays (3a / 3b) | 2D covers multidim teaching goals; high complexity for diminishing returns |
+
 
 ---
 
 ## Future directions (no milestones)
 
-The front-end language set and the M0–M18 middle/back-end track are complete, and the current compiler is sufficient for lcc's teaching goals. The ideas below are recorded **for reference only** — they are **deliberately unscheduled, carry no milestones, and are not planned near-term**. Pick one up ad hoc only if it serves a specific learning goal.
+The front-end language set and the M0–M18 middle/back-end track are complete, and the current compiler is sufficient for lcc's teaching goals. The ideas below are recorded for reference only — **deliberately unscheduled, with no milestones attached**. Pick one up ad hoc only if it serves a specific learning goal.
 
 ### Real diagnostics
 
@@ -362,18 +346,9 @@ Self-contained; adds no new language semantics; high UX/teaching value.
 
 ### C language features not yet implemented
 
-Smaller, self-contained extensions — distinct from the larger deferrals under [Explicitly out of scope](#explicitly-out-of-scope-for-now) (preprocessor, `extern` / multi-TU, 3D arrays):
+The list is [Language.md § Not supported](Language.md#not-supported-yet), which is the page a reader asking whether `lcc` accepts something is already on, and the one place to update when the answer changes.
 
-| Idea | Touches | Notes |
-|------|---------|-------|
-| `goto` + labels | lexer, `Parser.y`, codegen | Self-contained; reuses the basic-block machinery from loops / `switch` |
-| Function pointers | declarator grammar, type system, call lowering | Hardest corner of the type system; enables callbacks |
-| More scalar types | lexer, `BuiltinType`, codegen | `signed`, `long long`, `long double` |
-| Struct bit-fields | AST, struct layout, codegen | Packing rules |
-| Designated initializers | init grammar, codegen | `{ .x = 1, [2] = 3 }` |
-| Block-scope `typedef` | scope handling, State 133 conflicts | Extends the current file-scope `typedef` |
-
-Each would follow the same one-idea-per-change discipline (grammar → AST → codegen → tests), but none is scheduled.
+Any of them would follow the same one-idea-per-change discipline (grammar → AST → codegen → tests), but none is scheduled.
 
 Deeper **optimization / back-end** ideas are recorded in [MiddleBackendNotes.md § Future directions](MiddleBackendNotes.md#future-directions-no-milestones).
 
@@ -381,7 +356,7 @@ Deeper **optimization / back-end** ideas are recorded in [MiddleBackendNotes.md 
 
 ## Suggested workflow per feature
 
-For each roadmap item:
+Each feature above followed the same loop, and a new one should too:
 
 1. Add one or more tests under `tests/`.
 2. Extend `Parser.y` / AST / codegen in that order (or AST first if grammar is obvious).

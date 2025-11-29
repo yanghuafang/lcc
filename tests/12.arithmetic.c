@@ -1,5 +1,5 @@
 // The arithmetic operators over mixed types, exercising C's usual arithmetic
-// conversions (see typeUpgrade in src/Utils.cpp).
+// conversions (see src/types/TypeRules.cpp).
 
 int printf(char*, ...);
 

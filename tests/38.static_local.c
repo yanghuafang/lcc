@@ -1,6 +1,6 @@
 // Block-scope static: one object per (function, name), initialized once. A
 // non-constant initializer needs a guard variable — see defineBlockStaticVar
-// in src/AbstractSyntaxTree.cpp.
+// in src/irgen/DeclToIr.cpp.
 
 int printf(char*, ...);
 

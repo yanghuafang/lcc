@@ -72,7 +72,8 @@ done
 
 if [[ "$parse_counterexamples" == true ]]; then
   cd ../src
-  bison -d Parser.y -v -Wcounterexamples &> Parser.counterexamples
+  mkdir -p generated
+  bison -d frontend/Parser.y -v -Wcounterexamples &> generated/Parser.counterexamples
   cd ../scripts
 fi
 

@@ -10,7 +10,7 @@ All commands below assume `cd lcc/scripts`.
 | `install-deps-ubuntu.sh` | Install apt packages on Ubuntu LTS |
 | `install-deps-macos.sh` | Install Homebrew packages on macOS |
 | `build-lcc.sh` | Configure and build the `lcc` compiler — see [Install.md](Install.md) |
-| `compile-tests.sh` | Compile unit tests to `../../lcc-build/*.o`; writes AST/IR/asm under `../debug/` |
+| `compile-tests.sh` | Compile the test programs to `../../lcc-build/*.o`; writes AST/IR/asm under `../debug/` |
 | `link-tests.sh` | Link `../../lcc-build/*.o` to executables with `LCC_LINKER` |
 | `run-tests.sh` | Run linked test binaries |
 | `check-debug-info.sh` | Smoke test: compile with `-g -O0`, verify `llvm-dwarfdump` output |
@@ -19,6 +19,10 @@ All commands below assume `cd lcc/scripts`.
 | `check-ir-opt.sh` | IR opt regression: recompile `-O2`, compare IR vs committed `debug/` goldens (M16) |
 | `mir-study.sh` | Study helper: print MIR before/after regalloc via `llc` (M13) |
 | `bench.sh` | Benchmark `benchmarks/*` (compile time, IR count, runtime); `--smoke` for CI — see [Benchmarks.md](Benchmarks.md) |
+| `format.sh` | `clang-format` plus trailing-whitespace strip; `--check` reports without writing |
+| `tidy.sh` | `clang-tidy` against the curated list in `.clang-tidy`; `--fix` applies what it can |
+
+`format.sh` and `tidy.sh` are style gates rather than tests, but CI runs both, so run them before pushing. Both skip `src/generated/` — flex and bison rewrite it on every configure, so formatting it produces thousands of lines of phantom diff.
 
 `tests-compile-link-run.sh` is not run directly; it defines the test list and shared `compile` / `link` / `run` helpers used by the three `*-tests.sh` scripts.
 
@@ -29,7 +33,7 @@ Linking the suite with /usr/bin/clang...
 All tests linked.
 ```
 
-## Unit tests
+## Regression suite
 
 Typical full run:
 
@@ -122,7 +126,7 @@ Catches unintended middle-end IR changes after a compiler edit. It recompiles ev
 | `--diff` | `debug/<t>.release.post.ll` | Full textual diff of post-opt IR (exact) |
 | `--release` | `debug/<t>.release.ll` | Full diff of final IR, ignoring `target datalayout` / `target triple` |
 
-Post-opt goldens (`.release.post.ll`) contain no `target datalayout` / `target triple` lines, so the count and `--diff` modes need no filtering. That is only about the header: the IR body is still shaped by the host datalayout. The `--release` diff uses the final IR (with target lines stripped). Any mismatch prints the offending test and exits non-zero:
+Post-opt goldens (`.release.post.ll`) contain no `target datalayout` / `target triple` lines, so the count and `--diff` modes need no filtering; the `--release` mode strips those lines from the final IR instead. This is only about the header lines — the IR body is still shaped by the host datalayout. Any mismatch prints the offending test and exits non-zero:
 
 ```text
 12.arithmetic                             3        2  CHANGED
@@ -131,6 +135,8 @@ If the change is intentional, regenerate: ./compile-tests.sh --release
 ```
 
 The goldens are host-specific (their datalayout shapes struct-heavy IR), so run this on the same host that generated them. After an **intentional** IR change, regenerate the goldens with `./compile-tests.sh --release` and re-run the check. Not wired into CI for that reason — it is a local pre-commit / pre-PR guard.
+
+The final-IR goldens (`*.debug.ll`, `*.release.ll`) embed the full host triple, including the OS patch version (`arm64-apple-darwin25.6.0`). An OS point upgrade therefore makes `compile-tests.sh` rewrite every one of them, in both modes with nothing but a triple change — review such diffs before committing. `check-ir-opt.sh` is unaffected: its default and `--diff` modes read `.post.ll`, which has no target lines, and `--release` strips them.
 
 ### Benchmark smoke test
 
@@ -142,6 +148,8 @@ See [Benchmarks.md](Benchmarks.md) for workloads, timed runs, and recording resu
 
 ## CI
 
-GitHub Actions (`.github/workflows/build.yml`) runs a matrix on `ubuntu-latest` and `macos-latest`: install, build, compile, link, run, `check-debug-info.sh`, `check-asm-smoke.sh`, `check-machine-pass-smoke.sh`, and `bench.sh --smoke`. See [Install.md](Install.md) for dependencies.
+GitHub Actions runs one workflow per gate. `.github/workflows/build.yml` is the matrix on `ubuntu-latest` and `macos-latest`: install, build, compile, link, run, `check-debug-info.sh`, `check-asm-smoke.sh`, `check-machine-pass-smoke.sh`, and `bench.sh --smoke`. `.github/workflows/lint.yml` runs `format.sh --check` and `tidy.sh`. See [Install.md](Install.md) for dependencies.
+
+`format.sh --check` is a job of its own rather than a step in the build, so a formatting slip fails in seconds rather than after a full LLVM link. `tidy.sh` needs the compile database a build produces, so its job builds `lcc` again; it runs on `ubuntu-latest` alone — its findings are host-independent, so a second copy would add cost without signal.
 
 `check-ir-opt.sh` (M16) is **not** in CI: its `debug/` goldens are host-specific, so it is a local pre-commit guard run on the host that generated them.

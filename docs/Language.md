@@ -6,68 +6,74 @@ Unlike industrial compilers (clang, gcc) that use recursive-descent parsing, `lc
 
 ## Supported features
 
-- Builtin types: `char`, `short`, `int`, `long`, `float`, `double`, corresponding `unsigned` types, `bool` and `void`.
-- User defined types: struct, union and enum, corresponding reference (`structObj.member`) and dereference (`structPtr->member`) on struct and union objects.
-- Pointer and address of: `Type* objectPtr`, `objectPtr = &object`; dereference: `*objectPtr`.
-- Pointer move on array of builtin types and user defined types by using operators `++`, `--`, `+=` and `-=`.
-- One dimensional array: `Type arrayName[INTEGER];`, including mixed lists such as `int a[4], b;` (bounds on each name via `VarInit`)
-- One dimensional array brace initialization: `int a[4] = {1, 2, 3};` and empty `{}` (zero-fill), global and local
+### Types
+
+- Builtin types: `char`, `short`, `int`, `long`, `float`, `double`, the corresponding `unsigned` types, `bool` and `void`
+- User-defined types: `struct`, `union` and `enum`, with member reference (`structObj.member`) and dereference (`structPtr->member`) on struct and union objects
+- Pointers and address-of: `Type* objectPtr`, `objectPtr = &object`, dereference `*objectPtr`
+- `const` qualifier: `const int limit = 5;`, `const char* s`. Parsed and recorded on the type (file-scope `const` objects become LLVM constants), but **not enforced** — assigning to a `const` object is not diagnosed
+- `typedef`: builtin and pointer aliases (`typedef unsigned long size_t;`, `typedef int* IntPtr;`); struct and union aliases for an **already-defined** type (`typedef struct Employee Employee;`, `typedef struct Employee* EmployeePtr;`) and combined define-and-alias forms (`typedef struct Point { int x; int y; } Point;`, `typedef union U { int a; float b; } U;`)
+
+### Declarations and initialization
+
+- Functions: declaration, definition and call, including variadic parameters (`...`)
+- Variable lists: `a = 1, b, c = 3`
+- One-dimensional arrays: `Type arrayName[INTEGER];`, including mixed lists such as `int a[4], b;` (bounds on each name via `VarInit`)
+- One-dimensional brace initialization: `int a[4] = {1, 2, 3};` and empty `{}` (zero-fill), global and local
 - Inferred 1D array size: `int arr[] = {10, 7, 8, 9, 1, 5};`
 - Char array string initialization: `char s[] = "hello";`, `char s[6] = "hello";` (length includes `'\0'`)
-- Two dimensional array: `int matrix[8][5];`, subscript `matrix[i][j]`, including mixed lists such as `int a[2][3], b;`
-- Two dimensional array brace initialization: `int a[8][5] = {{0,1,2},{3,4,5}};`, flat `{0,1,2,3,4,5}`, and `int a[][5] = {{1},{2,3}};`
-- Typedef: builtin and pointer aliases (`typedef unsigned long size_t;`, `typedef int* IntPtr;`); struct and union aliases (`typedef struct Employee Employee;`, `typedef struct Employee* EmployeePtr;`, `typedef struct Point { int x; int y; } Point;`, `typedef union U { int a; float b; } U;`)
+- Two-dimensional arrays: `int matrix[8][5];`, subscript `matrix[i][j]`, including mixed lists such as `int a[2][3], b;`
+- Two-dimensional brace initialization: `int a[8][5] = {{0,1,2},{3,4,5}};`, flat `{0,1,2,3,4,5}`, and `int a[][5] = {{1},{2,3}};`
 - File-scope `static`: file-local variables and functions (`static int counter = 0;`, `static int helper(int x) { … }`)
 - Block-scope `static`: function-local persistent variables (`static int count;`, `static int count = 10;`)
-- Variable list: such as `a = 1, b, c = 3`
-- Variant parameters: `...`
-- Function declaration, definition and call.
-- `sizeof` operator.
-- Explicit (`(Type)varObject`) and implicit type cast.
-- C operator precedence: https://en.cppreference.com/w/c/language/operator_precedence
-- `(Expr)` modifies precedence in expression, such as `(a + b) * c`.
-- Assign: `=`
-- Integer literals: decimal and `0x` hex; optional `u`, `l`, or `ul` suffixes. Unsuffixed hex picks the narrowest fitting type (`int` through `unsigned long`).
-- Arithmetic: `+`, `-`, `*`, `/`, `%`
-- Arithmetic Assign: `+=`, `-=`, `*=`, `/=`, `%=`
-- Prefix and postfix inc/dec operators: `++`, `--`
-- Bitwise: `&`, `|`, `^`, `~`
-- Bitwise Assign: `&=`, `|=`, `^=`
-- Shift: `<<`, `>>`
-- Shift Assign: `<<=`, `>>=`
-- Logic: `&&`, `||`, `!`
+
+### Expressions and operators
+
+- Integer literals: decimal and `0x` hex, with optional `u`, `l`, or `ul` suffixes. Unsuffixed hex picks the narrowest fitting type (`int` through `unsigned long`)
+- Boolean literals: `true`, `false`
+- Assignment: `=`
+- Arithmetic: `+`, `-`, `*`, `/`, `%`, and the compound forms `+=`, `-=`, `*=`, `/=`, `%=`
+- Prefix and postfix increment / decrement: `++`, `--`
+- Bitwise: `&`, `|`, `^`, `~`, and the compound forms `&=`, `|=`, `^=`
+- Shift: `<<`, `>>`, and the compound forms `<<=`, `>>=`
+- Logical: `&&`, `||`, `!` — none of them short-circuit; see [Not supported](#not-supported-yet)
 - Comparison: `==`, `!=`, `<`, `<=`, `>`, `>=`
-- Ternary expression: `condition ? trueExpr : falseExpr`
-- Branch: `if`, `else`
-- Branch: `switch`, `case`, `default`
+- Ternary: `condition ? trueExpr : falseExpr` — both arms evaluate; see [Not supported](#not-supported-yet)
+- Pointer arithmetic over arrays of builtin and user-defined types, via `++`, `--`, `+=` and `-=`
+- `sizeof`
+- Explicit (`(Type)varObject`) and implicit type casts
+- [C operator precedence](https://en.cppreference.com/w/c/language/operator_precedence), with `(Expr)` overriding it — `(a + b) * c`
+
+### Statements
+
+- Branch: `if` / `else`
+- Branch: `switch` / `case` / `default`
 - Loop: `for`, `do`, `while`
-- In loop: `continue`, `break`, `return`
-- In switch statement: `break`, `return`
-- In function: `return`
+- In a loop: `continue`, `break`, `return`
+- In a `switch`: `break`, `return`
+- In a function: `return`
 
 ## Not supported (yet)
 
-- Preprocessing: such as `#include`
-- Macro definition `#define` and expansion
-- Multidimensional array initialization beyond 2D: such as `int a[2][8][5] = {…};`
-- Three dimensional arrays: such as `int a[2][8][5];` (deferred)
+- Preprocessing: such as `#include`, and macro definition `#define` and expansion. A separate pipeline stage, and a large one.
+- `goto` and labels
+- Function pointers: declaring one (`int (*p)(int);`) and calling through it
+- Struct bit-fields: `struct S { int a : 3; };`
+- Designated initializers: `{ .x = 1, [2] = 3 }`
+- Scalar types beyond the builtin set: `signed`, `long long`, `long double`
+- Three dimensional and higher arrays, and their initialization: such as `int a[2][8][5];` (deferred — 2D already covers the multidimensional case, and the complexity climbs steeply from there)
 - Block-scope typedef: only file-scope `typedef` is supported.
 - Struct tag typedefs before definition: `typedef struct Employee Employee;` requires the struct to be defined first, or use the combined form `typedef struct S { … } S;`.
-- Expression/type disambiguation (State 133 in `Parser.output`; see [ParserConflicts.md](ParserConflicts.md)): typedef names in expression positions may still parse as types; lcc rejects typedef names used as variables in the same scope.
-- `extern`: `lcc` requires function declaration for linkage; extern variables are not allowed.
-
-- A parenthesized expression whose first token is a bare identifier, when the
-  next token is `)` or `*`:
+- **Parentheses starting with a bare identifier followed by `)` or `*`.** In that position the parser reduces `IDENTIFIER` to a type name and reads the parentheses as a cast, so these are syntax errors:
 
   ```c
   r = (a);            /* error — redundant parentheses around a variable */
   r = (a * 7) + 1;    /* error — identifier immediately followed by `*` */
   ```
 
-  Any other operator after the identifier parses fine (`(a + 7)`, `(a == 3)`),
-  as does a parenthesis that does not begin with a bare identifier (`(7 * a)`,
-  `(*p * 7)`, `(arr[0] * 7)`). Reorder the operands, drop the parentheses, or
-  assign to a temporary. Root cause: [ParserConflicts.md](ParserConflicts.md#4-identifier-type-name-or-expression-4-reducereduce).
+  Any other operator after the identifier parses fine (`(a + 7)`, `(a == 3)`, `(a > 3)`), as does a parenthesized expression that does not begin with a bare identifier (`(7 * a)`, `(*p * 7)`, `(arr[0] * 7)`). Work around it by reordering the operands, dropping the parentheses, or assigning to a temporary. Root cause: state 133 in `Parser.output` — see [ParserConflicts.md](ParserConflicts.md#4-identifier-type-name-or-expression-4-reducereduce).
+- Typedef names used as variables in the same scope (rejected; same root cause as above).
+- `extern`: `lcc` requires function declaration for linkage; extern variables are not allowed. Supporting them means a linkage and multi-translation-unit model, and manual declarations cover what the tests need.
 
 For front-end feature history and test coverage per language item, see [FrontendNotes.md](FrontendNotes.md). For the active middle-end, optimization, and back-end track, see [LearningPlan.md](LearningPlan.md).
 

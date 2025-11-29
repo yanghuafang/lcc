@@ -6,7 +6,7 @@
 lcc -i <input.c> -o <output.o> [-S <asm.s>] [-v <ast.dot>] [-l <ir.ll>] [-l-pre-opt <pre.ll>] [-l-post-opt <post.ll>] [-ir-stats <file>] [-machine-stats <file>] [-fold-add-zero] [-O-passes <pipeline>] [--target <triple>] [-mcpu <cpu>] [-mattr <features>] [-g] [-O0|-O1|-O2|-O3|-Os|-Oz]
 ```
 
-`-O-passes` and `-O0`…`-Oz` are **mutually exclusive** (middle-end: custom pipeline vs `default<O*>`). With `-g`, both are skipped (same as `-O2` with debug). Backend `-O` codegen level follows the CLI `-O` flag only — when you use `-O-passes` alone, backend defaults to no codegen opts (`-O0` equivalent).
+`-O-passes` and `-O0`…`-Oz` are **mutually exclusive** (middle-end: custom pipeline vs `default<O*>`), and `-g` skips both. [Optimization levels](#optimization-levels--o) below explains how the middle-end and back-end levels are chosen.
 
 | Flag | Required | Description |
 |------|----------|-------------|
@@ -38,7 +38,9 @@ lcc -i <input.c> -o <output.o> [-S <asm.s>] [-v <ast.dot>] [-l <ir.ll>] [-l-pre-
 | `-O3` | O3 pipeline (includes vectorizers) | Aggressive |
 | `-Os` / `-Oz` | Size-focused IR pipeline | Default |
 
-With **`-g`**, middle-end LLVM opts are **skipped** (DWARF `dbg.declare` allocas must survive); the CLI `-O` level is still passed to the back-end. **`-O-passes`** is also skipped under `-g`. See [LlvmTools.md](LlvmTools.md) for IR/asm study recipes (M9, M12, M14).
+**`-g` skips the whole middle-end** — no `-O` pipeline and no `-O-passes` — so that the `dbg.declare` allocas DWARF depends on survive; `lcc` warns if you passed either. The CLI `-O` level still reaches the back-end, so `-g -O2` pairs unoptimized IR with optimized codegen. Custom passes (`-ir-stats`, `-fold-add-zero`) run under `-g` as usual.
+
+The back-end level follows the CLI `-O` flag alone. Since `-O-passes` cannot be combined with `-O0`…`-Oz`, using it leaves the back-end at `CodeGenOptLevel::None`. See [LlvmTools.md](LlvmTools.md) for IR/asm study recipes (M9, M12, M14).
 
 ### Explicit pipeline (`-O-passes`)
 
@@ -88,7 +90,7 @@ Example (assembly with CPU/features), from `lcc/scripts`:
 |------|---------------------|-------------|
 | `-l-pre-opt` | After `genCode()`, before `IrOptimizer` / debug finalization | Raw frontend IR (allocas, unoptimized structure) |
 | `-l-post-opt` | After `IrOptimizer::run()` and debug finalization (`-g`) | Optimized or finalized IR (no target metadata yet) |
-| `-l` | Immediately after `genObjectCode()` (before optional `-S`) | Final IR with `target triple` / `datalayout` (test `debug/*.debug.ll` goldens) |
+| `-l` | Immediately after `pipeline::emitObject()` (before optional `-S`) | Final IR with `target triple` / `datalayout` (test `debug/*.debug.ll` goldens) |
 
 `compile-tests.sh` writes middle-end snapshots as `debug/<test>.debug.pre.ll` and `.debug.post.ll` (or `.release.*` in release mode). The plain `debug/<test>.debug.ll` file is the **final** `-l` dump after object emission — not the same as `.post.ll`.
 
@@ -96,12 +98,13 @@ Example (compare raw vs optimized IR), from `lcc/scripts`:
 
 ```bash
 ../../lcc-build/lcc -O2 -i ../tests/25.quick_sort.c -o /tmp/q.o \
-  -l-pre-opt /tmp/q.pre.ll \
-  -l-post-opt /tmp/q.post.ll
+  -l-pre-opt /tmp/q.pre.ll -l-post-opt /tmp/q.post.ll
 diff -u /tmp/q.pre.ll /tmp/q.post.ll | head
 ```
 
-With `-g`, LLVM optimization is skipped; `-l-pre-opt` and `-l-post-opt` still differ because `debugInfo_->finalize()` runs between them. With `-O2` and no `-g`, pre and post differ from LLVM opts.
+Dump to `/tmp` rather than `../debug/`: those files are committed goldens that [`check-ir-opt.sh`](Testing.md#ir-optimization-regression-check-m16) compares against, and `./compile-tests.sh --release` is the supported way to regenerate them.
+
+Under `-g` the two dumps still differ even though no LLVM pipeline runs, because `debugInfo_->finalize()` happens between them.
 
 Example (IR instruction stats), from `lcc/scripts`:
 
@@ -176,7 +179,7 @@ LCC_LINKER=gcc ./link-tests.sh
 
 ## Debug a program built by `lcc`
 
-`-g` embeds debug info for the **generated** C program (the `-i` file), not for debugging `lcc` itself. See [DebuggingLcc.md](DebuggingLcc.md) to debug the compiler.
+`-g` embeds debug info for the C program being compiled (the `-i` file), not for debugging `lcc` itself. See [DebuggingLcc.md](DebuggingLcc.md) to debug the compiler.
 
 ```bash
 ../../lcc-build/lcc -g -O0 -i ../tests/0.hello_world.c -o ../../lcc-build/0.hello_world.o
@@ -190,6 +193,6 @@ Supported DWARF under `-g`/`-O0`-style builds: subprograms, line stepping, local
 
 | Document | Topics |
 |----------|--------|
-| [LlvmTools.md](LlvmTools.md) | LLVM tool recipes (`opt`, `llc`, `objdump`, `mca`), M9/M12/M14 study notes |
+| [LlvmTools.md](LlvmTools.md) | LLVM tool recipes (`opt`, `llc`, `objdump`, `mca`) and milestone case studies (M7–M9, M12–M14, M17) |
 | [Testing.md](Testing.md) | Regression scripts, compile modes, CI smoke tests |
 | [LearningPlan.md](LearningPlan.md) | Full milestone path M0–M18 |
