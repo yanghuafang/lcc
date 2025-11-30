@@ -18,7 +18,8 @@ class Module;
 
 class CodeGenerator;
 
-// The compiler's phase ordering, and the only place the phases meet.
+// The compiler's phase ordering — the executable form of the stage diagram in
+// docs/Architecture.md, and the only place the phases meet.
 //
 // Keeping the sequence here rather than on CodeGenerator is what lets irgen/
 // depend on nothing but ast/ and types/. CodeGenerator is the context an AST

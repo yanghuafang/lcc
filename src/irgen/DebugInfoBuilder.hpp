@@ -42,7 +42,8 @@ class Type;
 // *interleaved* with the AST walk: CodeGenerator constructs it before
 // genCode(), each node that creates a function, scope, or local variable calls
 // in as it is lowered, and the accumulated metadata is only sealed at the end.
-// That is why debug info does not appear as a box in the stage diagram.
+// That is why debug info does not appear as a box in the stage diagram —
+// see docs/Architecture.md.
 //
 // The required call order, and what goes wrong otherwise:
 //

@@ -3,18 +3,18 @@
 [![Build](https://github.com/yanghuafang/lcc/actions/workflows/build.yml/badge.svg)](https://github.com/yanghuafang/lcc/actions/workflows/build.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
-A teaching C compiler built with **flex**, **bison**, and **LLVM 20**. It uses **bottom-up LALR** parsing (not recursive descent) so the grammar stays small enough to study and modify.
+A teaching C compiler built with **flex**, **bison**, and **LLVM 20**.
 
-`lcc` compiles one `.c` translation unit to a `.o` object file (`-i` and `-o` are both required). Optionally emit assembly with `-S`. Link with `clang` or `gcc` to run the program.
+`lcc` compiles one `.c` translation unit to a `.o` object file (`-i` and `-o` are both required), and optionally to assembly with `-S`. Link the object with `clang` or `gcc` to run the program.
 
 ## Why this project
 
-| | |
-|---|---|
-| **Small enough to read** | Bottom-up **LALR** grammar (flex/bison) instead of a hand-written recursive-descent parser — the whole front-end is small enough to study and modify. |
+| Trait | What it means |
+| --- | --- |
+| **Small enough to read** | A bottom-up **LALR** grammar (flex/bison) instead of a hand-written recursive-descent parser keeps the front-end short enough to study and modify. |
 | **A real toolchain** | Emits genuine **LLVM 20** IR and native object files through `IRBuilder` and `TargetMachine` — not a toy backend. |
-| **Cleanly layered** | Front-end, middle-end (`IrOptimizer`), and back-end (`TargetBackend`) are separated, so you can study or change one layer at a time. |
-| **Guided curriculum** | An 19-milestone learning plan (**M0–M18**) takes you from a first build to custom LLVM passes and codegen — see [docs/LearningPlan.md](docs/LearningPlan.md). |
+| **Cleanly layered** | `src/` is an acyclic dependency graph: `ast/` includes nothing outside itself, `irgen/` does not know the middle end or back end exist, and the phase ordering lives in one file (`driver/Pipeline.cpp`). You can study or change one layer at a time. |
+| **Guided curriculum** | A 19-milestone learning plan (**M0–M18**) takes you from a first build to custom LLVM passes and codegen — see [docs/LearningPlan.md](docs/LearningPlan.md). |
 | **Inspectable** | Dump AST graphs (Graphviz), pre/post-optimization IR, assembly, and IR / machine-instruction stats straight from the CLI. |
 
 ## How it works
@@ -24,10 +24,10 @@ A teaching C compiler built with **flex**, **bison**, and **LLVM 20**. It uses *
   │  [front-end]   flex (Lexer.l) + bison (Parser.y)
   ▼
 AST  (namespace AST, rooted at g_root)
-  │  [front-end]   CodeGenerator::genIrCode()  — single pass; types resolved on demand
+  │  [front-end]   pipeline::genIr()
   ▼
 LLVM IR  (llvm::Module, built with IRBuilder)
-  │  [middle-end]  IrOptimizer::run()  — LLVM New PM: -O0..-O3, custom passes
+  │  [middle-end]  IrOptimizer::run()  — LLVM New PM: -O0..-Oz, -O-passes, custom passes
   ▼
 Optimized IR  (+ DWARF when -g)
   │  [back-end]    TargetBackend  — llvm::TargetMachine
@@ -36,11 +36,11 @@ Optimized IR  (+ DWARF when -g)
 ```
 
 <p align="center">
-  <img src="debug/0.hello_world.png" alt="AST for tests/0.hello_world.c, dumped with lcc -v and rendered by Graphviz" width="100%"><br>
-  <sub>The front-end AST for <a href="tests/0.hello_world.c"><code>tests/0.hello_world.c</code></a>, dumped with <code>lcc -v out.dot</code> and rendered by Graphviz (<a href="debug/0.hello_world.png"><code>debug/0.hello_world.png</code></a>).</sub>
+  <img src="debug/0.hello_world.png" alt="Front-end AST for tests/0.hello_world.c" width="100%"><br>
+  <sub>The front-end AST for <a href="tests/0.hello_world.c"><code>tests/0.hello_world.c</code></a>, dumped with <code>lcc -v out.dot</code> and rendered by Graphviz.</sub>
 </p>
 
-There is **no separate semantic-analysis pass**: C type information is resolved on demand during `genCode()`, using opaque pointers (pointee types live on the AST `VarType`, not on `llvm::Type*`). Link the resulting `.o` with `clang` or `gcc`. Full walkthrough: [docs/LlvmTools.md](docs/LlvmTools.md) and [docs/LearningPlan.md](docs/LearningPlan.md).
+There is **no separate semantic-analysis pass**: C type information is resolved on demand during `genCode()`, using opaque pointers (pointee types live on the AST `VarType`, not on `llvm::Type*`). [docs/Architecture.md](docs/Architecture.md) walks the stages in detail and maps them to `src/` files; [docs/LlvmTools.md](docs/LlvmTools.md) shows how to inspect each one with LLVM tools.
 
 ## Quick start
 
@@ -65,7 +65,7 @@ Full regression suite:
 ./compile-tests.sh && ./link-tests.sh && ./run-tests.sh
 ```
 
-Build artifacts go to `../../lcc-build/` (sibling of the repo). Sample AST graphs and LLVM IR live under `lcc/debug/` — middle-end snapshots use `*.debug.pre.ll` / `*.post.ll` (or `.release.*`); final IR after object emission uses `*.debug.ll` / `*.release.ll` (see [compile modes](docs/Testing.md)).
+Build artifacts go to `../../lcc-build/` (sibling of the repo). The AST graphs, IR, and assembly the tests produce land in `lcc/debug/`; [docs/Testing.md](docs/Testing.md) explains the file-name suffixes and the debug/release compile modes.
 
 ## Compile and run your own program
 
@@ -88,7 +88,7 @@ int main() {
 Save it as `/tmp/sum.c`, then from `lcc/scripts` (after `./build-lcc.sh`):
 
 ```bash
-# 1. Compile C -> object with lcc (-i and -o are both required)
+# 1. Compile C -> object with lcc
 ../../lcc-build/lcc -i /tmp/sum.c -o /tmp/sum.o
 
 # 2. Link the object with the system toolchain
@@ -99,11 +99,17 @@ clang /tmp/sum.o -o /tmp/sum
 # -> sum(1..10) = 55
 ```
 
-`lcc` emits position-independent objects, so the same link step works on macOS and Linux without `-no-pie`. Add `-O2` to optimize, `-S /tmp/sum.s` to also emit assembly, `-g` for a debuggable build, or `-v /tmp/sum.dot` to dump the AST graph. Full flag reference: [docs/Usage.md](docs/Usage.md).
+`lcc` emits position-independent objects, so the same link step works on macOS and Linux without `-no-pie`.
+
+Useful extra flags: `-O2` to optimize, `-g` for a debuggable build, `-S /tmp/sum.s` to also emit assembly, and `-v /tmp/sum.dot` to dump the AST graph. Full reference: [docs/Usage.md](docs/Usage.md).
 
 ## What it supports (summary)
 
-Types (builtin, struct, union, enum), pointers, 1D/2D arrays and brace init, `typedef`, file/block `static`, functions, `sizeof`, casts, full expression/statement grammar (control flow, `break`/`continue`), and `-g` DWARF for debuggable builds.
+- Types: builtin, struct, union, enum, `typedef`, and pointers
+- 1D and 2D arrays, including brace and string initialization
+- Functions (including variadic declarations), file- and block-scope `static`
+- Expressions and statements: operators, `sizeof`, casts, control flow, `break` / `continue`
+- DWARF debug info under `-g`
 
 There is no preprocessor, which is why the example in [Compile and run your own program](#compile-and-run-your-own-program) declares `printf` by hand instead of including `<stdio.h>`. For what `lcc` rejects, and the reason in each case, see [docs/Language.md § Not supported](docs/Language.md#not-supported-yet).
 
@@ -111,19 +117,45 @@ There is no preprocessor, which is why the example in [Compile and run your own 
 
 ```
 lcc/
-├── src/               # Compiler sources
-│   ├── Lexer.l                  # flex lexer
-│   ├── Parser.y                 # bison LALR grammar
-│   ├── AbstractSyntaxTree.*     # AST nodes + genCode() IR emission
-│   ├── CodeGenerator.*          # LLVM context/module, scoped symbol tables
-│   ├── IrOptimizer.*            # middle-end (LLVM New Pass Manager)
-│   ├── TargetBackend.*          # back-end (.o / .s emission)
-│   ├── DebugInfoBuilder.*       # DWARF debug info (-g)
-│   ├── Visualizer.*             # Graphviz AST graphs (-v)
-│   └── passes/                  # Custom LLVM passes (IR stats, fold-add-zero, machine stats)
-├── tests/             # 40+ small C programs, each self-checks and prints "<name> PASS"
+├── src/               # Compiler sources; src/ is the only include root, so
+│   │                  # every include names its directory ("ast/...", "irgen/...")
+│   ├── driver/                  # the only place the phases meet
+│   │   ├── main.cpp             # CLI parsing, flag validation
+│   │   └── Pipeline.*           # walk -> optimize -> emit .o / .s
+│   ├── frontend/                # the .l / .y that define the language
+│   │   ├── Lexer.l              # flex lexer
+│   │   └── Parser.y             # bison LALR grammar
+│   ├── ast/                     # The tree, no LLVM knowledge
+│   │   ├── Nodes.hpp            # Node hierarchy (Decl / Stmt / Expr / VarType)
+│   │   ├── Ownership.cpp        # destructors: who deletes what
+│   │   └── BuiltinTypeId.hpp    # C type enum, carries the signedness LLVM drops
+│   ├── types/                   # What a type is; emits no instructions
+│   │   ├── TypeEnv.hpp          # type environment interface (AST VarType -> llvm::Type)
+│   │   ├── TypeRules.*          # C type rules: promotion, conversion, signedness
+│   │   └── VarTypeQuery.*       # AST VarType -> BuiltinTypeId / llvm::Type queries
+│   ├── irgen/                   # AST -> LLVM IR
+│   │   ├── ExprToIr.cpp         # walker: genCode() for every Expr node
+│   │   ├── StmtToIr.cpp         # walker: statements, basic blocks, break/continue
+│   │   ├── DeclToIr.cpp         # walker: declarations, initializers, block statics
+│   │   ├── TypeToIr.cpp         # walker: AST VarType -> llvm::Type
+│   │   ├── Operators.*          # one function per C operator (arithmetic, bitwise, compare)
+│   │   ├── TypeConversion.*     # emits C conversions (pairs with types/TypeRules)
+│   │   ├── IrIdioms.*           # alloca, block terminator, load/store
+│   │   ├── CodeGenerator.*      # LLVM context/module, scoped symbol tables
+│   │   └── DebugInfoBuilder.*   # DWARF debug info (-g)
+│   ├── opt/                     # middle-end (LLVM New Pass Manager)
+│   │   ├── IrOptimizer.*        # pass pipeline
+│   │   └── passes/              # lcc's own IR passes (IR stats, fold-add-zero)
+│   ├── backend/                 # back-end (.o / .s emission)
+│   │   ├── TargetBackend.*      # TargetMachine setup, legacy-PM codegen
+│   │   └── passes/              # lcc's own MIR passes (machine stats)
+│   ├── dot/                     # AST -> Graphviz DOT, independent of irgen/
+│   │   ├── AstToDot.cpp         # genGraph() for every node (-v)
+│   │   └── DotFileWriter.*      # writes the assembled DOT graph to disk
+│   └── generated/               # flex/bison output — never edit (Lexer.cpp, Parser.*)
+├── tests/             # suite programs (+1 study fixture); each prints "<name> PASS" or "FAIL"
 ├── benchmarks/        # Larger workloads for bench.sh (M15)
-├── scripts/           # build-lcc.sh, compile/link/run-tests.sh, smoke checks, bench
+├── scripts/           # build-lcc.sh, compile/link/run-tests.sh, format.sh, tidy.sh, bench
 ├── docs/              # Guides (start with LearningPlan.md)
 ├── debug/             # Committed AST / IR / asm goldens for the test suite
 ├── CMakeLists.txt     # flex/bison codegen + LLVM configuration
@@ -132,31 +164,42 @@ lcc/
 
 ## Documentation
 
-Full index (grouped by learning path, how-to, and reference): [docs/README.md](docs/README.md).
-
 | Guide | Topics |
-|-------|--------|
+| ------- | -------- |
 | [docs/LearningPlan.md](docs/LearningPlan.md) | **Start here** — full learning path (M0–M18) |
-| [docs/MiddleBackendNotes.md](docs/MiddleBackendNotes.md) | Middle/back-end implementation detail |
+| [docs/Architecture.md](docs/Architecture.md) | `src/` file map and where to make a given change |
+| [docs/LlvmTools.md](docs/LlvmTools.md) | LLVM tool reference and per-milestone case studies (M7–M9, M12–M15, M17) |
 | [docs/Install.md](docs/Install.md) | Dependencies, build `lcc`, CMake options |
 | [docs/Usage.md](docs/Usage.md) | CLI flags, link, debug compiled programs |
-| [docs/Testing.md](docs/Testing.md) | Scripts, unit tests, compile modes |
+| [docs/Testing.md](docs/Testing.md) | Test scripts, compile modes, CI smoke checks |
 | [docs/Benchmarks.md](docs/Benchmarks.md) | Benchmark harness, workloads, recording opt results (M15) |
 | [docs/DebuggingLcc.md](docs/DebuggingLcc.md) | Debug `lcc` in VS Code / LLDB |
 | [docs/Language.md](docs/Language.md) | Full feature list and limitations |
-| [docs/FrontendNotes.md](docs/FrontendNotes.md) | Front-end language features (complete) |
-| [docs/LlvmTools.md](docs/LlvmTools.md) | Pipeline overview, LLVM tool reference, opt/asm/vectorization study (M9, M12, M14) |
 | [docs/ParserConflicts.md](docs/ParserConflicts.md) | Bison parser conflicts |
+| [docs/FrontendNotes.md](docs/FrontendNotes.md) | How the front-end reached its current feature set |
+| [docs/MiddleBackendNotes.md](docs/MiddleBackendNotes.md) | What each middle/back-end milestone built, with acceptance criteria |
+
+[docs/README.md](docs/README.md) indexes the same guides with a milestone-to-doc map.
 
 ## Requirements
 
-LLVM **20**, flex, bison, argparse, graphviz, CMake **3.22+**, **C++17**, and a system linker (`clang` or `gcc`). Supported platforms: **macOS** (Homebrew) and **Ubuntu LTS**. See [docs/Install.md](docs/Install.md).
+**macOS** (Homebrew) or **Ubuntu LTS**, with **LLVM 20**, **CMake 3.22+**, a **C++17** compiler, and a system linker (`clang` or `gcc`) for lcc's PIC objects. flex, bison, argparse, graphviz and doxygen come from the setup scripts.
 
-## Roadmap
+| Needed | Note |
+| --- | --- |
+| LLVM **20**, CMake **3.22+**, **C++17** | |
+| flex, bison | required at **configure** time — CMake regenerates the lexer and parser on every run |
+| a system linker (`clang` or `gcc`) | links lcc's PIC objects |
+| argparse | used if installed; CMake downloads it otherwise |
+| graphviz | supplies `dot`, which the test scripts call to render AST images |
 
-Front-end language work (arrays through `-g` debug info) is **complete**; see [docs/FrontendNotes.md](docs/FrontendNotes.md). Middle/back-end milestones **M0–M18 are complete**, including the optional ones (M7, M8, M13, M15, M16, M17); see [docs/LearningPlan.md](docs/LearningPlan.md).
+Setup commands: [docs/Install.md](docs/Install.md).
 
-Exploratory ideas for later — real diagnostics, more C language features, and deeper optimization/back-end passes — are recorded as **unscheduled Future directions** (no milestones attached) in [docs/FrontendNotes.md](docs/FrontendNotes.md#future-directions-no-milestones) and [docs/MiddleBackendNotes.md](docs/MiddleBackendNotes.md#future-directions-no-milestones).
+## Project status
+
+Front-end language work (arrays through `-g` debug info) is **complete** ([docs/FrontendNotes.md](docs/FrontendNotes.md)), and so is the **M0–M18** learning plan ([docs/LearningPlan.md](docs/LearningPlan.md)).
+
+Exploratory ideas for later — real diagnostics, more C language features, and deeper optimization/back-end passes — are recorded as **unscheduled future directions** (no milestones attached) in [docs/FrontendNotes.md](docs/FrontendNotes.md#future-directions-no-milestones) and [docs/MiddleBackendNotes.md](docs/MiddleBackendNotes.md#future-directions-no-milestones).
 
 ## Contributing
 
