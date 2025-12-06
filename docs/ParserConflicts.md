@@ -182,13 +182,47 @@ After parsing `if (b) stmt1 •`, the parser can:
 - **Shift** `ELSE` — start the rule **with** `else` (inner `if` gets it).
 - **Reduce** to `IfStmt` without `else` — close the inner `if` and leave `else` for the outer `if`.
 
-### lcc's fix
+### What actually resolves it: the shift default
+
+Bison **shifts**, so `else` attaches to the nearest open `if`. That is standard C behavior — but it is the plain shift/reduce default doing the work, not a precedence declaration.
+
+`Parser.y` does contain the textbook remedy
 
 ```yacc
 %nonassoc ELSE
 ```
 
-`%nonassoc` on `ELSE` tells Bison: do not reduce a rule that ends with `ELSE` on the stack when the lookahead is also `ELSE`. In practice, on input `... stmt • else`, the parser **shifts** `else` to the nearest open `if`. That is standard C behavior.
+but **that declaration is inert here.** Understanding why is worth more than the declaration itself.
+
+Precedence resolution compares two precedences: the **lookahead token's** and the **rule's**. A rule gets its precedence from the **last terminal in its right-hand side**, unless overridden with `%prec`. The rule competing for the reduce is rule 94:
+
+```yacc
+IfStmt: IF LPARENTHESES Expr RPARENTHESES Stmt      /* last terminal: RPARENTHESES */
+```
+
+Its last terminal is `RPARENTHESES`, which appears in no `%left` / `%right` / `%nonassoc` line, so **rule 94 has no precedence at all**. With nothing to compare against `ELSE`, Bison cannot apply precedence and falls back to its default: shift.
+
+`%nonassoc ELSE` does give rule 93 (`… Stmt ELSE Stmt`, last terminal `ELSE`) a precedence, but rule 93 is never the reducing rule in a conflict on lookahead `ELSE`, so that has no observable effect either. Consistently, `Parser.output` contains no `error (nonassociative)` action anywhere.
+
+### How Parser.output proves it
+
+Two signals, both visible in state 305:
+
+```
+State 305 conflicts: 1 shift/reduce
+
+   93 IfStmt: IF LPARENTHESES Expr RPARENTHESES Stmt • ELSE Stmt
+   94       | IF LPARENTHESES Expr RPARENTHESES Stmt •
+
+    ELSE  shift, and go to state 312
+
+    ELSE      [reduce using rule 94 (IfStmt)]
+```
+
+1. The conflict is **counted** — it is one of the 48 reported by bison. A conflict resolved by precedence is silently resolved and never reported.
+2. The discarded reduce is **bracketed** (`[reduce using rule 94 …]`), which is how Bison marks an action dropped by a default resolution.
+
+Delete `%nonassoc ELSE`, rerun bison, and the counts stay at 48/6 with a byte-identical automaton in `Parser.output`. That is the experiment to trust over the comment.
 
 ### Where to look — dangling else
 
@@ -201,9 +235,24 @@ IF ( Expr ) IF ( Expr ) Stmt • ELSE Stmt
   Reduce:  outer if closes, else would attach outward
 ```
 
-### Takeaway — a one-line precedence fix
+### Making the resolution explicit (optional)
 
-This is the most famous parser ambiguity. The fix is a one-line precedence declaration, not a grammar rewrite.
+To resolve this by precedence rather than by default, give the else-less rule a precedence lower than `ELSE` using a dummy token:
+
+```yacc
+%nonassoc THEN      /* dummy token, never returned by the lexer */
+%nonassoc ELSE      /* declared later ⇒ higher precedence */
+
+IfStmt: IF LPARENTHESES Expr RPARENTHESES Stmt ELSE Stmt
+      | IF LPARENTHESES Expr RPARENTHESES Stmt %prec THEN
+      ;
+```
+
+Now both sides have a precedence, `ELSE` wins, and the conflict disappears from the report: **47** shift/reduce instead of 48, and state 305 loses its bracketed reduce. The parse is unchanged — only the resolution becomes intentional and documented by the grammar itself.
+
+### Takeaway — a "fix" that does nothing is still a lesson
+
+This is the most famous parser ambiguity, and `%nonassoc ELSE` is the most famous cure — copied so often that it is easy to assume it must be doing something. Here it is not. When you rely on precedence, verify it: check that the conflict count actually dropped and that `Parser.output` no longer brackets the losing action.
 
 ---
 
@@ -390,6 +439,10 @@ Conflicts around `[` are separate from the `%left` / `%right` precedence table, 
 ```
 
 Subscript `LBRACKET` is **not** in the precedence table; it is a distinct postfix production (`Expr LBRACKET Expr RBRACKET`). That is why unary/binary-vs-subscript conflicts show up as explicit shift/reduce pairs rather than being silently ordered by `%prec`.
+
+The grouping and punctuation tokens — `LPARENTHESES`, `RPARENTHESES`, `LBRACKET`, `RBRACKET`, `LBRACE`, `RBRACE`, `SEMICOLON` — are likewise absent from the table. That absence is what makes several rules **precedence-less**, since a rule inherits the precedence of its last terminal: any rule ending in `)` or `;` is invisible to precedence resolution. Section 2 shows the consequence for the dangling else.
+
+`%nonassoc ELSE` sits after `%left DOT ARROW` in `Parser.y`, so `ELSE` is the highest precedence level in the file. That ranking never comes into play — see section 2.
 
 Full table: `src/frontend/Parser.y` (comments link to [C operator precedence](https://en.cppreference.com/w/c/language/operator_precedence)).
 

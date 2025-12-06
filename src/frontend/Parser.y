@@ -229,10 +229,10 @@ AST::Program* g_root;
    the precedence of its last terminal, and the competing rule
    `IfStmt: IF LPARENTHESES Expr RPARENTHESES Stmt` ends in RPARENTHESES, which has no
    precedence — so there is nothing to compare ELSE against. Bison reports the conflict
-   (state 305) and resolves it with its shift default, which happens to be the C
-   behavior: ELSE pairs with the nearest preceding unpaired IF. Removing the line below
-   leaves the automaton unchanged. See docs/ParserConflicts.md section 2 for the
-   evidence and for the %prec marker that would make the resolution explicit. */
+   and resolves it with its shift default, which happens to be the C behavior: ELSE
+   pairs with the nearest preceding unpaired IF. Removing the line below leaves the
+   automaton unchanged. See docs/ParserConflicts.md section 2 for the state number,
+   the evidence, and the %prec marker that would make the resolution explicit. */
 %nonassoc ELSE
 
  /* Start production of C grammar */
