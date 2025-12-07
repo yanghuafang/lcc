@@ -111,6 +111,26 @@ llvm::Value* castToBool(llvm::IRBuilder<>& builder, llvm::Value* value) {
   if (value->getType() == builder.getInt1Ty()) {
     return value;
   }
+  // `if (a < b)` reaches here holding the int the comparison operators are
+  // required to produce (boolToInt in irgen/ExprToIr.cpp), so the bit we want
+  // is one zext away. Take it back rather than testing the widened value
+  // against zero: without this, every comparison used as a condition would
+  // emit icmp -> zext i1 to i32 -> icmp ne i32, and read as three
+  // instructions where one did the work. -O1 and up fold that pair anyway;
+  // this keeps -O0 IR — what docs/LlvmTools.md and debug/*.ll show — honest.
+  //
+  // Erase when nothing else took the widened value, or the zext lingers as
+  // dead code at -O0, which is the noise this exists to avoid. Every caller
+  // passes a temporary or reassigns it, so no caller holds the erased pointer.
+  if (auto* zext = llvm::dyn_cast<llvm::ZExtInst>(value)) {
+    if (zext->getSrcTy() == builder.getInt1Ty()) {
+      llvm::Value* boolValue = zext->getOperand(0);
+      if (zext->use_empty()) {
+        zext->eraseFromParent();
+      }
+      return boolValue;
+    }
+  }
   if (value->getType()->isIntegerTy()) {
     return builder.CreateICmpNE(
         value, llvm::ConstantInt::get(

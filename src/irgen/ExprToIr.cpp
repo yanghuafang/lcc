@@ -104,6 +104,23 @@ VarType* resolveAggregateVarType(VarType* varType, CodeGenerator& generator) {
   return nullptr;
 }
 
+// C's relational, equality, and logical operators yield int — 0 or 1 — not a
+// one-bit value. LLVM's icmp/fcmp produce i1, so widen here, at the single
+// point each of those operators produces its result.
+//
+// This has to happen in genCode(), not at the use site: getExprTypeId() below
+// reports INT for these nodes, and every consumer (typeCast, the usual
+// arithmetic conversion in typeUpgrade, variadic promotion in FuncCall) derives
+// signedness from that type id alone. An i1 left in place would be *sign*
+// extended on the way to i32, making `int r = a < b` store -1.
+//
+// Zero extension, not sign: the comparison is unsigned-1-bit, so `zext`. Any
+// consumer needing the bit back — an if/while condition, `&&` — calls
+// castToBool, and -O1 and up fold the zext/icmp pair away entirely.
+llvm::Value* boolToInt(llvm::IRBuilder<>& builder, llvm::Value* boolValue) {
+  return builder.CreateZExt(boolValue, builder.getInt32Ty());
+}
+
 // Rvalue form of an lvalue expression: evaluate address, then load.
 llvm::Value* loadFromLValuePtr(CodeGenerator& generator, Expr* expr) {
   return iridiom::createLoad(generator.getBuilder(),
@@ -1103,6 +1120,15 @@ llvm::Value* RightShiftAssign::genCodePtr(CodeGenerator& generator) {
       });
 }
 
+// C: the result of &&, ||, ==, !=, <, <=, >, >= has type int. Without this
+// override the base Expr::getExprTypeId() answers UNKNOWN, which fails
+// typeUpgrade's integer test and makes `(a < b) * 3` throw "Mul with
+// unsupported types!". genCode() widens the i1 to match (see boolToInt).
+BuiltinTypeId LogicExpr::getExprTypeId(CodeGenerator& generator) {
+  (void)generator;
+  return BuiltinTypeId::INT;
+}
+
 llvm::Value* LogicExpr::genCodePtr(CodeGenerator& generator) {
   (void)generator;
   throw std::logic_error(nonLValueErrorMessage());
@@ -1118,15 +1144,16 @@ llvm::Value* LogicExpr::genBoolBinaryCode(
       convert::castToBool(generator.getBuilder(), lhs_->genCode(generator));
   llvm::Value* rhs =
       convert::castToBool(generator.getBuilder(), rhs_->genCode(generator));
-  return combine(lhs, rhs);
+  return boolToInt(generator.getBuilder(), combine(lhs, rhs));
 }
 
 llvm::Value* LogicExpr::genEqualityCode(CodeGenerator& generator) {
   llvm::Value* lhs = lhs_->genCode(generator);
   llvm::Value* rhs = rhs_->genCode(generator);
-  return ops::createCmpEq(generator.getBuilder(), lhs, rhs,
-                          lhs_->getExprTypeId(generator),
-                          rhs_->getExprTypeId(generator));
+  return boolToInt(generator.getBuilder(),
+                   ops::createCmpEq(generator.getBuilder(), lhs, rhs,
+                                    lhs_->getExprTypeId(generator),
+                                    rhs_->getExprTypeId(generator)));
 }
 
 llvm::Value* LogicExpr::genOrderedCompare(CodeGenerator& generator,
@@ -1138,7 +1165,7 @@ llvm::Value* LogicExpr::genOrderedCompare(CodeGenerator& generator,
       lhs_, rhs_, lhs, rhs, static_cast<ops::IntCmpPred>(intCmpPred),
       static_cast<llvm::CmpInst::Predicate>(floatCmpPred), generator);
   if (cmp != nullptr) {
-    return cmp;
+    return boolToInt(generator.getBuilder(), cmp);
   }
 
   throw std::logic_error(std::string("Unsupported type for operator \"") +
@@ -1191,10 +1218,18 @@ llvm::Value* LogicOr::genCode(CodeGenerator& generator) {
       });
 }
 
+// C: `!x` has type int, like the binary logic operators above.
+BuiltinTypeId LogicNot::getExprTypeId(CodeGenerator& generator) {
+  (void)generator;
+  return BuiltinTypeId::INT;
+}
+
 llvm::Value* LogicNot::genCode(CodeGenerator& generator) {
-  return generator.getBuilder().CreateICmpEQ(
-      convert::castToBool(generator.getBuilder(), operand_->genCode(generator)),
-      generator.getBuilder().getInt1(false));
+  return boolToInt(generator.getBuilder(),
+                   generator.getBuilder().CreateICmpEQ(
+                       convert::castToBool(generator.getBuilder(),
+                                           operand_->genCode(generator)),
+                       generator.getBuilder().getInt1(false)));
 }
 
 llvm::Value* LogicEq::genCode(CodeGenerator& generator) {

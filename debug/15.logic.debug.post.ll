@@ -64,7 +64,7 @@ if.end3:                                          ; preds = %else2, %then1
   %8 = load i1, ptr %t, align 1, !dbg !35
   %9 = load i1, ptr %f, align 1, !dbg !35
   %10 = select i1 %8, i1 %9, i1 false, !dbg !35
-  %11 = sext i1 %10 to i32, !dbg !35
+  %11 = zext i1 %10 to i32, !dbg !35
   store i32 %11, ptr %v, align 4, !dbg !35
   %12 = load i32, ptr %v, align 4, !dbg !35
   %13 = load i32, ptr %v, align 4, !dbg !36
@@ -83,7 +83,7 @@ if.end6:                                          ; preds = %else5, %then4
   %16 = load i1, ptr %t, align 1, !dbg !38
   %17 = load i1, ptr %t, align 1, !dbg !38
   %18 = select i1 %16, i1 %17, i1 false, !dbg !38
-  %19 = sext i1 %18 to i32, !dbg !38
+  %19 = zext i1 %18 to i32, !dbg !38
   store i32 %19, ptr %v, align 4, !dbg !38
   %20 = load i32, ptr %v, align 4, !dbg !38
   %21 = load i32, ptr %v, align 4, !dbg !39
@@ -102,7 +102,7 @@ if.end9:                                          ; preds = %else8, %then7
   %24 = load i1, ptr %f, align 1, !dbg !41
   %25 = load i1, ptr %f, align 1, !dbg !41
   %26 = select i1 %24, i1 %25, i1 false, !dbg !41
-  %27 = sext i1 %26 to i32, !dbg !41
+  %27 = zext i1 %26 to i32, !dbg !41
   store i32 %27, ptr %v, align 4, !dbg !41
   %28 = load i32, ptr %v, align 4, !dbg !41
   %29 = load i32, ptr %v, align 4, !dbg !42
@@ -121,7 +121,7 @@ if.end12:                                         ; preds = %else11, %then10
   %32 = load i1, ptr %t, align 1, !dbg !44
   %33 = load i1, ptr %f, align 1, !dbg !44
   %34 = select i1 %32, i1 true, i1 %33, !dbg !44
-  %35 = sext i1 %34 to i32, !dbg !44
+  %35 = zext i1 %34 to i32, !dbg !44
   store i32 %35, ptr %v, align 4, !dbg !44
   %36 = load i32, ptr %v, align 4, !dbg !44
   %37 = load i32, ptr %v, align 4, !dbg !45
@@ -140,7 +140,7 @@ if.end15:                                         ; preds = %else14, %then13
   %40 = load i1, ptr %t, align 1, !dbg !47
   %41 = load i1, ptr %t, align 1, !dbg !47
   %42 = select i1 %40, i1 true, i1 %41, !dbg !47
-  %43 = sext i1 %42 to i32, !dbg !47
+  %43 = zext i1 %42 to i32, !dbg !47
   store i32 %43, ptr %v, align 4, !dbg !47
   %44 = load i32, ptr %v, align 4, !dbg !47
   %45 = load i32, ptr %v, align 4, !dbg !48
@@ -159,7 +159,7 @@ if.end18:                                         ; preds = %else17, %then16
   %48 = load i1, ptr %f, align 1, !dbg !50
   %49 = load i1, ptr %f, align 1, !dbg !50
   %50 = select i1 %48, i1 true, i1 %49, !dbg !50
-  %51 = sext i1 %50 to i32, !dbg !50
+  %51 = zext i1 %50 to i32, !dbg !50
   store i32 %51, ptr %v, align 4, !dbg !50
   %52 = load i32, ptr %v, align 4, !dbg !50
   %53 = load i32, ptr %v, align 4, !dbg !51
@@ -177,7 +177,7 @@ else20:                                           ; preds = %if.end18
 if.end21:                                         ; preds = %else20, %then19
   %56 = load i1, ptr %t, align 1, !dbg !53
   %57 = icmp eq i1 %56, false, !dbg !53
-  %58 = sext i1 %57 to i32, !dbg !53
+  %58 = zext i1 %57 to i32, !dbg !53
   store i32 %58, ptr %v, align 4, !dbg !53
   %59 = load i32, ptr %v, align 4, !dbg !53
   %60 = load i32, ptr %v, align 4, !dbg !54
@@ -195,7 +195,7 @@ else23:                                           ; preds = %if.end21
 if.end24:                                         ; preds = %else23, %then22
   %63 = load i1, ptr %f, align 1, !dbg !56
   %64 = icmp eq i1 %63, false, !dbg !56
-  %65 = sext i1 %64 to i32, !dbg !56
+  %65 = zext i1 %64 to i32, !dbg !56
   store i32 %65, ptr %v, align 4, !dbg !56
   %66 = load i32, ptr %v, align 4, !dbg !56
   %67 = load i32, ptr %v, align 4, !dbg !57
@@ -217,7 +217,7 @@ if.end27:                                         ; preds = %else26, %then25
   %70 = load i32, ptr %a, align 4, !dbg !59
   %71 = load i32, ptr %b, align 4, !dbg !59
   %72 = icmp eq i32 %70, %71, !dbg !59
-  %73 = sext i1 %72 to i32, !dbg !59
+  %73 = zext i1 %72 to i32, !dbg !59
   store i32 %73, ptr %v, align 4, !dbg !59
   %74 = load i32, ptr %v, align 4, !dbg !59
   %75 = load i32, ptr %v, align 4, !dbg !60
@@ -236,7 +236,7 @@ if.end30:                                         ; preds = %else29, %then28
   %78 = load i32, ptr %a, align 4, !dbg !62
   %79 = load i32, ptr %c, align 4, !dbg !62
   %80 = icmp eq i32 %78, %79, !dbg !62
-  %81 = sext i1 %80 to i32, !dbg !62
+  %81 = zext i1 %80 to i32, !dbg !62
   store i32 %81, ptr %v, align 4, !dbg !62
   %82 = load i32, ptr %v, align 4, !dbg !62
   %83 = load i32, ptr %v, align 4, !dbg !63
@@ -255,7 +255,7 @@ if.end33:                                         ; preds = %else32, %then31
   %86 = load i32, ptr %a, align 4, !dbg !65
   %87 = load i32, ptr %b, align 4, !dbg !65
   %88 = icmp ne i32 %86, %87, !dbg !65
-  %89 = sext i1 %88 to i32, !dbg !65
+  %89 = zext i1 %88 to i32, !dbg !65
   store i32 %89, ptr %v, align 4, !dbg !65
   %90 = load i32, ptr %v, align 4, !dbg !65
   %91 = load i32, ptr %v, align 4, !dbg !66
@@ -274,7 +274,7 @@ if.end36:                                         ; preds = %else35, %then34
   %94 = load i32, ptr %a, align 4, !dbg !68
   %95 = load i32, ptr %c, align 4, !dbg !68
   %96 = icmp ne i32 %94, %95, !dbg !68
-  %97 = sext i1 %96 to i32, !dbg !68
+  %97 = zext i1 %96 to i32, !dbg !68
   store i32 %97, ptr %v, align 4, !dbg !68
   %98 = load i32, ptr %v, align 4, !dbg !68
   %99 = load i32, ptr %v, align 4, !dbg !69
@@ -293,7 +293,7 @@ if.end39:                                         ; preds = %else38, %then37
   %102 = load i32, ptr %a, align 4, !dbg !71
   %103 = load i32, ptr %b, align 4, !dbg !71
   %104 = icmp slt i32 %102, %103, !dbg !71
-  %105 = sext i1 %104 to i32, !dbg !71
+  %105 = zext i1 %104 to i32, !dbg !71
   store i32 %105, ptr %v, align 4, !dbg !71
   %106 = load i32, ptr %v, align 4, !dbg !71
   %107 = load i32, ptr %v, align 4, !dbg !72
@@ -312,7 +312,7 @@ if.end42:                                         ; preds = %else41, %then40
   %110 = load i32, ptr %a, align 4, !dbg !74
   %111 = load i32, ptr %c, align 4, !dbg !74
   %112 = icmp slt i32 %110, %111, !dbg !74
-  %113 = sext i1 %112 to i32, !dbg !74
+  %113 = zext i1 %112 to i32, !dbg !74
   store i32 %113, ptr %v, align 4, !dbg !74
   %114 = load i32, ptr %v, align 4, !dbg !74
   %115 = load i32, ptr %v, align 4, !dbg !75
@@ -331,7 +331,7 @@ if.end45:                                         ; preds = %else44, %then43
   %118 = load i32, ptr %c, align 4, !dbg !77
   %119 = load i32, ptr %a, align 4, !dbg !77
   %120 = icmp slt i32 %118, %119, !dbg !77
-  %121 = sext i1 %120 to i32, !dbg !77
+  %121 = zext i1 %120 to i32, !dbg !77
   store i32 %121, ptr %v, align 4, !dbg !77
   %122 = load i32, ptr %v, align 4, !dbg !77
   %123 = load i32, ptr %v, align 4, !dbg !78
@@ -350,7 +350,7 @@ if.end48:                                         ; preds = %else47, %then46
   %126 = load i32, ptr %a, align 4, !dbg !80
   %127 = load i32, ptr %b, align 4, !dbg !80
   %128 = icmp sle i32 %126, %127, !dbg !80
-  %129 = sext i1 %128 to i32, !dbg !80
+  %129 = zext i1 %128 to i32, !dbg !80
   store i32 %129, ptr %v, align 4, !dbg !80
   %130 = load i32, ptr %v, align 4, !dbg !80
   %131 = load i32, ptr %v, align 4, !dbg !81
@@ -369,7 +369,7 @@ if.end51:                                         ; preds = %else50, %then49
   %134 = load i32, ptr %a, align 4, !dbg !83
   %135 = load i32, ptr %c, align 4, !dbg !83
   %136 = icmp sle i32 %134, %135, !dbg !83
-  %137 = sext i1 %136 to i32, !dbg !83
+  %137 = zext i1 %136 to i32, !dbg !83
   store i32 %137, ptr %v, align 4, !dbg !83
   %138 = load i32, ptr %v, align 4, !dbg !83
   %139 = load i32, ptr %v, align 4, !dbg !84
@@ -388,7 +388,7 @@ if.end54:                                         ; preds = %else53, %then52
   %142 = load i32, ptr %c, align 4, !dbg !86
   %143 = load i32, ptr %a, align 4, !dbg !86
   %144 = icmp sle i32 %142, %143, !dbg !86
-  %145 = sext i1 %144 to i32, !dbg !86
+  %145 = zext i1 %144 to i32, !dbg !86
   store i32 %145, ptr %v, align 4, !dbg !86
   %146 = load i32, ptr %v, align 4, !dbg !86
   %147 = load i32, ptr %v, align 4, !dbg !87
@@ -407,7 +407,7 @@ if.end57:                                         ; preds = %else56, %then55
   %150 = load i32, ptr %a, align 4, !dbg !89
   %151 = load i32, ptr %b, align 4, !dbg !89
   %152 = icmp sgt i32 %150, %151, !dbg !89
-  %153 = sext i1 %152 to i32, !dbg !89
+  %153 = zext i1 %152 to i32, !dbg !89
   store i32 %153, ptr %v, align 4, !dbg !89
   %154 = load i32, ptr %v, align 4, !dbg !89
   %155 = load i32, ptr %v, align 4, !dbg !90
@@ -426,7 +426,7 @@ if.end60:                                         ; preds = %else59, %then58
   %158 = load i32, ptr %a, align 4, !dbg !92
   %159 = load i32, ptr %c, align 4, !dbg !92
   %160 = icmp sgt i32 %158, %159, !dbg !92
-  %161 = sext i1 %160 to i32, !dbg !92
+  %161 = zext i1 %160 to i32, !dbg !92
   store i32 %161, ptr %v, align 4, !dbg !92
   %162 = load i32, ptr %v, align 4, !dbg !92
   %163 = load i32, ptr %v, align 4, !dbg !93
@@ -445,7 +445,7 @@ if.end63:                                         ; preds = %else62, %then61
   %166 = load i32, ptr %c, align 4, !dbg !95
   %167 = load i32, ptr %a, align 4, !dbg !95
   %168 = icmp sgt i32 %166, %167, !dbg !95
-  %169 = sext i1 %168 to i32, !dbg !95
+  %169 = zext i1 %168 to i32, !dbg !95
   store i32 %169, ptr %v, align 4, !dbg !95
   %170 = load i32, ptr %v, align 4, !dbg !95
   %171 = load i32, ptr %v, align 4, !dbg !96
@@ -464,7 +464,7 @@ if.end66:                                         ; preds = %else65, %then64
   %174 = load i32, ptr %a, align 4, !dbg !98
   %175 = load i32, ptr %b, align 4, !dbg !98
   %176 = icmp sge i32 %174, %175, !dbg !98
-  %177 = sext i1 %176 to i32, !dbg !98
+  %177 = zext i1 %176 to i32, !dbg !98
   store i32 %177, ptr %v, align 4, !dbg !98
   %178 = load i32, ptr %v, align 4, !dbg !98
   %179 = load i32, ptr %v, align 4, !dbg !99
@@ -483,7 +483,7 @@ if.end69:                                         ; preds = %else68, %then67
   %182 = load i32, ptr %a, align 4, !dbg !101
   %183 = load i32, ptr %c, align 4, !dbg !101
   %184 = icmp sge i32 %182, %183, !dbg !101
-  %185 = sext i1 %184 to i32, !dbg !101
+  %185 = zext i1 %184 to i32, !dbg !101
   store i32 %185, ptr %v, align 4, !dbg !101
   %186 = load i32, ptr %v, align 4, !dbg !101
   %187 = load i32, ptr %v, align 4, !dbg !102
@@ -502,7 +502,7 @@ if.end72:                                         ; preds = %else71, %then70
   %190 = load i32, ptr %c, align 4, !dbg !104
   %191 = load i32, ptr %a, align 4, !dbg !104
   %192 = icmp sge i32 %190, %191, !dbg !104
-  %193 = sext i1 %192 to i32, !dbg !104
+  %193 = zext i1 %192 to i32, !dbg !104
   store i32 %193, ptr %v, align 4, !dbg !104
   %194 = load i32, ptr %v, align 4, !dbg !104
   %195 = load i32, ptr %v, align 4, !dbg !105
@@ -523,7 +523,7 @@ if.end75:                                         ; preds = %else74, %then73
   %198 = load i32, ptr %ua, align 4, !dbg !107
   %199 = load i32, ptr %ub, align 4, !dbg !107
   %200 = icmp ult i32 %198, %199, !dbg !107
-  %201 = sext i1 %200 to i32, !dbg !107
+  %201 = zext i1 %200 to i32, !dbg !107
   store i32 %201, ptr %v, align 4, !dbg !107
   %202 = load i32, ptr %v, align 4, !dbg !107
   %203 = load i32, ptr %v, align 4, !dbg !108
@@ -542,7 +542,7 @@ if.end78:                                         ; preds = %else77, %then76
   %206 = load i32, ptr %ub, align 4, !dbg !110
   %207 = load i32, ptr %ua, align 4, !dbg !110
   %208 = icmp ugt i32 %206, %207, !dbg !110
-  %209 = sext i1 %208 to i32, !dbg !110
+  %209 = zext i1 %208 to i32, !dbg !110
   store i32 %209, ptr %v, align 4, !dbg !110
   %210 = load i32, ptr %v, align 4, !dbg !110
   %211 = load i32, ptr %v, align 4, !dbg !111
@@ -563,7 +563,7 @@ if.end81:                                         ; preds = %else80, %then79
   %214 = load i32, ptr %si, align 4, !dbg !113
   %215 = load i32, ptr %ui, align 4, !dbg !113
   %216 = icmp ult i32 %214, %215, !dbg !113
-  %217 = sext i1 %216 to i32, !dbg !113
+  %217 = zext i1 %216 to i32, !dbg !113
   store i32 %217, ptr %v, align 4, !dbg !113
   %218 = load i32, ptr %v, align 4, !dbg !113
   %219 = load i32, ptr %v, align 4, !dbg !114
@@ -582,7 +582,7 @@ if.end84:                                         ; preds = %else83, %then82
   %222 = load i32, ptr %si, align 4, !dbg !116
   %223 = load i32, ptr %ui, align 4, !dbg !116
   %224 = icmp ugt i32 %222, %223, !dbg !116
-  %225 = sext i1 %224 to i32, !dbg !116
+  %225 = zext i1 %224 to i32, !dbg !116
   store i32 %225, ptr %v, align 4, !dbg !116
   %226 = load i32, ptr %v, align 4, !dbg !116
   %227 = load i32, ptr %v, align 4, !dbg !117
@@ -601,47 +601,181 @@ if.end87:                                         ; preds = %else86, %then85
   %230 = load i32, ptr %a, align 4, !dbg !119
   %231 = load i32, ptr %c, align 4, !dbg !119
   %232 = icmp slt i32 %230, %231, !dbg !119
-  %233 = sext i1 %232 to i32, !dbg !119
+  %233 = zext i1 %232 to i32, !dbg !119
   store i32 %233, ptr %v, align 4, !dbg !119
   %234 = load i32, ptr %v, align 4, !dbg !119
-  %235 = load i32, ptr %a, align 4, !dbg !120
-  %236 = load i32, ptr %b, align 4, !dbg !120
-  %237 = icmp eq i32 %235, %236, !dbg !120
-  %238 = sext i1 %237 to i32, !dbg !120
-  store i32 %238, ptr %v, align 4, !dbg !120
-  %239 = load i32, ptr %v, align 4, !dbg !120
-  %240 = load i1, ptr %t, align 1, !dbg !121
-  %241 = load i1, ptr %t, align 1, !dbg !121
-  %242 = select i1 %240, i1 %241, i1 false, !dbg !121
-  %243 = sext i1 %242 to i32, !dbg !121
-  store i32 %243, ptr %v, align 4, !dbg !121
-  %244 = load i32, ptr %v, align 4, !dbg !121
-  %245 = load i1, ptr %t, align 1, !dbg !122
-  %246 = load i1, ptr %f, align 1, !dbg !122
-  %247 = select i1 %245, i1 true, i1 %246, !dbg !122
-  %248 = sext i1 %247 to i32, !dbg !122
-  store i32 %248, ptr %v, align 4, !dbg !122
-  %249 = load i32, ptr %v, align 4, !dbg !122
-  %250 = load i1, ptr %f, align 1, !dbg !123
-  %251 = icmp eq i1 %250, false, !dbg !123
-  %252 = sext i1 %251 to i32, !dbg !123
-  store i32 %252, ptr %v, align 4, !dbg !123
-  %253 = load i32, ptr %v, align 4, !dbg !123
-  %254 = load i32, ptr %err, align 4, !dbg !124
-  %255 = icmp eq i32 %254, 0, !dbg !124
-  br i1 %255, label %then88, label %else89, !dbg !124
+  %235 = load i32, ptr %v, align 4, !dbg !120
+  %236 = icmp ne i32 %235, 1, !dbg !120
+  br i1 %236, label %then88, label %else89, !dbg !120
 
 then88:                                           ; preds = %if.end87
-  %256 = call i32 (ptr, ...) @printf(ptr @0), !dbg !125
-  br label %if.end90, !dbg !125
+  store i32 1, ptr %err, align 4, !dbg !121
+  %237 = load i32, ptr %err, align 4, !dbg !121
+  br label %if.end90, !dbg !121
 
 else89:                                           ; preds = %if.end87
-  %257 = call i32 (ptr, ...) @printf(ptr @1), !dbg !127
-  br label %if.end90, !dbg !127
+  br label %if.end90, !dbg !121
 
 if.end90:                                         ; preds = %else89, %then88
-  %258 = load i32, ptr %err, align 4, !dbg !129
-  ret i32 %258, !dbg !129
+  %238 = load i32, ptr %a, align 4, !dbg !122
+  %239 = load i32, ptr %b, align 4, !dbg !122
+  %240 = icmp eq i32 %238, %239, !dbg !122
+  %241 = zext i1 %240 to i32, !dbg !122
+  store i32 %241, ptr %v, align 4, !dbg !122
+  %242 = load i32, ptr %v, align 4, !dbg !122
+  %243 = load i32, ptr %v, align 4, !dbg !123
+  %244 = icmp ne i32 %243, 1, !dbg !123
+  br i1 %244, label %then91, label %else92, !dbg !123
+
+then91:                                           ; preds = %if.end90
+  store i32 1, ptr %err, align 4, !dbg !124
+  %245 = load i32, ptr %err, align 4, !dbg !124
+  br label %if.end93, !dbg !124
+
+else92:                                           ; preds = %if.end90
+  br label %if.end93, !dbg !124
+
+if.end93:                                         ; preds = %else92, %then91
+  %246 = load i1, ptr %t, align 1, !dbg !125
+  %247 = load i1, ptr %t, align 1, !dbg !125
+  %248 = select i1 %246, i1 %247, i1 false, !dbg !125
+  %249 = zext i1 %248 to i32, !dbg !125
+  store i32 %249, ptr %v, align 4, !dbg !125
+  %250 = load i32, ptr %v, align 4, !dbg !125
+  %251 = load i32, ptr %v, align 4, !dbg !126
+  %252 = icmp ne i32 %251, 1, !dbg !126
+  br i1 %252, label %then94, label %else95, !dbg !126
+
+then94:                                           ; preds = %if.end93
+  store i32 1, ptr %err, align 4, !dbg !127
+  %253 = load i32, ptr %err, align 4, !dbg !127
+  br label %if.end96, !dbg !127
+
+else95:                                           ; preds = %if.end93
+  br label %if.end96, !dbg !127
+
+if.end96:                                         ; preds = %else95, %then94
+  %254 = load i1, ptr %t, align 1, !dbg !128
+  %255 = load i1, ptr %f, align 1, !dbg !128
+  %256 = select i1 %254, i1 true, i1 %255, !dbg !128
+  %257 = zext i1 %256 to i32, !dbg !128
+  store i32 %257, ptr %v, align 4, !dbg !128
+  %258 = load i32, ptr %v, align 4, !dbg !128
+  %259 = load i32, ptr %v, align 4, !dbg !129
+  %260 = icmp ne i32 %259, 1, !dbg !129
+  br i1 %260, label %then97, label %else98, !dbg !129
+
+then97:                                           ; preds = %if.end96
+  store i32 1, ptr %err, align 4, !dbg !130
+  %261 = load i32, ptr %err, align 4, !dbg !130
+  br label %if.end99, !dbg !130
+
+else98:                                           ; preds = %if.end96
+  br label %if.end99, !dbg !130
+
+if.end99:                                         ; preds = %else98, %then97
+  %262 = load i1, ptr %f, align 1, !dbg !131
+  %263 = icmp eq i1 %262, false, !dbg !131
+  %264 = zext i1 %263 to i32, !dbg !131
+  store i32 %264, ptr %v, align 4, !dbg !131
+  %265 = load i32, ptr %v, align 4, !dbg !131
+  %266 = load i32, ptr %v, align 4, !dbg !132
+  %267 = icmp ne i32 %266, 1, !dbg !132
+  br i1 %267, label %then100, label %else101, !dbg !132
+
+then100:                                          ; preds = %if.end99
+  store i32 1, ptr %err, align 4, !dbg !133
+  %268 = load i32, ptr %err, align 4, !dbg !133
+  br label %if.end102, !dbg !133
+
+else101:                                          ; preds = %if.end99
+  br label %if.end102, !dbg !133
+
+if.end102:                                        ; preds = %else101, %then100
+  %269 = load i32, ptr %a, align 4, !dbg !134
+  %270 = load i32, ptr %c, align 4, !dbg !134
+  %271 = icmp slt i32 %269, %270, !dbg !134
+  %272 = zext i1 %271 to i32, !dbg !134
+  %273 = mul i32 %272, 3, !dbg !134
+  %274 = icmp ne i32 %273, 3, !dbg !134
+  br i1 %274, label %then103, label %else104, !dbg !134
+
+then103:                                          ; preds = %if.end102
+  store i32 1, ptr %err, align 4, !dbg !135
+  %275 = load i32, ptr %err, align 4, !dbg !135
+  br label %if.end105, !dbg !135
+
+else104:                                          ; preds = %if.end102
+  br label %if.end105, !dbg !135
+
+if.end105:                                        ; preds = %else104, %then103
+  %276 = load i32, ptr %a, align 4, !dbg !136
+  %277 = load i32, ptr %c, align 4, !dbg !136
+  %278 = icmp slt i32 %276, %277, !dbg !136
+  %279 = zext i1 %278 to i32, !dbg !136
+  %280 = add i32 %279, 10, !dbg !136
+  %281 = icmp ne i32 %280, 11, !dbg !136
+  br i1 %281, label %then106, label %else107, !dbg !136
+
+then106:                                          ; preds = %if.end105
+  store i32 1, ptr %err, align 4, !dbg !137
+  %282 = load i32, ptr %err, align 4, !dbg !137
+  br label %if.end108, !dbg !137
+
+else107:                                          ; preds = %if.end105
+  br label %if.end108, !dbg !137
+
+if.end108:                                        ; preds = %else107, %then106
+  %283 = load i32, ptr %a, align 4, !dbg !138
+  %284 = load i32, ptr %c, align 4, !dbg !138
+  %285 = icmp slt i32 %283, %284, !dbg !138
+  %286 = zext i1 %285 to i32, !dbg !138
+  %287 = sub i32 0, %286, !dbg !138
+  %288 = icmp ne i32 %287, -1, !dbg !138
+  br i1 %288, label %then109, label %else110, !dbg !138
+
+then109:                                          ; preds = %if.end108
+  store i32 1, ptr %err, align 4, !dbg !139
+  %289 = load i32, ptr %err, align 4, !dbg !139
+  br label %if.end111, !dbg !139
+
+else110:                                          ; preds = %if.end108
+  br label %if.end111, !dbg !139
+
+if.end111:                                        ; preds = %else110, %then109
+  %290 = load i32, ptr %a, align 4, !dbg !140
+  %291 = load i32, ptr %c, align 4, !dbg !140
+  %292 = icmp slt i32 %290, %291, !dbg !140
+  %293 = zext i1 %292 to i32, !dbg !140
+  %294 = icmp slt i32 %293, 5, !dbg !140
+  %295 = zext i1 %294 to i32, !dbg !140
+  %296 = icmp ne i32 %295, 1, !dbg !140
+  br i1 %296, label %then112, label %else113, !dbg !140
+
+then112:                                          ; preds = %if.end111
+  store i32 1, ptr %err, align 4, !dbg !141
+  %297 = load i32, ptr %err, align 4, !dbg !141
+  br label %if.end114, !dbg !141
+
+else113:                                          ; preds = %if.end111
+  br label %if.end114, !dbg !141
+
+if.end114:                                        ; preds = %else113, %then112
+  %298 = load i32, ptr %err, align 4, !dbg !142
+  %299 = icmp eq i32 %298, 0, !dbg !142
+  br i1 %299, label %then115, label %else116, !dbg !142
+
+then115:                                          ; preds = %if.end114
+  %300 = call i32 (ptr, ...) @printf(ptr @0), !dbg !143
+  br label %if.end117, !dbg !143
+
+else116:                                          ; preds = %if.end114
+  %301 = call i32 (ptr, ...) @printf(ptr @1), !dbg !145
+  br label %if.end117, !dbg !145
+
+if.end117:                                        ; preds = %else116, %then115
+  %302 = load i32, ptr %err, align 4, !dbg !147
+  ret i32 %302, !dbg !147
 }
 
 !llvm.dbg.cu = !{!0}
@@ -767,12 +901,30 @@ if.end90:                                         ; preds = %else89, %then88
 !118 = !DILocation(line: 84, column: 15, scope: !2)
 !119 = !DILocation(line: 89, column: 3, scope: !2)
 !120 = !DILocation(line: 90, column: 3, scope: !2)
-!121 = !DILocation(line: 91, column: 3, scope: !2)
-!122 = !DILocation(line: 92, column: 3, scope: !2)
-!123 = !DILocation(line: 93, column: 3, scope: !2)
-!124 = !DILocation(line: 98, column: 3, scope: !2)
-!125 = !DILocation(line: 99, column: 5, scope: !126)
-!126 = distinct !DILexicalBlock(scope: !2, file: !1, line: 98, column: 17)
-!127 = !DILocation(line: 101, column: 5, scope: !128)
-!128 = distinct !DILexicalBlock(scope: !2, file: !1, line: 100, column: 10)
-!129 = !DILocation(line: 103, column: 3, scope: !2)
+!121 = !DILocation(line: 90, column: 15, scope: !2)
+!122 = !DILocation(line: 91, column: 3, scope: !2)
+!123 = !DILocation(line: 92, column: 3, scope: !2)
+!124 = !DILocation(line: 92, column: 15, scope: !2)
+!125 = !DILocation(line: 93, column: 3, scope: !2)
+!126 = !DILocation(line: 94, column: 3, scope: !2)
+!127 = !DILocation(line: 94, column: 15, scope: !2)
+!128 = !DILocation(line: 95, column: 3, scope: !2)
+!129 = !DILocation(line: 96, column: 3, scope: !2)
+!130 = !DILocation(line: 96, column: 15, scope: !2)
+!131 = !DILocation(line: 97, column: 3, scope: !2)
+!132 = !DILocation(line: 98, column: 3, scope: !2)
+!133 = !DILocation(line: 98, column: 15, scope: !2)
+!134 = !DILocation(line: 102, column: 3, scope: !2)
+!135 = !DILocation(line: 102, column: 25, scope: !2)
+!136 = !DILocation(line: 103, column: 3, scope: !2)
+!137 = !DILocation(line: 103, column: 27, scope: !2)
+!138 = !DILocation(line: 104, column: 3, scope: !2)
+!139 = !DILocation(line: 104, column: 23, scope: !2)
+!140 = !DILocation(line: 105, column: 3, scope: !2)
+!141 = !DILocation(line: 105, column: 27, scope: !2)
+!142 = !DILocation(line: 107, column: 3, scope: !2)
+!143 = !DILocation(line: 108, column: 5, scope: !144)
+!144 = distinct !DILexicalBlock(scope: !2, file: !1, line: 107, column: 17)
+!145 = !DILocation(line: 110, column: 5, scope: !146)
+!146 = distinct !DILexicalBlock(scope: !2, file: !1, line: 109, column: 10)
+!147 = !DILocation(line: 112, column: 3, scope: !2)

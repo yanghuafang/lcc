@@ -58,7 +58,7 @@ LBB0_6:
 	and	w10, w10, #0x1
 	ands	w10, w10, #0x1
 	csel	w8, w8, w9, ne
-	sbfx	w8, w8, #0, #1
+	and	w8, w8, #0x1
 	str	w8, [sp, #16]
 	.loc	1 17 3 is_stmt 1
 	ldr	w8, [sp, #16]
@@ -81,7 +81,7 @@ LBB0_9:
 	and	w10, w10, #0x1
 	ands	w10, w10, #0x1
 	csel	w8, w8, w9, ne
-	sbfx	w8, w8, #0, #1
+	and	w8, w8, #0x1
 	str	w8, [sp, #16]
 	.loc	1 19 3 is_stmt 1
 	ldr	w8, [sp, #16]
@@ -104,7 +104,7 @@ LBB0_12:
 	and	w10, w10, #0x1
 	ands	w10, w10, #0x1
 	csel	w8, w8, w9, ne
-	sbfx	w8, w8, #0, #1
+	and	w8, w8, #0x1
 	str	w8, [sp, #16]
 	.loc	1 21 3 is_stmt 1
 	ldr	w8, [sp, #16]
@@ -124,7 +124,7 @@ LBB0_15:
 	and	w9, w9, #0x1
 	ands	w9, w9, #0x1
 	csinc	w8, w8, wzr, eq
-	sbfx	w8, w8, #0, #1
+	and	w8, w8, #0x1
 	str	w8, [sp, #16]
 	.loc	1 24 3
 	ldr	w8, [sp, #16]
@@ -144,7 +144,7 @@ LBB0_18:
 	and	w9, w9, #0x1
 	ands	w9, w9, #0x1
 	csinc	w8, w8, wzr, eq
-	sbfx	w8, w8, #0, #1
+	and	w8, w8, #0x1
 	str	w8, [sp, #16]
 	.loc	1 26 3
 	ldr	w8, [sp, #16]
@@ -164,7 +164,7 @@ LBB0_21:
 	and	w9, w9, #0x1
 	ands	w9, w9, #0x1
 	csinc	w8, w8, wzr, eq
-	sbfx	w8, w8, #0, #1
+	and	w8, w8, #0x1
 	str	w8, [sp, #16]
 	.loc	1 28 3
 	ldr	w8, [sp, #16]
@@ -187,7 +187,6 @@ LBB0_24:
 	and	w9, w9, #0x1
 	subs	w8, w8, w9
 	cset	w8, eq
-	sbfx	w8, w8, #0, #1
 	str	w8, [sp, #16]
 	.loc	1 31 3 is_stmt 1
 	ldr	w8, [sp, #16]
@@ -210,7 +209,6 @@ LBB0_27:
 	and	w9, w9, #0x1
 	subs	w8, w8, w9
 	cset	w8, eq
-	sbfx	w8, w8, #0, #1
 	str	w8, [sp, #16]
 	.loc	1 33 3 is_stmt 1
 	ldr	w8, [sp, #16]
@@ -238,7 +236,6 @@ LBB0_30:
 	ldr	w9, [sp, #24]
 	subs	w8, w8, w9
 	cset	w8, eq
-	sbfx	w8, w8, #0, #1
 	str	w8, [sp, #16]
 	.loc	1 40 3
 	ldr	w8, [sp, #16]
@@ -257,7 +254,6 @@ LBB0_33:
 	ldr	w9, [sp, #28]
 	subs	w8, w8, w9
 	cset	w8, eq
-	sbfx	w8, w8, #0, #1
 	str	w8, [sp, #16]
 	.loc	1 42 3
 	ldr	w8, [sp, #16]
@@ -276,7 +272,6 @@ LBB0_36:
 	ldr	w9, [sp, #24]
 	subs	w8, w8, w9
 	cset	w8, ne
-	sbfx	w8, w8, #0, #1
 	str	w8, [sp, #16]
 	.loc	1 44 3
 	ldr	w8, [sp, #16]
@@ -295,7 +290,6 @@ LBB0_39:
 	ldr	w9, [sp, #28]
 	subs	w8, w8, w9
 	cset	w8, ne
-	sbfx	w8, w8, #0, #1
 	str	w8, [sp, #16]
 	.loc	1 46 3
 	ldr	w8, [sp, #16]
@@ -314,7 +308,6 @@ LBB0_42:
 	ldr	w9, [sp, #24]
 	subs	w8, w8, w9
 	cset	w8, lt
-	sbfx	w8, w8, #0, #1
 	str	w8, [sp, #16]
 	.loc	1 48 3
 	ldr	w8, [sp, #16]
@@ -333,7 +326,6 @@ LBB0_45:
 	ldr	w9, [sp, #28]
 	subs	w8, w8, w9
 	cset	w8, lt
-	sbfx	w8, w8, #0, #1
 	str	w8, [sp, #16]
 	.loc	1 50 3
 	ldr	w8, [sp, #16]
@@ -352,7 +344,6 @@ LBB0_48:
 	ldr	w9, [sp, #20]
 	subs	w8, w8, w9
 	cset	w8, lt
-	sbfx	w8, w8, #0, #1
 	str	w8, [sp, #16]
 	.loc	1 52 3
 	ldr	w8, [sp, #16]
@@ -371,7 +362,6 @@ LBB0_51:
 	ldr	w9, [sp, #24]
 	subs	w8, w8, w9
 	cset	w8, le
-	sbfx	w8, w8, #0, #1
 	str	w8, [sp, #16]
 	.loc	1 54 3
 	ldr	w8, [sp, #16]
@@ -390,7 +380,6 @@ LBB0_54:
 	ldr	w9, [sp, #28]
 	subs	w8, w8, w9
 	cset	w8, le
-	sbfx	w8, w8, #0, #1
 	str	w8, [sp, #16]
 	.loc	1 56 3
 	ldr	w8, [sp, #16]
@@ -409,7 +398,6 @@ LBB0_57:
 	ldr	w9, [sp, #20]
 	subs	w8, w8, w9
 	cset	w8, le
-	sbfx	w8, w8, #0, #1
 	str	w8, [sp, #16]
 	.loc	1 58 3
 	ldr	w8, [sp, #16]
@@ -428,7 +416,6 @@ LBB0_60:
 	ldr	w9, [sp, #24]
 	subs	w8, w8, w9
 	cset	w8, gt
-	sbfx	w8, w8, #0, #1
 	str	w8, [sp, #16]
 	.loc	1 60 3
 	ldr	w8, [sp, #16]
@@ -447,7 +434,6 @@ LBB0_63:
 	ldr	w9, [sp, #28]
 	subs	w8, w8, w9
 	cset	w8, gt
-	sbfx	w8, w8, #0, #1
 	str	w8, [sp, #16]
 	.loc	1 62 3
 	ldr	w8, [sp, #16]
@@ -466,7 +452,6 @@ LBB0_66:
 	ldr	w9, [sp, #20]
 	subs	w8, w8, w9
 	cset	w8, gt
-	sbfx	w8, w8, #0, #1
 	str	w8, [sp, #16]
 	.loc	1 64 3
 	ldr	w8, [sp, #16]
@@ -485,7 +470,6 @@ LBB0_69:
 	ldr	w9, [sp, #24]
 	subs	w8, w8, w9
 	cset	w8, ge
-	sbfx	w8, w8, #0, #1
 	str	w8, [sp, #16]
 	.loc	1 66 3
 	ldr	w8, [sp, #16]
@@ -504,7 +488,6 @@ LBB0_72:
 	ldr	w9, [sp, #28]
 	subs	w8, w8, w9
 	cset	w8, ge
-	sbfx	w8, w8, #0, #1
 	str	w8, [sp, #16]
 	.loc	1 68 3
 	ldr	w8, [sp, #16]
@@ -523,7 +506,6 @@ LBB0_75:
 	ldr	w9, [sp, #20]
 	subs	w8, w8, w9
 	cset	w8, ge
-	sbfx	w8, w8, #0, #1
 	str	w8, [sp, #16]
 	.loc	1 70 3
 	ldr	w8, [sp, #16]
@@ -548,7 +530,6 @@ LBB0_78:
 	ldr	w9, [sp, #36]
 	subs	w8, w8, w9
 	cset	w8, lo
-	sbfx	w8, w8, #0, #1
 	str	w8, [sp, #16]
 	.loc	1 75 3
 	ldr	w8, [sp, #16]
@@ -567,7 +548,6 @@ LBB0_81:
 	ldr	w9, [sp, #32]
 	subs	w8, w8, w9
 	cset	w8, hi
-	sbfx	w8, w8, #0, #1
 	str	w8, [sp, #16]
 	.loc	1 77 3
 	ldr	w8, [sp, #16]
@@ -592,7 +572,6 @@ LBB0_84:
 	ldr	w9, [sp, #44]
 	subs	w8, w8, w9
 	cset	w8, lo
-	sbfx	w8, w8, #0, #1
 	str	w8, [sp, #16]
 	.loc	1 82 3
 	ldr	w8, [sp, #16]
@@ -611,7 +590,6 @@ LBB0_87:
 	ldr	w9, [sp, #44]
 	subs	w8, w8, w9
 	cset	w8, hi
-	sbfx	w8, w8, #0, #1
 	str	w8, [sp, #16]
 	.loc	1 84 3
 	ldr	w8, [sp, #16]
@@ -630,63 +608,195 @@ LBB0_90:
 	ldr	w9, [sp, #28]
 	subs	w8, w8, w9
 	cset	w8, lt
-	sbfx	w8, w8, #0, #1
 	str	w8, [sp, #16]
 	.loc	1 90 3
+	ldr	w8, [sp, #16]
+	subs	w8, w8, #1
+	b.eq	LBB0_92
+	b	LBB0_91
+LBB0_91:
+	.loc	1 90 15 is_stmt 0
+	mov	w8, #1
+	str	w8, [sp, #8]
+	b	LBB0_93
+LBB0_92:
+	b	LBB0_93
+LBB0_93:
+	.loc	1 91 3 is_stmt 1
 	ldr	w8, [sp, #20]
 	ldr	w9, [sp, #24]
 	subs	w8, w8, w9
 	cset	w8, eq
-	sbfx	w8, w8, #0, #1
 	str	w8, [sp, #16]
-	.loc	1 91 3
+	.loc	1 92 3
+	ldr	w8, [sp, #16]
+	subs	w8, w8, #1
+	b.eq	LBB0_95
+	b	LBB0_94
+LBB0_94:
+	.loc	1 92 15 is_stmt 0
+	mov	w8, #1
+	str	w8, [sp, #8]
+	b	LBB0_96
+LBB0_95:
+	b	LBB0_96
+LBB0_96:
+	.loc	1 93 3 is_stmt 1
 	ldrb	w10, [sp, #14]
 	ldrb	w8, [sp, #14]
 	mov	w9, wzr
 	and	w10, w10, #0x1
 	ands	w10, w10, #0x1
 	csel	w8, w8, w9, ne
-	sbfx	w8, w8, #0, #1
+	and	w8, w8, #0x1
 	str	w8, [sp, #16]
-	.loc	1 92 3
-	ldrb	w10, [sp, #14]
+	.loc	1 94 3
+	ldr	w8, [sp, #16]
+	subs	w8, w8, #1
+	b.eq	LBB0_98
+	b	LBB0_97
+LBB0_97:
+	.loc	1 94 15 is_stmt 0
+	mov	w8, #1
+	str	w8, [sp, #8]
+	b	LBB0_99
+LBB0_98:
+	b	LBB0_99
+LBB0_99:
+	.loc	1 95 3 is_stmt 1
+	ldrb	w9, [sp, #14]
 	ldrb	w8, [sp, #15]
-	and	w10, w10, #0x1
-	ands	w10, w10, #0x1
+	and	w9, w9, #0x1
+	ands	w9, w9, #0x1
 	csinc	w8, w8, wzr, eq
-	sbfx	w8, w8, #0, #1
+	and	w8, w8, #0x1
 	str	w8, [sp, #16]
-	.loc	1 93 3
+	.loc	1 96 3
+	ldr	w8, [sp, #16]
+	subs	w8, w8, #1
+	b.eq	LBB0_101
+	b	LBB0_100
+LBB0_100:
+	.loc	1 96 15 is_stmt 0
+	mov	w8, #1
+	str	w8, [sp, #8]
+	b	LBB0_102
+LBB0_101:
+	b	LBB0_102
+LBB0_102:
+	.loc	1 97 3 is_stmt 1
 	ldrb	w8, [sp, #15]
 	and	w8, w8, #0x1
+	mov	w9, wzr
 	and	w9, w9, #0x1
 	subs	w8, w8, w9
 	cset	w8, eq
-	sbfx	w8, w8, #0, #1
 	str	w8, [sp, #16]
 	.loc	1 98 3
+	ldr	w8, [sp, #16]
+	subs	w8, w8, #1
+	b.eq	LBB0_104
+	b	LBB0_103
+LBB0_103:
+	.loc	1 98 15 is_stmt 0
+	mov	w8, #1
+	str	w8, [sp, #8]
+	b	LBB0_105
+LBB0_104:
+	b	LBB0_105
+LBB0_105:
+	.loc	1 102 3 is_stmt 1
+	ldr	w8, [sp, #20]
+	ldr	w9, [sp, #28]
+	subs	w8, w8, w9
+	cset	w8, lt
+	mov	w9, #3
+	mul	w8, w8, w9
+	subs	w8, w8, #3
+	b.eq	LBB0_107
+	b	LBB0_106
+LBB0_106:
+	.loc	1 102 25 is_stmt 0
+	mov	w8, #1
+	str	w8, [sp, #8]
+	b	LBB0_108
+LBB0_107:
+	b	LBB0_108
+LBB0_108:
+	.loc	1 103 3 is_stmt 1
+	ldr	w9, [sp, #20]
+	ldr	w10, [sp, #28]
+	mov	w8, #10
+	subs	w9, w9, w10
+	cinc	w8, w8, lt
+	subs	w8, w8, #11
+	b.eq	LBB0_110
+	b	LBB0_109
+LBB0_109:
+	.loc	1 103 27 is_stmt 0
+	mov	w8, #1
+	str	w8, [sp, #8]
+	b	LBB0_111
+LBB0_110:
+	b	LBB0_111
+LBB0_111:
+	.loc	1 104 3 is_stmt 1
+	ldr	w8, [sp, #20]
+	ldr	w9, [sp, #28]
+	subs	w8, w8, w9
+	cset	w8, lt
+	subs	w8, w8, #1
+	b.eq	LBB0_113
+	b	LBB0_112
+LBB0_112:
+	.loc	1 104 23 is_stmt 0
+	mov	w8, #1
+	str	w8, [sp, #8]
+	b	LBB0_114
+LBB0_113:
+	b	LBB0_114
+LBB0_114:
+	.loc	1 105 3 is_stmt 1
+	ldr	w8, [sp, #20]
+	ldr	w9, [sp, #28]
+	subs	w8, w8, w9
+	cset	w8, lt
+	subs	w8, w8, #5
+	cset	w8, lt
+	subs	w8, w8, #1
+	b.eq	LBB0_116
+	b	LBB0_115
+LBB0_115:
+	.loc	1 105 27 is_stmt 0
+	mov	w8, #1
+	str	w8, [sp, #8]
+	b	LBB0_117
+LBB0_116:
+	b	LBB0_117
+LBB0_117:
+	.loc	1 107 3 is_stmt 1
 	ldr	w8, [sp, #8]
-	cbnz	w8, LBB0_92
-	b	LBB0_91
-LBB0_91:
+	cbnz	w8, LBB0_119
+	b	LBB0_118
+LBB0_118:
 Ltmp1:
-	.loc	1 99 5
+	.loc	1 108 5
 	adrp	x0, l___unnamed_1@PAGE
 	add	x0, x0, l___unnamed_1@PAGEOFF
 	bl	_printf
-	b	LBB0_93
+	b	LBB0_120
 Ltmp2:
-LBB0_92:
-	.loc	1 101 5
+LBB0_119:
+	.loc	1 110 5
 	adrp	x0, l___unnamed_2@PAGE
 	add	x0, x0, l___unnamed_2@PAGEOFF
 	bl	_printf
-	b	LBB0_93
+	b	LBB0_120
 Ltmp3:
-LBB0_93:
-	.loc	1 103 3
+LBB0_120:
+	.loc	1 112 3
 	ldr	w0, [sp, #8]
-	.loc	1 103 3 epilogue_begin is_stmt 0
+	.loc	1 112 3 epilogue_begin is_stmt 0
 	ldp	x29, x30, [sp, #48]
 	add	sp, sp, #64
 	ret

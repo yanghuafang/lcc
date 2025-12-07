@@ -1530,6 +1530,8 @@ class LogicExpr : public LhsRhsExpr {
                                  int floatCmpPred, const char* unsupportedOp);
 
  public:
+  BuiltinTypeId getExprTypeId(CodeGenerator& generator) override;
+
   llvm::Value* genCodePtr(CodeGenerator& generator) override;
 };
 
@@ -1563,6 +1565,8 @@ class LogicNot : public ThrowingUnaryExpr {
  public:
   LogicNot(Expr* operand) : ThrowingUnaryExpr(operand) {}
   ~LogicNot() override {}
+
+  BuiltinTypeId getExprTypeId(CodeGenerator& generator) override;
 
   llvm::Value* genCode(CodeGenerator& generator) override;
 
