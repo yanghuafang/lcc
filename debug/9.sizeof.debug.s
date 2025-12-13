@@ -176,101 +176,127 @@ LBB0_36:
 	tbz	w8, #0, LBB0_38
 	b	LBB0_37
 LBB0_37:
-	.loc	1 60 30 is_stmt 0
+	.loc	1 60 29 is_stmt 0
 	mov	w8, #1
 	str	w8, [sp, #4]
 	b	LBB0_39
 LBB0_38:
 	b	LBB0_39
 LBB0_39:
-	.loc	1 0 30
+	.loc	1 0 29
 	mov	w8, wzr
 	.loc	1 61 3 is_stmt 1
 	tbz	w8, #0, LBB0_41
 	b	LBB0_40
 LBB0_40:
-	.loc	1 61 30 is_stmt 0
+	.loc	1 61 29 is_stmt 0
 	mov	w8, #1
 	str	w8, [sp, #4]
 	b	LBB0_42
 LBB0_41:
 	b	LBB0_42
 LBB0_42:
-	.loc	1 0 30
+	.loc	1 0 29
 	mov	w8, wzr
 	.loc	1 62 3 is_stmt 1
 	tbz	w8, #0, LBB0_44
 	b	LBB0_43
 LBB0_43:
-	.loc	1 62 24 is_stmt 0
+	.loc	1 62 30 is_stmt 0
 	mov	w8, #1
 	str	w8, [sp, #4]
 	b	LBB0_45
 LBB0_44:
 	b	LBB0_45
 LBB0_45:
-	.loc	1 0 24
+	.loc	1 0 30
 	mov	w8, wzr
 	.loc	1 63 3 is_stmt 1
 	tbz	w8, #0, LBB0_47
 	b	LBB0_46
 LBB0_46:
-	.loc	1 63 24 is_stmt 0
+	.loc	1 63 30 is_stmt 0
 	mov	w8, #1
 	str	w8, [sp, #4]
 	b	LBB0_48
 LBB0_47:
 	b	LBB0_48
 LBB0_48:
-	.loc	1 0 24
+	.loc	1 0 30
 	mov	w8, wzr
 	.loc	1 64 3 is_stmt 1
 	tbz	w8, #0, LBB0_50
 	b	LBB0_49
 LBB0_49:
-	.loc	1 64 31 is_stmt 0
+	.loc	1 64 24 is_stmt 0
 	mov	w8, #1
 	str	w8, [sp, #4]
 	b	LBB0_51
 LBB0_50:
 	b	LBB0_51
 LBB0_51:
-	.loc	1 0 31
+	.loc	1 0 24
 	mov	w8, wzr
 	.loc	1 65 3 is_stmt 1
 	tbz	w8, #0, LBB0_53
 	b	LBB0_52
 LBB0_52:
-	.loc	1 65 28 is_stmt 0
+	.loc	1 65 24 is_stmt 0
 	mov	w8, #1
 	str	w8, [sp, #4]
 	b	LBB0_54
 LBB0_53:
 	b	LBB0_54
 LBB0_54:
-	.loc	1 67 3 is_stmt 1
-	ldr	w8, [sp, #4]
-	cbnz	w8, LBB0_56
+	.loc	1 0 24
+	mov	w8, wzr
+	.loc	1 66 3 is_stmt 1
+	tbz	w8, #0, LBB0_56
 	b	LBB0_55
 LBB0_55:
+	.loc	1 66 31 is_stmt 0
+	mov	w8, #1
+	str	w8, [sp, #4]
+	b	LBB0_57
+LBB0_56:
+	b	LBB0_57
+LBB0_57:
+	.loc	1 0 31
+	mov	w8, wzr
+	.loc	1 67 3 is_stmt 1
+	tbz	w8, #0, LBB0_59
+	b	LBB0_58
+LBB0_58:
+	.loc	1 67 28 is_stmt 0
+	mov	w8, #1
+	str	w8, [sp, #4]
+	b	LBB0_60
+LBB0_59:
+	b	LBB0_60
+LBB0_60:
+	.loc	1 69 3 is_stmt 1
+	ldr	w8, [sp, #4]
+	cbnz	w8, LBB0_62
+	b	LBB0_61
+LBB0_61:
 Ltmp1:
-	.loc	1 68 5
+	.loc	1 70 5
 	adrp	x0, l___unnamed_1@PAGE
 	add	x0, x0, l___unnamed_1@PAGEOFF
 	bl	_printf
-	b	LBB0_57
+	b	LBB0_63
 Ltmp2:
-LBB0_56:
-	.loc	1 70 5
+LBB0_62:
+	.loc	1 72 5
 	adrp	x0, l___unnamed_2@PAGE
 	add	x0, x0, l___unnamed_2@PAGEOFF
 	bl	_printf
-	b	LBB0_57
+	b	LBB0_63
 Ltmp3:
-LBB0_57:
-	.loc	1 72 3
+LBB0_63:
+	.loc	1 74 3
 	ldr	w0, [sp, #4]
-	.loc	1 72 3 epilogue_begin is_stmt 0
+	.loc	1 74 3 epilogue_begin is_stmt 0
 	ldp	x29, x30, [sp, #208]
 	add	sp, sp, #224
 	ret
@@ -595,8 +621,8 @@ Ldebug_info_start0:
 	.byte	0
 	.byte	8
 	.long	85
-	.byte	12
-	.byte	4
+	.byte	16
+	.byte	8
 	.byte	9
 	.long	92
 	.long	341
@@ -605,8 +631,8 @@ Ldebug_info_start0:
 	.byte	9
 	.long	99
 	.long	278
-	.byte	4
-	.byte	4
+	.byte	8
+	.byte	8
 	.byte	0
 	.byte	4
 	.long	94

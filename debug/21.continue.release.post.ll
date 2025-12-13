@@ -1,5 +1,7 @@
 ; ModuleID = 'lcc'
 source_filename = "lcc"
+target datalayout = "e-m:o-p270:32:32-p271:32:32-p272:64:64-i64:64-i128:128-n32:64-S128-Fn32"
+target triple = "arm64-apple-darwin25.6.0"
 
 @str.1 = private unnamed_addr constant [19 x i8] c"21.continue.c PASS\00", align 1
 
@@ -34,18 +36,26 @@ while.loop.lr.ph:                                 ; preds = %entry, %if.end
   %i.0.ph15 = phi i32 [ %4, %if.end ], [ 1, %entry ]
   %count.0.ph14 = phi i32 [ %3, %if.end ], [ 0, %entry ]
   %1 = add i32 %i.0.ph15, 1
-  %2 = add i32 %i.0.ph15, 1
-  %.not = icmp sgt i32 %2, %0
-  br i1 %.not, label %while.end, label %if.end
+  br label %while.loop
 
-if.end:                                           ; preds = %while.loop.lr.ph
+while.loop:                                       ; preds = %while.loop.lr.ph, %then
+  %i.011 = phi i32 [ %i.0.ph15, %while.loop.lr.ph ], [ %2, %then ]
+  %lftr.wideiv = trunc i32 %i.011 to i1
+  br i1 %lftr.wideiv, label %then, label %if.end
+
+then:                                             ; preds = %while.loop
+  %2 = add i32 %i.011, 1
+  %.not = icmp sgt i32 %2, %0
+  br i1 %.not, label %while.end, label %while.loop
+
+if.end:                                           ; preds = %while.loop
   %3 = add i32 %count.0.ph14, 1
   %4 = or disjoint i32 %1, 1
   %.not10.not = icmp slt i32 %1, %0
   br i1 %.not10.not, label %while.loop.lr.ph, label %while.end
 
-while.end:                                        ; preds = %if.end, %while.loop.lr.ph, %entry
-  %count.0.ph.lcssa = phi i32 [ 0, %entry ], [ %count.0.ph14, %while.loop.lr.ph ], [ %3, %if.end ]
+while.end:                                        ; preds = %if.end, %then, %entry
+  %count.0.ph.lcssa = phi i32 [ 0, %entry ], [ %count.0.ph14, %then ], [ %3, %if.end ]
   ret i32 %count.0.ph.lcssa
 }
 
@@ -83,3 +93,8 @@ declare noundef i32 @puts(ptr nocapture noundef readonly) local_unnamed_addr #1
 
 attributes #0 = { nofree norecurse nosync nounwind memory(none) }
 attributes #1 = { nofree nounwind }
+
+!llvm.module.flags = !{!0, !1}
+
+!0 = !{i32 8, !"PIC Level", i32 2}
+!1 = !{i32 7, !"PIE Level", i32 2}

@@ -239,85 +239,107 @@ else50:                                           ; preds = %if.end48
   br label %if.end51, !dbg !95
 
 if.end51:                                         ; preds = %else50, %then49
-  %18 = load i32, ptr %err, align 4, !dbg !96
-  %19 = icmp eq i32 %18, 0, !dbg !96
-  br i1 %19, label %then52, label %else53, !dbg !96
+  br i1 false, label %then52, label %else53, !dbg !96
 
 then52:                                           ; preds = %if.end51
-  %20 = call i32 (ptr, ...) @printf(ptr @0), !dbg !97
+  store i32 1, ptr %err, align 4, !dbg !97
+  %18 = load i32, ptr %err, align 4, !dbg !97
   br label %if.end54, !dbg !97
 
 else53:                                           ; preds = %if.end51
-  %21 = call i32 (ptr, ...) @printf(ptr @1), !dbg !99
-  br label %if.end54, !dbg !99
+  br label %if.end54, !dbg !97
 
 if.end54:                                         ; preds = %else53, %then52
-  %22 = load i32, ptr %err, align 4, !dbg !101
-  ret i32 %22, !dbg !101
+  br i1 false, label %then55, label %else56, !dbg !98
+
+then55:                                           ; preds = %if.end54
+  store i32 1, ptr %err, align 4, !dbg !99
+  %19 = load i32, ptr %err, align 4, !dbg !99
+  br label %if.end57, !dbg !99
+
+else56:                                           ; preds = %if.end54
+  br label %if.end57, !dbg !99
+
+if.end57:                                         ; preds = %else56, %then55
+  %20 = load i32, ptr %err, align 4, !dbg !100
+  %21 = icmp eq i32 %20, 0, !dbg !100
+  br i1 %21, label %then58, label %else59, !dbg !100
+
+then58:                                           ; preds = %if.end57
+  %22 = call i32 (ptr, ...) @printf(ptr @0), !dbg !101
+  br label %if.end60, !dbg !101
+
+else59:                                           ; preds = %if.end57
+  %23 = call i32 (ptr, ...) @printf(ptr @1), !dbg !103
+  br label %if.end60, !dbg !103
+
+if.end60:                                         ; preds = %else59, %then58
+  %24 = load i32, ptr %err, align 4, !dbg !105
+  ret i32 %24, !dbg !105
 }
 
-!llvm.dbg.cu = !{!0}
-!llvm.module.flags = !{!2, !3}
+!llvm.module.flags = !{!0, !1}
+!llvm.dbg.cu = !{!2}
 
-!0 = distinct !DICompileUnit(language: DW_LANG_C, file: !1, producer: "lcc", isOptimized: false, runtimeVersion: 0, emissionKind: FullDebug)
-!1 = !DIFile(filename: "9.sizeof.c", directory: "../tests")
-!2 = !{i32 8, !"PIC Level", i32 2}
-!3 = !{i32 7, !"PIE Level", i32 2}
-!4 = distinct !DISubprogram(name: "main", linkageName: "main", scope: null, file: !1, line: 30, type: !5, scopeLine: 30, spFlags: DISPFlagDefinition, unit: !0, retainedNodes: !8)
+!0 = !{i32 8, !"PIC Level", i32 2}
+!1 = !{i32 7, !"PIE Level", i32 2}
+!2 = distinct !DICompileUnit(language: DW_LANG_C, file: !3, producer: "lcc", isOptimized: false, runtimeVersion: 0, emissionKind: FullDebug)
+!3 = !DIFile(filename: "9.sizeof.c", directory: "../tests")
+!4 = distinct !DISubprogram(name: "main", linkageName: "main", scope: null, file: !3, line: 30, type: !5, scopeLine: 30, spFlags: DISPFlagDefinition, unit: !2, retainedNodes: !8)
 !5 = !DISubroutineType(types: !6)
 !6 = !{!7}
 !7 = !DIBasicType(name: "int", size: 32, encoding: DW_ATE_signed)
 !8 = !{}
-!9 = !DILocalVariable(name: "longs", scope: !4, file: !1, line: 43, type: !10)
-!10 = !DICompositeType(tag: DW_TAG_array_type, baseType: !11, size: 256, align: 32, elements: !12)
+!9 = !DILocalVariable(name: "longs", scope: !4, file: !3, line: 43, type: !10)
+!10 = !DICompositeType(tag: DW_TAG_array_type, baseType: !11, size: 256, align: 64, elements: !12)
 !11 = !DIBasicType(name: "long", size: 64, encoding: DW_ATE_signed)
 !12 = !{!13}
 !13 = !DISubrange(count: 4, lowerBound: 0)
 !14 = !DILocation(line: 43, column: 3, scope: !4)
-!15 = !DILocalVariable(name: "students", scope: !4, file: !1, line: 42, type: !16)
+!15 = !DILocalVariable(name: "students", scope: !4, file: !3, line: 42, type: !16)
 !16 = !DICompositeType(tag: DW_TAG_array_type, baseType: !17, size: 576, align: 64, elements: !18)
 !17 = !DIBasicType(name: "void", encoding: DW_ATE_address)
 !18 = !{!19}
 !19 = !DISubrange(count: 3, lowerBound: 0)
 !20 = !DILocation(line: 42, column: 3, scope: !4)
-!21 = !DILocalVariable(name: "padded", scope: !4, file: !1, line: 41, type: !22)
-!22 = !DICompositeType(tag: DW_TAG_structure_type, name: "Padded", file: !1, size: 96, align: 32, elements: !23)
+!21 = !DILocalVariable(name: "padded", scope: !4, file: !3, line: 41, type: !22)
+!22 = !DICompositeType(tag: DW_TAG_structure_type, name: "Padded", file: !3, size: 128, align: 64, elements: !23)
 !23 = !{!24, !26}
-!24 = !DIDerivedType(tag: DW_TAG_member, name: "c", file: !1, baseType: !25, size: 8, align: 8)
+!24 = !DIDerivedType(tag: DW_TAG_member, name: "c", file: !3, baseType: !25, size: 8, align: 8)
 !25 = !DIBasicType(name: "char", size: 8, encoding: DW_ATE_signed_char)
-!26 = !DIDerivedType(tag: DW_TAG_member, name: "l", file: !1, baseType: !11, size: 64, align: 32, offset: 32)
+!26 = !DIDerivedType(tag: DW_TAG_member, name: "l", file: !3, baseType: !11, size: 64, align: 64, offset: 64)
 !27 = !DILocation(line: 41, column: 3, scope: !4)
-!28 = !DILocalVariable(name: "sex", scope: !4, file: !1, line: 40, type: !7)
+!28 = !DILocalVariable(name: "sex", scope: !4, file: !3, line: 40, type: !7)
 !29 = !DILocation(line: 40, column: 3, scope: !4)
-!30 = !DILocalVariable(name: "id", scope: !4, file: !1, line: 39, type: !31)
-!31 = !DICompositeType(tag: DW_TAG_union_type, name: "ID", file: !1, size: 64, align: 64, elements: !32)
+!30 = !DILocalVariable(name: "id", scope: !4, file: !3, line: 39, type: !31)
+!31 = !DICompositeType(tag: DW_TAG_union_type, name: "ID", file: !3, size: 64, align: 64, elements: !32)
 !32 = !{!33, !34}
-!33 = !DIDerivedType(tag: DW_TAG_member, name: "id", file: !1, baseType: !7, size: 32, align: 32)
-!34 = !DIDerivedType(tag: DW_TAG_member, name: "name", file: !1, baseType: !35, size: 64, align: 64)
+!33 = !DIDerivedType(tag: DW_TAG_member, name: "id", file: !3, baseType: !7, size: 32, align: 32)
+!34 = !DIDerivedType(tag: DW_TAG_member, name: "name", file: !3, baseType: !35, size: 64, align: 64)
 !35 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !25, size: 64)
 !36 = !DILocation(line: 39, column: 3, scope: !4)
-!37 = !DILocalVariable(name: "student", scope: !4, file: !1, line: 38, type: !38)
-!38 = !DICompositeType(tag: DW_TAG_structure_type, name: "Student", file: !1, size: 192, align: 64, elements: !39)
+!37 = !DILocalVariable(name: "student", scope: !4, file: !3, line: 38, type: !38)
+!38 = !DICompositeType(tag: DW_TAG_structure_type, name: "Student", file: !3, size: 192, align: 64, elements: !39)
 !39 = !{!33, !40, !41, !42}
-!40 = !DIDerivedType(tag: DW_TAG_member, name: "name", file: !1, baseType: !35, size: 64, align: 64, offset: 64)
-!41 = !DIDerivedType(tag: DW_TAG_member, name: "sex", file: !1, baseType: !25, size: 8, align: 8, offset: 128)
-!42 = !DIDerivedType(tag: DW_TAG_member, name: "score", file: !1, baseType: !43, size: 32, align: 32, offset: 160)
+!40 = !DIDerivedType(tag: DW_TAG_member, name: "name", file: !3, baseType: !35, size: 64, align: 64, offset: 64)
+!41 = !DIDerivedType(tag: DW_TAG_member, name: "sex", file: !3, baseType: !25, size: 8, align: 8, offset: 128)
+!42 = !DIDerivedType(tag: DW_TAG_member, name: "score", file: !3, baseType: !43, size: 32, align: 32, offset: 160)
 !43 = !DIBasicType(name: "float", size: 32, encoding: DW_ATE_float)
 !44 = !DILocation(line: 38, column: 3, scope: !4)
-!45 = !DILocalVariable(name: "pc", scope: !4, file: !1, line: 37, type: !35)
+!45 = !DILocalVariable(name: "pc", scope: !4, file: !3, line: 37, type: !35)
 !46 = !DILocation(line: 37, column: 3, scope: !4)
-!47 = !DILocalVariable(name: "d", scope: !4, file: !1, line: 36, type: !48)
+!47 = !DILocalVariable(name: "d", scope: !4, file: !3, line: 36, type: !48)
 !48 = !DIBasicType(name: "double", size: 64, encoding: DW_ATE_float)
 !49 = !DILocation(line: 36, column: 3, scope: !4)
-!50 = !DILocalVariable(name: "f", scope: !4, file: !1, line: 35, type: !43)
+!50 = !DILocalVariable(name: "f", scope: !4, file: !3, line: 35, type: !43)
 !51 = !DILocation(line: 35, column: 3, scope: !4)
-!52 = !DILocalVariable(name: "l", scope: !4, file: !1, line: 34, type: !11)
+!52 = !DILocalVariable(name: "l", scope: !4, file: !3, line: 34, type: !11)
 !53 = !DILocation(line: 34, column: 3, scope: !4)
-!54 = !DILocalVariable(name: "i", scope: !4, file: !1, line: 33, type: !7)
+!54 = !DILocalVariable(name: "i", scope: !4, file: !3, line: 33, type: !7)
 !55 = !DILocation(line: 33, column: 3, scope: !4)
-!56 = !DILocalVariable(name: "c", scope: !4, file: !1, line: 32, type: !25)
+!56 = !DILocalVariable(name: "c", scope: !4, file: !3, line: 32, type: !25)
 !57 = !DILocation(line: 32, column: 3, scope: !4)
-!58 = !DILocalVariable(name: "err", scope: !4, file: !1, line: 31, type: !7)
+!58 = !DILocalVariable(name: "err", scope: !4, file: !3, line: 31, type: !7)
 !59 = !DILocation(line: 31, column: 3, scope: !4)
 !60 = !DILocation(line: 45, column: 3, scope: !4)
 !61 = !DILocation(line: 45, column: 26, scope: !4)
@@ -344,20 +366,24 @@ if.end54:                                         ; preds = %else53, %then52
 !82 = !DILocation(line: 56, column: 3, scope: !4)
 !83 = !DILocation(line: 56, column: 25, scope: !4)
 !84 = !DILocation(line: 60, column: 3, scope: !4)
-!85 = !DILocation(line: 60, column: 30, scope: !4)
+!85 = !DILocation(line: 60, column: 29, scope: !4)
 !86 = !DILocation(line: 61, column: 3, scope: !4)
-!87 = !DILocation(line: 61, column: 30, scope: !4)
+!87 = !DILocation(line: 61, column: 29, scope: !4)
 !88 = !DILocation(line: 62, column: 3, scope: !4)
-!89 = !DILocation(line: 62, column: 24, scope: !4)
+!89 = !DILocation(line: 62, column: 30, scope: !4)
 !90 = !DILocation(line: 63, column: 3, scope: !4)
-!91 = !DILocation(line: 63, column: 24, scope: !4)
+!91 = !DILocation(line: 63, column: 30, scope: !4)
 !92 = !DILocation(line: 64, column: 3, scope: !4)
-!93 = !DILocation(line: 64, column: 31, scope: !4)
+!93 = !DILocation(line: 64, column: 24, scope: !4)
 !94 = !DILocation(line: 65, column: 3, scope: !4)
-!95 = !DILocation(line: 65, column: 28, scope: !4)
-!96 = !DILocation(line: 67, column: 3, scope: !4)
-!97 = !DILocation(line: 68, column: 5, scope: !98)
-!98 = distinct !DILexicalBlock(scope: !4, file: !1, line: 67, column: 17)
-!99 = !DILocation(line: 70, column: 5, scope: !100)
-!100 = distinct !DILexicalBlock(scope: !4, file: !1, line: 69, column: 10)
-!101 = !DILocation(line: 72, column: 3, scope: !4)
+!95 = !DILocation(line: 65, column: 24, scope: !4)
+!96 = !DILocation(line: 66, column: 3, scope: !4)
+!97 = !DILocation(line: 66, column: 31, scope: !4)
+!98 = !DILocation(line: 67, column: 3, scope: !4)
+!99 = !DILocation(line: 67, column: 28, scope: !4)
+!100 = !DILocation(line: 69, column: 3, scope: !4)
+!101 = !DILocation(line: 70, column: 5, scope: !102)
+!102 = distinct !DILexicalBlock(scope: !4, file: !3, line: 69, column: 17)
+!103 = !DILocation(line: 72, column: 5, scope: !104)
+!104 = distinct !DILexicalBlock(scope: !4, file: !3, line: 71, column: 10)
+!105 = !DILocation(line: 74, column: 3, scope: !4)

@@ -1,5 +1,7 @@
 ; ModuleID = 'lcc'
 source_filename = "lcc"
+target datalayout = "e-m:o-p270:32:32-p271:32:32-p272:64:64-i64:64-i128:128-n32:64-S128-Fn32"
+target triple = "arm64-apple-darwin25.6.0"
 
 %struct.Employee = type { i32, i8 }
 %struct.Point = type { i32, i32 }
@@ -120,9 +122,9 @@ else8:                                            ; preds = %if.end6
 
 if.end9:                                          ; preds = %else8, %then7
   %24 = call i64 @strlen(ptr @0)
-  store i64 %24, ptr %len, align 4
-  %25 = load i64, ptr %len, align 4
-  %26 = load i64, ptr %len, align 4
+  store i64 %24, ptr %len, align 8
+  %25 = load i64, ptr %len, align 8
+  %26 = load i64, ptr %len, align 8
   %27 = icmp ne i64 %26, 2
   br i1 %27, label %then10, label %else11
 
@@ -239,3 +241,8 @@ if.end30:                                         ; preds = %else29, %then28
   %66 = load i32, ptr %err, align 4
   ret i32 %66
 }
+
+!llvm.module.flags = !{!0, !1}
+
+!0 = !{i32 8, !"PIC Level", i32 2}
+!1 = !{i32 7, !"PIE Level", i32 2}

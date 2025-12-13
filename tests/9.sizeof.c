@@ -57,6 +57,8 @@ int main() {
 
   // Aggregates: size includes the padding the target's alignment rules
   // require, so these fail unless the module knows what it is compiling for.
+  if (sizeof(Padded) != 16) err = 1;
+  if (sizeof(padded) != 16) err = 1;
   if (sizeof(Student) != 24) err = 1;
   if (sizeof(student) != 24) err = 1;
   if (sizeof(ID) != 8) err = 1;

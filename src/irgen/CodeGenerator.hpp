@@ -242,11 +242,6 @@ class CodeGenerator : public TypeEnv {
   // Top-level container for all LLVM IR in this compilation unit.
   llvm::Module* module_;
 
-  // llvm::DataLayout manages how data is organized for a specific target
-  // architecture. It's like a blueprint that describes how different types of
-  // data should be arranged and sized in memory.
-  llvm::DataLayout* dataLayout_;
-
   // One map stores functions, types, variables, and constants (see SymbolType).
   class Symbol {
    public:

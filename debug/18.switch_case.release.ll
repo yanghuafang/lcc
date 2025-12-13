@@ -9,12 +9,13 @@ target triple = "arm64-apple-darwin25.6.0"
 ; Function Attrs: mustprogress nofree norecurse nosync nounwind willreturn memory(none)
 define range(i8 65, 70) i8 @gradeOfScore(i32 %0) local_unnamed_addr #0 {
 entry:
-  %switch.tableidx = sub i32 %0, 1
+  %switch.tableidx = add i32 %0, -1
   %1 = icmp ult i32 %switch.tableidx, 10
   br i1 %1, label %switch.lookup, label %switch.end
 
 switch.lookup:                                    ; preds = %entry
-  %switch.gep = getelementptr inbounds [10 x i8], ptr @switch.table.gradeOfScore, i32 0, i32 %switch.tableidx
+  %2 = zext nneg i32 %switch.tableidx to i64
+  %switch.gep = getelementptr inbounds nuw [10 x i8], ptr @switch.table.gradeOfScore, i64 0, i64 %2
   %switch.load = load i8, ptr %switch.gep, align 1
   br label %switch.end
 

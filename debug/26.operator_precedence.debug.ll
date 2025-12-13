@@ -49,17 +49,17 @@ entry:
   %err = alloca i32, align 4
     #dbg_declare(ptr %err, !46, !DIExpression(), !47)
   store i32 0, ptr %err, align 4, !dbg !47
-  store i64 1311768465173141112, ptr %a, align 4, !dbg !45
-  store i64 -7296712171277459728, ptr %b, align 4, !dbg !43
+  store i64 1311768465173141112, ptr %a, align 8, !dbg !45
+  store i64 -7296712171277459728, ptr %b, align 8, !dbg !43
   %0 = ptrtoint ptr %a to i64, !dbg !41
-  store i64 %0, ptr %c, align 4, !dbg !41
+  store i64 %0, ptr %c, align 8, !dbg !41
   %1 = ptrtoint ptr %c to i64, !dbg !39
-  %2 = load i64, ptr %a, align 4, !dbg !39
+  %2 = load i64, ptr %a, align 8, !dbg !39
   %3 = and i64 %1, %2, !dbg !39
-  %4 = load i64, ptr %b, align 4, !dbg !39
+  %4 = load i64, ptr %b, align 8, !dbg !39
   %5 = and i64 %3, %4, !dbg !39
-  store i64 %5, ptr %d, align 4, !dbg !39
-  %6 = load i64, ptr %a, align 4, !dbg !48
+  store i64 %5, ptr %d, align 8, !dbg !39
+  %6 = load i64, ptr %a, align 8, !dbg !48
   %7 = icmp ne i64 %6, 1311768465173141112, !dbg !48
   br i1 %7, label %then, label %else, !dbg !48
 
@@ -72,7 +72,7 @@ else:                                             ; preds = %entry
   br label %if.end, !dbg !49
 
 if.end:                                           ; preds = %else, %then
-  %9 = load i64, ptr %b, align 4, !dbg !50
+  %9 = load i64, ptr %b, align 8, !dbg !50
   %10 = icmp ne i64 %9, -7296712171277459728, !dbg !50
   br i1 %10, label %then1, label %else2, !dbg !50
 
@@ -184,11 +184,11 @@ else23:                                           ; preds = %if.end21
   br label %if.end24, !dbg !65
 
 if.end24:                                         ; preds = %else23, %then22
-  store i64 1234, ptr %callI, align 4, !dbg !25
-  %36 = load i64, ptr %callI, align 4, !dbg !66
+  store i64 1234, ptr %callI, align 8, !dbg !25
+  %36 = load i64, ptr %callI, align 8, !dbg !66
   %37 = trunc i64 %36 to i32, !dbg !66
   call void @subFunc(i32 %37), !dbg !66
-  %38 = load i64, ptr %callI, align 4, !dbg !67
+  %38 = load i64, ptr %callI, align 8, !dbg !67
   %39 = trunc i64 %38 to i32, !dbg !67
   %40 = icmp ne i32 %39, 1234, !dbg !67
   br i1 %40, label %then25, label %else26, !dbg !67
@@ -287,56 +287,56 @@ if.end42:                                         ; preds = %else41, %then40
   ret i32 %66, !dbg !82
 }
 
-!llvm.dbg.cu = !{!0}
-!llvm.module.flags = !{!2, !3}
+!llvm.module.flags = !{!0, !1}
+!llvm.dbg.cu = !{!2}
 
-!0 = distinct !DICompileUnit(language: DW_LANG_C, file: !1, producer: "lcc", isOptimized: false, runtimeVersion: 0, emissionKind: FullDebug)
-!1 = !DIFile(filename: "26.operator_precedence.c", directory: "../tests")
-!2 = !{i32 8, !"PIC Level", i32 2}
-!3 = !{i32 7, !"PIE Level", i32 2}
-!4 = distinct !DISubprogram(name: "subFunc", linkageName: "subFunc", scope: null, file: !1, line: 6, type: !5, scopeLine: 6, spFlags: DISPFlagDefinition, unit: !0, retainedNodes: !9)
+!0 = !{i32 8, !"PIC Level", i32 2}
+!1 = !{i32 7, !"PIE Level", i32 2}
+!2 = distinct !DICompileUnit(language: DW_LANG_C, file: !3, producer: "lcc", isOptimized: false, runtimeVersion: 0, emissionKind: FullDebug)
+!3 = !DIFile(filename: "26.operator_precedence.c", directory: "../tests")
+!4 = distinct !DISubprogram(name: "subFunc", linkageName: "subFunc", scope: null, file: !3, line: 6, type: !5, scopeLine: 6, spFlags: DISPFlagDefinition, unit: !2, retainedNodes: !9)
 !5 = !DISubroutineType(types: !6)
 !6 = !{!7, !8}
 !7 = !DIBasicType(name: "void", encoding: DW_ATE_address)
 !8 = !DIBasicType(name: "int", size: 32, encoding: DW_ATE_signed)
 !9 = !{}
-!10 = !DILocalVariable(name: "i", arg: 1, scope: !4, file: !1, line: 6, type: !8)
+!10 = !DILocalVariable(name: "i", arg: 1, scope: !4, file: !3, line: 6, type: !8)
 !11 = !DILocation(line: 6, column: 6, scope: !4)
-!12 = distinct !DISubprogram(name: "main", linkageName: "main", scope: null, file: !1, line: 8, type: !13, scopeLine: 8, spFlags: DISPFlagDefinition, unit: !0, retainedNodes: !9)
+!12 = distinct !DISubprogram(name: "main", linkageName: "main", scope: null, file: !3, line: 8, type: !13, scopeLine: 8, spFlags: DISPFlagDefinition, unit: !2, retainedNodes: !9)
 !13 = !DISubroutineType(types: !14)
 !14 = !{!8}
-!15 = !DILocalVariable(name: "decB", scope: !12, file: !1, line: 43, type: !8)
+!15 = !DILocalVariable(name: "decB", scope: !12, file: !3, line: 43, type: !8)
 !16 = !DILocation(line: 43, column: 3, scope: !12)
-!17 = !DILocalVariable(name: "decA", scope: !12, file: !1, line: 42, type: !8)
+!17 = !DILocalVariable(name: "decA", scope: !12, file: !3, line: 42, type: !8)
 !18 = !DILocation(line: 42, column: 3, scope: !12)
-!19 = !DILocalVariable(name: "incB", scope: !12, file: !1, line: 38, type: !8)
+!19 = !DILocalVariable(name: "incB", scope: !12, file: !3, line: 38, type: !8)
 !20 = !DILocation(line: 38, column: 3, scope: !12)
-!21 = !DILocalVariable(name: "incA", scope: !12, file: !1, line: 37, type: !8)
+!21 = !DILocalVariable(name: "incA", scope: !12, file: !3, line: 37, type: !8)
 !22 = !DILocation(line: 37, column: 3, scope: !12)
-!23 = !DILocalVariable(name: "callI", scope: !12, file: !1, line: 33, type: !24)
+!23 = !DILocalVariable(name: "callI", scope: !12, file: !3, line: 33, type: !24)
 !24 = !DIBasicType(name: "long", size: 64, encoding: DW_ATE_signed)
 !25 = !DILocation(line: 33, column: 3, scope: !12)
-!26 = !DILocalVariable(name: "mulC", scope: !12, file: !1, line: 30, type: !27)
+!26 = !DILocalVariable(name: "mulC", scope: !12, file: !3, line: 30, type: !27)
 !27 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !8, size: 64)
 !28 = !DILocation(line: 30, column: 3, scope: !12)
-!29 = !DILocalVariable(name: "mulB", scope: !12, file: !1, line: 29, type: !8)
+!29 = !DILocalVariable(name: "mulB", scope: !12, file: !3, line: 29, type: !8)
 !30 = !DILocation(line: 29, column: 3, scope: !12)
-!31 = !DILocalVariable(name: "mulA", scope: !12, file: !1, line: 28, type: !8)
+!31 = !DILocalVariable(name: "mulA", scope: !12, file: !3, line: 28, type: !8)
 !32 = !DILocation(line: 28, column: 3, scope: !12)
-!33 = !DILocalVariable(name: "minusA", scope: !12, file: !1, line: 24, type: !8)
+!33 = !DILocalVariable(name: "minusA", scope: !12, file: !3, line: 24, type: !8)
 !34 = !DILocation(line: 24, column: 3, scope: !12)
-!35 = !DILocalVariable(name: "plusA", scope: !12, file: !1, line: 18, type: !8)
+!35 = !DILocalVariable(name: "plusA", scope: !12, file: !3, line: 18, type: !8)
 !36 = !DILocation(line: 18, column: 3, scope: !12)
-!37 = !DILocalVariable(name: "d", scope: !12, file: !1, line: 14, type: !38)
+!37 = !DILocalVariable(name: "d", scope: !12, file: !3, line: 14, type: !38)
 !38 = !DIBasicType(name: "unsigned long", size: 64, encoding: DW_ATE_unsigned)
 !39 = !DILocation(line: 14, column: 3, scope: !12)
-!40 = !DILocalVariable(name: "c", scope: !12, file: !1, line: 13, type: !38)
+!40 = !DILocalVariable(name: "c", scope: !12, file: !3, line: 13, type: !38)
 !41 = !DILocation(line: 13, column: 3, scope: !12)
-!42 = !DILocalVariable(name: "b", scope: !12, file: !1, line: 12, type: !38)
+!42 = !DILocalVariable(name: "b", scope: !12, file: !3, line: 12, type: !38)
 !43 = !DILocation(line: 12, column: 3, scope: !12)
-!44 = !DILocalVariable(name: "a", scope: !12, file: !1, line: 11, type: !38)
+!44 = !DILocalVariable(name: "a", scope: !12, file: !3, line: 11, type: !38)
 !45 = !DILocation(line: 11, column: 3, scope: !12)
-!46 = !DILocalVariable(name: "err", scope: !12, file: !1, line: 9, type: !8)
+!46 = !DILocalVariable(name: "err", scope: !12, file: !3, line: 9, type: !8)
 !47 = !DILocation(line: 9, column: 3, scope: !12)
 !48 = !DILocation(line: 15, column: 3, scope: !12)
 !49 = !DILocation(line: 15, column: 32, scope: !12)
@@ -369,7 +369,7 @@ if.end42:                                         ; preds = %else41, %then40
 !76 = !DILocation(line: 45, column: 18, scope: !12)
 !77 = !DILocation(line: 47, column: 3, scope: !12)
 !78 = !DILocation(line: 48, column: 5, scope: !79)
-!79 = distinct !DILexicalBlock(scope: !12, file: !1, line: 47, column: 17)
+!79 = distinct !DILexicalBlock(scope: !12, file: !3, line: 47, column: 17)
 !80 = !DILocation(line: 50, column: 5, scope: !81)
-!81 = distinct !DILexicalBlock(scope: !12, file: !1, line: 49, column: 10)
+!81 = distinct !DILexicalBlock(scope: !12, file: !3, line: 49, column: 10)
 !82 = !DILocation(line: 52, column: 3, scope: !12)

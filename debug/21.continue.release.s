@@ -24,20 +24,26 @@ LBB0_4:
 	.p2align	2
 _countEvenNumber2:
 	cmp	w0, #1
-	b.lt	LBB1_5
+	b.lt	LBB1_7
 	mov	w8, w0
 	mov	w0, wzr
-	mov	w9, #2
+	mov	w9, #1
 LBB1_2:
+	add	w10, w9, #1
+LBB1_3:
+	tbz	w9, #0, LBB1_5
+	add	w9, w9, #1
 	cmp	w9, w8
-	b.gt	LBB1_4
-	cmp	w9, w8
-	add	w9, w9, #2
-	add	w0, w0, #1
-	b.lt	LBB1_2
-LBB1_4:
-	ret
+	b.le	LBB1_3
+	b	LBB1_6
 LBB1_5:
+	cmp	w10, w8
+	add	w0, w0, #1
+	orr	w9, w10, #0x1
+	b.lt	LBB1_2
+LBB1_6:
+	ret
+LBB1_7:
 	mov	w0, wzr
 	ret
 

@@ -33,17 +33,30 @@ struct TargetBackendOptions {
 //   emitAssembly runs a second, complete codegen over the same module. So
 //   calling both does the back-end work twice, by design.
 //
-// - **Emission mutates the module.** Codegen stamps the target triple, data
-//   layout, and PIC level onto it, and the legacy pass manager rewrites as it
-//   lowers. A module is therefore not pristine after emitObject, which is why
-//   driver/Pipeline.cpp dumps -l between the object and assembly calls rather
-//   than after both — the IR you would dump last is not the IR the object was
-//   built from.
+// - **Emission mutates the module.** The legacy pass manager rewrites the
+//   module as it lowers, so a module is not pristine after emitObject. That is
+//   why driver/Pipeline.cpp dumps -l between the object and assembly calls
+//   rather than after both — the IR you would dump last is not the IR the
+//   object was built from.
 //
 // lcc emits position-independent code unconditionally, so the resulting .o
 // links with a stock PIE toolchain on both macOS and Linux without -no-pie.
 class TargetBackend {
  public:
+  // Describe the target on the module: data layout, triple, and PIC/PIE level.
+  //
+  // Call this before generating any IR. The data layout is what decides how
+  // wide a struct is and where its members sit, and lcc reads those back off
+  // the module for sizeof (irgen/CodeGenerator.cpp) and for DWARF type
+  // metadata (irgen/DebugInfoBuilder.cpp). A module with no layout does not
+  // fail — it silently answers from LLVM's default, a big-endian machine with
+  // 4-byte-aligned i64 — so leaving this until emission does not break the
+  // build, it just computes every aggregate size for the wrong target.
+  //
+  // Throws on an unknown triple.
+  static void configureModule(llvm::Module& module,
+                              const TargetBackendOptions& options = {});
+
   // Emit a relocatable object file. Throws on an unknown triple or an
   // unwritable path.
   static void emitObject(llvm::Module& module, const std::string& path,

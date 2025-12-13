@@ -14,9 +14,6 @@
 CodeGenerator::CodeGenerator()
     : builder_(context_),
       module_(new llvm::Module("lcc", context_)),
-      // DataLayout(Module*) removed in LLVM 20; layout string comes from the
-      // module.
-      dataLayout_(new llvm::DataLayout(module_->getDataLayout())),
       structTypeTable_(new StructTypeTable),
       unionTypeTable_(new UnionTypeTable),
       globalBlock_(nullptr),
@@ -42,9 +39,6 @@ CodeGenerator::~CodeGenerator() {
   structTypeTable_ = nullptr;
   delete unionTypeTable_;
   unionTypeTable_ = nullptr;
-  // Constructed separately from Module; not owned by the module.
-  delete dataLayout_;
-  dataLayout_ = nullptr;
   delete module_;
   module_ = nullptr;
 }
@@ -68,8 +62,13 @@ void CodeGenerator::popSymbolTable() {
   }
 }
 
+// Read the layout off the module every time rather than caching a copy: the
+// driver stamps the target's real layout on before the AST walk starts (see
+// driver/Pipeline.cpp), and a copy taken in the constructor would freeze
+// LLVM's default — which is big-endian with 4-byte-aligned i64, so every
+// sizeof of an aggregate would be computed for a machine nobody ships.
 llvm::TypeSize CodeGenerator::getTypeSize(llvm::Type* type) {
-  return dataLayout_->getTypeAllocSize(type);
+  return module_->getDataLayout().getTypeAllocSize(type);
 }
 
 llvm::Type* CodeGenerator::findType(const std::string& typeName) {

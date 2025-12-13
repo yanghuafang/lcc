@@ -1,5 +1,7 @@
 ; ModuleID = 'lcc'
 source_filename = "lcc"
+target datalayout = "e-m:o-p270:32:32-p271:32:32-p272:64:64-i64:64-i128:128-n32:64-S128-Fn32"
+target triple = "arm64-apple-darwin25.6.0"
 
 @0 = private unnamed_addr constant [20 x i8] c"4.enum_type.c PASS\0A\00", align 1
 @1 = private unnamed_addr constant [20 x i8] c"4.enum_type.c FAIL\0A\00", align 1
@@ -153,3 +155,8 @@ if.end24:                                         ; preds = %else23, %then22
   %38 = load i32, ptr %err, align 4
   ret i32 %38
 }
+
+!llvm.module.flags = !{!0, !1}
+
+!0 = !{i32 8, !"PIC Level", i32 2}
+!1 = !{i32 7, !"PIE Level", i32 2}

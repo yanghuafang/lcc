@@ -1,347 +1,352 @@
 ; ModuleID = 'lcc'
 source_filename = "lcc"
+target datalayout = "e-m:o-p270:32:32-p271:32:32-p272:64:64-i64:64-i128:128-n32:64-S128-Fn32"
+target triple = "arm64-apple-darwin25.6.0"
 
 @0 = private unnamed_addr constant [18 x i8] c"23.return.c PASS\0A\00", align 1
 @1 = private unnamed_addr constant [18 x i8] c"23.return.c FAIL\0A\00", align 1
 
 declare i32 @printf(ptr, ...)
 
-define i32 @checkAge1(i32 %0) !dbg !2 {
+define i32 @checkAge1(i32 %0) !dbg !4 {
 entry:
   %age = alloca i32, align 4
-    #dbg_declare(ptr %age, !6, !DIExpression(), !7)
-  store i32 %0, ptr %age, align 4, !dbg !7
-  %1 = load i32, ptr %age, align 4, !dbg !8
-  %2 = icmp slt i32 %1, 18, !dbg !8
-  br i1 %2, label %then, label %else, !dbg !8
+    #dbg_declare(ptr %age, !8, !DIExpression(), !9)
+  store i32 %0, ptr %age, align 4, !dbg !9
+  %1 = load i32, ptr %age, align 4, !dbg !10
+  %2 = icmp slt i32 %1, 18, !dbg !10
+  br i1 %2, label %then, label %else, !dbg !10
 
 then:                                             ; preds = %entry
-  %3 = load i32, ptr %age, align 4, !dbg !9
-  ret i32 %3, !dbg !9
+  %3 = load i32, ptr %age, align 4, !dbg !11
+  ret i32 %3, !dbg !11
 
 else:                                             ; preds = %entry
-  br label %if.end, !dbg !9
+  br label %if.end, !dbg !11
 
 if.end:                                           ; preds = %else
-  %4 = load i32, ptr %age, align 4, !dbg !11
-  %5 = icmp eq i32 %4, 18, !dbg !11
-  br i1 %5, label %then1, label %else2, !dbg !11
+  %4 = load i32, ptr %age, align 4, !dbg !13
+  %5 = icmp eq i32 %4, 18, !dbg !13
+  br i1 %5, label %then1, label %else2, !dbg !13
 
 then1:                                            ; preds = %if.end
-  %6 = load i32, ptr %age, align 4, !dbg !12
-  ret i32 %6, !dbg !12
+  %6 = load i32, ptr %age, align 4, !dbg !14
+  ret i32 %6, !dbg !14
 
 else2:                                            ; preds = %if.end
-  br label %if.end3, !dbg !14
+  br label %if.end3, !dbg !16
 
 if.end3:                                          ; preds = %else2
-  %7 = load i32, ptr %age, align 4, !dbg !15
-  %8 = icmp sgt i32 %7, 18, !dbg !15
-  br i1 %8, label %then4, label %else5, !dbg !15
+  %7 = load i32, ptr %age, align 4, !dbg !17
+  %8 = icmp sgt i32 %7, 18, !dbg !17
+  br i1 %8, label %then4, label %else5, !dbg !17
 
 then4:                                            ; preds = %if.end3
-  %9 = load i32, ptr %age, align 4, !dbg !16
-  ret i32 %9, !dbg !16
+  %9 = load i32, ptr %age, align 4, !dbg !18
+  ret i32 %9, !dbg !18
 
 else5:                                            ; preds = %if.end3
-  br label %if.end6, !dbg !16
+  br label %if.end6, !dbg !18
 
 if.end6:                                          ; preds = %else5
-  %10 = load i32, ptr %age, align 4, !dbg !18
-  ret i32 %10, !dbg !18
+  %10 = load i32, ptr %age, align 4, !dbg !20
+  ret i32 %10, !dbg !20
 }
 
-define i32 @checkAge2(i32 %0) !dbg !19 {
+define i32 @checkAge2(i32 %0) !dbg !21 {
 entry:
   %age = alloca i32, align 4
-    #dbg_declare(ptr %age, !20, !DIExpression(), !21)
-  store i32 %0, ptr %age, align 4, !dbg !21
-  %1 = load i32, ptr %age, align 4, !dbg !22
-  %2 = icmp slt i32 %1, 18, !dbg !22
-  br i1 %2, label %then, label %else, !dbg !22
+    #dbg_declare(ptr %age, !22, !DIExpression(), !23)
+  store i32 %0, ptr %age, align 4, !dbg !23
+  %1 = load i32, ptr %age, align 4, !dbg !24
+  %2 = icmp slt i32 %1, 18, !dbg !24
+  br i1 %2, label %then, label %else, !dbg !24
 
 then:                                             ; preds = %entry
-  %3 = load i32, ptr %age, align 4, !dbg !23
-  ret i32 %3, !dbg !23
+  %3 = load i32, ptr %age, align 4, !dbg !25
+  ret i32 %3, !dbg !25
 
 else:                                             ; preds = %entry
-  %4 = load i32, ptr %age, align 4, !dbg !25
-  %5 = icmp eq i32 %4, 18, !dbg !25
-  br i1 %5, label %then1, label %else2, !dbg !25
+  %4 = load i32, ptr %age, align 4, !dbg !27
+  %5 = icmp eq i32 %4, 18, !dbg !27
+  br i1 %5, label %then1, label %else2, !dbg !27
 
 then1:                                            ; preds = %else
-  %6 = load i32, ptr %age, align 4, !dbg !26
-  ret i32 %6, !dbg !26
+  %6 = load i32, ptr %age, align 4, !dbg !28
+  ret i32 %6, !dbg !28
 
 else2:                                            ; preds = %else
-  %7 = load i32, ptr %age, align 4, !dbg !28
-  ret i32 %7, !dbg !28
+  %7 = load i32, ptr %age, align 4, !dbg !30
+  ret i32 %7, !dbg !30
 }
 
-define i32 @checkAge3(i32 %0) !dbg !30 {
+define i32 @checkAge3(i32 %0) !dbg !32 {
 entry:
   %age = alloca i32, align 4
-    #dbg_declare(ptr %age, !31, !DIExpression(), !32)
-  store i32 %0, ptr %age, align 4, !dbg !32
-  %1 = load i32, ptr %age, align 4, !dbg !33
-  %2 = icmp sle i32 %1, 6, !dbg !33
-  br i1 %2, label %then, label %else, !dbg !33
+    #dbg_declare(ptr %age, !33, !DIExpression(), !34)
+  store i32 %0, ptr %age, align 4, !dbg !34
+  %1 = load i32, ptr %age, align 4, !dbg !35
+  %2 = icmp sle i32 %1, 6, !dbg !35
+  br i1 %2, label %then, label %else, !dbg !35
 
 then:                                             ; preds = %entry
-  %3 = load i32, ptr %age, align 4, !dbg !34
-  ret i32 %3, !dbg !34
+  %3 = load i32, ptr %age, align 4, !dbg !36
+  ret i32 %3, !dbg !36
 
 else:                                             ; preds = %entry
-  %4 = load i32, ptr %age, align 4, !dbg !36
-  %5 = icmp sgt i32 %4, 6, !dbg !36
-  %6 = load i32, ptr %age, align 4, !dbg !36
-  %7 = icmp sle i32 %6, 14, !dbg !36
-  %8 = select i1 %5, i1 %7, i1 false, !dbg !36
-  br i1 %8, label %then1, label %else2, !dbg !36
+  %4 = load i32, ptr %age, align 4, !dbg !38
+  %5 = icmp sgt i32 %4, 6, !dbg !38
+  %6 = load i32, ptr %age, align 4, !dbg !38
+  %7 = icmp sle i32 %6, 14, !dbg !38
+  %8 = select i1 %5, i1 %7, i1 false, !dbg !38
+  br i1 %8, label %then1, label %else2, !dbg !38
 
 then1:                                            ; preds = %else
-  %9 = load i32, ptr %age, align 4, !dbg !37
-  ret i32 %9, !dbg !37
+  %9 = load i32, ptr %age, align 4, !dbg !39
+  ret i32 %9, !dbg !39
 
 else2:                                            ; preds = %else
-  %10 = load i32, ptr %age, align 4, !dbg !39
-  %11 = icmp sgt i32 %10, 14, !dbg !39
-  %12 = load i32, ptr %age, align 4, !dbg !39
-  %13 = icmp sle i32 %12, 18, !dbg !39
-  %14 = select i1 %11, i1 %13, i1 false, !dbg !39
-  br i1 %14, label %then3, label %else4, !dbg !39
+  %10 = load i32, ptr %age, align 4, !dbg !41
+  %11 = icmp sgt i32 %10, 14, !dbg !41
+  %12 = load i32, ptr %age, align 4, !dbg !41
+  %13 = icmp sle i32 %12, 18, !dbg !41
+  %14 = select i1 %11, i1 %13, i1 false, !dbg !41
+  br i1 %14, label %then3, label %else4, !dbg !41
 
 then3:                                            ; preds = %else2
-  %15 = load i32, ptr %age, align 4, !dbg !40
-  ret i32 %15, !dbg !40
+  %15 = load i32, ptr %age, align 4, !dbg !42
+  ret i32 %15, !dbg !42
 
 else4:                                            ; preds = %else2
-  %16 = load i32, ptr %age, align 4, !dbg !42
-  %17 = icmp sgt i32 %16, 18, !dbg !42
-  %18 = load i32, ptr %age, align 4, !dbg !42
-  %19 = icmp sle i32 %18, 35, !dbg !42
-  %20 = select i1 %17, i1 %19, i1 false, !dbg !42
-  br i1 %20, label %then5, label %else6, !dbg !42
+  %16 = load i32, ptr %age, align 4, !dbg !44
+  %17 = icmp sgt i32 %16, 18, !dbg !44
+  %18 = load i32, ptr %age, align 4, !dbg !44
+  %19 = icmp sle i32 %18, 35, !dbg !44
+  %20 = select i1 %17, i1 %19, i1 false, !dbg !44
+  br i1 %20, label %then5, label %else6, !dbg !44
 
 then5:                                            ; preds = %else4
-  %21 = load i32, ptr %age, align 4, !dbg !43
-  ret i32 %21, !dbg !43
+  %21 = load i32, ptr %age, align 4, !dbg !45
+  ret i32 %21, !dbg !45
 
 else6:                                            ; preds = %else4
-  br label %if.end, !dbg !43
+  br label %if.end, !dbg !45
 
 if.end:                                           ; preds = %else6
-  br label %if.end7, !dbg !43
+  br label %if.end7, !dbg !45
 
 if.end7:                                          ; preds = %if.end
-  br label %if.end8, !dbg !43
+  br label %if.end8, !dbg !45
 
 if.end8:                                          ; preds = %if.end7
-  br label %if.end9, !dbg !43
+  br label %if.end9, !dbg !45
 
 if.end9:                                          ; preds = %if.end8
-  %22 = load i32, ptr %age, align 4, !dbg !45
-  ret i32 %22, !dbg !45
+  %22 = load i32, ptr %age, align 4, !dbg !47
+  ret i32 %22, !dbg !47
 }
 
-define i32 @main() !dbg !46 {
+define i32 @main() !dbg !48 {
 entry:
   %err = alloca i32, align 4
-    #dbg_declare(ptr %err, !49, !DIExpression(), !50)
-  store i32 0, ptr %err, align 4, !dbg !50
-  %0 = call i32 @checkAge1(i32 16), !dbg !51
-  %1 = icmp ne i32 %0, 16, !dbg !51
-  br i1 %1, label %then, label %else, !dbg !51
+    #dbg_declare(ptr %err, !51, !DIExpression(), !52)
+  store i32 0, ptr %err, align 4, !dbg !52
+  %0 = call i32 @checkAge1(i32 16), !dbg !53
+  %1 = icmp ne i32 %0, 16, !dbg !53
+  br i1 %1, label %then, label %else, !dbg !53
 
 then:                                             ; preds = %entry
-  store i32 1, ptr %err, align 4, !dbg !52
-  %2 = load i32, ptr %err, align 4, !dbg !52
-  br label %if.end, !dbg !52
+  store i32 1, ptr %err, align 4, !dbg !54
+  %2 = load i32, ptr %err, align 4, !dbg !54
+  br label %if.end, !dbg !54
 
 else:                                             ; preds = %entry
-  br label %if.end, !dbg !52
+  br label %if.end, !dbg !54
 
 if.end:                                           ; preds = %else, %then
-  %3 = call i32 @checkAge1(i32 18), !dbg !53
-  %4 = icmp ne i32 %3, 18, !dbg !53
-  br i1 %4, label %then1, label %else2, !dbg !53
+  %3 = call i32 @checkAge1(i32 18), !dbg !55
+  %4 = icmp ne i32 %3, 18, !dbg !55
+  br i1 %4, label %then1, label %else2, !dbg !55
 
 then1:                                            ; preds = %if.end
-  store i32 1, ptr %err, align 4, !dbg !54
-  %5 = load i32, ptr %err, align 4, !dbg !54
-  br label %if.end3, !dbg !54
+  store i32 1, ptr %err, align 4, !dbg !56
+  %5 = load i32, ptr %err, align 4, !dbg !56
+  br label %if.end3, !dbg !56
 
 else2:                                            ; preds = %if.end
-  br label %if.end3, !dbg !54
+  br label %if.end3, !dbg !56
 
 if.end3:                                          ; preds = %else2, %then1
-  %6 = call i32 @checkAge1(i32 20), !dbg !55
-  %7 = icmp ne i32 %6, 20, !dbg !55
-  br i1 %7, label %then4, label %else5, !dbg !55
+  %6 = call i32 @checkAge1(i32 20), !dbg !57
+  %7 = icmp ne i32 %6, 20, !dbg !57
+  br i1 %7, label %then4, label %else5, !dbg !57
 
 then4:                                            ; preds = %if.end3
-  store i32 1, ptr %err, align 4, !dbg !56
-  %8 = load i32, ptr %err, align 4, !dbg !56
-  br label %if.end6, !dbg !56
+  store i32 1, ptr %err, align 4, !dbg !58
+  %8 = load i32, ptr %err, align 4, !dbg !58
+  br label %if.end6, !dbg !58
 
 else5:                                            ; preds = %if.end3
-  br label %if.end6, !dbg !56
+  br label %if.end6, !dbg !58
 
 if.end6:                                          ; preds = %else5, %then4
-  %9 = call i32 @checkAge2(i32 16), !dbg !57
-  %10 = icmp ne i32 %9, 16, !dbg !57
-  br i1 %10, label %then7, label %else8, !dbg !57
+  %9 = call i32 @checkAge2(i32 16), !dbg !59
+  %10 = icmp ne i32 %9, 16, !dbg !59
+  br i1 %10, label %then7, label %else8, !dbg !59
 
 then7:                                            ; preds = %if.end6
-  store i32 1, ptr %err, align 4, !dbg !58
-  %11 = load i32, ptr %err, align 4, !dbg !58
-  br label %if.end9, !dbg !58
+  store i32 1, ptr %err, align 4, !dbg !60
+  %11 = load i32, ptr %err, align 4, !dbg !60
+  br label %if.end9, !dbg !60
 
 else8:                                            ; preds = %if.end6
-  br label %if.end9, !dbg !58
+  br label %if.end9, !dbg !60
 
 if.end9:                                          ; preds = %else8, %then7
-  %12 = call i32 @checkAge2(i32 18), !dbg !59
-  %13 = icmp ne i32 %12, 18, !dbg !59
-  br i1 %13, label %then10, label %else11, !dbg !59
+  %12 = call i32 @checkAge2(i32 18), !dbg !61
+  %13 = icmp ne i32 %12, 18, !dbg !61
+  br i1 %13, label %then10, label %else11, !dbg !61
 
 then10:                                           ; preds = %if.end9
-  store i32 1, ptr %err, align 4, !dbg !60
-  %14 = load i32, ptr %err, align 4, !dbg !60
-  br label %if.end12, !dbg !60
+  store i32 1, ptr %err, align 4, !dbg !62
+  %14 = load i32, ptr %err, align 4, !dbg !62
+  br label %if.end12, !dbg !62
 
 else11:                                           ; preds = %if.end9
-  br label %if.end12, !dbg !60
+  br label %if.end12, !dbg !62
 
 if.end12:                                         ; preds = %else11, %then10
-  %15 = call i32 @checkAge2(i32 20), !dbg !61
-  %16 = icmp ne i32 %15, 20, !dbg !61
-  br i1 %16, label %then13, label %else14, !dbg !61
+  %15 = call i32 @checkAge2(i32 20), !dbg !63
+  %16 = icmp ne i32 %15, 20, !dbg !63
+  br i1 %16, label %then13, label %else14, !dbg !63
 
 then13:                                           ; preds = %if.end12
-  store i32 1, ptr %err, align 4, !dbg !62
-  %17 = load i32, ptr %err, align 4, !dbg !62
-  br label %if.end15, !dbg !62
+  store i32 1, ptr %err, align 4, !dbg !64
+  %17 = load i32, ptr %err, align 4, !dbg !64
+  br label %if.end15, !dbg !64
 
 else14:                                           ; preds = %if.end12
-  br label %if.end15, !dbg !62
+  br label %if.end15, !dbg !64
 
 if.end15:                                         ; preds = %else14, %then13
-  %18 = call i32 @checkAge3(i32 6), !dbg !63
-  %19 = icmp ne i32 %18, 6, !dbg !63
-  br i1 %19, label %then16, label %else17, !dbg !63
+  %18 = call i32 @checkAge3(i32 6), !dbg !65
+  %19 = icmp ne i32 %18, 6, !dbg !65
+  br i1 %19, label %then16, label %else17, !dbg !65
 
 then16:                                           ; preds = %if.end15
-  store i32 1, ptr %err, align 4, !dbg !64
-  %20 = load i32, ptr %err, align 4, !dbg !64
-  br label %if.end18, !dbg !64
+  store i32 1, ptr %err, align 4, !dbg !66
+  %20 = load i32, ptr %err, align 4, !dbg !66
+  br label %if.end18, !dbg !66
 
 else17:                                           ; preds = %if.end15
-  br label %if.end18, !dbg !64
+  br label %if.end18, !dbg !66
 
 if.end18:                                         ; preds = %else17, %then16
-  %21 = call i32 @checkAge3(i32 35), !dbg !65
-  %22 = icmp ne i32 %21, 35, !dbg !65
-  br i1 %22, label %then19, label %else20, !dbg !65
+  %21 = call i32 @checkAge3(i32 35), !dbg !67
+  %22 = icmp ne i32 %21, 35, !dbg !67
+  br i1 %22, label %then19, label %else20, !dbg !67
 
 then19:                                           ; preds = %if.end18
-  store i32 1, ptr %err, align 4, !dbg !66
-  %23 = load i32, ptr %err, align 4, !dbg !66
-  br label %if.end21, !dbg !66
+  store i32 1, ptr %err, align 4, !dbg !68
+  %23 = load i32, ptr %err, align 4, !dbg !68
+  br label %if.end21, !dbg !68
 
 else20:                                           ; preds = %if.end18
-  br label %if.end21, !dbg !66
+  br label %if.end21, !dbg !68
 
 if.end21:                                         ; preds = %else20, %then19
-  %24 = load i32, ptr %err, align 4, !dbg !67
-  %25 = icmp eq i32 %24, 0, !dbg !67
-  br i1 %25, label %then22, label %else23, !dbg !67
+  %24 = load i32, ptr %err, align 4, !dbg !69
+  %25 = icmp eq i32 %24, 0, !dbg !69
+  br i1 %25, label %then22, label %else23, !dbg !69
 
 then22:                                           ; preds = %if.end21
-  %26 = call i32 (ptr, ...) @printf(ptr @0), !dbg !68
-  br label %if.end24, !dbg !68
-
-else23:                                           ; preds = %if.end21
-  %27 = call i32 (ptr, ...) @printf(ptr @1), !dbg !70
+  %26 = call i32 (ptr, ...) @printf(ptr @0), !dbg !70
   br label %if.end24, !dbg !70
 
+else23:                                           ; preds = %if.end21
+  %27 = call i32 (ptr, ...) @printf(ptr @1), !dbg !72
+  br label %if.end24, !dbg !72
+
 if.end24:                                         ; preds = %else23, %then22
-  %28 = load i32, ptr %err, align 4, !dbg !72
-  ret i32 %28, !dbg !72
+  %28 = load i32, ptr %err, align 4, !dbg !74
+  ret i32 %28, !dbg !74
 }
 
-!llvm.dbg.cu = !{!0}
+!llvm.module.flags = !{!0, !1}
+!llvm.dbg.cu = !{!2}
 
-!0 = distinct !DICompileUnit(language: DW_LANG_C, file: !1, producer: "lcc", isOptimized: false, runtimeVersion: 0, emissionKind: FullDebug)
-!1 = !DIFile(filename: "23.return.c", directory: "../tests")
-!2 = distinct !DISubprogram(name: "checkAge1", linkageName: "checkAge1", scope: null, file: !1, line: 6, type: !3, scopeLine: 6, spFlags: DISPFlagDefinition, unit: !0)
-!3 = !DISubroutineType(types: !4)
-!4 = !{!5, !5}
-!5 = !DIBasicType(name: "int", size: 32, encoding: DW_ATE_signed)
-!6 = !DILocalVariable(name: "age", arg: 1, scope: !2, file: !1, line: 6, type: !5)
-!7 = !DILocation(line: 6, column: 5, scope: !2)
-!8 = !DILocation(line: 7, column: 3, scope: !2)
-!9 = !DILocation(line: 8, column: 5, scope: !10)
-!10 = distinct !DILexicalBlock(scope: !2, file: !1, line: 7, column: 17)
-!11 = !DILocation(line: 10, column: 3, scope: !2)
-!12 = !DILocation(line: 11, column: 5, scope: !13)
-!13 = distinct !DILexicalBlock(scope: !2, file: !1, line: 10, column: 18)
-!14 = !DILocation(line: 12, column: 10, scope: !2)
-!15 = !DILocation(line: 14, column: 3, scope: !2)
-!16 = !DILocation(line: 15, column: 5, scope: !17)
-!17 = distinct !DILexicalBlock(scope: !2, file: !1, line: 14, column: 17)
-!18 = !DILocation(line: 17, column: 3, scope: !2)
-!19 = distinct !DISubprogram(name: "checkAge2", linkageName: "checkAge2", scope: null, file: !1, line: 20, type: !3, scopeLine: 20, spFlags: DISPFlagDefinition, unit: !0)
-!20 = !DILocalVariable(name: "age", arg: 1, scope: !19, file: !1, line: 20, type: !5)
-!21 = !DILocation(line: 20, column: 5, scope: !19)
-!22 = !DILocation(line: 21, column: 3, scope: !19)
-!23 = !DILocation(line: 22, column: 5, scope: !24)
-!24 = distinct !DILexicalBlock(scope: !19, file: !1, line: 21, column: 17)
-!25 = !DILocation(line: 23, column: 10, scope: !19)
-!26 = !DILocation(line: 24, column: 5, scope: !27)
-!27 = distinct !DILexicalBlock(scope: !19, file: !1, line: 23, column: 25)
-!28 = !DILocation(line: 26, column: 5, scope: !29)
-!29 = distinct !DILexicalBlock(scope: !19, file: !1, line: 25, column: 10)
-!30 = distinct !DISubprogram(name: "checkAge3", linkageName: "checkAge3", scope: null, file: !1, line: 30, type: !3, scopeLine: 30, spFlags: DISPFlagDefinition, unit: !0)
-!31 = !DILocalVariable(name: "age", arg: 1, scope: !30, file: !1, line: 30, type: !5)
-!32 = !DILocation(line: 30, column: 5, scope: !30)
-!33 = !DILocation(line: 31, column: 3, scope: !30)
-!34 = !DILocation(line: 32, column: 5, scope: !35)
-!35 = distinct !DILexicalBlock(scope: !30, file: !1, line: 31, column: 17)
-!36 = !DILocation(line: 33, column: 10, scope: !30)
-!37 = !DILocation(line: 34, column: 5, scope: !38)
-!38 = distinct !DILexicalBlock(scope: !30, file: !1, line: 33, column: 36)
-!39 = !DILocation(line: 35, column: 10, scope: !30)
-!40 = !DILocation(line: 36, column: 5, scope: !41)
-!41 = distinct !DILexicalBlock(scope: !30, file: !1, line: 35, column: 37)
-!42 = !DILocation(line: 37, column: 10, scope: !30)
-!43 = !DILocation(line: 38, column: 5, scope: !44)
-!44 = distinct !DILexicalBlock(scope: !30, file: !1, line: 37, column: 37)
-!45 = !DILocation(line: 40, column: 3, scope: !30)
-!46 = distinct !DISubprogram(name: "main", linkageName: "main", scope: null, file: !1, line: 43, type: !47, scopeLine: 43, spFlags: DISPFlagDefinition, unit: !0)
-!47 = !DISubroutineType(types: !48)
-!48 = !{!5}
-!49 = !DILocalVariable(name: "err", scope: !46, file: !1, line: 44, type: !5)
-!50 = !DILocation(line: 44, column: 3, scope: !46)
-!51 = !DILocation(line: 46, column: 3, scope: !46)
-!52 = !DILocation(line: 46, column: 28, scope: !46)
-!53 = !DILocation(line: 47, column: 3, scope: !46)
-!54 = !DILocation(line: 47, column: 28, scope: !46)
-!55 = !DILocation(line: 48, column: 3, scope: !46)
-!56 = !DILocation(line: 48, column: 28, scope: !46)
-!57 = !DILocation(line: 49, column: 3, scope: !46)
-!58 = !DILocation(line: 49, column: 28, scope: !46)
-!59 = !DILocation(line: 50, column: 3, scope: !46)
-!60 = !DILocation(line: 50, column: 28, scope: !46)
-!61 = !DILocation(line: 51, column: 3, scope: !46)
-!62 = !DILocation(line: 51, column: 28, scope: !46)
-!63 = !DILocation(line: 52, column: 3, scope: !46)
-!64 = !DILocation(line: 52, column: 26, scope: !46)
-!65 = !DILocation(line: 53, column: 3, scope: !46)
-!66 = !DILocation(line: 53, column: 28, scope: !46)
-!67 = !DILocation(line: 55, column: 3, scope: !46)
-!68 = !DILocation(line: 56, column: 5, scope: !69)
-!69 = distinct !DILexicalBlock(scope: !46, file: !1, line: 55, column: 17)
-!70 = !DILocation(line: 58, column: 5, scope: !71)
-!71 = distinct !DILexicalBlock(scope: !46, file: !1, line: 57, column: 10)
-!72 = !DILocation(line: 60, column: 3, scope: !46)
+!0 = !{i32 8, !"PIC Level", i32 2}
+!1 = !{i32 7, !"PIE Level", i32 2}
+!2 = distinct !DICompileUnit(language: DW_LANG_C, file: !3, producer: "lcc", isOptimized: false, runtimeVersion: 0, emissionKind: FullDebug)
+!3 = !DIFile(filename: "23.return.c", directory: "../tests")
+!4 = distinct !DISubprogram(name: "checkAge1", linkageName: "checkAge1", scope: null, file: !3, line: 6, type: !5, scopeLine: 6, spFlags: DISPFlagDefinition, unit: !2)
+!5 = !DISubroutineType(types: !6)
+!6 = !{!7, !7}
+!7 = !DIBasicType(name: "int", size: 32, encoding: DW_ATE_signed)
+!8 = !DILocalVariable(name: "age", arg: 1, scope: !4, file: !3, line: 6, type: !7)
+!9 = !DILocation(line: 6, column: 5, scope: !4)
+!10 = !DILocation(line: 7, column: 3, scope: !4)
+!11 = !DILocation(line: 8, column: 5, scope: !12)
+!12 = distinct !DILexicalBlock(scope: !4, file: !3, line: 7, column: 17)
+!13 = !DILocation(line: 10, column: 3, scope: !4)
+!14 = !DILocation(line: 11, column: 5, scope: !15)
+!15 = distinct !DILexicalBlock(scope: !4, file: !3, line: 10, column: 18)
+!16 = !DILocation(line: 12, column: 10, scope: !4)
+!17 = !DILocation(line: 14, column: 3, scope: !4)
+!18 = !DILocation(line: 15, column: 5, scope: !19)
+!19 = distinct !DILexicalBlock(scope: !4, file: !3, line: 14, column: 17)
+!20 = !DILocation(line: 17, column: 3, scope: !4)
+!21 = distinct !DISubprogram(name: "checkAge2", linkageName: "checkAge2", scope: null, file: !3, line: 20, type: !5, scopeLine: 20, spFlags: DISPFlagDefinition, unit: !2)
+!22 = !DILocalVariable(name: "age", arg: 1, scope: !21, file: !3, line: 20, type: !7)
+!23 = !DILocation(line: 20, column: 5, scope: !21)
+!24 = !DILocation(line: 21, column: 3, scope: !21)
+!25 = !DILocation(line: 22, column: 5, scope: !26)
+!26 = distinct !DILexicalBlock(scope: !21, file: !3, line: 21, column: 17)
+!27 = !DILocation(line: 23, column: 10, scope: !21)
+!28 = !DILocation(line: 24, column: 5, scope: !29)
+!29 = distinct !DILexicalBlock(scope: !21, file: !3, line: 23, column: 25)
+!30 = !DILocation(line: 26, column: 5, scope: !31)
+!31 = distinct !DILexicalBlock(scope: !21, file: !3, line: 25, column: 10)
+!32 = distinct !DISubprogram(name: "checkAge3", linkageName: "checkAge3", scope: null, file: !3, line: 30, type: !5, scopeLine: 30, spFlags: DISPFlagDefinition, unit: !2)
+!33 = !DILocalVariable(name: "age", arg: 1, scope: !32, file: !3, line: 30, type: !7)
+!34 = !DILocation(line: 30, column: 5, scope: !32)
+!35 = !DILocation(line: 31, column: 3, scope: !32)
+!36 = !DILocation(line: 32, column: 5, scope: !37)
+!37 = distinct !DILexicalBlock(scope: !32, file: !3, line: 31, column: 17)
+!38 = !DILocation(line: 33, column: 10, scope: !32)
+!39 = !DILocation(line: 34, column: 5, scope: !40)
+!40 = distinct !DILexicalBlock(scope: !32, file: !3, line: 33, column: 36)
+!41 = !DILocation(line: 35, column: 10, scope: !32)
+!42 = !DILocation(line: 36, column: 5, scope: !43)
+!43 = distinct !DILexicalBlock(scope: !32, file: !3, line: 35, column: 37)
+!44 = !DILocation(line: 37, column: 10, scope: !32)
+!45 = !DILocation(line: 38, column: 5, scope: !46)
+!46 = distinct !DILexicalBlock(scope: !32, file: !3, line: 37, column: 37)
+!47 = !DILocation(line: 40, column: 3, scope: !32)
+!48 = distinct !DISubprogram(name: "main", linkageName: "main", scope: null, file: !3, line: 43, type: !49, scopeLine: 43, spFlags: DISPFlagDefinition, unit: !2)
+!49 = !DISubroutineType(types: !50)
+!50 = !{!7}
+!51 = !DILocalVariable(name: "err", scope: !48, file: !3, line: 44, type: !7)
+!52 = !DILocation(line: 44, column: 3, scope: !48)
+!53 = !DILocation(line: 46, column: 3, scope: !48)
+!54 = !DILocation(line: 46, column: 28, scope: !48)
+!55 = !DILocation(line: 47, column: 3, scope: !48)
+!56 = !DILocation(line: 47, column: 28, scope: !48)
+!57 = !DILocation(line: 48, column: 3, scope: !48)
+!58 = !DILocation(line: 48, column: 28, scope: !48)
+!59 = !DILocation(line: 49, column: 3, scope: !48)
+!60 = !DILocation(line: 49, column: 28, scope: !48)
+!61 = !DILocation(line: 50, column: 3, scope: !48)
+!62 = !DILocation(line: 50, column: 28, scope: !48)
+!63 = !DILocation(line: 51, column: 3, scope: !48)
+!64 = !DILocation(line: 51, column: 28, scope: !48)
+!65 = !DILocation(line: 52, column: 3, scope: !48)
+!66 = !DILocation(line: 52, column: 26, scope: !48)
+!67 = !DILocation(line: 53, column: 3, scope: !48)
+!68 = !DILocation(line: 53, column: 28, scope: !48)
+!69 = !DILocation(line: 55, column: 3, scope: !48)
+!70 = !DILocation(line: 56, column: 5, scope: !71)
+!71 = distinct !DILexicalBlock(scope: !48, file: !3, line: 55, column: 17)
+!72 = !DILocation(line: 58, column: 5, scope: !73)
+!73 = distinct !DILexicalBlock(scope: !48, file: !3, line: 57, column: 10)
+!74 = !DILocation(line: 60, column: 3, scope: !48)

@@ -1,5 +1,7 @@
 ; ModuleID = 'lcc'
 source_filename = "lcc"
+target datalayout = "e-m:o-p270:32:32-p271:32:32-p272:64:64-i64:64-i128:128-n32:64-S128-Fn32"
+target triple = "arm64-apple-darwin25.6.0"
 
 %struct.Student = type { i32, ptr, i8, float }
 %struct.Padded = type { i8, i64 }
@@ -224,19 +226,46 @@ else50:                                           ; preds = %if.end48
   br label %if.end51
 
 if.end51:                                         ; preds = %else50, %then49
-  %18 = load i32, ptr %err, align 4
-  %19 = icmp eq i32 %18, 0
-  br i1 %19, label %then52, label %else53
+  br i1 false, label %then52, label %else53
 
 then52:                                           ; preds = %if.end51
-  %20 = call i32 (ptr, ...) @printf(ptr @0)
+  store i32 1, ptr %err, align 4
+  %18 = load i32, ptr %err, align 4
   br label %if.end54
 
 else53:                                           ; preds = %if.end51
-  %21 = call i32 (ptr, ...) @printf(ptr @1)
   br label %if.end54
 
 if.end54:                                         ; preds = %else53, %then52
-  %22 = load i32, ptr %err, align 4
-  ret i32 %22
+  br i1 false, label %then55, label %else56
+
+then55:                                           ; preds = %if.end54
+  store i32 1, ptr %err, align 4
+  %19 = load i32, ptr %err, align 4
+  br label %if.end57
+
+else56:                                           ; preds = %if.end54
+  br label %if.end57
+
+if.end57:                                         ; preds = %else56, %then55
+  %20 = load i32, ptr %err, align 4
+  %21 = icmp eq i32 %20, 0
+  br i1 %21, label %then58, label %else59
+
+then58:                                           ; preds = %if.end57
+  %22 = call i32 (ptr, ...) @printf(ptr @0)
+  br label %if.end60
+
+else59:                                           ; preds = %if.end57
+  %23 = call i32 (ptr, ...) @printf(ptr @1)
+  br label %if.end60
+
+if.end60:                                         ; preds = %else59, %then58
+  %24 = load i32, ptr %err, align 4
+  ret i32 %24
 }
+
+!llvm.module.flags = !{!0, !1}
+
+!0 = !{i32 8, !"PIC Level", i32 2}
+!1 = !{i32 7, !"PIE Level", i32 2}

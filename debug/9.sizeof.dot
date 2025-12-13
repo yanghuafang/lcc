@@ -552,11 +552,11 @@ IfStmt_167 -> LogicNotEq_168
 LogicNotEq_168 [label = LogicNotEq]
 LogicNotEq_168 -> SizeOf_169
 SizeOf_169 [label = SizeOf]
-Student_169 [label = Student]
-SizeOf_169 -> Student_169
+Padded_169 [label = Padded]
+SizeOf_169 -> Padded_169
 LogicNotEq_168 -> Constant_170
 Constant_170 [label = Constant]
-int_170 [label = "24"]
+int_170 [label = "16"]
 Constant_170 -> int_170
 IfStmt_167 -> Assign_171
 Assign_171 [label = Assign]
@@ -574,11 +574,11 @@ IfStmt_174 -> LogicNotEq_175
 LogicNotEq_175 [label = LogicNotEq]
 LogicNotEq_175 -> SizeOf_176
 SizeOf_176 [label = SizeOf]
-student_176 [label = student]
-SizeOf_176 -> student_176
+padded_176 [label = padded]
+SizeOf_176 -> padded_176
 LogicNotEq_175 -> Constant_177
 Constant_177 [label = Constant]
-int_177 [label = "24"]
+int_177 [label = "16"]
 Constant_177 -> int_177
 IfStmt_174 -> Assign_178
 Assign_178 [label = Assign]
@@ -596,11 +596,11 @@ IfStmt_181 -> LogicNotEq_182
 LogicNotEq_182 [label = LogicNotEq]
 LogicNotEq_182 -> SizeOf_183
 SizeOf_183 [label = SizeOf]
-ID_183 [label = ID]
-SizeOf_183 -> ID_183
+Student_183 [label = Student]
+SizeOf_183 -> Student_183
 LogicNotEq_182 -> Constant_184
 Constant_184 [label = Constant]
-int_184 [label = "8"]
+int_184 [label = "24"]
 Constant_184 -> int_184
 IfStmt_181 -> Assign_185
 Assign_185 [label = Assign]
@@ -618,11 +618,11 @@ IfStmt_188 -> LogicNotEq_189
 LogicNotEq_189 [label = LogicNotEq]
 LogicNotEq_189 -> SizeOf_190
 SizeOf_190 [label = SizeOf]
-id_190 [label = id]
-SizeOf_190 -> id_190
+student_190 [label = student]
+SizeOf_190 -> student_190
 LogicNotEq_189 -> Constant_191
 Constant_191 [label = Constant]
-int_191 [label = "8"]
+int_191 [label = "24"]
 Constant_191 -> int_191
 IfStmt_188 -> Assign_192
 Assign_192 [label = Assign]
@@ -640,11 +640,11 @@ IfStmt_195 -> LogicNotEq_196
 LogicNotEq_196 [label = LogicNotEq]
 LogicNotEq_196 -> SizeOf_197
 SizeOf_197 [label = SizeOf]
-students_197 [label = students]
-SizeOf_197 -> students_197
+ID_197 [label = ID]
+SizeOf_197 -> ID_197
 LogicNotEq_196 -> Constant_198
 Constant_198 [label = Constant]
-int_198 [label = "72"]
+int_198 [label = "8"]
 Constant_198 -> int_198
 IfStmt_195 -> Assign_199
 Assign_199 [label = Assign]
@@ -662,11 +662,11 @@ IfStmt_202 -> LogicNotEq_203
 LogicNotEq_203 [label = LogicNotEq]
 LogicNotEq_203 -> SizeOf_204
 SizeOf_204 [label = SizeOf]
-longs_204 [label = longs]
-SizeOf_204 -> longs_204
+id_204 [label = id]
+SizeOf_204 -> id_204
 LogicNotEq_203 -> Constant_205
 Constant_205 [label = Constant]
-int_205 [label = "32"]
+int_205 [label = "8"]
 Constant_205 -> int_205
 IfStmt_202 -> Assign_206
 Assign_206 [label = Assign]
@@ -680,40 +680,84 @@ int_208 [label = "1"]
 Constant_208 -> int_208
 FuncBody_34 -> IfStmt_209
 IfStmt_209 [label = IfStmt]
-IfStmt_209 -> LogicEq_210
-LogicEq_210 [label = LogicEq]
-LogicEq_210 -> Variable_211
-Variable_211 [label = Variable]
-err_211 [label = err]
-Variable_211 -> err_211
-LogicEq_210 -> Constant_212
+IfStmt_209 -> LogicNotEq_210
+LogicNotEq_210 [label = LogicNotEq]
+LogicNotEq_210 -> SizeOf_211
+SizeOf_211 [label = SizeOf]
+students_211 [label = students]
+SizeOf_211 -> students_211
+LogicNotEq_210 -> Constant_212
 Constant_212 [label = Constant]
-int_212 [label = "0"]
+int_212 [label = "72"]
 Constant_212 -> int_212
-IfStmt_209 -> Block_213
-Block_213 [label = Block]
-Block_213 -> FuncCall_214
-FuncCall_214 [label = FuncCall]
-printf_214[ label = printf]
-FuncCall_214 -> printf_214
-FuncCall_214 -> ConstStr_215
-ConstStr_215 [label = ConstStr]
-str_215 [label = "9.sizeof.c PASS"]
-ConstStr_215 -> str_215
-IfStmt_209 -> Block_216
-Block_216 [label = Block]
-Block_216 -> FuncCall_217
-FuncCall_217 [label = FuncCall]
-printf_217[ label = printf]
-FuncCall_217 -> printf_217
-FuncCall_217 -> ConstStr_218
-ConstStr_218 [label = ConstStr]
-str_218 [label = "9.sizeof.c FAIL"]
-ConstStr_218 -> str_218
-FuncBody_34 -> ReturnStmt_219
-ReturnStmt_219 [label = ReturnStmt]
-ReturnStmt_219 -> Variable_220
-Variable_220 [label = Variable]
-err_220 [label = err]
-Variable_220 -> err_220
+IfStmt_209 -> Assign_213
+Assign_213 [label = Assign]
+Assign_213 -> Variable_214
+Variable_214 [label = Variable]
+err_214 [label = err]
+Variable_214 -> err_214
+Assign_213 -> Constant_215
+Constant_215 [label = Constant]
+int_215 [label = "1"]
+Constant_215 -> int_215
+FuncBody_34 -> IfStmt_216
+IfStmt_216 [label = IfStmt]
+IfStmt_216 -> LogicNotEq_217
+LogicNotEq_217 [label = LogicNotEq]
+LogicNotEq_217 -> SizeOf_218
+SizeOf_218 [label = SizeOf]
+longs_218 [label = longs]
+SizeOf_218 -> longs_218
+LogicNotEq_217 -> Constant_219
+Constant_219 [label = Constant]
+int_219 [label = "32"]
+Constant_219 -> int_219
+IfStmt_216 -> Assign_220
+Assign_220 [label = Assign]
+Assign_220 -> Variable_221
+Variable_221 [label = Variable]
+err_221 [label = err]
+Variable_221 -> err_221
+Assign_220 -> Constant_222
+Constant_222 [label = Constant]
+int_222 [label = "1"]
+Constant_222 -> int_222
+FuncBody_34 -> IfStmt_223
+IfStmt_223 [label = IfStmt]
+IfStmt_223 -> LogicEq_224
+LogicEq_224 [label = LogicEq]
+LogicEq_224 -> Variable_225
+Variable_225 [label = Variable]
+err_225 [label = err]
+Variable_225 -> err_225
+LogicEq_224 -> Constant_226
+Constant_226 [label = Constant]
+int_226 [label = "0"]
+Constant_226 -> int_226
+IfStmt_223 -> Block_227
+Block_227 [label = Block]
+Block_227 -> FuncCall_228
+FuncCall_228 [label = FuncCall]
+printf_228[ label = printf]
+FuncCall_228 -> printf_228
+FuncCall_228 -> ConstStr_229
+ConstStr_229 [label = ConstStr]
+str_229 [label = "9.sizeof.c PASS"]
+ConstStr_229 -> str_229
+IfStmt_223 -> Block_230
+Block_230 [label = Block]
+Block_230 -> FuncCall_231
+FuncCall_231 [label = FuncCall]
+printf_231[ label = printf]
+FuncCall_231 -> printf_231
+FuncCall_231 -> ConstStr_232
+ConstStr_232 [label = ConstStr]
+str_232 [label = "9.sizeof.c FAIL"]
+ConstStr_232 -> str_232
+FuncBody_34 -> ReturnStmt_233
+ReturnStmt_233 [label = ReturnStmt]
+ReturnStmt_233 -> Variable_234
+Variable_234 [label = Variable]
+err_234 [label = err]
+Variable_234 -> err_234
 }

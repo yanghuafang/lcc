@@ -53,12 +53,18 @@ struct IrCodeGenOptions {
 
 // Front end + middle end: walk the AST into a module (CodeGenerator), then run
 // IrOptimizer over it, dumping IR before and after if asked.
+//
+// Takes the back end's options as well as the middle end's because the target
+// has to be resolved first: the AST walk computes sizeof and DWARF member
+// offsets from the module's data layout, and the middle end optimizes against
+// it. Both would otherwise run against LLVM's default layout and describe a
+// machine that does not exist.
 void genIr(CodeGenerator& generator, AST::Program* root,
-           const IrCodeGenOptions& options);
+           const IrCodeGenOptions& options,
+           const TargetBackendOptions& targetOptions);
 
-// Back end. Also stamps triple, data layout, and PIC/PIE level onto the module,
-// which is why a -l dump belongs between emitObject and emitAssembly: legacy-PM
-// codegen mutates the module in place.
+// Back end. A -l dump belongs between emitObject and emitAssembly because
+// legacy-PM codegen mutates the module in place.
 void emitObject(llvm::Module& module, const std::string& fileName,
                 const TargetBackendOptions& options);
 

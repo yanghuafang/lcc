@@ -1,5 +1,7 @@
 ; ModuleID = 'lcc'
 source_filename = "lcc"
+target datalayout = "e-m:o-p270:32:32-p271:32:32-p272:64:64-i64:64-i128:128-n32:64-S128-Fn32"
+target triple = "arm64-apple-darwin25.6.0"
 
 @0 = private unnamed_addr constant [31 x i8] c"26.operator_precedence.c PASS\0A\00", align 1
 @1 = private unnamed_addr constant [31 x i8] c"26.operator_precedence.c FAIL\0A\00", align 1
@@ -31,17 +33,17 @@ entry:
   %a = alloca i64, align 8
   %err = alloca i32, align 4
   store i32 0, ptr %err, align 4
-  store i64 1311768465173141112, ptr %a, align 4
-  store i64 -7296712171277459728, ptr %b, align 4
+  store i64 1311768465173141112, ptr %a, align 8
+  store i64 -7296712171277459728, ptr %b, align 8
   %0 = ptrtoint ptr %a to i64
-  store i64 %0, ptr %c, align 4
+  store i64 %0, ptr %c, align 8
   %1 = ptrtoint ptr %c to i64
-  %2 = load i64, ptr %a, align 4
+  %2 = load i64, ptr %a, align 8
   %3 = and i64 %1, %2
-  %4 = load i64, ptr %b, align 4
+  %4 = load i64, ptr %b, align 8
   %5 = and i64 %3, %4
-  store i64 %5, ptr %d, align 4
-  %6 = load i64, ptr %a, align 4
+  store i64 %5, ptr %d, align 8
+  %6 = load i64, ptr %a, align 8
   %7 = icmp ne i64 %6, 1311768465173141112
   br i1 %7, label %then, label %else
 
@@ -54,7 +56,7 @@ else:                                             ; preds = %entry
   br label %if.end
 
 if.end:                                           ; preds = %else, %then
-  %9 = load i64, ptr %b, align 4
+  %9 = load i64, ptr %b, align 8
   %10 = icmp ne i64 %9, -7296712171277459728
   br i1 %10, label %then1, label %else2
 
@@ -166,11 +168,11 @@ else23:                                           ; preds = %if.end21
   br label %if.end24
 
 if.end24:                                         ; preds = %else23, %then22
-  store i64 1234, ptr %callI, align 4
-  %36 = load i64, ptr %callI, align 4
+  store i64 1234, ptr %callI, align 8
+  %36 = load i64, ptr %callI, align 8
   %37 = trunc i64 %36 to i32
   call void @subFunc(i32 %37)
-  %38 = load i64, ptr %callI, align 4
+  %38 = load i64, ptr %callI, align 8
   %39 = trunc i64 %38 to i32
   %40 = icmp ne i32 %39, 1234
   br i1 %40, label %then25, label %else26
@@ -268,3 +270,8 @@ if.end42:                                         ; preds = %else41, %then40
   %66 = load i32, ptr %err, align 4
   ret i32 %66
 }
+
+!llvm.module.flags = !{!0, !1}
+
+!0 = !{i32 8, !"PIC Level", i32 2}
+!1 = !{i32 7, !"PIE Level", i32 2}

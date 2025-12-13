@@ -1,5 +1,7 @@
 ; ModuleID = 'lcc'
 source_filename = "lcc"
+target datalayout = "e-m:o-p270:32:32-p271:32:32-p272:64:64-i64:64-i128:128-n32:64-S128-Fn32"
+target triple = "arm64-apple-darwin25.6.0"
 
 @ga = global [4 x i32] [i32 1, i32 2, i32 3, i32 0]
 @gb = global [2 x i32] [i32 10, i32 20]
@@ -9,360 +11,363 @@ source_filename = "lcc"
 
 declare i32 @printf(ptr, ...)
 
-define i32 @main() !dbg !2 {
+define i32 @main() !dbg !4 {
 entry:
   %lc = alloca [2 x i32], align 4
-    #dbg_declare(ptr %lc, !7, !DIExpression(), !11)
+    #dbg_declare(ptr %lc, !9, !DIExpression(), !13)
   %lb = alloca [3 x i32], align 4
-    #dbg_declare(ptr %lb, !12, !DIExpression(), !16)
+    #dbg_declare(ptr %lb, !14, !DIExpression(), !18)
   %la = alloca [4 x i32], align 4
-    #dbg_declare(ptr %la, !17, !DIExpression(), !21)
+    #dbg_declare(ptr %la, !19, !DIExpression(), !23)
   %err = alloca i32, align 4
-    #dbg_declare(ptr %err, !22, !DIExpression(), !23)
-  store i32 0, ptr %err, align 4, !dbg !23
-  %0 = getelementptr [4 x i32], ptr %la, i32 0, i32 0, !dbg !21
-  store i32 1, ptr %0, align 4, !dbg !21
-  %1 = getelementptr [4 x i32], ptr %la, i32 0, i32 1, !dbg !21
-  store i32 2, ptr %1, align 4, !dbg !21
-  %2 = getelementptr [4 x i32], ptr %la, i32 0, i32 2, !dbg !21
-  store i32 3, ptr %2, align 4, !dbg !21
-  %3 = getelementptr [4 x i32], ptr %la, i32 0, i32 3, !dbg !21
-  store i32 0, ptr %3, align 4, !dbg !21
-  %4 = getelementptr [3 x i32], ptr %lb, i32 0, i32 0, !dbg !16
-  store i32 4, ptr %4, align 4, !dbg !16
-  %5 = getelementptr [3 x i32], ptr %lb, i32 0, i32 1, !dbg !16
-  store i32 5, ptr %5, align 4, !dbg !16
-  %6 = getelementptr [3 x i32], ptr %lb, i32 0, i32 2, !dbg !16
-  store i32 6, ptr %6, align 4, !dbg !16
-  %7 = getelementptr [2 x i32], ptr %lc, i32 0, i32 0, !dbg !11
-  store i32 0, ptr %7, align 4, !dbg !11
-  %8 = getelementptr [2 x i32], ptr %lc, i32 0, i32 1, !dbg !11
-  store i32 0, ptr %8, align 4, !dbg !11
-  %9 = getelementptr i32, ptr %la, i32 0, !dbg !24
-  %10 = load i32, ptr %9, align 4, !dbg !24
-  %11 = icmp ne i32 %10, 1, !dbg !24
-  br i1 %11, label %then, label %else, !dbg !24
+    #dbg_declare(ptr %err, !24, !DIExpression(), !25)
+  store i32 0, ptr %err, align 4, !dbg !25
+  %0 = getelementptr [4 x i32], ptr %la, i32 0, i32 0, !dbg !23
+  store i32 1, ptr %0, align 4, !dbg !23
+  %1 = getelementptr [4 x i32], ptr %la, i32 0, i32 1, !dbg !23
+  store i32 2, ptr %1, align 4, !dbg !23
+  %2 = getelementptr [4 x i32], ptr %la, i32 0, i32 2, !dbg !23
+  store i32 3, ptr %2, align 4, !dbg !23
+  %3 = getelementptr [4 x i32], ptr %la, i32 0, i32 3, !dbg !23
+  store i32 0, ptr %3, align 4, !dbg !23
+  %4 = getelementptr [3 x i32], ptr %lb, i32 0, i32 0, !dbg !18
+  store i32 4, ptr %4, align 4, !dbg !18
+  %5 = getelementptr [3 x i32], ptr %lb, i32 0, i32 1, !dbg !18
+  store i32 5, ptr %5, align 4, !dbg !18
+  %6 = getelementptr [3 x i32], ptr %lb, i32 0, i32 2, !dbg !18
+  store i32 6, ptr %6, align 4, !dbg !18
+  %7 = getelementptr [2 x i32], ptr %lc, i32 0, i32 0, !dbg !13
+  store i32 0, ptr %7, align 4, !dbg !13
+  %8 = getelementptr [2 x i32], ptr %lc, i32 0, i32 1, !dbg !13
+  store i32 0, ptr %8, align 4, !dbg !13
+  %9 = getelementptr i32, ptr %la, i32 0, !dbg !26
+  %10 = load i32, ptr %9, align 4, !dbg !26
+  %11 = icmp ne i32 %10, 1, !dbg !26
+  br i1 %11, label %then, label %else, !dbg !26
 
 then:                                             ; preds = %entry
-  store i32 1, ptr %err, align 4, !dbg !25
-  %12 = load i32, ptr %err, align 4, !dbg !25
-  br label %if.end, !dbg !25
+  store i32 1, ptr %err, align 4, !dbg !27
+  %12 = load i32, ptr %err, align 4, !dbg !27
+  br label %if.end, !dbg !27
 
 else:                                             ; preds = %entry
-  br label %if.end, !dbg !25
+  br label %if.end, !dbg !27
 
 if.end:                                           ; preds = %else, %then
-  %13 = getelementptr i32, ptr %la, i32 1, !dbg !26
-  %14 = load i32, ptr %13, align 4, !dbg !26
-  %15 = icmp ne i32 %14, 2, !dbg !26
-  br i1 %15, label %then1, label %else2, !dbg !26
+  %13 = getelementptr i32, ptr %la, i32 1, !dbg !28
+  %14 = load i32, ptr %13, align 4, !dbg !28
+  %15 = icmp ne i32 %14, 2, !dbg !28
+  br i1 %15, label %then1, label %else2, !dbg !28
 
 then1:                                            ; preds = %if.end
-  store i32 1, ptr %err, align 4, !dbg !27
-  %16 = load i32, ptr %err, align 4, !dbg !27
-  br label %if.end3, !dbg !27
+  store i32 1, ptr %err, align 4, !dbg !29
+  %16 = load i32, ptr %err, align 4, !dbg !29
+  br label %if.end3, !dbg !29
 
 else2:                                            ; preds = %if.end
-  br label %if.end3, !dbg !27
+  br label %if.end3, !dbg !29
 
 if.end3:                                          ; preds = %else2, %then1
-  %17 = getelementptr i32, ptr %la, i32 2, !dbg !28
-  %18 = load i32, ptr %17, align 4, !dbg !28
-  %19 = icmp ne i32 %18, 3, !dbg !28
-  br i1 %19, label %then4, label %else5, !dbg !28
+  %17 = getelementptr i32, ptr %la, i32 2, !dbg !30
+  %18 = load i32, ptr %17, align 4, !dbg !30
+  %19 = icmp ne i32 %18, 3, !dbg !30
+  br i1 %19, label %then4, label %else5, !dbg !30
 
 then4:                                            ; preds = %if.end3
-  store i32 1, ptr %err, align 4, !dbg !29
-  %20 = load i32, ptr %err, align 4, !dbg !29
-  br label %if.end6, !dbg !29
+  store i32 1, ptr %err, align 4, !dbg !31
+  %20 = load i32, ptr %err, align 4, !dbg !31
+  br label %if.end6, !dbg !31
 
 else5:                                            ; preds = %if.end3
-  br label %if.end6, !dbg !29
+  br label %if.end6, !dbg !31
 
 if.end6:                                          ; preds = %else5, %then4
-  %21 = getelementptr i32, ptr %la, i32 3, !dbg !30
-  %22 = load i32, ptr %21, align 4, !dbg !30
-  %23 = icmp ne i32 %22, 0, !dbg !30
-  br i1 %23, label %then7, label %else8, !dbg !30
+  %21 = getelementptr i32, ptr %la, i32 3, !dbg !32
+  %22 = load i32, ptr %21, align 4, !dbg !32
+  %23 = icmp ne i32 %22, 0, !dbg !32
+  br i1 %23, label %then7, label %else8, !dbg !32
 
 then7:                                            ; preds = %if.end6
-  store i32 1, ptr %err, align 4, !dbg !31
-  %24 = load i32, ptr %err, align 4, !dbg !31
-  br label %if.end9, !dbg !31
+  store i32 1, ptr %err, align 4, !dbg !33
+  %24 = load i32, ptr %err, align 4, !dbg !33
+  br label %if.end9, !dbg !33
 
 else8:                                            ; preds = %if.end6
-  br label %if.end9, !dbg !31
+  br label %if.end9, !dbg !33
 
 if.end9:                                          ; preds = %else8, %then7
-  %25 = getelementptr i32, ptr %lb, i32 0, !dbg !32
-  %26 = load i32, ptr %25, align 4, !dbg !32
-  %27 = icmp ne i32 %26, 4, !dbg !32
-  br i1 %27, label %then10, label %else11, !dbg !32
+  %25 = getelementptr i32, ptr %lb, i32 0, !dbg !34
+  %26 = load i32, ptr %25, align 4, !dbg !34
+  %27 = icmp ne i32 %26, 4, !dbg !34
+  br i1 %27, label %then10, label %else11, !dbg !34
 
 then10:                                           ; preds = %if.end9
-  store i32 1, ptr %err, align 4, !dbg !33
-  %28 = load i32, ptr %err, align 4, !dbg !33
-  br label %if.end12, !dbg !33
+  store i32 1, ptr %err, align 4, !dbg !35
+  %28 = load i32, ptr %err, align 4, !dbg !35
+  br label %if.end12, !dbg !35
 
 else11:                                           ; preds = %if.end9
-  br label %if.end12, !dbg !33
+  br label %if.end12, !dbg !35
 
 if.end12:                                         ; preds = %else11, %then10
-  %29 = getelementptr i32, ptr %lb, i32 1, !dbg !34
-  %30 = load i32, ptr %29, align 4, !dbg !34
-  %31 = icmp ne i32 %30, 5, !dbg !34
-  br i1 %31, label %then13, label %else14, !dbg !34
+  %29 = getelementptr i32, ptr %lb, i32 1, !dbg !36
+  %30 = load i32, ptr %29, align 4, !dbg !36
+  %31 = icmp ne i32 %30, 5, !dbg !36
+  br i1 %31, label %then13, label %else14, !dbg !36
 
 then13:                                           ; preds = %if.end12
-  store i32 1, ptr %err, align 4, !dbg !35
-  %32 = load i32, ptr %err, align 4, !dbg !35
-  br label %if.end15, !dbg !35
+  store i32 1, ptr %err, align 4, !dbg !37
+  %32 = load i32, ptr %err, align 4, !dbg !37
+  br label %if.end15, !dbg !37
 
 else14:                                           ; preds = %if.end12
-  br label %if.end15, !dbg !35
+  br label %if.end15, !dbg !37
 
 if.end15:                                         ; preds = %else14, %then13
-  %33 = getelementptr i32, ptr %lb, i32 2, !dbg !36
-  %34 = load i32, ptr %33, align 4, !dbg !36
-  %35 = icmp ne i32 %34, 6, !dbg !36
-  br i1 %35, label %then16, label %else17, !dbg !36
+  %33 = getelementptr i32, ptr %lb, i32 2, !dbg !38
+  %34 = load i32, ptr %33, align 4, !dbg !38
+  %35 = icmp ne i32 %34, 6, !dbg !38
+  br i1 %35, label %then16, label %else17, !dbg !38
 
 then16:                                           ; preds = %if.end15
-  store i32 1, ptr %err, align 4, !dbg !37
-  %36 = load i32, ptr %err, align 4, !dbg !37
-  br label %if.end18, !dbg !37
+  store i32 1, ptr %err, align 4, !dbg !39
+  %36 = load i32, ptr %err, align 4, !dbg !39
+  br label %if.end18, !dbg !39
 
 else17:                                           ; preds = %if.end15
-  br label %if.end18, !dbg !37
+  br label %if.end18, !dbg !39
 
 if.end18:                                         ; preds = %else17, %then16
-  %37 = getelementptr i32, ptr %lc, i32 0, !dbg !38
-  %38 = load i32, ptr %37, align 4, !dbg !38
-  %39 = icmp ne i32 %38, 0, !dbg !38
-  br i1 %39, label %then19, label %else20, !dbg !38
+  %37 = getelementptr i32, ptr %lc, i32 0, !dbg !40
+  %38 = load i32, ptr %37, align 4, !dbg !40
+  %39 = icmp ne i32 %38, 0, !dbg !40
+  br i1 %39, label %then19, label %else20, !dbg !40
 
 then19:                                           ; preds = %if.end18
-  store i32 1, ptr %err, align 4, !dbg !39
-  %40 = load i32, ptr %err, align 4, !dbg !39
-  br label %if.end21, !dbg !39
+  store i32 1, ptr %err, align 4, !dbg !41
+  %40 = load i32, ptr %err, align 4, !dbg !41
+  br label %if.end21, !dbg !41
 
 else20:                                           ; preds = %if.end18
-  br label %if.end21, !dbg !39
+  br label %if.end21, !dbg !41
 
 if.end21:                                         ; preds = %else20, %then19
-  %41 = getelementptr i32, ptr %lc, i32 1, !dbg !40
-  %42 = load i32, ptr %41, align 4, !dbg !40
-  %43 = icmp ne i32 %42, 0, !dbg !40
-  br i1 %43, label %then22, label %else23, !dbg !40
+  %41 = getelementptr i32, ptr %lc, i32 1, !dbg !42
+  %42 = load i32, ptr %41, align 4, !dbg !42
+  %43 = icmp ne i32 %42, 0, !dbg !42
+  br i1 %43, label %then22, label %else23, !dbg !42
 
 then22:                                           ; preds = %if.end21
-  store i32 1, ptr %err, align 4, !dbg !41
-  %44 = load i32, ptr %err, align 4, !dbg !41
-  br label %if.end24, !dbg !41
+  store i32 1, ptr %err, align 4, !dbg !43
+  %44 = load i32, ptr %err, align 4, !dbg !43
+  br label %if.end24, !dbg !43
 
 else23:                                           ; preds = %if.end21
-  br label %if.end24, !dbg !41
+  br label %if.end24, !dbg !43
 
 if.end24:                                         ; preds = %else23, %then22
-  %45 = load i32, ptr @ga, align 4, !dbg !42
-  %46 = icmp ne i32 %45, 1, !dbg !42
-  br i1 %46, label %then25, label %else26, !dbg !42
+  %45 = load i32, ptr @ga, align 4, !dbg !44
+  %46 = icmp ne i32 %45, 1, !dbg !44
+  br i1 %46, label %then25, label %else26, !dbg !44
 
 then25:                                           ; preds = %if.end24
-  store i32 1, ptr %err, align 4, !dbg !43
-  %47 = load i32, ptr %err, align 4, !dbg !43
-  br label %if.end27, !dbg !43
+  store i32 1, ptr %err, align 4, !dbg !45
+  %47 = load i32, ptr %err, align 4, !dbg !45
+  br label %if.end27, !dbg !45
 
 else26:                                           ; preds = %if.end24
-  br label %if.end27, !dbg !43
+  br label %if.end27, !dbg !45
 
 if.end27:                                         ; preds = %else26, %then25
-  %48 = load i32, ptr getelementptr (i32, ptr @ga, i32 1), align 4, !dbg !44
-  %49 = icmp ne i32 %48, 2, !dbg !44
-  br i1 %49, label %then28, label %else29, !dbg !44
+  %48 = load i32, ptr getelementptr (i32, ptr @ga, i32 1), align 4, !dbg !46
+  %49 = icmp ne i32 %48, 2, !dbg !46
+  br i1 %49, label %then28, label %else29, !dbg !46
 
 then28:                                           ; preds = %if.end27
-  store i32 1, ptr %err, align 4, !dbg !45
-  %50 = load i32, ptr %err, align 4, !dbg !45
-  br label %if.end30, !dbg !45
+  store i32 1, ptr %err, align 4, !dbg !47
+  %50 = load i32, ptr %err, align 4, !dbg !47
+  br label %if.end30, !dbg !47
 
 else29:                                           ; preds = %if.end27
-  br label %if.end30, !dbg !45
+  br label %if.end30, !dbg !47
 
 if.end30:                                         ; preds = %else29, %then28
-  %51 = load i32, ptr getelementptr (i32, ptr @ga, i32 2), align 4, !dbg !46
-  %52 = icmp ne i32 %51, 3, !dbg !46
-  br i1 %52, label %then31, label %else32, !dbg !46
+  %51 = load i32, ptr getelementptr (i32, ptr @ga, i32 2), align 4, !dbg !48
+  %52 = icmp ne i32 %51, 3, !dbg !48
+  br i1 %52, label %then31, label %else32, !dbg !48
 
 then31:                                           ; preds = %if.end30
-  store i32 1, ptr %err, align 4, !dbg !47
-  %53 = load i32, ptr %err, align 4, !dbg !47
-  br label %if.end33, !dbg !47
+  store i32 1, ptr %err, align 4, !dbg !49
+  %53 = load i32, ptr %err, align 4, !dbg !49
+  br label %if.end33, !dbg !49
 
 else32:                                           ; preds = %if.end30
-  br label %if.end33, !dbg !47
+  br label %if.end33, !dbg !49
 
 if.end33:                                         ; preds = %else32, %then31
-  %54 = load i32, ptr getelementptr (i32, ptr @ga, i32 3), align 4, !dbg !48
-  %55 = icmp ne i32 %54, 0, !dbg !48
-  br i1 %55, label %then34, label %else35, !dbg !48
+  %54 = load i32, ptr getelementptr (i32, ptr @ga, i32 3), align 4, !dbg !50
+  %55 = icmp ne i32 %54, 0, !dbg !50
+  br i1 %55, label %then34, label %else35, !dbg !50
 
 then34:                                           ; preds = %if.end33
-  store i32 1, ptr %err, align 4, !dbg !49
-  %56 = load i32, ptr %err, align 4, !dbg !49
-  br label %if.end36, !dbg !49
+  store i32 1, ptr %err, align 4, !dbg !51
+  %56 = load i32, ptr %err, align 4, !dbg !51
+  br label %if.end36, !dbg !51
 
 else35:                                           ; preds = %if.end33
-  br label %if.end36, !dbg !49
+  br label %if.end36, !dbg !51
 
 if.end36:                                         ; preds = %else35, %then34
-  %57 = load i32, ptr @gb, align 4, !dbg !50
-  %58 = icmp ne i32 %57, 10, !dbg !50
-  br i1 %58, label %then37, label %else38, !dbg !50
+  %57 = load i32, ptr @gb, align 4, !dbg !52
+  %58 = icmp ne i32 %57, 10, !dbg !52
+  br i1 %58, label %then37, label %else38, !dbg !52
 
 then37:                                           ; preds = %if.end36
-  store i32 1, ptr %err, align 4, !dbg !51
-  %59 = load i32, ptr %err, align 4, !dbg !51
-  br label %if.end39, !dbg !51
+  store i32 1, ptr %err, align 4, !dbg !53
+  %59 = load i32, ptr %err, align 4, !dbg !53
+  br label %if.end39, !dbg !53
 
 else38:                                           ; preds = %if.end36
-  br label %if.end39, !dbg !51
+  br label %if.end39, !dbg !53
 
 if.end39:                                         ; preds = %else38, %then37
-  %60 = load i32, ptr getelementptr (i32, ptr @gb, i32 1), align 4, !dbg !52
-  %61 = icmp ne i32 %60, 20, !dbg !52
-  br i1 %61, label %then40, label %else41, !dbg !52
+  %60 = load i32, ptr getelementptr (i32, ptr @gb, i32 1), align 4, !dbg !54
+  %61 = icmp ne i32 %60, 20, !dbg !54
+  br i1 %61, label %then40, label %else41, !dbg !54
 
 then40:                                           ; preds = %if.end39
-  store i32 1, ptr %err, align 4, !dbg !53
-  %62 = load i32, ptr %err, align 4, !dbg !53
-  br label %if.end42, !dbg !53
+  store i32 1, ptr %err, align 4, !dbg !55
+  %62 = load i32, ptr %err, align 4, !dbg !55
+  br label %if.end42, !dbg !55
 
 else41:                                           ; preds = %if.end39
-  br label %if.end42, !dbg !53
+  br label %if.end42, !dbg !55
 
 if.end42:                                         ; preds = %else41, %then40
-  %63 = load i32, ptr @gc, align 4, !dbg !54
-  %64 = icmp ne i32 %63, 0, !dbg !54
-  br i1 %64, label %then43, label %else44, !dbg !54
+  %63 = load i32, ptr @gc, align 4, !dbg !56
+  %64 = icmp ne i32 %63, 0, !dbg !56
+  br i1 %64, label %then43, label %else44, !dbg !56
 
 then43:                                           ; preds = %if.end42
-  store i32 1, ptr %err, align 4, !dbg !55
-  %65 = load i32, ptr %err, align 4, !dbg !55
-  br label %if.end45, !dbg !55
+  store i32 1, ptr %err, align 4, !dbg !57
+  %65 = load i32, ptr %err, align 4, !dbg !57
+  br label %if.end45, !dbg !57
 
 else44:                                           ; preds = %if.end42
-  br label %if.end45, !dbg !55
+  br label %if.end45, !dbg !57
 
 if.end45:                                         ; preds = %else44, %then43
-  %66 = load i32, ptr getelementptr (i32, ptr @gc, i32 1), align 4, !dbg !56
-  %67 = icmp ne i32 %66, 0, !dbg !56
-  br i1 %67, label %then46, label %else47, !dbg !56
+  %66 = load i32, ptr getelementptr (i32, ptr @gc, i32 1), align 4, !dbg !58
+  %67 = icmp ne i32 %66, 0, !dbg !58
+  br i1 %67, label %then46, label %else47, !dbg !58
 
 then46:                                           ; preds = %if.end45
-  store i32 1, ptr %err, align 4, !dbg !57
-  %68 = load i32, ptr %err, align 4, !dbg !57
-  br label %if.end48, !dbg !57
+  store i32 1, ptr %err, align 4, !dbg !59
+  %68 = load i32, ptr %err, align 4, !dbg !59
+  br label %if.end48, !dbg !59
 
 else47:                                           ; preds = %if.end45
-  br label %if.end48, !dbg !57
+  br label %if.end48, !dbg !59
 
 if.end48:                                         ; preds = %else47, %then46
-  %69 = load i32, ptr getelementptr (i32, ptr @gc, i32 2), align 4, !dbg !58
-  %70 = icmp ne i32 %69, 0, !dbg !58
-  br i1 %70, label %then49, label %else50, !dbg !58
+  %69 = load i32, ptr getelementptr (i32, ptr @gc, i32 2), align 4, !dbg !60
+  %70 = icmp ne i32 %69, 0, !dbg !60
+  br i1 %70, label %then49, label %else50, !dbg !60
 
 then49:                                           ; preds = %if.end48
-  store i32 1, ptr %err, align 4, !dbg !59
-  %71 = load i32, ptr %err, align 4, !dbg !59
-  br label %if.end51, !dbg !59
+  store i32 1, ptr %err, align 4, !dbg !61
+  %71 = load i32, ptr %err, align 4, !dbg !61
+  br label %if.end51, !dbg !61
 
 else50:                                           ; preds = %if.end48
-  br label %if.end51, !dbg !59
+  br label %if.end51, !dbg !61
 
 if.end51:                                         ; preds = %else50, %then49
-  %72 = load i32, ptr %err, align 4, !dbg !60
-  %73 = icmp eq i32 %72, 0, !dbg !60
-  br i1 %73, label %then52, label %else53, !dbg !60
+  %72 = load i32, ptr %err, align 4, !dbg !62
+  %73 = icmp eq i32 %72, 0, !dbg !62
+  br i1 %73, label %then52, label %else53, !dbg !62
 
 then52:                                           ; preds = %if.end51
-  %74 = call i32 (ptr, ...) @printf(ptr @0), !dbg !61
-  br label %if.end54, !dbg !61
-
-else53:                                           ; preds = %if.end51
-  %75 = call i32 (ptr, ...) @printf(ptr @1), !dbg !63
+  %74 = call i32 (ptr, ...) @printf(ptr @0), !dbg !63
   br label %if.end54, !dbg !63
 
+else53:                                           ; preds = %if.end51
+  %75 = call i32 (ptr, ...) @printf(ptr @1), !dbg !65
+  br label %if.end54, !dbg !65
+
 if.end54:                                         ; preds = %else53, %then52
-  %76 = load i32, ptr %err, align 4, !dbg !65
-  ret i32 %76, !dbg !65
+  %76 = load i32, ptr %err, align 4, !dbg !67
+  ret i32 %76, !dbg !67
 }
 
-!llvm.dbg.cu = !{!0}
+!llvm.module.flags = !{!0, !1}
+!llvm.dbg.cu = !{!2}
 
-!0 = distinct !DICompileUnit(language: DW_LANG_C, file: !1, producer: "lcc", isOptimized: false, runtimeVersion: 0, emissionKind: FullDebug)
-!1 = !DIFile(filename: "31.array_1d_brace_init.c", directory: "../tests")
-!2 = distinct !DISubprogram(name: "main", linkageName: "main", scope: null, file: !1, line: 12, type: !3, scopeLine: 12, spFlags: DISPFlagDefinition, unit: !0, retainedNodes: !6)
-!3 = !DISubroutineType(types: !4)
-!4 = !{!5}
-!5 = !DIBasicType(name: "int", size: 32, encoding: DW_ATE_signed)
-!6 = !{}
-!7 = !DILocalVariable(name: "lc", scope: !2, file: !1, line: 16, type: !8)
-!8 = !DICompositeType(tag: DW_TAG_array_type, baseType: !5, size: 64, align: 32, elements: !9)
-!9 = !{!10}
-!10 = !DISubrange(count: 2, lowerBound: 0)
-!11 = !DILocation(line: 16, column: 3, scope: !2)
-!12 = !DILocalVariable(name: "lb", scope: !2, file: !1, line: 15, type: !13)
-!13 = !DICompositeType(tag: DW_TAG_array_type, baseType: !5, size: 96, align: 32, elements: !14)
-!14 = !{!15}
-!15 = !DISubrange(count: 3, lowerBound: 0)
-!16 = !DILocation(line: 15, column: 3, scope: !2)
-!17 = !DILocalVariable(name: "la", scope: !2, file: !1, line: 14, type: !18)
-!18 = !DICompositeType(tag: DW_TAG_array_type, baseType: !5, size: 128, align: 32, elements: !19)
-!19 = !{!20}
-!20 = !DISubrange(count: 4, lowerBound: 0)
-!21 = !DILocation(line: 14, column: 3, scope: !2)
-!22 = !DILocalVariable(name: "err", scope: !2, file: !1, line: 13, type: !5)
-!23 = !DILocation(line: 13, column: 3, scope: !2)
-!24 = !DILocation(line: 18, column: 3, scope: !2)
-!25 = !DILocation(line: 18, column: 19, scope: !2)
-!26 = !DILocation(line: 19, column: 3, scope: !2)
-!27 = !DILocation(line: 19, column: 19, scope: !2)
-!28 = !DILocation(line: 20, column: 3, scope: !2)
-!29 = !DILocation(line: 20, column: 19, scope: !2)
-!30 = !DILocation(line: 21, column: 3, scope: !2)
-!31 = !DILocation(line: 21, column: 19, scope: !2)
-!32 = !DILocation(line: 23, column: 3, scope: !2)
-!33 = !DILocation(line: 23, column: 19, scope: !2)
-!34 = !DILocation(line: 24, column: 3, scope: !2)
-!35 = !DILocation(line: 24, column: 19, scope: !2)
-!36 = !DILocation(line: 25, column: 3, scope: !2)
-!37 = !DILocation(line: 25, column: 19, scope: !2)
-!38 = !DILocation(line: 27, column: 3, scope: !2)
-!39 = !DILocation(line: 27, column: 19, scope: !2)
-!40 = !DILocation(line: 28, column: 3, scope: !2)
-!41 = !DILocation(line: 28, column: 19, scope: !2)
-!42 = !DILocation(line: 30, column: 3, scope: !2)
-!43 = !DILocation(line: 30, column: 19, scope: !2)
-!44 = !DILocation(line: 31, column: 3, scope: !2)
-!45 = !DILocation(line: 31, column: 19, scope: !2)
-!46 = !DILocation(line: 32, column: 3, scope: !2)
-!47 = !DILocation(line: 32, column: 19, scope: !2)
-!48 = !DILocation(line: 33, column: 3, scope: !2)
-!49 = !DILocation(line: 33, column: 19, scope: !2)
-!50 = !DILocation(line: 35, column: 3, scope: !2)
-!51 = !DILocation(line: 35, column: 20, scope: !2)
-!52 = !DILocation(line: 36, column: 3, scope: !2)
-!53 = !DILocation(line: 36, column: 20, scope: !2)
-!54 = !DILocation(line: 38, column: 3, scope: !2)
-!55 = !DILocation(line: 38, column: 19, scope: !2)
-!56 = !DILocation(line: 39, column: 3, scope: !2)
-!57 = !DILocation(line: 39, column: 19, scope: !2)
-!58 = !DILocation(line: 40, column: 3, scope: !2)
-!59 = !DILocation(line: 40, column: 19, scope: !2)
-!60 = !DILocation(line: 42, column: 3, scope: !2)
-!61 = !DILocation(line: 43, column: 5, scope: !62)
-!62 = distinct !DILexicalBlock(scope: !2, file: !1, line: 42, column: 17)
-!63 = !DILocation(line: 45, column: 5, scope: !64)
-!64 = distinct !DILexicalBlock(scope: !2, file: !1, line: 44, column: 10)
-!65 = !DILocation(line: 47, column: 3, scope: !2)
+!0 = !{i32 8, !"PIC Level", i32 2}
+!1 = !{i32 7, !"PIE Level", i32 2}
+!2 = distinct !DICompileUnit(language: DW_LANG_C, file: !3, producer: "lcc", isOptimized: false, runtimeVersion: 0, emissionKind: FullDebug)
+!3 = !DIFile(filename: "31.array_1d_brace_init.c", directory: "../tests")
+!4 = distinct !DISubprogram(name: "main", linkageName: "main", scope: null, file: !3, line: 12, type: !5, scopeLine: 12, spFlags: DISPFlagDefinition, unit: !2, retainedNodes: !8)
+!5 = !DISubroutineType(types: !6)
+!6 = !{!7}
+!7 = !DIBasicType(name: "int", size: 32, encoding: DW_ATE_signed)
+!8 = !{}
+!9 = !DILocalVariable(name: "lc", scope: !4, file: !3, line: 16, type: !10)
+!10 = !DICompositeType(tag: DW_TAG_array_type, baseType: !7, size: 64, align: 32, elements: !11)
+!11 = !{!12}
+!12 = !DISubrange(count: 2, lowerBound: 0)
+!13 = !DILocation(line: 16, column: 3, scope: !4)
+!14 = !DILocalVariable(name: "lb", scope: !4, file: !3, line: 15, type: !15)
+!15 = !DICompositeType(tag: DW_TAG_array_type, baseType: !7, size: 96, align: 32, elements: !16)
+!16 = !{!17}
+!17 = !DISubrange(count: 3, lowerBound: 0)
+!18 = !DILocation(line: 15, column: 3, scope: !4)
+!19 = !DILocalVariable(name: "la", scope: !4, file: !3, line: 14, type: !20)
+!20 = !DICompositeType(tag: DW_TAG_array_type, baseType: !7, size: 128, align: 32, elements: !21)
+!21 = !{!22}
+!22 = !DISubrange(count: 4, lowerBound: 0)
+!23 = !DILocation(line: 14, column: 3, scope: !4)
+!24 = !DILocalVariable(name: "err", scope: !4, file: !3, line: 13, type: !7)
+!25 = !DILocation(line: 13, column: 3, scope: !4)
+!26 = !DILocation(line: 18, column: 3, scope: !4)
+!27 = !DILocation(line: 18, column: 19, scope: !4)
+!28 = !DILocation(line: 19, column: 3, scope: !4)
+!29 = !DILocation(line: 19, column: 19, scope: !4)
+!30 = !DILocation(line: 20, column: 3, scope: !4)
+!31 = !DILocation(line: 20, column: 19, scope: !4)
+!32 = !DILocation(line: 21, column: 3, scope: !4)
+!33 = !DILocation(line: 21, column: 19, scope: !4)
+!34 = !DILocation(line: 23, column: 3, scope: !4)
+!35 = !DILocation(line: 23, column: 19, scope: !4)
+!36 = !DILocation(line: 24, column: 3, scope: !4)
+!37 = !DILocation(line: 24, column: 19, scope: !4)
+!38 = !DILocation(line: 25, column: 3, scope: !4)
+!39 = !DILocation(line: 25, column: 19, scope: !4)
+!40 = !DILocation(line: 27, column: 3, scope: !4)
+!41 = !DILocation(line: 27, column: 19, scope: !4)
+!42 = !DILocation(line: 28, column: 3, scope: !4)
+!43 = !DILocation(line: 28, column: 19, scope: !4)
+!44 = !DILocation(line: 30, column: 3, scope: !4)
+!45 = !DILocation(line: 30, column: 19, scope: !4)
+!46 = !DILocation(line: 31, column: 3, scope: !4)
+!47 = !DILocation(line: 31, column: 19, scope: !4)
+!48 = !DILocation(line: 32, column: 3, scope: !4)
+!49 = !DILocation(line: 32, column: 19, scope: !4)
+!50 = !DILocation(line: 33, column: 3, scope: !4)
+!51 = !DILocation(line: 33, column: 19, scope: !4)
+!52 = !DILocation(line: 35, column: 3, scope: !4)
+!53 = !DILocation(line: 35, column: 20, scope: !4)
+!54 = !DILocation(line: 36, column: 3, scope: !4)
+!55 = !DILocation(line: 36, column: 20, scope: !4)
+!56 = !DILocation(line: 38, column: 3, scope: !4)
+!57 = !DILocation(line: 38, column: 19, scope: !4)
+!58 = !DILocation(line: 39, column: 3, scope: !4)
+!59 = !DILocation(line: 39, column: 19, scope: !4)
+!60 = !DILocation(line: 40, column: 3, scope: !4)
+!61 = !DILocation(line: 40, column: 19, scope: !4)
+!62 = !DILocation(line: 42, column: 3, scope: !4)
+!63 = !DILocation(line: 43, column: 5, scope: !64)
+!64 = distinct !DILexicalBlock(scope: !4, file: !3, line: 42, column: 17)
+!65 = !DILocation(line: 45, column: 5, scope: !66)
+!66 = distinct !DILexicalBlock(scope: !4, file: !3, line: 44, column: 10)
+!67 = !DILocation(line: 47, column: 3, scope: !4)

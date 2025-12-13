@@ -83,25 +83,25 @@ if.end9:                                          ; preds = %else8, %then7
   ret i32 %20, !dbg !31
 }
 
-!llvm.dbg.cu = !{!0}
-!llvm.module.flags = !{!2, !3}
+!llvm.module.flags = !{!0, !1}
+!llvm.dbg.cu = !{!2}
 
-!0 = distinct !DICompileUnit(language: DW_LANG_C, file: !1, producer: "lcc", isOptimized: false, runtimeVersion: 0, emissionKind: FullDebug)
-!1 = !DIFile(filename: "30.array_mixed_decl.c", directory: "../tests")
-!2 = !{i32 8, !"PIC Level", i32 2}
-!3 = !{i32 7, !"PIE Level", i32 2}
-!4 = distinct !DISubprogram(name: "main", linkageName: "main", scope: null, file: !1, line: 6, type: !5, scopeLine: 6, spFlags: DISPFlagDefinition, unit: !0, retainedNodes: !8)
+!0 = !{i32 8, !"PIC Level", i32 2}
+!1 = !{i32 7, !"PIE Level", i32 2}
+!2 = distinct !DICompileUnit(language: DW_LANG_C, file: !3, producer: "lcc", isOptimized: false, runtimeVersion: 0, emissionKind: FullDebug)
+!3 = !DIFile(filename: "30.array_mixed_decl.c", directory: "../tests")
+!4 = distinct !DISubprogram(name: "main", linkageName: "main", scope: null, file: !3, line: 6, type: !5, scopeLine: 6, spFlags: DISPFlagDefinition, unit: !2, retainedNodes: !8)
 !5 = !DISubroutineType(types: !6)
 !6 = !{!7}
 !7 = !DIBasicType(name: "int", size: 32, encoding: DW_ATE_signed)
 !8 = !{}
-!9 = !DILocalVariable(name: "b", scope: !4, file: !1, line: 8, type: !7)
+!9 = !DILocalVariable(name: "b", scope: !4, file: !3, line: 8, type: !7)
 !10 = !DILocation(line: 8, column: 3, scope: !4)
-!11 = !DILocalVariable(name: "a", scope: !4, file: !1, line: 8, type: !12)
+!11 = !DILocalVariable(name: "a", scope: !4, file: !3, line: 8, type: !12)
 !12 = !DICompositeType(tag: DW_TAG_array_type, baseType: !7, size: 128, align: 32, elements: !13)
 !13 = !{!14}
 !14 = !DISubrange(count: 4, lowerBound: 0)
-!15 = !DILocalVariable(name: "err", scope: !4, file: !1, line: 7, type: !7)
+!15 = !DILocalVariable(name: "err", scope: !4, file: !3, line: 7, type: !7)
 !16 = !DILocation(line: 7, column: 3, scope: !4)
 !17 = !DILocation(line: 9, column: 3, scope: !4)
 !18 = !DILocation(line: 10, column: 3, scope: !4)
@@ -114,7 +114,7 @@ if.end9:                                          ; preds = %else8, %then7
 !25 = !DILocation(line: 15, column: 16, scope: !4)
 !26 = !DILocation(line: 17, column: 3, scope: !4)
 !27 = !DILocation(line: 18, column: 5, scope: !28)
-!28 = distinct !DILexicalBlock(scope: !4, file: !1, line: 17, column: 17)
+!28 = distinct !DILexicalBlock(scope: !4, file: !3, line: 17, column: 17)
 !29 = !DILocation(line: 20, column: 5, scope: !30)
-!30 = distinct !DILexicalBlock(scope: !4, file: !1, line: 19, column: 10)
+!30 = distinct !DILexicalBlock(scope: !4, file: !3, line: 19, column: 10)
 !31 = !DILocation(line: 22, column: 3, scope: !4)

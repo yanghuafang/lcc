@@ -41,25 +41,25 @@ if.end3:                                          ; preds = %else2, %then1
   ret i32 %5, !dbg !18
 }
 
-!llvm.dbg.cu = !{!0}
-!llvm.module.flags = !{!2, !3}
+!llvm.module.flags = !{!0, !1}
+!llvm.dbg.cu = !{!2}
 
-!0 = distinct !DICompileUnit(language: DW_LANG_C, file: !1, producer: "lcc", isOptimized: false, runtimeVersion: 0, emissionKind: FullDebug)
-!1 = !DIFile(filename: "0.hello_world.c", directory: "../tests")
-!2 = !{i32 8, !"PIC Level", i32 2}
-!3 = !{i32 7, !"PIE Level", i32 2}
-!4 = distinct !DISubprogram(name: "main", linkageName: "main", scope: null, file: !1, line: 7, type: !5, scopeLine: 7, spFlags: DISPFlagDefinition, unit: !0, retainedNodes: !8)
+!0 = !{i32 8, !"PIC Level", i32 2}
+!1 = !{i32 7, !"PIE Level", i32 2}
+!2 = distinct !DICompileUnit(language: DW_LANG_C, file: !3, producer: "lcc", isOptimized: false, runtimeVersion: 0, emissionKind: FullDebug)
+!3 = !DIFile(filename: "0.hello_world.c", directory: "../tests")
+!4 = distinct !DISubprogram(name: "main", linkageName: "main", scope: null, file: !3, line: 7, type: !5, scopeLine: 7, spFlags: DISPFlagDefinition, unit: !2, retainedNodes: !8)
 !5 = !DISubroutineType(types: !6)
 !6 = !{!7}
 !7 = !DIBasicType(name: "int", size: 32, encoding: DW_ATE_signed)
 !8 = !{}
-!9 = !DILocalVariable(name: "err", scope: !4, file: !1, line: 8, type: !7)
+!9 = !DILocalVariable(name: "err", scope: !4, file: !3, line: 8, type: !7)
 !10 = !DILocation(line: 8, column: 3, scope: !4)
 !11 = !DILocation(line: 9, column: 3, scope: !4)
 !12 = !DILocation(line: 9, column: 15, scope: !4)
 !13 = !DILocation(line: 10, column: 3, scope: !4)
 !14 = !DILocation(line: 11, column: 5, scope: !15)
-!15 = distinct !DILexicalBlock(scope: !4, file: !1, line: 10, column: 17)
+!15 = distinct !DILexicalBlock(scope: !4, file: !3, line: 10, column: 17)
 !16 = !DILocation(line: 13, column: 5, scope: !17)
-!17 = distinct !DILexicalBlock(scope: !4, file: !1, line: 12, column: 10)
+!17 = distinct !DILexicalBlock(scope: !4, file: !3, line: 12, column: 10)
 !18 = !DILocation(line: 15, column: 3, scope: !4)

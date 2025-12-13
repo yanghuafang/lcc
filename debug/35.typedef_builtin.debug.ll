@@ -16,11 +16,11 @@ entry:
     #dbg_declare(ptr %step, !14, !DIExpression(), !13)
   %nbytes = alloca i64, align 8
     #dbg_declare(ptr %nbytes, !15, !DIExpression(), !13)
-  store i64 %0, ptr %nbytes, align 4, !dbg !13
+  store i64 %0, ptr %nbytes, align 8, !dbg !13
   store i32 %1, ptr %step, align 4, !dbg !13
   store ptr %2, ptr %p, align 8, !dbg !13
   %3 = load ptr, ptr %p, align 8, !dbg !16
-  %4 = load i64, ptr %nbytes, align 4, !dbg !16
+  %4 = load i64, ptr %nbytes, align 8, !dbg !16
   %5 = load i32, ptr %step, align 4, !dbg !16
   %6 = zext i32 %5 to i64, !dbg !16
   %7 = add i64 %4, %6, !dbg !16
@@ -108,14 +108,14 @@ if.end9:                                          ; preds = %else8, %then7
   ret i32 %17, !dbg !42
 }
 
-!llvm.dbg.cu = !{!0}
-!llvm.module.flags = !{!2, !3}
+!llvm.module.flags = !{!0, !1}
+!llvm.dbg.cu = !{!2}
 
-!0 = distinct !DICompileUnit(language: DW_LANG_C, file: !1, producer: "lcc", isOptimized: false, runtimeVersion: 0, emissionKind: FullDebug)
-!1 = !DIFile(filename: "35.typedef_builtin.c", directory: "../tests")
-!2 = !{i32 8, !"PIC Level", i32 2}
-!3 = !{i32 7, !"PIE Level", i32 2}
-!4 = distinct !DISubprogram(name: "helper", linkageName: "helper", scope: null, file: !1, line: 10, type: !5, scopeLine: 10, spFlags: DISPFlagDefinition, unit: !0, retainedNodes: !11)
+!0 = !{i32 8, !"PIC Level", i32 2}
+!1 = !{i32 7, !"PIE Level", i32 2}
+!2 = distinct !DICompileUnit(language: DW_LANG_C, file: !3, producer: "lcc", isOptimized: false, runtimeVersion: 0, emissionKind: FullDebug)
+!3 = !DIFile(filename: "35.typedef_builtin.c", directory: "../tests")
+!4 = distinct !DISubprogram(name: "helper", linkageName: "helper", scope: null, file: !3, line: 10, type: !5, scopeLine: 10, spFlags: DISPFlagDefinition, unit: !2, retainedNodes: !11)
 !5 = !DISubroutineType(types: !6)
 !6 = !{!7, !8, !9, !10}
 !7 = !DIBasicType(name: "void", encoding: DW_ATE_address)
@@ -123,23 +123,23 @@ if.end9:                                          ; preds = %else8, %then7
 !9 = !DIBasicType(name: "int", size: 32, encoding: DW_ATE_signed)
 !10 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !7, size: 64)
 !11 = !{}
-!12 = !DILocalVariable(name: "p", arg: 3, scope: !4, file: !1, line: 10, type: !10)
+!12 = !DILocalVariable(name: "p", arg: 3, scope: !4, file: !3, line: 10, type: !10)
 !13 = !DILocation(line: 10, column: 6, scope: !4)
-!14 = !DILocalVariable(name: "step", arg: 2, scope: !4, file: !1, line: 10, type: !9)
-!15 = !DILocalVariable(name: "nbytes", arg: 1, scope: !4, file: !1, line: 10, type: !8)
+!14 = !DILocalVariable(name: "step", arg: 2, scope: !4, file: !3, line: 10, type: !9)
+!15 = !DILocalVariable(name: "nbytes", arg: 1, scope: !4, file: !3, line: 10, type: !8)
 !16 = !DILocation(line: 11, column: 3, scope: !4)
-!17 = distinct !DISubprogram(name: "main", linkageName: "main", scope: null, file: !1, line: 14, type: !18, scopeLine: 14, spFlags: DISPFlagDefinition, unit: !0, retainedNodes: !11)
+!17 = distinct !DISubprogram(name: "main", linkageName: "main", scope: null, file: !3, line: 14, type: !18, scopeLine: 14, spFlags: DISPFlagDefinition, unit: !2, retainedNodes: !11)
 !18 = !DISubroutineType(types: !19)
 !19 = !{!9}
-!20 = !DILocalVariable(name: "result", scope: !17, file: !1, line: 24, type: !9)
+!20 = !DILocalVariable(name: "result", scope: !17, file: !3, line: 24, type: !9)
 !21 = !DILocation(line: 24, column: 3, scope: !17)
-!22 = !DILocalVariable(name: "p", scope: !17, file: !1, line: 18, type: !10)
+!22 = !DILocalVariable(name: "p", scope: !17, file: !3, line: 18, type: !10)
 !23 = !DILocation(line: 18, column: 3, scope: !17)
-!24 = !DILocalVariable(name: "x", scope: !17, file: !1, line: 17, type: !9)
+!24 = !DILocalVariable(name: "x", scope: !17, file: !3, line: 17, type: !9)
 !25 = !DILocation(line: 17, column: 3, scope: !17)
-!26 = !DILocalVariable(name: "c", scope: !17, file: !1, line: 16, type: !9)
+!26 = !DILocalVariable(name: "c", scope: !17, file: !3, line: 16, type: !9)
 !27 = !DILocation(line: 16, column: 3, scope: !17)
-!28 = !DILocalVariable(name: "err", scope: !17, file: !1, line: 15, type: !9)
+!28 = !DILocalVariable(name: "err", scope: !17, file: !3, line: 15, type: !9)
 !29 = !DILocation(line: 15, column: 3, scope: !17)
 !30 = !DILocation(line: 20, column: 3, scope: !17)
 !31 = !DILocation(line: 22, column: 3, scope: !17)
@@ -150,7 +150,7 @@ if.end9:                                          ; preds = %else8, %then7
 !36 = !DILocation(line: 25, column: 21, scope: !17)
 !37 = !DILocation(line: 27, column: 3, scope: !17)
 !38 = !DILocation(line: 28, column: 5, scope: !39)
-!39 = distinct !DILexicalBlock(scope: !17, file: !1, line: 27, column: 17)
+!39 = distinct !DILexicalBlock(scope: !17, file: !3, line: 27, column: 17)
 !40 = !DILocation(line: 30, column: 5, scope: !41)
-!41 = distinct !DILexicalBlock(scope: !17, file: !1, line: 29, column: 10)
+!41 = distinct !DILexicalBlock(scope: !17, file: !3, line: 29, column: 10)
 !42 = !DILocation(line: 32, column: 3, scope: !17)

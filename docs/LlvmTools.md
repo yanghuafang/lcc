@@ -208,7 +208,7 @@ From `lcc/scripts`:
 ../../lcc-build/lcc -O2 -i ../tests/25.quick_sort.c -o /tmp/q2.o -l-post-opt /tmp/q.o2.ll
 ```
 
-Typical line counts: pre ≈ 294, **peephole ≈ 146**, full **O2 ≈ 174**. The preset removes most stack `alloca`s (mem2reg) and simplifies `@swap` / `@partition`, but does not run loop opts or inlining — so peephole IR can be **smaller** than full O2 on some tests while still doing less work.
+Typical line counts: pre ≈ 301, **peephole ≈ 153**, full **O2 ≈ 181**. The preset removes most stack `alloca`s (mem2reg) and simplifies `@swap` / `@partition`, but does not run loop opts or inlining — so peephole IR can be **smaller** than full O2 on some tests while still doing less work.
 
 Verify SSA on `@partition`: peephole post-opt IR should show `phi` nodes for loop indices (same family of change as M9, but without later GVN/licm).
 
@@ -251,7 +251,7 @@ Generate fresh IR:
   -l-pre-opt /tmp/q.pre.ll -l-post-opt /tmp/q.post.ll
 ```
 
-Line counts on a typical host: pre ≈ 294, post ≈ 174 — matching the committed `debug/25.quick_sort.release.{pre,post}.ll` used for the excerpts below (the final `-l` file adds target metadata).
+Line counts on a typical host: pre ≈ 301, post ≈ 181 — matching the committed `debug/25.quick_sort.release.{pre,post}.ll` used for the excerpts below (the final `-l` file adds target metadata).
 
 #### 1. SSA formation (`mem2reg`) — `@partition`
 

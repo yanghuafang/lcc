@@ -1,5 +1,7 @@
 ; ModuleID = 'lcc'
 source_filename = "lcc"
+target datalayout = "e-m:o-p270:32:32-p271:32:32-p272:64:64-i64:64-i128:128-n32:64-S128-Fn32"
+target triple = "arm64-apple-darwin25.6.0"
 
 @0 = private unnamed_addr constant [24 x i8] c"1.builtin_types.c PASS\0A\00", align 1
 @1 = private unnamed_addr constant [24 x i8] c"1.builtin_types.c FAIL\0A\00", align 1
@@ -24,10 +26,10 @@ entry:
   store i8 65, ptr %ch, align 1
   store i16 -1024, ptr %sh, align 2
   store i32 -12345678, ptr %in, align 4
-  store i64 -1234567890, ptr %ln, align 4
+  store i64 -1234567890, ptr %ln, align 8
   store i8 -6, ptr %uch, align 1
   store i32 180150000, ptr %uint, align 4
-  store i64 9876043210, ptr %uln, align 4
+  store i64 9876043210, ptr %uln, align 8
   store float 0x400921FB40000000, ptr %fl, align 4
   store double 0x400921FB54442D11, ptr %db, align 8
   store i1 true, ptr %bt, align 1
@@ -73,7 +75,7 @@ else5:                                            ; preds = %if.end3
   br label %if.end6
 
 if.end6:                                          ; preds = %else5, %then4
-  %11 = load i64, ptr %ln, align 4
+  %11 = load i64, ptr %ln, align 8
   %12 = icmp ne i64 %11, -1234567890
   br i1 %12, label %then7, label %else8
 
@@ -113,7 +115,7 @@ else14:                                           ; preds = %if.end12
   br label %if.end15
 
 if.end15:                                         ; preds = %else14, %then13
-  %21 = load i64, ptr %uln, align 4
+  %21 = load i64, ptr %uln, align 8
   %22 = icmp ne i64 %21, 9876043210
   br i1 %22, label %then16, label %else17
 
@@ -170,3 +172,8 @@ if.end27:                                         ; preds = %else26, %then25
   %36 = load i32, ptr %err, align 4
   ret i32 %36
 }
+
+!llvm.module.flags = !{!0, !1}
+
+!0 = !{i32 8, !"PIC Level", i32 2}
+!1 = !{i32 7, !"PIE Level", i32 2}
