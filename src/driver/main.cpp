@@ -6,6 +6,7 @@
 #include "backend/TargetBackend.hpp"
 #include "dot/DotFileWriter.hpp"
 #include "driver/Pipeline.hpp"
+#include "frontend/TokenStrings.hpp"
 #include "irgen/CodeGenerator.hpp"
 
 // lcc's entry point: parse the command line, then hand off to driver/Pipeline
@@ -191,6 +192,13 @@ int main(int argc, char* argv[]) {
 
   // Lex & syntax parsing.
   int ret = yyparse();
+
+  // The lexer allocates one string per IDENTIFIER/STRING token from an arena,
+  // because Bison frees a token value only when it discards one — never when a
+  // reduction consumes it. The grammar actions have copied everything they need
+  // into the AST by now, so the arena goes back here, on both paths.
+  tokenstrings::releaseAll();
+
   if (ret != 0) {
     fclose(p);
     p = nullptr;

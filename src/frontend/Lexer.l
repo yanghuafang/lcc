@@ -3,6 +3,8 @@
 %{
 #include "Parser.hpp"
 
+#include "frontend/TokenStrings.hpp"
+
 #include <cerrno>
 #include <climits>
 #include <cstdlib>
@@ -369,7 +371,7 @@ int returnLexHexConstant(const char* text, size_t len) {
 
  /** Identifier **/
 [a-zA-Z_][a-zA-Z0-9_]* {
-    yylval.idVal = new std::string(yytext, yyleng);
+    yylval.idVal = tokenstrings::create(yytext, yyleng);
     return IDENTIFIER;
 }
 
@@ -477,9 +479,12 @@ int returnLexHexConstant(const char* text, size_t len) {
     return CHARACTER;
 }
 
- /** String (non-greedy: stops at unescaped closing quote) **/
+ /** String **/
+ /* The class excludes " and \ so the match cannot run past the closing quote;
+    \\. covers an escaped one. flex has no non-greedy operator — this is an
+    ordinary greedy match, unambiguous because of the class. */
 \"([^\"\\]|\\.)*\" {
-    yylval.strVal = new std::string;
+    yylval.strVal = tokenstrings::createEmpty();
     for (int i = 1; i < yyleng - 1; ++i) {
         if (yytext[i] == '\\') {
             yylval.strVal->push_back(escapeDecode(yytext[++i]));
