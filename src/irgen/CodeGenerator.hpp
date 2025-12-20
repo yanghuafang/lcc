@@ -245,13 +245,17 @@ class CodeGenerator : public TypeEnv {
   // One map stores functions, types, variables, and constants (see SymbolType).
   class Symbol {
    public:
-    Symbol() : content_(nullptr), type_(SymbolType::UNDEFINED) {}
+    // Member init lists follow declaration order (type_ before content_),
+    // which is the order C++ actually runs them in regardless of what is
+    // written here. Harmless while no initializer reads another member, but
+    // -Wreorder-ctor flags it because that stops being true silently.
+    Symbol() : type_(SymbolType::UNDEFINED), content_(nullptr) {}
     Symbol(llvm::Function* func)
-        : content_(func), type_(SymbolType::FUNCTION) {}
-    Symbol(llvm::Type* type) : content_(type), type_(SymbolType::TYPE) {}
+        : type_(SymbolType::FUNCTION), content_(func) {}
+    Symbol(llvm::Type* type) : type_(SymbolType::TYPE), content_(type) {}
     Symbol(llvm::Value* value, bool isConst, AST::VarType* varType = nullptr)
-        : content_(value),
-          type_(isConst ? SymbolType::CONSTANT : SymbolType::VARIABLE),
+        : type_(isConst ? SymbolType::CONSTANT : SymbolType::VARIABLE),
+          content_(value),
           varType_(varType) {}
 
     llvm::Function* getFunction() {

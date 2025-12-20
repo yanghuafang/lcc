@@ -81,6 +81,37 @@ Other flags:
 | Flag | Effect |
 |------|--------|
 | `--parse` | Regenerate `src/generated/Parser.counterexamples` (Bison `-Wcounterexamples`) before building; combinable with a build mode, e.g. `./build-lcc.sh --debug --parse` |
+| `--asan` | Build `lcc` with AddressSanitizer (`-DLCC_ASAN=ON`) |
+| `--werror` | Fail the build on any compiler warning (`-DLCC_WERROR=ON`) |
+
+### Warnings and sanitizers
+
+`lcc` always builds with `-Wall -Wextra`. LLVM's headers are included as system
+headers so their warnings stay out of the way, and the generated
+`src/generated/Lexer.cpp` / `Parser.cpp` are compiled with warnings off, since
+they are regenerated on every configure and must not be hand-edited.
+
+`-Wunused-parameter` is disabled deliberately. Every AST node overrides
+`genCode(CodeGenerator&)` whether or not it uses the generator, so around
+eighty of these are unavoidable and the parameter name documents the slot.
+
+`--werror` is opt-in rather than the default: a compiler upgrade can add a new
+warning at any time, and cloning the repo should give you a build rather than a
+wall of errors. CI does not use it — the warning sets differ between GCC and
+Clang, and only Clang is verified here.
+
+`--asan` builds `lcc` itself under AddressSanitizer, which catches
+use-after-free and buffer overflows while it compiles a program:
+
+```bash
+./build-lcc.sh --asan
+./compile-tests.sh
+```
+
+CI runs exactly this on Ubuntu. Note that it sets `ASAN_OPTIONS=detect_leaks=0`:
+LeakSanitizer comes along with ASan on Linux, and `lcc` has two known leaks it
+would stop on — an orphaned `llvm::BasicBlock` in `SwitchStmt::genCode`, and the
+AST nodes a partial `AST::Decls` holds when a parse fails.
 
 ### Manual build (optional)
 

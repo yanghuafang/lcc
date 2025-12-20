@@ -28,6 +28,8 @@ source ./build-env.sh || exit 1
 build_type="Release"
 build_mode=""
 parse_counterexamples=false
+asan=OFF
+werror=OFF
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
@@ -62,9 +64,18 @@ while [[ $# -gt 0 ]]; do
       parse_counterexamples=true
       shift
       ;;
+    --asan)
+      asan=ON
+      shift
+      ;;
+    --werror)
+      werror=ON
+      shift
+      ;;
     *)
       echo "Unknown option: $1" >&2
-      echo "Usage: $0 [--debug|--release|--relwithdebinfo] [--parse]" >&2
+      echo "Usage: $0 [--debug|--release|--relwithdebinfo] [--parse] [--asan]" \
+           "[--werror]" >&2
       exit 1
       ;;
   esac
@@ -80,6 +91,8 @@ fi
 cmake -S ../ -B "${LCC_BUILD_DIR}" \
   -DCMAKE_BUILD_TYPE="${build_type}" \
   -DLLVM_DIR="${LLVM_DIR}" \
+  -DLCC_ASAN="${asan}" \
+  -DLCC_WERROR="${werror}" \
   -DCMAKE_EXE_LINKER_FLAGS="" \
   -DCMAKE_SHARED_LINKER_FLAGS="" \
   -DCMAKE_MODULE_LINKER_FLAGS=""
