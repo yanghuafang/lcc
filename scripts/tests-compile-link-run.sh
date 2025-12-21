@@ -62,6 +62,44 @@ tests=(
   "41.zero_init_global.c"
 )
 
+# AST graphs come from tests/graphs/, not from the suite above.
+#
+# A suite program is mostly assertions — `if (x != y) err = 1;` repeated dozens
+# of times — and that scaffolding dominates its AST. 15.logic.c is 820 nodes, of
+# which about 700 are assertions; the nine logic operators it exists to
+# demonstrate are ~100. Rendering those graphs produced 29 MB of PNGs in which
+# the language construct was the hard part to find.
+#
+# So the two jobs are split. The suite verifies behaviour and keeps every
+# assertion; these fixtures are assertion-free and exist only to be looked at.
+graph_fixtures=(
+  "types.c"
+  "expressions.c"
+  "statements.c"
+  "functions.c"
+  "arrays.c"
+  "structs.c"
+)
+
+# The one suite program that still gets a graph: it is 54 nodes — already
+# fixture-sized, since it has no assertions to speak of — and README.md embeds
+# debug/0.hello_world.png, with docs/Usage.md and docs/DebuggingLcc.md pointing
+# at debug/0.hello_world.dot.
+graph_tests=(
+  "0.hello_world.c"
+)
+
+hasGraph() {
+  local candidate=$1
+  local entry
+  for entry in "${graph_tests[@]}"; do
+    if [[ "$entry" == "$candidate" ]]; then
+      return 0
+    fi
+  done
+  return 1
+}
+
 # lcc flags for test compilation; set via setCompileMode() from compile-tests.sh
 # (defaults to --debug when compile-tests.sh is run with no mode flag).
 lcc_debug_flags=""
@@ -95,10 +133,15 @@ compileC2Obj() {
   local ir=$5
   local graph=$6
   local asm=$7
+  # Empty graph = no -v for this program; see graph_tests above.
+  local graph_flag=""
+  if [[ -n "${graph}" ]]; then
+    graph_flag="-v ../debug/${graph}"
+  fi
   if ! ${LCC_BUILD_DIR}/lcc ${lcc_debug_flags} ${lcc_opt_flags} \
     -i ../tests/${source} -o ${LCC_BUILD_DIR}/${obj} \
     -l-pre-opt ../debug/${ir_pre} -l-post-opt ../debug/${ir_post} \
-    -l ../debug/${ir} -v ../debug/${graph} -S ../debug/${asm}; then
+    -l ../debug/${ir} ${graph_flag} -S ../debug/${asm}; then
     echo "Failed to compile ${source}" >&2
     rm -f ${LCC_BUILD_DIR}/${obj} ../debug/${ir_pre} ../debug/${ir_post} \
       ../debug/${asm}
@@ -107,19 +150,43 @@ compileC2Obj() {
 }
 
 graph2Image() {
-  local source=$1
-  local graph=${source%.c}.dot
-  local image=${source%.c}.png
-  # A large AST (e.g. 15.logic.c) can exceed Cairo's PNG bitmap size limit; dot
-  # then downscales the image and warns. The PNG is still valid, so drop only
-  # that benign warning while keeping real errors and dot's exit status.
+  local dir=${1:-..\/debug}
+  local graph=$2
+  local image=$3
+  # Kept from when the whole suite was rendered and 15.logic.c's 820-node graph
+  # exceeded Cairo's PNG bitmap limit: dot downscales and warns, and the PNG is
+  # still valid. Nothing generated now comes close, but a fixture could grow, so
+  # drop only that benign warning and keep real errors and dot's exit status.
   local dot_err rc
-  dot_err="$(dot -T png -o ../debug/${image} ../debug/${graph} 2>&1 1>/dev/null)"
+  dot_err="$(dot -T png -o ${dir}/${image} ${dir}/${graph} 2>&1 1>/dev/null)"
   rc=$?
   if [[ -n "$dot_err" ]]; then
     grep -v 'too large for cairo-renderer bitmaps' <<<"$dot_err" >&2 || true
   fi
   return $rc
+}
+
+# Render one tests/graphs/ fixture into debug/graphs/. Compiled only far enough
+# to produce the tree: the object goes to the build directory and is never
+# linked or run, because a fixture asserts nothing.
+compileGraphFixture() {
+  local source=$1
+  local base=${source%.c}
+  printf '\n========== [graph] %s ==========\n' "${source}"
+  if ! ${LCC_BUILD_DIR}/lcc -i ../tests/graphs/${source} \
+    -o ${LCC_BUILD_DIR}/graph.${base}.o -v ../debug/graphs/${base}.dot; then
+    echo "Failed to compile graph fixture ${source}" >&2
+    return 1
+  fi
+  graph2Image ../debug/graphs "${base}.dot" "${base}.png"
+}
+
+compileGraphFixtures() {
+  mkdir -p ../debug/graphs
+  local fixture
+  for fixture in "${graph_fixtures[@]}"; do
+    compileGraphFixture "${fixture}" || return 1
+  done
 }
 
 compile() {
@@ -139,12 +206,17 @@ compile() {
   local ir_post="${base}${mode_suffix}.post.ll"
   local ir="${base}${mode_suffix}.ll"
   local asm="${base}${mode_suffix}.s"
-  local graph=${base}.dot
+  local graph=""
+  if hasGraph "${source}"; then
+    graph="${base}.dot"
+  fi
   # Per-file banner so each test's lcc output is easy to separate visually and
   # grep for when compiling the whole suite (see compile-tests.sh).
   printf '\n========== [%s] %s ==========\n' "${compile_mode#--}" "${source}"
-  compileC2Obj ${source} ${obj} ${ir_pre} ${ir_post} ${ir} ${graph} ${asm}
-  graph2Image ${source}
+  compileC2Obj ${source} ${obj} ${ir_pre} ${ir_post} ${ir} "${graph}" ${asm} || return 1
+  if [[ -n "${graph}" ]]; then
+    graph2Image ../debug "${graph}" "${base}.png"
+  fi
 }
 
 linkObj2Bin() {

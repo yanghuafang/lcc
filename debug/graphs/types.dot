@@ -1,0 +1,263 @@
+digraph {
+Program [label = Program]
+Program -> TypedefDecl_0
+TypedefDecl_0 [label = TypedefDecl, alias = "Int"]
+TypedefDecl_0 -> BuiltinType_1
+BuiltinType_1 [label = BuiltinType]
+"int_1" [label = "int"]
+BuiltinType_1 -> "int_1"
+Program -> TypeDecl_2
+TypeDecl_2 [label = TypeDecl]
+TypeDecl_2 -> StructType_3
+StructType_3 [label = StructType]
+"Point_3" [label = "Point"]
+StructType_3 -> "Point_3"
+StructType_3 -> FieldDecl_4
+FieldDecl_4 [label = FieldDecl]
+FieldDecl_4 -> BuiltinType_5
+BuiltinType_5 [label = BuiltinType]
+"int_5" [label = "int"]
+BuiltinType_5 -> "int_5"
+x_4 [label = x]
+FieldDecl_4 -> x_4
+StructType_3 -> FieldDecl_6
+FieldDecl_6 [label = FieldDecl]
+FieldDecl_6 -> BuiltinType_7
+BuiltinType_7 [label = BuiltinType]
+"int_7" [label = "int"]
+BuiltinType_7 -> "int_7"
+y_6 [label = y]
+FieldDecl_6 -> y_6
+Program -> TypeDecl_8
+TypeDecl_8 [label = TypeDecl]
+TypeDecl_8 -> UnionType_9
+UnionType_9 [label = UnionType]
+"Value_9" [label = "Value"]
+UnionType_9 -> "Value_9"
+UnionType_9 -> FieldDecl_10
+FieldDecl_10 [label = FieldDecl]
+FieldDecl_10 -> BuiltinType_11
+BuiltinType_11 [label = BuiltinType]
+"int_11" [label = "int"]
+BuiltinType_11 -> "int_11"
+i_10 [label = i]
+FieldDecl_10 -> i_10
+UnionType_9 -> FieldDecl_12
+FieldDecl_12 [label = FieldDecl]
+FieldDecl_12 -> BuiltinType_13
+BuiltinType_13 [label = BuiltinType]
+"double_13" [label = "double"]
+BuiltinType_13 -> "double_13"
+d_12 [label = d]
+FieldDecl_12 -> d_12
+Program -> TypeDecl_14
+TypeDecl_14 [label = TypeDecl]
+TypeDecl_14 -> EnumType_15
+EnumType_15 [label = EnumType]
+"Color_15" [label = "Color"]
+EnumType_15 -> "Color_15"
+EnumType_15 -> Enum_16
+Enum_16 [label = Enum]
+RED_16 [label = RED]
+Enum_16 -> RED_16
+EnumType_15 -> Enum_17
+Enum_17 [label = Enum]
+GREEN_17 [label = GREEN]
+Enum_17 -> GREEN_17
+EnumType_15 -> Enum_18
+Enum_18 [label = Enum]
+BLUE_18 [label = BLUE]
+Enum_18 -> BLUE_18
+Program -> FuncDecl_19
+FuncDecl_19 [label = FuncDecl]
+FuncDecl_19 -> BuiltinType_20
+BuiltinType_20 [label = BuiltinType]
+"int_20" [label = "int"]
+BuiltinType_20 -> "int_20"
+main_19[ label = main]
+FuncDecl_19 -> main_19
+FuncDecl_19 -> ParamList_21
+ParamList_21 [label = ParamList]
+FuncDecl_19 -> FuncBody_22
+FuncBody_22 [label = FuncBody]
+FuncBody_22 -> VarDecl_23
+VarDecl_23 [label = VarDecl]
+VarDecl_23 -> BuiltinType_24
+BuiltinType_24 [label = BuiltinType]
+"char_24" [label = "char"]
+BuiltinType_24 -> "char_24"
+VarDecl_23 -> VarInit_25
+VarInit_25 [label = VarInit]
+c_25 [label = c]
+VarInit_25 -> c_25
+FuncBody_22 -> VarDecl_26
+VarDecl_26 [label = VarDecl]
+VarDecl_26 -> BuiltinType_27
+BuiltinType_27 [label = BuiltinType]
+"short_27" [label = "short"]
+BuiltinType_27 -> "short_27"
+VarDecl_26 -> VarInit_28
+VarInit_28 [label = VarInit]
+s_28 [label = s]
+VarInit_28 -> s_28
+FuncBody_22 -> VarDecl_29
+VarDecl_29 [label = VarDecl]
+VarDecl_29 -> BuiltinType_30
+BuiltinType_30 [label = BuiltinType]
+"int_30" [label = "int"]
+BuiltinType_30 -> "int_30"
+VarDecl_29 -> VarInit_31
+VarInit_31 [label = VarInit]
+i_31 [label = i]
+VarInit_31 -> i_31
+FuncBody_22 -> VarDecl_32
+VarDecl_32 [label = VarDecl]
+VarDecl_32 -> BuiltinType_33
+BuiltinType_33 [label = BuiltinType]
+"long_33" [label = "long"]
+BuiltinType_33 -> "long_33"
+VarDecl_32 -> VarInit_34
+VarInit_34 [label = VarInit]
+l_34 [label = l]
+VarInit_34 -> l_34
+FuncBody_22 -> VarDecl_35
+VarDecl_35 [label = VarDecl]
+VarDecl_35 -> BuiltinType_36
+BuiltinType_36 [label = BuiltinType]
+"uint_36" [label = "uint"]
+BuiltinType_36 -> "uint_36"
+VarDecl_35 -> VarInit_37
+VarInit_37 [label = VarInit]
+u_37 [label = u]
+VarInit_37 -> u_37
+FuncBody_22 -> VarDecl_38
+VarDecl_38 [label = VarDecl]
+VarDecl_38 -> BuiltinType_39
+BuiltinType_39 [label = BuiltinType]
+"ulong_39" [label = "ulong"]
+BuiltinType_39 -> "ulong_39"
+VarDecl_38 -> VarInit_40
+VarInit_40 [label = VarInit]
+ul_40 [label = ul]
+VarInit_40 -> ul_40
+FuncBody_22 -> VarDecl_41
+VarDecl_41 [label = VarDecl]
+VarDecl_41 -> BuiltinType_42
+BuiltinType_42 [label = BuiltinType]
+"float_42" [label = "float"]
+BuiltinType_42 -> "float_42"
+VarDecl_41 -> VarInit_43
+VarInit_43 [label = VarInit]
+f_43 [label = f]
+VarInit_43 -> f_43
+FuncBody_22 -> VarDecl_44
+VarDecl_44 [label = VarDecl]
+VarDecl_44 -> BuiltinType_45
+BuiltinType_45 [label = BuiltinType]
+"double_45" [label = "double"]
+BuiltinType_45 -> "double_45"
+VarDecl_44 -> VarInit_46
+VarInit_46 [label = VarInit]
+d_46 [label = d]
+VarInit_46 -> d_46
+FuncBody_22 -> VarDecl_47
+VarDecl_47 [label = VarDecl]
+VarDecl_47 -> BuiltinType_48
+BuiltinType_48 [label = BuiltinType]
+"bool_48" [label = "bool"]
+BuiltinType_48 -> "bool_48"
+VarDecl_47 -> VarInit_49
+VarInit_49 [label = VarInit]
+b_49 [label = b]
+VarInit_49 -> b_49
+FuncBody_22 -> VarDecl_50
+VarDecl_50 [label = VarDecl]
+VarDecl_50 -> PointerType_51
+PointerType_51 [label = PointerType]
+"int*_51" [label = "int*"]
+PointerType_51 -> "int*_51"
+VarDecl_50 -> VarInit_52
+VarInit_52 [label = VarInit]
+p_52 [label = p]
+VarInit_52 -> p_52
+FuncBody_22 -> VarDecl_53
+VarDecl_53 [label = VarDecl]
+VarDecl_53 -> PointerType_54
+PointerType_54 [label = PointerType]
+"int**_54" [label = "int**"]
+PointerType_54 -> "int**_54"
+VarDecl_53 -> VarInit_55
+VarInit_55 [label = VarInit]
+pp_55 [label = pp]
+VarInit_55 -> pp_55
+FuncBody_22 -> VarDecl_56
+VarDecl_56 [label = VarDecl]
+VarDecl_56 -> BuiltinType_57
+BuiltinType_57 [label = BuiltinType]
+"int_57" [label = "int"]
+BuiltinType_57 -> "int_57"
+VarDecl_56 -> VarInit_58
+VarInit_58 [label = VarInit]
+a_58 [label = a]
+VarInit_58 -> a_58
+bounds_58 [label = "[4]"]
+VarInit_58 -> bounds_58
+FuncBody_22 -> VarDecl_59
+VarDecl_59 [label = VarDecl]
+VarDecl_59 -> BuiltinType_60
+BuiltinType_60 [label = BuiltinType]
+"int_60" [label = "int"]
+BuiltinType_60 -> "int_60"
+VarDecl_59 -> VarInit_61
+VarInit_61 [label = VarInit]
+m_61 [label = m]
+VarInit_61 -> m_61
+bounds_61 [label = "[2][3]"]
+VarInit_61 -> bounds_61
+FuncBody_22 -> VarDecl_62
+VarDecl_62 [label = VarDecl]
+VarDecl_62 -> DefinedType_63
+DefinedType_63 [label = DefinedType]
+"Point_63" [label = "Point"]
+DefinedType_63 -> "Point_63"
+VarDecl_62 -> VarInit_64
+VarInit_64 [label = VarInit]
+pt_64 [label = pt]
+VarInit_64 -> pt_64
+FuncBody_22 -> VarDecl_65
+VarDecl_65 [label = VarDecl]
+VarDecl_65 -> DefinedType_66
+DefinedType_66 [label = DefinedType]
+"Value_66" [label = "Value"]
+DefinedType_66 -> "Value_66"
+VarDecl_65 -> VarInit_67
+VarInit_67 [label = VarInit]
+v_67 [label = v]
+VarInit_67 -> v_67
+FuncBody_22 -> VarDecl_68
+VarDecl_68 [label = VarDecl]
+VarDecl_68 -> DefinedType_69
+DefinedType_69 [label = DefinedType]
+"Color_69" [label = "Color"]
+DefinedType_69 -> "Color_69"
+VarDecl_68 -> VarInit_70
+VarInit_70 [label = VarInit]
+col_70 [label = col]
+VarInit_70 -> col_70
+FuncBody_22 -> VarDecl_71
+VarDecl_71 [label = VarDecl]
+VarDecl_71 -> DefinedType_72
+DefinedType_72 [label = DefinedType]
+"Int_72" [label = "Int"]
+DefinedType_72 -> "Int_72"
+VarDecl_71 -> VarInit_73
+VarInit_73 [label = VarInit]
+alias_73 [label = alias]
+VarInit_73 -> alias_73
+FuncBody_22 -> ReturnStmt_74
+ReturnStmt_74 [label = ReturnStmt]
+ReturnStmt_74 -> Constant_75
+Constant_75 [label = Constant]
+int_75 [label = "0"]
+Constant_75 -> int_75
+}

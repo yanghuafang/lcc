@@ -1,0 +1,277 @@
+digraph {
+Program [label = Program]
+Program -> FuncDecl_0
+FuncDecl_0 [label = FuncDecl]
+FuncDecl_0 -> BuiltinType_1
+BuiltinType_1 [label = BuiltinType]
+"int_1" [label = "int"]
+BuiltinType_1 -> "int_1"
+classify_0[ label = classify]
+FuncDecl_0 -> classify_0
+FuncDecl_0 -> ParamList_2
+ParamList_2 [label = ParamList]
+ParamList_2 -> Param_3
+Param_3 [label = Param]
+Param_3 -> BuiltinType_4
+BuiltinType_4 [label = BuiltinType]
+"int_4" [label = "int"]
+BuiltinType_4 -> "int_4"
+n_3 [label = n]
+Param_3 -> n_3
+FuncDecl_0 -> FuncBody_5
+FuncBody_5 [label = FuncBody]
+FuncBody_5 -> VarDecl_6
+VarDecl_6 [label = VarDecl]
+VarDecl_6 -> BuiltinType_7
+BuiltinType_7 [label = BuiltinType]
+"int_7" [label = "int"]
+BuiltinType_7 -> "int_7"
+VarDecl_6 -> VarInit_8
+VarInit_8 [label = VarInit]
+total_8 [label = total]
+VarInit_8 -> total_8
+VarInit_8 -> Constant_9
+Constant_9 [label = Constant]
+int_9 [label = "0"]
+Constant_9 -> int_9
+FuncBody_5 -> IfStmt_10
+IfStmt_10 [label = IfStmt]
+IfStmt_10 -> LogicGreaterThan_11
+LogicGreaterThan_11 [label = LogicGreaterThan]
+LogicGreaterThan_11 -> Variable_12
+Variable_12 [label = Variable]
+n_12 [label = n]
+Variable_12 -> n_12
+LogicGreaterThan_11 -> Constant_13
+Constant_13 [label = Constant]
+int_13 [label = "0"]
+Constant_13 -> int_13
+IfStmt_10 -> Block_14
+Block_14 [label = Block]
+Block_14 -> Assign_15
+Assign_15 [label = Assign]
+Assign_15 -> Variable_16
+Variable_16 [label = Variable]
+total_16 [label = total]
+Variable_16 -> total_16
+Assign_15 -> Constant_17
+Constant_17 [label = Constant]
+int_17 [label = "1"]
+Constant_17 -> int_17
+IfStmt_10 -> Block_18
+Block_18 [label = Block]
+Block_18 -> Assign_19
+Assign_19 [label = Assign]
+Assign_19 -> Variable_20
+Variable_20 [label = Variable]
+total_20 [label = total]
+Variable_20 -> total_20
+Assign_19 -> Constant_21
+Constant_21 [label = Constant]
+int_21 [label = "2"]
+Constant_21 -> int_21
+FuncBody_5 -> SwitchStmt_22
+SwitchStmt_22 [label = SwitchStmt]
+SwitchStmt_22 -> Variable_23
+Variable_23 [label = Variable]
+n_23 [label = n]
+Variable_23 -> n_23
+SwitchStmt_22 -> CaseStmt_24
+CaseStmt_24 [label = CaseStmt]
+CaseStmt_24 -> Constant_25
+Constant_25 [label = Constant]
+int_25 [label = "0"]
+Constant_25 -> int_25
+CaseStmt_24 -> Assign_26
+Assign_26 [label = Assign]
+Assign_26 -> Variable_27
+Variable_27 [label = Variable]
+total_27 [label = total]
+Variable_27 -> total_27
+Assign_26 -> Add_28
+Add_28 [label = Add]
+Add_28 -> Variable_29
+Variable_29 [label = Variable]
+total_29 [label = total]
+Variable_29 -> total_29
+Add_28 -> Constant_30
+Constant_30 [label = Constant]
+int_30 [label = "1"]
+Constant_30 -> int_30
+CaseStmt_24 -> BreakStmt_31
+BreakStmt_31 [label = BreakStmt]
+SwitchStmt_22 -> CaseStmt_32
+CaseStmt_32 [label = CaseStmt]
+CaseStmt_32 -> BreakStmt_33
+BreakStmt_33 [label = BreakStmt]
+FuncBody_5 -> ForStmt_34
+ForStmt_34 [label = ForStmt]
+ForStmt_34 -> VarDecl_35
+VarDecl_35 [label = VarDecl]
+VarDecl_35 -> BuiltinType_36
+BuiltinType_36 [label = BuiltinType]
+"int_36" [label = "int"]
+BuiltinType_36 -> "int_36"
+VarDecl_35 -> VarInit_37
+VarInit_37 [label = VarInit]
+i_37 [label = i]
+VarInit_37 -> i_37
+VarInit_37 -> Constant_38
+Constant_38 [label = Constant]
+int_38 [label = "0"]
+Constant_38 -> int_38
+ForStmt_34 -> LogicLessThan_39
+LogicLessThan_39 [label = LogicLessThan]
+LogicLessThan_39 -> Variable_40
+Variable_40 [label = Variable]
+i_40 [label = i]
+Variable_40 -> i_40
+LogicLessThan_39 -> Constant_41
+Constant_41 [label = Constant]
+int_41 [label = "3"]
+Constant_41 -> int_41
+ForStmt_34 -> PostfixInc_42
+PostfixInc_42 [label = PostfixInc]
+PostfixInc_42 -> Variable_43
+Variable_43 [label = Variable]
+i_43 [label = i]
+Variable_43 -> i_43
+ForStmt_34 -> Block_44
+Block_44 [label = Block]
+Block_44 -> IfStmt_45
+IfStmt_45 [label = IfStmt]
+IfStmt_45 -> LogicEq_46
+LogicEq_46 [label = LogicEq]
+LogicEq_46 -> Variable_47
+Variable_47 [label = Variable]
+i_47 [label = i]
+Variable_47 -> i_47
+LogicEq_46 -> Constant_48
+Constant_48 [label = Constant]
+int_48 [label = "1"]
+Constant_48 -> int_48
+IfStmt_45 -> Block_49
+Block_49 [label = Block]
+Block_49 -> ContinueStmt_50
+ContinueStmt_50 [label = ContinueStmt]
+Block_44 -> IfStmt_51
+IfStmt_51 [label = IfStmt]
+IfStmt_51 -> LogicEq_52
+LogicEq_52 [label = LogicEq]
+LogicEq_52 -> Variable_53
+Variable_53 [label = Variable]
+i_53 [label = i]
+Variable_53 -> i_53
+LogicEq_52 -> Constant_54
+Constant_54 [label = Constant]
+int_54 [label = "2"]
+Constant_54 -> int_54
+IfStmt_51 -> Block_55
+Block_55 [label = Block]
+Block_55 -> BreakStmt_56
+BreakStmt_56 [label = BreakStmt]
+Block_44 -> Assign_57
+Assign_57 [label = Assign]
+Assign_57 -> Variable_58
+Variable_58 [label = Variable]
+total_58 [label = total]
+Variable_58 -> total_58
+Assign_57 -> Add_59
+Add_59 [label = Add]
+Add_59 -> Variable_60
+Variable_60 [label = Variable]
+total_60 [label = total]
+Variable_60 -> total_60
+Add_59 -> Variable_61
+Variable_61 [label = Variable]
+i_61 [label = i]
+Variable_61 -> i_61
+FuncBody_5 -> WhileStmt_62
+WhileStmt_62 [label = WhileStmt]
+WhileStmt_62 -> LogicLessThan_63
+LogicLessThan_63 [label = LogicLessThan]
+LogicLessThan_63 -> Variable_64
+Variable_64 [label = Variable]
+total_64 [label = total]
+Variable_64 -> total_64
+LogicLessThan_63 -> Constant_65
+Constant_65 [label = Constant]
+int_65 [label = "5"]
+Constant_65 -> int_65
+WhileStmt_62 -> Block_66
+Block_66 [label = Block]
+Block_66 -> Assign_67
+Assign_67 [label = Assign]
+Assign_67 -> Variable_68
+Variable_68 [label = Variable]
+total_68 [label = total]
+Variable_68 -> total_68
+Assign_67 -> Add_69
+Add_69 [label = Add]
+Add_69 -> Variable_70
+Variable_70 [label = Variable]
+total_70 [label = total]
+Variable_70 -> total_70
+Add_69 -> Constant_71
+Constant_71 [label = Constant]
+int_71 [label = "1"]
+Constant_71 -> int_71
+FuncBody_5 -> DoStmt_72
+DoStmt_72 [label = DoStmt]
+DoStmt_72 -> Block_73
+Block_73 [label = Block]
+Block_73 -> Assign_74
+Assign_74 [label = Assign]
+Assign_74 -> Variable_75
+Variable_75 [label = Variable]
+total_75 [label = total]
+Variable_75 -> total_75
+Assign_74 -> Add_76
+Add_76 [label = Add]
+Add_76 -> Variable_77
+Variable_77 [label = Variable]
+total_77 [label = total]
+Variable_77 -> total_77
+Add_76 -> Constant_78
+Constant_78 [label = Constant]
+int_78 [label = "1"]
+Constant_78 -> int_78
+DoStmt_72 -> LogicLessThan_79
+LogicLessThan_79 [label = LogicLessThan]
+LogicLessThan_79 -> Variable_80
+Variable_80 [label = Variable]
+total_80 [label = total]
+Variable_80 -> total_80
+LogicLessThan_79 -> Constant_81
+Constant_81 [label = Constant]
+int_81 [label = "8"]
+Constant_81 -> int_81
+FuncBody_5 -> ReturnStmt_82
+ReturnStmt_82 [label = ReturnStmt]
+ReturnStmt_82 -> Variable_83
+Variable_83 [label = Variable]
+total_83 [label = total]
+Variable_83 -> total_83
+Program -> FuncDecl_84
+FuncDecl_84 [label = FuncDecl]
+FuncDecl_84 -> BuiltinType_85
+BuiltinType_85 [label = BuiltinType]
+"int_85" [label = "int"]
+BuiltinType_85 -> "int_85"
+main_84[ label = main]
+FuncDecl_84 -> main_84
+FuncDecl_84 -> ParamList_86
+ParamList_86 [label = ParamList]
+FuncDecl_84 -> FuncBody_87
+FuncBody_87 [label = FuncBody]
+FuncBody_87 -> ReturnStmt_88
+ReturnStmt_88 [label = ReturnStmt]
+ReturnStmt_88 -> FuncCall_89
+FuncCall_89 [label = FuncCall]
+classify_89[ label = classify]
+FuncCall_89 -> classify_89
+FuncCall_89 -> Constant_90
+Constant_90 [label = Constant]
+int_90 [label = "1"]
+Constant_90 -> int_90
+}
