@@ -8,13 +8,14 @@ on:
 
 jobs:
   # lcc compiling the suite while instrumented, which is where a use-after-free
-  # on the AST or a stale llvm::Value* would show up. Its own workflow because
-  # instrumentation makes the build slow enough that nothing else should have
-  # to wait behind it. Both platforms: the two hosts differ in allocator
-  # and in architecture, so a lifetime bug can be reported on one and missed
-  # on the other.
+  # on the AST, a stale llvm::Value*, or signed overflow in the constant folder
+  # would show up. Its own workflow because instrumentation makes the build slow
+  # enough that nothing else should have to wait behind it. ASan and UBSan share
+  # one job because they compose into a single build. Both
+  # platforms: the two hosts differ in allocator and in architecture, so a
+  # lifetime bug can be reported on one and missed on the other.
   sanitize:
-    name: ${{ matrix.name }} / ASan
+    name: ${{ matrix.name }} / ASan + UBSan
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
@@ -22,17 +23,31 @@ jobs:
         include:
           - name: Ubuntu
             os: ubuntu-latest
+            # LeakSanitizer rides along with ASan on Linux, and is only useful
+            # now that the leaks it would have tripped over are gone: the
+            # orphaned llvm::BasicBlock in SwitchStmt::genCode is fixed, and
+            # main holds an llvm_shutdown_obj so LLVM's own ManagedStatic
+            # registries are released at exit. This leg is the only place any
+            # of that is verified — LeakSanitizer does not run on macOS, so
+            # neither the macOS leg nor a developer build there can check it.
+            #
+            # One known leak remains and is deliberately not covered: the AST
+            # nodes a partial AST::Decls holds when a parse fails. No test in
+            # the suite fails to parse, so this job never reaches it. Adding
+            # such a test means fixing that leak first.
+            asan_options: detect_leaks=1
           - name: macOS
             os: macos-latest
+            # Not merely unused on macOS: ASan there rejects detect_leaks=1
+            # outright, so the option has to be spelled off rather than omitted
+            # from the matrix.
+            asan_options: detect_leaks=0
     env:
-      # Leak detection is off on purpose. LeakSanitizer rides along with ASan on
-      # Linux, and lcc still has two known leaks it would fail on: an orphaned
-      # llvm::BasicBlock in SwitchStmt::genCode, and the AST nodes held by a
-      # partial AST::Decls when a parse fails. Neither is a memory *error*, which
-      # is what this job is for. Turn this on once both are fixed — and expect to
-      # check whether LLVM's own exit-time allocations need suppressing, since
-      # lcc never calls llvm_shutdown().
-      ASAN_OPTIONS: detect_leaks=0
+      ASAN_OPTIONS: ${{ matrix.asan_options }}
+      # A UBSan report is only actionable with a stack trace, and the runtime
+      # needs to be told to collect one; the build already passes
+      # -fno-sanitize-recover, so the process aborts on the first finding.
+      UBSAN_OPTIONS: print_stacktrace=1
     steps:
       - uses: actions/checkout@v4
 
@@ -46,14 +61,14 @@ jobs:
         working-directory: scripts
         run: ./install-deps-macos.sh
 
-      - name: Build lcc with ASan
+      - name: Build lcc with ASan and UBSan
         working-directory: scripts
-        run: ./build-lcc.sh --asan
+        run: ./build-lcc.sh --asan --ubsan
 
       # Both modes: -O0 and -O2 take different paths through the middle end, and
       # only the instrumented lcc process matters here — the programs it emits
-      # are not themselves built with ASan.
-      - name: Compile tests under ASan
+      # are not themselves built with the sanitizers.
+      - name: Compile tests under sanitizers
         working-directory: scripts
         run: |
           ./compile-tests.sh

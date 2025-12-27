@@ -122,8 +122,30 @@ if(LCC_ASAN)
   message(STATUS "AddressSanitizer enabled")
 endif()
 
-# Link only the LLVM pieces lcc uses. LLVM_AVAILABLE_LIBS links every archive
-# twice on Homebrew (static list + libLLVM.dylib); map components instead.
+# UndefinedBehaviorSanitizer build: -DLCC_UBSAN=ON, or build-lcc.sh --ubsan.
+#
+# Complements ASan rather than repeating it: signed overflow and out-of-range
+# shifts in the constant folder and the integer conversions, plus loads of
+# out-of-range enum and bool values out of the AST and the generated parser.
+#
+# vptr is off because it needs RTTI on both sides of a cast, and the packaged
+# LLVM builds are frequently -fno-rtti; leaving it on reports every downcast of
+# an llvm::Value. -fno-sanitize-recover makes a finding abort the process, so
+# CI fails on it instead of printing a diagnostic and carrying on.
+option(LCC_UBSAN "Build lcc with UndefinedBehaviorSanitizer" OFF)
+if(LCC_UBSAN)
+  target_compile_options(${CMAKE_PROJECT_NAME} PRIVATE
+    -fsanitize=undefined -fno-sanitize=vptr -fno-sanitize-recover=all
+    -fno-omit-frame-pointer -g)
+  target_link_options(${CMAKE_PROJECT_NAME} PRIVATE
+    -fsanitize=undefined -fno-sanitize=vptr)
+  message(STATUS "UndefinedBehaviorSanitizer enabled")
+endif()
+
+# Map components rather than LLVM_AVAILABLE_LIBS, which links every archive
+# twice on Homebrew (static list + libLLVM.dylib). all-targets is deliberate
+# and not "only what lcc uses": --target accepts any triple registered in the
+# LLVM build, so every backend has to be linked in.
 if(LLVM_LINK_LLVM_DYLIB)
   target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE argparse::argparse LLVM)
 else()

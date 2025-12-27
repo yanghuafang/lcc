@@ -101,6 +101,10 @@ llvm::Value* IfStmt::genCode(CodeGenerator& generator) {
   if (endBlock->hasNPredecessorsOrMore(1)) {
     func->insert(func->end(), endBlock);
     generator.getBuilder().SetInsertPoint(endBlock);
+  } else {
+    // Both arms returned, so nothing branches here. Same ownership rule as the
+    // switch.end block below: detached means unowned, so drop it.
+    delete endBlock;
   }
 
   return nullptr;
@@ -148,9 +152,13 @@ llvm::Value* SwitchStmt::genCode(CodeGenerator& generator) {
   std::vector<llvm::BasicBlock*> comparisionBlocks;
   // The first comparison code should be in current insertion block.
   comparisionBlocks.push_back(generator.getBuilder().GetInsertBlock());
-  for (size_t i = 0; i < caseStmtList_->size(); ++i) {
+  // One block short of the case count: slot 0 above already holds test 0, and
+  // the slot past the last test is switch.end, appended below. Creating a block
+  // per case instead would leave the final test branching to a block that is
+  // never inserted into the function.
+  for (size_t i = 1; i < caseStmtList_->size(); ++i) {
     comparisionBlocks.push_back(llvm::BasicBlock::Create(
-        generator.getContext(), "switch.compare." + std::to_string(i)));
+        generator.getContext(), "switch.compare." + std::to_string(i - 1)));
   }
 
   // comparisionBlocks and caseBlocks hold the same block after switch
@@ -194,6 +202,12 @@ llvm::Value* SwitchStmt::genCode(CodeGenerator& generator) {
   if (caseBlocks.back()->hasNPredecessorsOrMore(1)) {
     func->insert(func->end(), caseBlocks.back());
     generator.getBuilder().SetInsertPoint(caseBlocks.back());
+  } else {
+    // Every case returned, so nothing branches here. A detached block belongs
+    // to no Function and is therefore owned by nobody; drop it rather than leak
+    // it. Having no predecessors also means nothing refers to it, so this is
+    // safe.
+    delete caseBlocks.back();
   }
 
   return nullptr;

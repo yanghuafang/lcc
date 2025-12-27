@@ -406,6 +406,15 @@ void CodeGenerator::switchInsertPointToGlobalBlock() {
 }
 
 void CodeGenerator::switchInsertPointToCurrentBlock() {
+  // A file-scope declaration switches to the global block with no insert point
+  // set at all, so the saved block is null and there is nothing to restore.
+  // SetInsertPoint would dereference it; ClearInsertionPoint is the API for
+  // "no insertion point", and leaves the builder as it was found.
+  if (currentBlock_ == nullptr) {
+    builder_.ClearInsertionPoint();
+    return;
+  }
+
   builder_.SetInsertPoint(currentBlock_);
 }
 
