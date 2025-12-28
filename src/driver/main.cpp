@@ -3,6 +3,7 @@
 #include <argparse/argparse.hpp>
 #include <cstdio>
 #include <iostream>
+#include <string>
 
 #include "ast/Nodes.hpp"
 #include "backend/TargetBackend.hpp"
@@ -51,12 +52,57 @@ namespace {
 
 // Frees g_root after compile; must outlive CodeGenerator, which stores
 // non-owning AST::VarType* pointers in symbol tables during pipeline::genIr.
+//
+// Constructed before yyparse() rather than after it so that every later exit
+// path frees the tree without having to remember — the -v, IR, object, dump,
+// and assembly stages each return early on failure. A failed parse needs no
+// help here: g_root is only assigned by the Program reduction in
+// frontend/Parser.y, so it is still null. The AST nodes a partial Decls holds
+// are leaked instead; see the %destructor note there. Declaring it early also
+// puts its destructor after CodeGenerator's, which is the ordering the
+// pointers into the AST require.
 class AstRootOwner {
  public:
+  AstRootOwner() = default;
   ~AstRootOwner() {
     delete g_root;
     g_root = nullptr;
   }
+
+  AstRootOwner(const AstRootOwner&) = delete;
+  AstRootOwner& operator=(const AstRootOwner&) = delete;
+};
+
+// Closes the source file on every exit path, including the exceptions the
+// pipeline stages below throw. main freopens the -i file onto stdin because
+// that is where yylex reads from, so what is closed here is stdin itself.
+class SourceFile {
+ public:
+  explicit SourceFile(const std::string& path)
+      : file_(freopen(path.c_str(), "r", stdin)) {}
+  ~SourceFile() {
+    if (file_ != nullptr) {
+      fclose(file_);
+    }
+  }
+
+  SourceFile(const SourceFile&) = delete;
+  SourceFile& operator=(const SourceFile&) = delete;
+
+  bool isOpen() const noexcept { return file_ != nullptr; }
+
+  // The parse is over and the pipeline never reads stdin, so release the
+  // descriptor as soon as yyparse() returns rather than holding it for the rest
+  // of the compile.
+  void close() noexcept {
+    if (file_ != nullptr) {
+      fclose(file_);
+      file_ = nullptr;
+    }
+  }
+
+ private:
+  FILE* file_;
 };
 
 }  // namespace
@@ -168,7 +214,7 @@ int main(int argc, char* argv[]) {
 
   try {
     parser.parse_args(argc, argv);
-  } catch (std::exception& e) {
+  } catch (const std::exception& e) {
     std::cerr << e.what() << '\n';
     return 2;
   }
@@ -201,15 +247,17 @@ int main(int argc, char* argv[]) {
   // genCode(), not in a separate semantic-analysis pass).
 
   // Open input source file.
-  FILE* p = freopen(parser.get<std::string>("-i").c_str(), "r", stdin);
-  if (p == nullptr) {
+  SourceFile sourceFile(parser.get<std::string>("-i"));
+  if (!sourceFile.isOpen()) {
     std::cerr << "Failed to open C source file "
               << parser.get<std::string>("-i") << '\n';
     return 3;
   }
 
+  AstRootOwner astRootOwner;
+
   // Lex & syntax parsing.
-  int ret = yyparse();
+  const int ret = yyparse();
 
   // The lexer allocates one string per IDENTIFIER/STRING token from an arena,
   // because Bison frees a token value only when it discards one — never when a
@@ -218,18 +266,11 @@ int main(int argc, char* argv[]) {
   tokenstrings::releaseAll();
 
   if (ret != 0) {
-    fclose(p);
-    p = nullptr;
-    delete g_root;
-    g_root = nullptr;
     std::cerr << "yyparse failed with ret " << ret << '\n';
     return 4;
   }
 
-  AstRootOwner astRootOwner;
-
-  fclose(p);
-  p = nullptr;
+  sourceFile.close();
 
   // Generate AST file of GraphViz DOT format for visualization.
   try {
@@ -239,7 +280,7 @@ int main(int argc, char* argv[]) {
       dotfile::write(parser.get<std::string>("-v"), graph);
       std::cout << "Generated AST graph file successfully!" << '\n';
     }
-  } catch (std::exception& e) {
+  } catch (const std::exception& e) {
     std::cerr << "Failed to generate AST graph file!" << '\n';
     std::cerr << e.what() << '\n';
     return 5;
@@ -279,7 +320,7 @@ int main(int argc, char* argv[]) {
       std::cout << "Dumped post-optimization IR to "
                 << parser.get<std::string>("-l-post-opt") << '\n';
     }
-  } catch (std::exception& e) {
+  } catch (const std::exception& e) {
     std::cerr << "Failed to generate IR code!" << '\n';
     std::cerr << e.what() << '\n';
     return 6;
@@ -289,7 +330,7 @@ int main(int argc, char* argv[]) {
     pipeline::emitObject(generator.getModule(), parser.get<std::string>("-o"),
                          backendOptions);
     std::cout << "Generated object code successfully!" << '\n';
-  } catch (std::exception& e) {
+  } catch (const std::exception& e) {
     std::cerr << "Failed to generate object code!" << '\n';
     std::cerr << e.what() << '\n';
     return 7;
@@ -303,7 +344,7 @@ int main(int argc, char* argv[]) {
       pipeline::dumpIr(generator.getModule(), parser.get<std::string>("-l"));
       std::cout << "Dump IR code successfully!" << '\n';
     }
-  } catch (std::exception& e) {
+  } catch (const std::exception& e) {
     std::cerr << "Failed to dump IR code!" << '\n';
     std::cerr << e.what() << '\n';
     return 8;
@@ -315,7 +356,7 @@ int main(int argc, char* argv[]) {
                              parser.get<std::string>("-S"), backendOptions);
       std::cout << "Generated assembly successfully!" << '\n';
     }
-  } catch (std::exception& e) {
+  } catch (const std::exception& e) {
     std::cerr << "Failed to generate assembly!" << '\n';
     std::cerr << e.what() << '\n';
     return 9;

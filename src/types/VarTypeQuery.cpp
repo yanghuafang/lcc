@@ -48,6 +48,29 @@ AST::VarType* resolveTypedefVarType(AST::VarType* varType, TypeEnv& env) {
   return varType;
 }
 
+AST::VarType* resolveAggregateVarType(AST::VarType* varType, TypeEnv& env) {
+  varType = resolveTypedefVarType(varType, env);
+  if (varType == nullptr) {
+    return nullptr;
+  }
+  if (varType->isStructType() || varType->isUnionType()) {
+    return varType;
+  }
+  if (varType->isDefinedType()) {
+    llvm::Type* llvmTy = varType->getType(env);
+    if (llvmTy != nullptr && llvmTy->isStructTy()) {
+      auto* structTy = static_cast<llvm::StructType*>(llvmTy);
+      if (AST::StructType* astStruct = env.findStructType(structTy)) {
+        return astStruct;
+      }
+      if (AST::UnionType* astUnion = env.findUnionType(structTy)) {
+        return astUnion;
+      }
+    }
+  }
+  return nullptr;
+}
+
 BuiltinTypeId resolvedVarTypeToTypeId(AST::VarType* varType, TypeEnv& env) {
   return varTypeToTypeId(resolveTypedefVarType(varType, env));
 }

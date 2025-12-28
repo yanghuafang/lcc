@@ -14,6 +14,7 @@
 #include <llvm/Target/TargetOptions.h>
 #include <llvm/TargetParser/Host.h>
 
+#include <memory>
 #include <optional>
 #include <stdexcept>
 
@@ -150,16 +151,11 @@ void applyTargetToModule(llvm::Module& module, llvm::TargetMachine& machine,
   }
 }
 
-}  // namespace
-
-void TargetBackend::configureModule(llvm::Module& module,
-                                    const TargetBackendOptions& options) {
-  std::string resolvedTriple;
-  std::unique_ptr<llvm::TargetMachine> targetMachine =
-      createTargetMachine(options, resolvedTriple);
-  applyTargetToModule(module, *targetMachine, resolvedTriple);
-}
-
+// Shared by emitObject and emitAssembly, which differ only in the file type
+// LLVM is asked for. Internal to this file, like everything else in this
+// namespace: it is not part of the TargetBackend interface, and giving it
+// external linkage would put a bare `emit` symbol in the binary for any other
+// translation unit to collide with.
 void emit(llvm::Module& module, const std::string& path,
           llvm::CodeGenFileType fileType, const TargetBackendOptions& options) {
   std::string resolvedTriple;
@@ -192,6 +188,16 @@ void emit(llvm::Module& module, const std::string& path,
 
   pm.run(module);
   outStream.flush();
+}
+
+}  // namespace
+
+void TargetBackend::configureModule(llvm::Module& module,
+                                    const TargetBackendOptions& options) {
+  std::string resolvedTriple;
+  const std::unique_ptr<llvm::TargetMachine> targetMachine =
+      createTargetMachine(options, resolvedTriple);
+  applyTargetToModule(module, *targetMachine, resolvedTriple);
 }
 
 void TargetBackend::emitObject(llvm::Module& module, const std::string& path,

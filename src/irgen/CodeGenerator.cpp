@@ -3,8 +3,8 @@
 #include <llvm/IR/DebugInfoMetadata.h>
 #include <llvm/IR/Function.h>
 #include <llvm/IR/Instructions.h>
+#include <llvm/IR/Module.h>
 
-#include <cassert>
 #include <iostream>
 #include <memory>
 
@@ -13,54 +13,18 @@
 
 CodeGenerator::CodeGenerator()
     : builder_(context_),
-      module_(new llvm::Module("lcc", context_)),
-      structTypeTable_(new StructTypeTable),
-      unionTypeTable_(new UnionTypeTable),
+      module_(std::make_unique<llvm::Module>("lcc", context_)),
       globalBlock_(nullptr),
       globalFunc_(nullptr),
       currentBlock_(nullptr),
       currentFunc_(nullptr) {}
 
-CodeGenerator::~CodeGenerator() {
-  // Scope stacks may be unbalanced after a failed lowering; drain owned tables
-  // and drop non-owning debug-scope metadata.
-  while (!symbolTableStack_.empty()) {
-    delete symbolTableStack_.back();
-    symbolTableStack_.pop_back();
-  }
-  while (!typedefTableStack_.empty()) {
-    delete typedefTableStack_.back();
-    typedefTableStack_.pop_back();
-  }
-
-  debugScopeStack_.clear();
-
-  delete structTypeTable_;
-  structTypeTable_ = nullptr;
-  delete unionTypeTable_;
-  unionTypeTable_ = nullptr;
-  delete module_;
-  module_ = nullptr;
-}
-
-void CodeGenerator::pushSymbolTable() {
-  symbolTableStack_.push_back(new SymbolTable);
-  typedefTableStack_.push_back(new TypedefTable);
-}
-
-void CodeGenerator::popSymbolTable() {
-  if (symbolTableStack_.empty()) {
-    return;
-  }
-
-  delete symbolTableStack_.back();
-  symbolTableStack_.pop_back();
-
-  if (!typedefTableStack_.empty()) {
-    delete typedefTableStack_.back();
-    typedefTableStack_.pop_back();
-  }
-}
+// Out of line, not `= default` in the header: module_ and debugInfo_ are
+// unique_ptrs to types the header only forward-declares, so the deleters have
+// to be instantiated where those types are complete. Every member cleans up
+// after itself, including the scope stacks — which may still be non-empty here
+// if a lowering threw partway through a nested scope.
+CodeGenerator::~CodeGenerator() = default;
 
 // Read the layout off the module every time rather than caching a copy: the
 // driver stamps the target's real layout on before the AST walk starts (see
@@ -71,267 +35,9 @@ llvm::TypeSize CodeGenerator::getTypeSize(llvm::Type* type) {
   return module_->getDataLayout().getTypeAllocSize(type);
 }
 
-llvm::Type* CodeGenerator::findType(const std::string& typeName) {
-  if (symbolTableStack_.empty()) {
-    return nullptr;
-  }
-
-  for (auto iter = symbolTableStack_.end() - 1;
-       iter >= symbolTableStack_.begin(); --iter) {
-    auto pairIter = (*iter)->find(typeName);
-    if (pairIter != (*iter)->end()) {
-      return pairIter->second.getType();
-    }
-  }
-
-  return nullptr;
+llvm::Function* CodeGenerator::getCurrentFunction() const {
+  return currentFunc_;
 }
-
-bool CodeGenerator::addType(const std::string& typeName, llvm::Type* type) {
-  if (symbolTableStack_.empty()) {
-    return false;
-  }
-
-  SymbolTable* topSymbolTable = symbolTableStack_.back();
-  auto pairIter = topSymbolTable->find(typeName);
-  if (pairIter != topSymbolTable->end()) {
-    // Type already exists!
-    return false;
-  }
-
-  (*topSymbolTable)[typeName] = Symbol(type);
-  return true;
-}
-
-AST::VarType* CodeGenerator::findTypedefAlias(const std::string& aliasName) {
-  if (typedefTableStack_.empty()) {
-    return nullptr;
-  }
-
-  for (auto iter = typedefTableStack_.end() - 1;
-       iter >= typedefTableStack_.begin(); --iter) {
-    auto pairIter = (*iter)->find(aliasName);
-    if (pairIter != (*iter)->end()) {
-      return pairIter->second;
-    }
-  }
-
-  return nullptr;
-}
-
-bool CodeGenerator::addTypedefAlias(const std::string& aliasName,
-                                    AST::VarType* varType) {
-  if (typedefTableStack_.empty()) {
-    return false;
-  }
-
-  TypedefTable* topTable = typedefTableStack_.back();
-  auto pairIter = topTable->find(aliasName);
-  if (pairIter != topTable->end()) {
-    return false;
-  }
-
-  (*topTable)[aliasName] = varType;
-  return true;
-}
-
-bool CodeGenerator::hasTypedefAliasInCurrentScope(
-    const std::string& aliasName) {
-  if (typedefTableStack_.empty()) {
-    return false;
-  }
-
-  TypedefTable* topTable = typedefTableStack_.back();
-  return topTable->find(aliasName) != topTable->end();
-}
-
-llvm::Value* CodeGenerator::findVariable(const std::string& varName) {
-  if (symbolTableStack_.empty()) {
-    return nullptr;
-  }
-
-  for (auto iter = symbolTableStack_.end() - 1;
-       iter >= symbolTableStack_.begin(); --iter) {
-    auto pairIter = (*iter)->find(varName);
-    if (pairIter != (*iter)->end()) {
-      return pairIter->second.getVariable();
-    }
-  }
-
-  return nullptr;
-}
-
-bool CodeGenerator::addVariable(const std::string& varName, llvm::Value* var,
-                                AST::VarType* varType) {
-  if (symbolTableStack_.empty()) {
-    return false;
-  }
-
-  SymbolTable* topSymbolTable = symbolTableStack_.back();
-  auto pairIter = topSymbolTable->find(varName);
-  if (pairIter != topSymbolTable->end()) {
-    // Variable already exists!
-    return false;
-  }
-
-  if (hasTypedefAliasInCurrentScope(varName)) {
-    return false;
-  }
-
-  (*topSymbolTable)[varName] = Symbol(var, false, varType);
-  return true;
-}
-
-AST::VarType* CodeGenerator::findVariableType(const std::string& varName) {
-  if (symbolTableStack_.empty()) {
-    return nullptr;
-  }
-
-  for (auto iter = symbolTableStack_.end() - 1;
-       iter >= symbolTableStack_.begin(); --iter) {
-    auto pairIter = (*iter)->find(varName);
-    if (pairIter != (*iter)->end()) {
-      return pairIter->second.getVarType();
-    }
-  }
-
-  return nullptr;
-}
-
-void CodeGenerator::setFuncSignature(
-    const std::string& funcName, AST::VarType* retType,
-    const std::vector<AST::VarType*>& paramTypes) {
-  funcRetTypes_[funcName] = retType;
-  funcParamTypes_[funcName] = paramTypes;
-}
-
-AST::VarType* CodeGenerator::findFuncRetType(const std::string& funcName) {
-  auto iter = funcRetTypes_.find(funcName);
-  if (iter != funcRetTypes_.end()) {
-    return iter->second;
-  }
-
-  return nullptr;
-}
-
-AST::VarType* CodeGenerator::findFuncParamType(const std::string& funcName,
-                                               size_t index) {
-  auto iter = funcParamTypes_.find(funcName);
-  if (iter == funcParamTypes_.end() || index >= iter->second.size()) {
-    return nullptr;
-  }
-
-  return iter->second[index];
-}
-
-llvm::Value* CodeGenerator::findConstant(const std::string& varName) {
-  if (symbolTableStack_.empty()) {
-    return nullptr;
-  }
-
-  for (auto iter = symbolTableStack_.end() - 1;
-       iter >= symbolTableStack_.begin(); --iter) {
-    auto pairIter = (*iter)->find(varName);
-    if (pairIter != (*iter)->end()) {
-      return pairIter->second.getConstant();
-    }
-  }
-
-  return nullptr;
-}
-
-bool CodeGenerator::addConstant(const std::string& varName, llvm::Value* var) {
-  if (symbolTableStack_.empty()) {
-    return false;
-  }
-
-  SymbolTable* topSymbolTable = symbolTableStack_.back();
-  auto pairIter = topSymbolTable->find(varName);
-  if (pairIter != topSymbolTable->end()) {
-    // Variable already exists!
-    return false;
-  }
-
-  (*topSymbolTable)[varName] = Symbol(var, true);
-  return true;
-}
-
-AST::StructType* CodeGenerator::findStructType(llvm::StructType* type) {
-  auto pairIter = structTypeTable_->find(type);
-  if (pairIter != structTypeTable_->end()) {
-    return pairIter->second;
-  }
-
-  return nullptr;
-}
-
-bool CodeGenerator::addStructType(llvm::StructType* llvmType,
-                                  AST::StructType* astType) {
-  auto pairIter = structTypeTable_->find(llvmType);
-  if (pairIter != structTypeTable_->end()) {
-    // Reflection on llvmType already exist!
-    return false;
-  }
-
-  (*structTypeTable_)[llvmType] = astType;
-  return true;
-}
-
-AST::UnionType* CodeGenerator::findUnionType(llvm::StructType* type) {
-  auto pairIter = unionTypeTable_->find(type);
-  if (pairIter != unionTypeTable_->end()) {
-    return pairIter->second;
-  }
-
-  return nullptr;
-}
-
-bool CodeGenerator::addUnionType(llvm::StructType* llvmType,
-                                 AST::UnionType* astType) {
-  auto pairIter = unionTypeTable_->find(llvmType);
-  if (pairIter != unionTypeTable_->end()) {
-    // Reflection on llvmType already exist!
-    return false;
-  }
-
-  (*unionTypeTable_)[llvmType] = astType;
-  return true;
-}
-
-llvm::Function* CodeGenerator::findFunction(const std::string& funcName) {
-  if (symbolTableStack_.empty()) {
-    return nullptr;
-  }
-
-  for (auto iter = symbolTableStack_.end() - 1;
-       iter >= symbolTableStack_.begin(); --iter) {
-    auto pairIter = (*iter)->find(funcName);
-    if (pairIter != (*iter)->end()) {
-      return pairIter->second.getFunction();
-    }
-  }
-
-  return nullptr;
-}
-
-bool CodeGenerator::addFunction(const std::string& funcName,
-                                llvm::Function* func) {
-  if (symbolTableStack_.empty()) {
-    return false;
-  }
-
-  SymbolTable* topSymbolTable = symbolTableStack_.back();
-  auto pairIter = topSymbolTable->find(funcName);
-  if (pairIter != topSymbolTable->end()) {
-    // funcName already exists!
-    return false;
-  }
-
-  (*topSymbolTable)[funcName] = Symbol(func);
-  return true;
-}
-
-llvm::Function* CodeGenerator::getCurrentFunction() { return currentFunc_; }
 
 void CodeGenerator::enterFunction(llvm::Function* func) { currentFunc_ = func; }
 
@@ -339,65 +45,6 @@ void CodeGenerator::leaveFunction() {
   // Lexical scopes are per-function; do not carry into the next DISubprogram.
   debugScopeStack_.clear();
   currentFunc_ = nullptr;
-}
-
-void CodeGenerator::enterLoop(llvm::BasicBlock* continueBlock,
-                              llvm::BasicBlock* breakBlock) {
-  continueBlockStack_.push_back(continueBlock);
-  breakBlockStack_.push_back(breakBlock);
-}
-
-void CodeGenerator::leaveLoop() {
-  // Both stacks are pushed by enterLoop; switch uses breakBlockStack_ only, so
-  // do not assert size equality across the two stacks.
-  assert(!continueBlockStack_.empty() && !breakBlockStack_.empty() &&
-         "leaveLoop without a matching enterLoop");
-  if (continueBlockStack_.empty() || breakBlockStack_.empty()) {
-    return;
-  }
-
-  continueBlockStack_.pop_back();
-  breakBlockStack_.pop_back();
-}
-
-void CodeGenerator::enterSwitch(llvm::BasicBlock* breakBlock) {
-  breakBlockStack_.push_back(breakBlock);
-}
-
-void CodeGenerator::leaveSwitch() {
-  assert(!breakBlockStack_.empty() &&
-         "leaveSwitch without a matching enterSwitch");
-  if (breakBlockStack_.empty()) {
-    return;
-  }
-
-  breakBlockStack_.pop_back();
-  switchFallthroughBlock_ = nullptr;
-}
-
-void CodeGenerator::setSwitchFallthroughBlock(
-    llvm::BasicBlock* fallthroughBlock) {
-  switchFallthroughBlock_ = fallthroughBlock;
-}
-
-llvm::BasicBlock* CodeGenerator::getSwitchFallthroughBlock() {
-  return switchFallthroughBlock_;
-}
-
-llvm::BasicBlock* CodeGenerator::getContinueBlock() {
-  if (continueBlockStack_.empty()) {
-    return nullptr;
-  }
-
-  return continueBlockStack_.back();
-}
-
-llvm::BasicBlock* CodeGenerator::getBreakBlock() {
-  if (breakBlockStack_.empty()) {
-    return nullptr;
-  }
-
-  return breakBlockStack_.back();
 }
 
 void CodeGenerator::switchInsertPointToGlobalBlock() {
@@ -464,7 +111,7 @@ void CodeGenerator::popDebugLexicalBlock() {
   }
 }
 
-llvm::DIScope* CodeGenerator::getCurrentDebugScope() {
+llvm::DIScope* CodeGenerator::getCurrentDebugScope() const {
   if (!debugScopeStack_.empty()) {
     return debugScopeStack_.back();
   }
@@ -521,13 +168,13 @@ void CodeGenerator::buildModule(AST::Program* root, bool generateDebugInfo,
     debugInfo_->setTypeEnv(this);
   }
 
-  pushSymbolTable();
+  symbols_.pushScope();
 
   // IRBuilder requires an insert point even for global initializers. Use a
   // temporary internal function/block, emit globals, then erase it.
   globalFunc_ = llvm::Function::Create(
       llvm::FunctionType::get(builder_.getVoidTy(), false),
-      llvm::GlobalValue::InternalLinkage, "globalFunc", module_);
+      llvm::GlobalValue::InternalLinkage, "globalFunc", module_.get());
   globalBlock_ = llvm::BasicBlock::Create(context_, "globalBlock", globalFunc_);
 
   root->genCode(*this);
@@ -535,5 +182,5 @@ void CodeGenerator::buildModule(AST::Program* root, bool generateDebugInfo,
   globalBlock_->eraseFromParent();
   globalFunc_->eraseFromParent();
 
-  popSymbolTable();
+  symbols_.popScope();
 }

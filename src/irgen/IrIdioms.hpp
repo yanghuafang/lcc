@@ -27,8 +27,7 @@ class Value;
 }  // namespace llvm
 
 // The handful of LLVM IR shapes lcc builds over and over, each stated once so
-// the AST walk in irgen/ExprToIr.cpp and StmtToIr.cpp reads as intent rather
-// than boilerplate:
+// the walkers under irgen/ read as intent rather than boilerplate:
 // the entry-block alloca every local variable needs, the "branch only if this
 // block is not already terminated" guard every control-flow node needs, and
 // load/store through an lvalue pointer.

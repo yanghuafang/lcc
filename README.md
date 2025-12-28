@@ -134,14 +134,21 @@ lcc/
 │   │   ├── TypeRules.*          # C type rules: promotion, conversion, signedness
 │   │   └── VarTypeQuery.*       # AST VarType -> BuiltinTypeId / llvm::Type queries
 │   ├── irgen/                   # AST -> LLVM IR
-│   │   ├── ExprToIr.cpp         # walker: genCode() for every Expr node
+│   │   ├── ExprToIr.cpp         # walker: variables, literals, calls, member access
+│   │   ├── OperatorToIr.cpp     # walker: assign, arithmetic, inc/dec, bitwise, shift
+│   │   ├── LogicToIr.cpp        # walker: &&, ||, !, comparisons, ?:
+│   │   ├── ExprTypeQuery.cpp    # what type an Expr has (no instructions emitted)
 │   │   ├── StmtToIr.cpp         # walker: statements, basic blocks, break/continue
-│   │   ├── DeclToIr.cpp         # walker: declarations, initializers, block statics
+│   │   ├── DeclToIr.cpp         # walker: declarations and their storage
 │   │   ├── TypeToIr.cpp         # walker: AST VarType -> llvm::Type
 │   │   ├── Operators.*          # one function per C operator (arithmetic, bitwise, compare)
 │   │   ├── TypeConversion.*     # emits C conversions (pairs with types/TypeRules)
 │   │   ├── IrIdioms.*           # alloca, block terminator, load/store
-│   │   ├── CodeGenerator.*      # LLVM context/module, scoped symbol tables
+│   │   ├── ArrayInitializer.*   # array bounds; brace/string init, local and global
+│   │   ├── StaticLocal.*        # block-scope static: module global + lazy-init guard
+│   │   ├── SymbolTable.*        # scoped name lookup (no IR emitted)
+│   │   ├── ControlFlowContext.* # where break and continue jump to
+│   │   ├── CodeGenerator.*      # LLVM context/module; composes the two above
 │   │   └── DebugInfoBuilder.*   # DWARF debug info (-g)
 │   ├── opt/                     # middle-end (LLVM New Pass Manager)
 │   │   ├── IrOptimizer.*        # pass pipeline
