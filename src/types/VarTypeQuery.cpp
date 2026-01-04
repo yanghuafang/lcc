@@ -48,6 +48,36 @@ AST::VarType* resolveTypedefVarType(AST::VarType* varType, TypeEnv& env) {
   return varType;
 }
 
+llvm::Type* builtinTypeIdToLlvmType(BuiltinTypeId typeId,
+                                    llvm::LLVMContext& context) {
+  switch (typeId) {
+    case BuiltinTypeId::CHAR:
+    case BuiltinTypeId::UCHAR:
+      return llvm::Type::getInt8Ty(context);
+    case BuiltinTypeId::SHORT:
+    case BuiltinTypeId::USHORT:
+      return llvm::Type::getInt16Ty(context);
+    case BuiltinTypeId::INT:
+    case BuiltinTypeId::UINT:
+      return llvm::Type::getInt32Ty(context);
+    case BuiltinTypeId::LONG:
+    case BuiltinTypeId::ULONG:
+      return llvm::Type::getInt64Ty(context);
+    case BuiltinTypeId::FLOAT:
+      return llvm::Type::getFloatTy(context);
+    case BuiltinTypeId::DOUBLE:
+      return llvm::Type::getDoubleTy(context);
+    case BuiltinTypeId::BOOL:
+      return llvm::Type::getInt1Ty(context);
+    case BuiltinTypeId::VOID:
+      return llvm::Type::getVoidTy(context);
+    case BuiltinTypeId::UNKNOWN:
+      return nullptr;
+  }
+
+  return nullptr;
+}
+
 AST::VarType* resolveAggregateVarType(AST::VarType* varType, TypeEnv& env) {
   varType = resolveTypedefVarType(varType, env);
   if (varType == nullptr) {

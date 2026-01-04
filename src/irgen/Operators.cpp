@@ -11,40 +11,59 @@ using AST::BuiltinTypeId;
 
 namespace ops {
 
-llvm::Value* createCmpEq(llvm::IRBuilder<>& builder, llvm::Value* lhs,
-                         llvm::Value* rhs, BuiltinTypeId lhsTypeId,
-                         BuiltinTypeId rhsTypeId) {
+llvm::Value* createCompare(llvm::IRBuilder<>& builder, IntCmpPred intPred,
+                           llvm::CmpInst::Predicate floatPred, llvm::Value* lhs,
+                           llvm::Value* rhs, BuiltinTypeId lhsTypeId,
+                           BuiltinTypeId rhsTypeId) {
   bool isUnsigned = false;
   BuiltinTypeId resultTypeId = BuiltinTypeId::UNKNOWN;
   if (convert::typeUpgrade(builder, lhs, rhs, lhsTypeId, rhsTypeId,
                            resultTypeId, isUnsigned)) {
     if (lhs->getType()->isIntegerTy()) {
-      return builder.CreateICmpEQ(lhs, rhs);
+      return createIntegerCmp(builder, intPred, lhs, rhs, isUnsigned);
     }
-    return builder.CreateFCmpOEQ(lhs, rhs);
+    return builder.CreateFCmp(floatPred, lhs, rhs);
   }
 
-  // Pointer and mixed pointer/integer equality: compare as i64 via ptrtoint so
-  // both sides are plain integers regardless of the (opaque) pointer types.
+  // Pointer and mixed pointer/integer comparison: compare as i64 via ptrtoint
+  // so both sides are plain integers regardless of the (opaque) pointer types.
+  // Addresses are unsigned, hence the unsigned predicate in every case below —
+  // the integer operand is widened to ULONG for the same reason.
+  llvm::Type* addressType = builder.getInt64Ty();
   if (lhs->getType()->isPointerTy() && lhs->getType() == rhs->getType()) {
-    return builder.CreateICmpEQ(
-        builder.CreatePtrToInt(lhs, builder.getInt64Ty()),
-        builder.CreatePtrToInt(rhs, builder.getInt64Ty()));
+    return createIntegerCmp(builder, intPred,
+                            builder.CreatePtrToInt(lhs, addressType),
+                            builder.CreatePtrToInt(rhs, addressType), true);
   }
   if (lhs->getType()->isPointerTy() && rhs->getType()->isIntegerTy()) {
-    return builder.CreateICmpEQ(
-        builder.CreatePtrToInt(lhs, builder.getInt64Ty()),
-        convert::typeUpgrade(builder, rhs, builder.getInt64Ty(), rhsTypeId,
-                             BuiltinTypeId::ULONG));
+    return createIntegerCmp(
+        builder, intPred, builder.CreatePtrToInt(lhs, addressType),
+        convert::typeUpgrade(builder, rhs, addressType, rhsTypeId,
+                             BuiltinTypeId::ULONG),
+        true);
   }
   if (lhs->getType()->isIntegerTy() && rhs->getType()->isPointerTy()) {
-    return builder.CreateICmpEQ(
-        convert::typeUpgrade(builder, lhs, builder.getInt64Ty(), lhsTypeId,
+    return createIntegerCmp(
+        builder, intPred,
+        convert::typeUpgrade(builder, lhs, addressType, lhsTypeId,
                              BuiltinTypeId::ULONG),
-        builder.CreatePtrToInt(rhs, builder.getInt64Ty()));
+        builder.CreatePtrToInt(rhs, addressType), true);
   }
 
-  throw std::logic_error("Unsupported types for \"==\" comparison!");
+  return nullptr;
+}
+
+llvm::Value* createCmpEq(llvm::IRBuilder<>& builder, llvm::Value* lhs,
+                         llvm::Value* rhs, BuiltinTypeId lhsTypeId,
+                         BuiltinTypeId rhsTypeId) {
+  llvm::Value* result =
+      createCompare(builder, IntCmpPred::EQ, llvm::CmpInst::FCMP_OEQ, lhs, rhs,
+                    lhsTypeId, rhsTypeId);
+  if (result == nullptr) {
+    throw std::logic_error("Unsupported types for \"==\" comparison!");
+  }
+
+  return result;
 }
 
 llvm::Value* createIntegerCmp(llvm::IRBuilder<>& builder, IntCmpPred pred,

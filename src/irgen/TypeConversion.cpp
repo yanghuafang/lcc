@@ -5,6 +5,7 @@
 #include <stdexcept>
 
 #include "types/TypeRules.hpp"
+#include "types/VarTypeQuery.hpp"
 
 using AST::BuiltinTypeId;
 
@@ -31,32 +32,6 @@ bool isDstSignedForCast(BuiltinTypeId dstTypeId) {
     return true;
   }
   return !typerules::isUnsignedTypeId(dstTypeId);
-}
-
-llvm::Type* llvmTypeForTypeId(llvm::IRBuilder<>& builder,
-                              BuiltinTypeId typeId) {
-  switch (typeId) {
-    case BuiltinTypeId::CHAR:
-    case BuiltinTypeId::UCHAR:
-      return builder.getInt8Ty();
-    case BuiltinTypeId::SHORT:
-    case BuiltinTypeId::USHORT:
-      return builder.getInt16Ty();
-    case BuiltinTypeId::INT:
-    case BuiltinTypeId::UINT:
-      return builder.getInt32Ty();
-    case BuiltinTypeId::LONG:
-    case BuiltinTypeId::ULONG:
-      return builder.getInt64Ty();
-    case BuiltinTypeId::FLOAT:
-      return builder.getFloatTy();
-    case BuiltinTypeId::DOUBLE:
-      return builder.getDoubleTy();
-    case BuiltinTypeId::BOOL:
-      return builder.getInt1Ty();
-    default:
-      return nullptr;
-  }
 }
 
 }  // namespace
@@ -185,7 +160,8 @@ bool typeUpgrade(llvm::IRBuilder<>& builder, llvm::Value*& lhs,
       typerules::isIntegerTypeId(rhsTypeId)) {
     resultTypeId =
         typerules::usualArithmeticConversion(lhsTypeId, rhsTypeId, isUnsigned);
-    llvm::Type* destType = llvmTypeForTypeId(builder, resultTypeId);
+    llvm::Type* destType =
+        vartype::builtinTypeIdToLlvmType(resultTypeId, builder.getContext());
     lhs = typeCast(builder, lhs, destType, lhsTypeId, resultTypeId);
     rhs = typeCast(builder, rhs, destType, rhsTypeId, resultTypeId);
     return true;
@@ -194,7 +170,8 @@ bool typeUpgrade(llvm::IRBuilder<>& builder, llvm::Value*& lhs,
       typerules::isFloatingTypeId(rhsTypeId)) {
     resultTypeId =
         typerules::usualArithmeticConversion(lhsTypeId, rhsTypeId, isUnsigned);
-    llvm::Type* destType = llvmTypeForTypeId(builder, resultTypeId);
+    llvm::Type* destType =
+        vartype::builtinTypeIdToLlvmType(resultTypeId, builder.getContext());
     lhs = typeCast(builder, lhs, destType, lhsTypeId, resultTypeId);
     rhs = typeCast(builder, rhs, destType, rhsTypeId, resultTypeId);
     return true;
@@ -202,15 +179,19 @@ bool typeUpgrade(llvm::IRBuilder<>& builder, llvm::Value*& lhs,
   if (lhs->getType()->isIntegerTy() && rhs->getType()->isFloatingPointTy()) {
     resultTypeId =
         typerules::usualArithmeticConversion(lhsTypeId, rhsTypeId, isUnsigned);
-    lhs = typeCast(builder, lhs, llvmTypeForTypeId(builder, resultTypeId),
-                   lhsTypeId, resultTypeId);
+    lhs = typeCast(
+        builder, lhs,
+        vartype::builtinTypeIdToLlvmType(resultTypeId, builder.getContext()),
+        lhsTypeId, resultTypeId);
     return true;
   }
   if (lhs->getType()->isFloatingPointTy() && rhs->getType()->isIntegerTy()) {
     resultTypeId =
         typerules::usualArithmeticConversion(lhsTypeId, rhsTypeId, isUnsigned);
-    rhs = typeCast(builder, rhs, llvmTypeForTypeId(builder, resultTypeId),
-                   rhsTypeId, resultTypeId);
+    rhs = typeCast(
+        builder, rhs,
+        vartype::builtinTypeIdToLlvmType(resultTypeId, builder.getContext()),
+        rhsTypeId, resultTypeId);
     return true;
   }
 

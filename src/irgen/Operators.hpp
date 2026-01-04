@@ -44,11 +44,28 @@ class TypeEnv;
 namespace ops {
 
 // Relation for icmp only (EQ/LT/… plus signed vs unsigned). Float/double
-// comparisons use fcmp and llvm::CmpInst::Predicate instead — see createCmpEq
-// and compareOrdered in irgen/LogicToIr.cpp, which pick icmp vs fcmp after
-// usual arithmetic conversion.
+// comparisons use fcmp and llvm::CmpInst::Predicate instead, which is why
+// createCompare below takes one of each and picks between them after the usual
+// arithmetic conversion.
 enum class IntCmpPred { EQ, NE, LT, LE, GT, GE };
 
+// The whole of C's comparison lowering: the usual arithmetic conversions and
+// icmp/fcmp for arithmetic operands, then the pointer cases C also permits —
+// pointer against pointer, and pointer against integer, both compared as i64
+// through ptrtoint since opaque pointers carry no width of their own. Null when
+// the operand pair is none of those, which is the caller's cue to report the
+// operator it was lowering.
+//
+// One function for `==` and for `<`, `<=`, `>`, `>=`: the ladder is identical
+// and only the predicate differs, so it takes both the integer predicate and
+// the floating-point one rather than existing twice.
+llvm::Value* createCompare(llvm::IRBuilder<>& builder, IntCmpPred intPred,
+                           llvm::CmpInst::Predicate floatPred, llvm::Value* lhs,
+                           llvm::Value* rhs, AST::BuiltinTypeId lhsTypeId,
+                           AST::BuiltinTypeId rhsTypeId);
+
+// createCompare fixed at equality, throwing rather than returning null. Used by
+// `==` and by switch-case matching in irgen/StmtToIr.cpp.
 llvm::Value* createCmpEq(llvm::IRBuilder<>& builder, llvm::Value* lhs,
                          llvm::Value* rhs, AST::BuiltinTypeId lhsTypeId,
                          AST::BuiltinTypeId rhsTypeId);

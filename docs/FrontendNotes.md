@@ -93,7 +93,7 @@ C array initialization is intentionally split into small merges. **2D is complet
 | **2b** (done) | nested/flat init, `int a[][5] = {…}`, partial rows | `tests/34.array_2d_brace_init.c`; reject `int a[][]`, `int b[8][]` |
 | **3D arrays** (declaration done) | `int a[2][8][5];`, subscript and `sizeof` at any depth; brace initializer deferred | — |
 
-Grammar symbols: `VarInit`, `ArrayBound`, `ArrayBoundList` (see `Parser.y`). `VarInit::buildVarType()` nests `ArrayType` for each bound (innermost bound last in the declarator list).
+Grammar symbols: `VarInit`, `ArrayBound`, `ArrayBoundList` (see `Parser.y`). `arrayinit::buildArrayVarType()` nests `ArrayType` for each bound (innermost bound last in the declarator list).
 
 ### Declarator unification (done)
 
@@ -151,7 +151,7 @@ Covers steps **2a** and **2b** (done); 3D declaration works as well — see [3D 
 int matrix[8][5];
 ```
 
-- `buildVarType` applies `ArrayBoundList` outside-in, so `int m[2][3]` becomes LLVM `[2 x [3 x T]]`.
+- `arrayinit::buildArrayVarType` nests `ArrayBoundList` inside-out — innermost bound first — so `int m[2][3]` becomes LLVM `[2 x [3 x T]]`.
 - `Subscript::genCodePtr` nests through `ops::createAdd` (which emits the `CreateGEP`), handling `a[i][j]` on locals, globals, and struct element grids.
 - `tests/33.array_2d_decl.c`.
 

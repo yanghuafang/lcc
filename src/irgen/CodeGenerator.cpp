@@ -1,6 +1,7 @@
 #include "irgen/CodeGenerator.hpp"
 
 #include <llvm/IR/DebugInfoMetadata.h>
+#include <llvm/IR/DerivedTypes.h>
 #include <llvm/IR/Function.h>
 #include <llvm/IR/Instructions.h>
 #include <llvm/IR/Module.h>
@@ -10,6 +11,45 @@
 
 #include "ast/Nodes.hpp"
 #include "irgen/DebugInfoBuilder.hpp"
+
+namespace {
+
+// Global initializers need an insert point even though they belong to no
+// function, so the module walk runs with a throwaway internal one around it.
+// Creating and erasing that function are two statements with the entire AST
+// walk in between, and the walk throws — an escaped exception used to leave a
+// stray `globalFunc` in the emitted module and two dangling pointers on the
+// generator. Both ends live here instead.
+//
+// The generator's members are taken by reference rather than returned, so that
+// clearing them is part of the same destructor that erases what they point to.
+class ScopedGlobalInitBlock {
+ public:
+  ScopedGlobalInitBlock(llvm::LLVMContext& context, llvm::Module& module,
+                        llvm::Function*& func, llvm::BasicBlock*& block)
+      : func_(func), block_(block) {
+    func_ = llvm::Function::Create(
+        llvm::FunctionType::get(llvm::Type::getVoidTy(context), false),
+        llvm::GlobalValue::InternalLinkage, "globalFunc", &module);
+    block_ = llvm::BasicBlock::Create(context, "globalBlock", func_);
+  }
+
+  ~ScopedGlobalInitBlock() {
+    block_->eraseFromParent();
+    func_->eraseFromParent();
+    block_ = nullptr;
+    func_ = nullptr;
+  }
+
+  ScopedGlobalInitBlock(const ScopedGlobalInitBlock&) = delete;
+  ScopedGlobalInitBlock& operator=(const ScopedGlobalInitBlock&) = delete;
+
+ private:
+  llvm::Function*& func_;
+  llvm::BasicBlock*& block_;
+};
+
+}  // namespace
 
 CodeGenerator::CodeGenerator()
     : builder_(context_),
@@ -131,7 +171,8 @@ void CodeGenerator::declareDebugAlloca(
     return;
   }
 
-  // Requires enterFunction() on the owning function (see FuncDecl::genCode).
+  // Requires an active ScopedFunction on the owning function (see
+  // FuncDecl::genCode).
   llvm::Function* func = getCurrentFunction();
   if (func == nullptr) {
     return;
@@ -168,19 +209,9 @@ void CodeGenerator::buildModule(AST::Program* root, bool generateDebugInfo,
     debugInfo_->setTypeEnv(this);
   }
 
-  symbols_.pushScope();
-
-  // IRBuilder requires an insert point even for global initializers. Use a
-  // temporary internal function/block, emit globals, then erase it.
-  globalFunc_ = llvm::Function::Create(
-      llvm::FunctionType::get(builder_.getVoidTy(), false),
-      llvm::GlobalValue::InternalLinkage, "globalFunc", module_.get());
-  globalBlock_ = llvm::BasicBlock::Create(context_, "globalBlock", globalFunc_);
+  ScopedSymbolTable moduleScope(symbols_);
+  ScopedGlobalInitBlock globalInit(context_, *module_, globalFunc_,
+                                   globalBlock_);
 
   root->genCode(*this);
-
-  globalBlock_->eraseFromParent();
-  globalFunc_->eraseFromParent();
-
-  symbols_.popScope();
 }

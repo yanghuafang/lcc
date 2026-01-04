@@ -64,56 +64,6 @@ llvm::Value* boolToInt(llvm::IRBuilder<>& builder, llvm::Value* boolValue) {
   return builder.CreateZExt(boolValue, builder.getInt32Ty());
 }
 
-// extra rules for pointer-vs-pointer and pointer-vs-integer operands.
-llvm::Value* compareOrdered(Expr* lhsExpr, Expr* rhsExpr, llvm::Value* lhs,
-                            llvm::Value* rhs, ops::IntCmpPred intPred,
-                            llvm::CmpInst::Predicate floatPred,
-                            CodeGenerator& generator) {
-  BuiltinTypeId lhsTypeId = lhsExpr->getExprTypeId(generator);
-  BuiltinTypeId rhsTypeId = rhsExpr->getExprTypeId(generator);
-  bool isUnsigned = false;
-  BuiltinTypeId resultTypeId = BuiltinTypeId::UNKNOWN;
-  if (convert::typeUpgrade(generator.getBuilder(), lhs, rhs, lhsTypeId,
-                           rhsTypeId, resultTypeId, isUnsigned)) {
-    if (lhs->getType()->isIntegerTy()) {
-      return ops::createIntegerCmp(generator.getBuilder(), intPred, lhs, rhs,
-                                   isUnsigned);
-    }
-    return generator.getBuilder().CreateFCmp(floatPred, lhs, rhs);
-  }
-
-  if (lhs->getType()->isPointerTy() && lhs->getType() == rhs->getType()) {
-    llvm::Value* lhsInt = generator.getBuilder().CreatePtrToInt(
-        lhs, generator.getBuilder().getInt64Ty());
-    llvm::Value* rhsInt = generator.getBuilder().CreatePtrToInt(
-        rhs, generator.getBuilder().getInt64Ty());
-    return ops::createIntegerCmp(generator.getBuilder(), intPred, lhsInt,
-                                 rhsInt, true);
-  }
-  if (lhs->getType()->isPointerTy() && rhs->getType()->isIntegerTy()) {
-    return ops::createIntegerCmp(
-        generator.getBuilder(), intPred,
-        generator.getBuilder().CreatePtrToInt(
-            lhs, generator.getBuilder().getInt64Ty()),
-        convert::typeUpgrade(generator.getBuilder(), rhs,
-                             generator.getBuilder().getInt64Ty(), rhsTypeId,
-                             BuiltinTypeId::ULONG),
-        true);
-  }
-  if (lhs->getType()->isIntegerTy() && rhs->getType()->isPointerTy()) {
-    return ops::createIntegerCmp(
-        generator.getBuilder(), intPred,
-        convert::typeUpgrade(generator.getBuilder(), lhs,
-                             generator.getBuilder().getInt64Ty(), lhsTypeId,
-                             BuiltinTypeId::ULONG),
-        generator.getBuilder().CreatePtrToInt(
-            rhs, generator.getBuilder().getInt64Ty()),
-        true);
-  }
-
-  return nullptr;
-}
-
 }  // namespace
 
 const char* LogicNot::nonLValueErrorMessage() const {
@@ -152,9 +102,10 @@ llvm::Value* LogicExpr::genOrderedCompare(CodeGenerator& generator,
                                           const char* unsupportedOp) {
   llvm::Value* lhs = lhs_->genCode(generator);
   llvm::Value* rhs = rhs_->genCode(generator);
-  llvm::Value* cmp = compareOrdered(
-      lhs_, rhs_, lhs, rhs, static_cast<ops::IntCmpPred>(intCmpPred),
-      static_cast<llvm::CmpInst::Predicate>(floatCmpPred), generator);
+  llvm::Value* cmp = ops::createCompare(
+      generator.getBuilder(), static_cast<ops::IntCmpPred>(intCmpPred),
+      static_cast<llvm::CmpInst::Predicate>(floatCmpPred), lhs, rhs,
+      lhs_->getExprTypeId(generator), rhs_->getExprTypeId(generator));
   if (cmp != nullptr) {
     return boolToInt(generator.getBuilder(), cmp);
   }

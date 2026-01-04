@@ -90,12 +90,16 @@ void defineBlockStaticVar(CodeGenerator& generator, AST::VarInit* var,
       constantInit = arrayinit::buildGlobalStringArrayInitializer(
           elemLlvmType, arrayInfo.length, strInit->str_);
     } else if (var->initialExpr_ != nullptr) {
-      generator.switchInsertPointToGlobalBlock();
-      llvm::Value* initialExpr = convert::typeCast(
-          generator.getBuilder(), var->initialExpr_->genCode(generator),
-          llvmVarType, var->initialExpr_->getExprTypeId(generator),
-          vartype::resolvedVarTypeToTypeId(varType, generator));
-      generator.switchInsertPointToCurrentBlock();
+      llvm::Value* initialExpr = nullptr;
+      {
+        // A block static has function lifetime but module storage, so its
+        // initializer is emitted into the global block like a file-scope one.
+        ScopedGlobalInsertPoint globalInsertPoint(generator);
+        initialExpr = convert::typeCast(
+            generator.getBuilder(), var->initialExpr_->genCode(generator),
+            llvmVarType, var->initialExpr_->getExprTypeId(generator),
+            vartype::resolvedVarTypeToTypeId(varType, generator));
+      }
       if (initialExpr == nullptr) {
         throw std::logic_error("It failed to init variable " + var->varName_ +
                                " with value of different type!");

@@ -24,28 +24,31 @@ void ControlFlowContext::leaveLoop() {
   breakBlockStack_.pop_back();
 }
 
-void ControlFlowContext::enterSwitch(llvm::BasicBlock* breakBlock) {
+void ControlFlowContext::enterSwitch(llvm::BasicBlock* breakBlock,
+                                     llvm::BasicBlock* fallthroughBlock) {
   breakBlockStack_.push_back(breakBlock);
+  fallthroughBlockStack_.push_back(fallthroughBlock);
 }
 
 void ControlFlowContext::leaveSwitch() {
-  assert(!breakBlockStack_.empty() &&
+  // Both stacks are pushed by enterSwitch; a loop pushes breakBlockStack_ only,
+  // so do not assert size equality across the two.
+  assert(!breakBlockStack_.empty() && !fallthroughBlockStack_.empty() &&
          "leaveSwitch without a matching enterSwitch");
-  if (breakBlockStack_.empty()) {
+  if (breakBlockStack_.empty() || fallthroughBlockStack_.empty()) {
     return;
   }
 
   breakBlockStack_.pop_back();
-  switchFallthroughBlock_ = nullptr;
-}
-
-void ControlFlowContext::setSwitchFallthroughBlock(
-    llvm::BasicBlock* fallthroughBlock) {
-  switchFallthroughBlock_ = fallthroughBlock;
+  fallthroughBlockStack_.pop_back();
 }
 
 llvm::BasicBlock* ControlFlowContext::getSwitchFallthroughBlock() const {
-  return switchFallthroughBlock_;
+  if (fallthroughBlockStack_.empty()) {
+    return nullptr;
+  }
+
+  return fallthroughBlockStack_.back();
 }
 
 llvm::BasicBlock* ControlFlowContext::getContinueBlock() const {

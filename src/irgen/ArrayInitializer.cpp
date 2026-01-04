@@ -6,6 +6,7 @@
 #include <llvm/IR/Value.h>
 
 #include <cstddef>
+#include <memory>
 #include <stdexcept>
 #include <string>
 #include <vector>
@@ -270,6 +271,19 @@ void storeLocalFlatArrayInitializer(CodeGenerator& generator,
   }
 }
 
+// Owns the nesting buildArrayVarType builds, until the finished chain is handed
+// back to the caller. AST::releaseArrayTypeChain stops at the first non-array
+// node, so unwinding frees only the ArrayType prefix and leaves the base type
+// VarDecl shares across its VarList intact.
+struct ArrayTypeChainDeleter {
+  void operator()(AST::VarType* chain) const noexcept {
+    AST::releaseArrayTypeChain(chain);
+  }
+};
+
+using OwnedArrayTypeChain =
+    std::unique_ptr<AST::VarType, ArrayTypeChainDeleter>;
+
 }  // namespace
 
 std::vector<size_t> resolveArrayBounds(const AST::VarInit* var,
@@ -318,6 +332,26 @@ std::vector<size_t> resolveArrayBounds(const AST::VarInit* var,
   }
 
   return bounds;
+}
+
+// The nesting is owned while it is built, because the caller cannot clean up
+// after a failure it never receives a pointer from: by the time a later bound
+// rejects the declarator, the earlier ones have already allocated.
+AST::VarType* buildArrayVarType(AST::VarType* baseType,
+                                const std::vector<size_t>& bounds) {
+  OwnedArrayTypeChain chain(baseType);
+  for (auto it = bounds.rbegin(); it != bounds.rend(); ++it) {
+    if (isInferredArrayBound(*it)) {
+      throw std::logic_error("Unresolved inferred array bound.");
+    }
+    // Construct first: should the allocation throw, `chain` still owns the
+    // prefix and unwinds it. On success `nested` owns that prefix instead, so
+    // `chain` has to let go of it rather than reset over it.
+    auto* nested = new AST::ArrayType(chain.get(), *it);
+    chain.release();
+    chain.reset(nested);
+  }
+  return chain.release();
 }
 
 Array1DInfo get1DArrayInfo(AST::VarType* varType) {

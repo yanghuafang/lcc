@@ -5,6 +5,7 @@
 
 #include "ast/Nodes.hpp"
 #include "types/TypeEnv.hpp"
+#include "types/VarTypeQuery.hpp"
 
 // AST types -> llvm::Type: getType() for each VarType node in ast/Nodes.hpp —
 // builtin, pointer, array, struct, union, enum, and typedef alias.
@@ -45,43 +46,8 @@ VarType* UnionType::getMemberVarType(const std::string& memberName) {
 }
 
 llvm::Type* BuiltinType::getType(TypeEnv& env) {
-  if (llvmType_ != nullptr) {
-    return llvmType_;
-  }
-
-  llvm::LLVMContext& context = env.getContext();
-  switch (typeId_) {
-    case BuiltinTypeId::CHAR:
-    case BuiltinTypeId::UCHAR:
-      llvmType_ = llvm::Type::getInt8Ty(context);
-      break;
-    case BuiltinTypeId::SHORT:
-    case BuiltinTypeId::USHORT:
-      llvmType_ = llvm::Type::getInt16Ty(context);
-      break;
-    case BuiltinTypeId::INT:
-    case BuiltinTypeId::UINT:
-      llvmType_ = llvm::Type::getInt32Ty(context);
-      break;
-    case BuiltinTypeId::LONG:
-    case BuiltinTypeId::ULONG:
-      llvmType_ = llvm::Type::getInt64Ty(context);
-      break;
-    case BuiltinTypeId::FLOAT:
-      llvmType_ = llvm::Type::getFloatTy(context);
-      break;
-    case BuiltinTypeId::DOUBLE:
-      llvmType_ = llvm::Type::getDoubleTy(context);
-      break;
-    case BuiltinTypeId::BOOL:
-      llvmType_ = llvm::Type::getInt1Ty(context);
-      break;
-    case BuiltinTypeId::VOID:
-      llvmType_ = llvm::Type::getVoidTy(context);
-      break;
-    default:
-      llvmType_ = nullptr;
-      break;
+  if (llvmType_ == nullptr) {
+    llvmType_ = vartype::builtinTypeIdToLlvmType(typeId_, env.getContext());
   }
 
   return llvmType_;

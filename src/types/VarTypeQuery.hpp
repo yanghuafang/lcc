@@ -12,6 +12,7 @@ class TypeEnv;
 
 namespace llvm {
 
+class LLVMContext;
 class Type;
 
 }  // namespace llvm
@@ -28,6 +29,21 @@ class Type;
 namespace vartype {
 
 AST::BuiltinTypeId varTypeToTypeId(AST::VarType* varType);
+
+// The llvm::Type a C builtin type is represented by; null for UNKNOWN.
+//
+// The single statement of C's width table — char -> i8, int -> i32, long ->
+// i64, and so on. Both AST::BuiltinType::getType (irgen/TypeToIr.cpp) and the
+// usual-arithmetic-conversion lowering (irgen/TypeConversion.cpp) answer from
+// here, so adding a scalar type such as `long long` is one edit rather than two
+// switches that can silently drift apart.
+//
+// Takes a bare LLVMContext rather than a TypeEnv because that is all it needs:
+// no name to look up, no aggregate to map. Asking for less is what keeps the
+// table usable from irgen/TypeConversion.cpp, which holds an IRBuilder but no
+// type environment.
+llvm::Type* builtinTypeIdToLlvmType(AST::BuiltinTypeId typeId,
+                                    llvm::LLVMContext& context);
 
 // Peels DefinedType aliases before the queries below.
 AST::VarType* resolveTypedefVarType(AST::VarType* varType, TypeEnv& env);
