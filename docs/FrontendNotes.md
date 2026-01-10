@@ -93,7 +93,7 @@ C array initialization is intentionally split into small merges. **2D is complet
 | **2b** (done) | nested/flat init, `int a[][5] = {…}`, partial rows | `tests/34.array_2d_brace_init.c`; reject `int a[][]`, `int b[8][]` |
 | **3D arrays** (declaration done) | `int a[2][8][5];`, subscript and `sizeof` at any depth; brace initializer deferred | — |
 
-Grammar symbols: `VarInit`, `ArrayBound`, `ArrayBoundList` (see `Parser.y`). `arrayinit::buildArrayVarType()` nests `ArrayType` for each bound (innermost bound last in the declarator list).
+Grammar symbols: `VarInit`, `ArrayBound`, `ArrayBoundList` (see `Parser.y`). `arrays::buildVarType()` nests `ArrayType` for each bound (innermost bound last in the declarator list).
 
 ### Declarator unification (done)
 
@@ -117,7 +117,7 @@ int buf[3] = {1, 2, 3};
 ```
 
 - `InitList` on `VarInit`; `= { … }` and `= {}` in `Parser.y` (`%prec COMMA` so commas are not parsed as the comma operator).
-- `buildGlobalArrayInitializer` for globals, `storeBraceArrayInitializer` for locals; zero-fill; reject too many elements.
+- `arrays::buildBraceInitializer` for globals, `arrays::storeBraceInitializer` for locals; zero-fill; reject too many elements.
 - `tests/31.array_1d_brace_init.c`.
 
 ### 1b — inferred size and string literals (done)
@@ -130,7 +130,7 @@ char s1[] = "hello";
 char s2[6] = "hello";
 ```
 
-- `ArrayBound`: `LBRACKET RBRACKET` stores `kInferredArrayBound`; `resolveArrayBounds` infers length from brace list or string (`strlen + 1`).
+- `ArrayBound`: `LBRACKET RBRACKET` stores `kInferredArrayBound`; `resolveBounds` infers length from brace list or string (`strlen + 1`).
 - String init copies bytes plus `'\0'` into the char array; rejects initializer longer than the declared bound.
 
 **Errors:** `char s3[5] = "hello";` (initializer too long).
@@ -151,7 +151,7 @@ Covers steps **2a** and **2b** (done); 3D declaration works as well — see [3D 
 int matrix[8][5];
 ```
 
-- `arrayinit::buildArrayVarType` nests `ArrayBoundList` inside-out — innermost bound first — so `int m[2][3]` becomes LLVM `[2 x [3 x T]]`.
+- `arrays::buildVarType` nests `ArrayBoundList` inside-out — innermost bound first — so `int m[2][3]` becomes LLVM `[2 x [3 x T]]`.
 - `Subscript::genCodePtr` nests through `ops::createAdd` (which emits the `CreateGEP`), handling `a[i][j]` on locals, globals, and struct element grids.
 - `tests/33.array_2d_decl.c`.
 

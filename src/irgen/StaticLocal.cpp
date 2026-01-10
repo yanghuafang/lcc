@@ -12,7 +12,7 @@
 #include <string>
 
 #include "ast/Nodes.hpp"
-#include "irgen/ArrayInitializer.hpp"
+#include "irgen/Arrays.hpp"
 #include "irgen/CodeGenerator.hpp"
 #include "irgen/TypeConversion.hpp"
 #include "types/VarTypeQuery.hpp"
@@ -82,12 +82,12 @@ void defineBlockStaticVar(CodeGenerator& generator, AST::VarInit* var,
 
   if (!needsRuntimeInit) {
     if (strInit != nullptr && isArray) {
-      arrayinit::Array1DInfo arrayInfo = arrayinit::get1DArrayInfo(varType);
+      arrays::Info1D arrayInfo = arrays::get1DInfo(varType);
       llvm::Type* elemLlvmType = arrayInfo.elemVarType->getType(generator);
       if (elemLlvmType == nullptr) {
         throw std::logic_error("Define variable with unknown type!");
       }
-      constantInit = arrayinit::buildGlobalStringArrayInitializer(
+      constantInit = arrays::buildGlobalStringInitializer(
           elemLlvmType, arrayInfo.length, strInit->str_);
     } else if (var->initialExpr_ != nullptr) {
       llvm::Value* initialExpr = nullptr;
@@ -128,14 +128,14 @@ void defineBlockStaticVar(CodeGenerator& generator, AST::VarInit* var,
         emitLocalStaticLazyInitPrologue(generator, guard);
 
     if (var->hasBraceInit()) {
-      arrayinit::storeBraceArrayInitializer(generator, globalVar, llvmVarType,
-                                            varType, *var->initList_);
+      arrays::storeBraceInitializer(generator, globalVar, llvmVarType, varType,
+                                    *var->initList_);
     } else if (strInit != nullptr && isArray) {
-      arrayinit::Array1DInfo arrayInfo = arrayinit::get1DArrayInfo(varType);
+      arrays::Info1D arrayInfo = arrays::get1DInfo(varType);
       llvm::Type* elemLlvmType = arrayInfo.elemVarType->getType(generator);
-      arrayinit::storeLocalStringArrayInitializer(
-          generator, globalVar, llvmVarType, elemLlvmType, arrayInfo.length,
-          strInit->str_);
+      arrays::storeLocalStringInitializer(generator, globalVar, llvmVarType,
+                                          elemLlvmType, arrayInfo.length,
+                                          strInit->str_);
     } else if (var->initialExpr_ != nullptr) {
       llvm::Value* initializer = convert::typeCast(
           generator.getBuilder(), var->initialExpr_->genCode(generator),

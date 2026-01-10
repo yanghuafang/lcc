@@ -17,7 +17,7 @@
 
 namespace AST {
 
-// arrayinit::buildArrayVarType() nests one ArrayType per declarator bound
+// arrays::buildVarType() nests one ArrayType per declarator bound
 // around the VarType that VarDecl owns and shares across every name in its
 // VarList. Delete only the ArrayType prefix, unlinking as we go, so that shared
 // tail is left for VarDecl to destroy exactly once.

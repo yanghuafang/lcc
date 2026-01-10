@@ -132,6 +132,7 @@ lcc/
 │   ├── types/                   # What a type is; emits no instructions
 │   │   ├── TypeEnv.hpp          # type environment interface (AST VarType -> llvm::Type)
 │   │   ├── TypeRules.*          # C type rules: promotion, conversion, signedness
+│   │   ├── BuiltinTypeMap.*     # C scalar width table: BuiltinTypeId -> llvm::Type
 │   │   └── VarTypeQuery.*       # AST VarType -> BuiltinTypeId / llvm::Type queries
 │   ├── irgen/                   # AST -> LLVM IR
 │   │   ├── ExprToIr.cpp         # walker: variables, literals, calls, member access
@@ -144,7 +145,7 @@ lcc/
 │   │   ├── Operators.*          # one function per C operator (arithmetic, bitwise, compare)
 │   │   ├── TypeConversion.*     # emits C conversions (pairs with types/TypeRules)
 │   │   ├── IrIdioms.*           # alloca, block terminator, load/store
-│   │   ├── ArrayInitializer.*   # array bounds; brace/string init, local and global
+│   │   ├── Arrays.*             # array bounds, the type they build, brace/string init
 │   │   ├── StaticLocal.*        # block-scope static: module global + lazy-init guard
 │   │   ├── SymbolTable.*        # scoped name lookup (no IR emitted)
 │   │   ├── ControlFlowContext.* # where break and continue jump to

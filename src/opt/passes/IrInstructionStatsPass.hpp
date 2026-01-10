@@ -26,7 +26,7 @@ class IrInstructionStatsPass
   explicit IrInstructionStatsPass(std::shared_ptr<IrInstructionStats> totals);
 
   llvm::PreservedAnalyses run(llvm::Function& function,
-                              llvm::FunctionAnalysisManager&);
+                              llvm::FunctionAnalysisManager& /*unused*/);
 
  private:
   std::shared_ptr<IrInstructionStats> totals_;

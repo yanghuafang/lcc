@@ -4,8 +4,8 @@
 
 #include <stdexcept>
 
+#include "types/BuiltinTypeMap.hpp"
 #include "types/TypeRules.hpp"
-#include "types/VarTypeQuery.hpp"
 
 using AST::BuiltinTypeId;
 
@@ -161,7 +161,7 @@ bool typeUpgrade(llvm::IRBuilder<>& builder, llvm::Value*& lhs,
     resultTypeId =
         typerules::usualArithmeticConversion(lhsTypeId, rhsTypeId, isUnsigned);
     llvm::Type* destType =
-        vartype::builtinTypeIdToLlvmType(resultTypeId, builder.getContext());
+        builtinmap::toLlvmType(resultTypeId, builder.getContext());
     lhs = typeCast(builder, lhs, destType, lhsTypeId, resultTypeId);
     rhs = typeCast(builder, rhs, destType, rhsTypeId, resultTypeId);
     return true;
@@ -171,7 +171,7 @@ bool typeUpgrade(llvm::IRBuilder<>& builder, llvm::Value*& lhs,
     resultTypeId =
         typerules::usualArithmeticConversion(lhsTypeId, rhsTypeId, isUnsigned);
     llvm::Type* destType =
-        vartype::builtinTypeIdToLlvmType(resultTypeId, builder.getContext());
+        builtinmap::toLlvmType(resultTypeId, builder.getContext());
     lhs = typeCast(builder, lhs, destType, lhsTypeId, resultTypeId);
     rhs = typeCast(builder, rhs, destType, rhsTypeId, resultTypeId);
     return true;
@@ -179,19 +179,17 @@ bool typeUpgrade(llvm::IRBuilder<>& builder, llvm::Value*& lhs,
   if (lhs->getType()->isIntegerTy() && rhs->getType()->isFloatingPointTy()) {
     resultTypeId =
         typerules::usualArithmeticConversion(lhsTypeId, rhsTypeId, isUnsigned);
-    lhs = typeCast(
-        builder, lhs,
-        vartype::builtinTypeIdToLlvmType(resultTypeId, builder.getContext()),
-        lhsTypeId, resultTypeId);
+    lhs = typeCast(builder, lhs,
+                   builtinmap::toLlvmType(resultTypeId, builder.getContext()),
+                   lhsTypeId, resultTypeId);
     return true;
   }
   if (lhs->getType()->isFloatingPointTy() && rhs->getType()->isIntegerTy()) {
     resultTypeId =
         typerules::usualArithmeticConversion(lhsTypeId, rhsTypeId, isUnsigned);
-    rhs = typeCast(
-        builder, rhs,
-        vartype::builtinTypeIdToLlvmType(resultTypeId, builder.getContext()),
-        rhsTypeId, resultTypeId);
+    rhs = typeCast(builder, rhs,
+                   builtinmap::toLlvmType(resultTypeId, builder.getContext()),
+                   rhsTypeId, resultTypeId);
     return true;
   }
 

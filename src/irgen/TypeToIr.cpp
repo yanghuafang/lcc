@@ -4,8 +4,8 @@
 #include <stdexcept>
 
 #include "ast/Nodes.hpp"
+#include "types/BuiltinTypeMap.hpp"
 #include "types/TypeEnv.hpp"
-#include "types/VarTypeQuery.hpp"
 
 // AST types -> llvm::Type: getType() for each VarType node in ast/Nodes.hpp —
 // builtin, pointer, array, struct, union, enum, and typedef alias.
@@ -16,12 +16,12 @@
 
 namespace AST {
 
-VarType* VarType::getMemberVarType(const std::string& memberName) {
+VarType* VarType::getMemberVarType(const std::string& memberName) const {
   (void)memberName;
   return nullptr;
 }
 
-VarType* StructType::getMemberVarType(const std::string& memberName) {
+VarType* StructType::getMemberVarType(const std::string& memberName) const {
   for (FieldDecl* decl : *structBody_) {
     for (const std::string& name : *decl->memberList_) {
       if (memberName == name) {
@@ -33,7 +33,7 @@ VarType* StructType::getMemberVarType(const std::string& memberName) {
   return nullptr;
 }
 
-VarType* UnionType::getMemberVarType(const std::string& memberName) {
+VarType* UnionType::getMemberVarType(const std::string& memberName) const {
   for (FieldDecl* decl : *unionBody_) {
     for (const std::string& name : *decl->memberList_) {
       if (memberName == name) {
@@ -47,7 +47,7 @@ VarType* UnionType::getMemberVarType(const std::string& memberName) {
 
 llvm::Type* BuiltinType::getType(TypeEnv& env) {
   if (llvmType_ == nullptr) {
-    llvmType_ = vartype::builtinTypeIdToLlvmType(typeId_, env.getContext());
+    llvmType_ = builtinmap::toLlvmType(typeId_, env.getContext());
   }
 
   return llvmType_;

@@ -12,7 +12,7 @@
 #include <vector>
 
 #include "ast/Nodes.hpp"
-#include "irgen/ArrayInitializer.hpp"
+#include "irgen/Arrays.hpp"
 #include "irgen/CodeGenerator.hpp"
 #include "irgen/DebugInfoBuilder.hpp"
 #include "irgen/IrIdioms.hpp"
@@ -28,7 +28,7 @@
 // choose storage — alloca, block-scope static, or file-scope global — and then
 // initialize it. What it initializes *with* lives next door rather than here:
 //
-//   irgen/ArrayInitializer.hpp  bound inference, the array type those bounds
+//   irgen/Arrays.hpp  bound inference, the array type those bounds
 //                               denote, and the four initializer shapes
 //                               (local/global x brace/string)
 //   irgen/StaticLocal.hpp       block-scope statics, including the lazy-init
@@ -199,10 +199,9 @@ llvm::Value* VarDecl::genCode(CodeGenerator& generator) {
   }
 
   for (VarInit* var : *varList_) {
-    std::vector<size_t> resolvedBounds =
-        arrayinit::resolveArrayBounds(var, varType_);
+    std::vector<size_t> resolvedBounds = arrays::resolveBounds(var, varType_);
     bool isArray = !resolvedBounds.empty();
-    ConstStr* strInit = arrayinit::asConstStr(var->initialExpr_);
+    ConstStr* strInit = arrays::asConstStr(var->initialExpr_);
 
     if (var->hasBraceInit()) {
       if (!isArray) {
@@ -210,7 +209,7 @@ llvm::Value* VarDecl::genCode(CodeGenerator& generator) {
             "Brace initialization is only supported for arrays.");
       }
     } else if (isArray && var->initialExpr_ != nullptr) {
-      if (strInit == nullptr || !arrayinit::isCharElementType(varType_)) {
+      if (strInit == nullptr || !arrays::isCharElementType(varType_)) {
         throw std::logic_error(
             "Array variable " + var->varName_ +
             " cannot be initialized with a single expression; use brace "
@@ -218,7 +217,7 @@ llvm::Value* VarDecl::genCode(CodeGenerator& generator) {
       }
     }
 
-    var->arrayVarType_ = arrayinit::buildArrayVarType(varType_, resolvedBounds);
+    var->arrayVarType_ = arrays::buildVarType(varType_, resolvedBounds);
     VarType* varType = var->arrayVarType_;
     llvm::Type* llvmVarType = varType->getType(generator);
     if (llvmVarType == nullptr) {
@@ -251,14 +250,14 @@ llvm::Value* VarDecl::genCode(CodeGenerator& generator) {
                                    varType, loc());
 
       if (var->hasBraceInit()) {
-        arrayinit::storeBraceArrayInitializer(
-            generator, allocaInst, llvmVarType, varType, *var->initList_);
+        arrays::storeBraceInitializer(generator, allocaInst, llvmVarType,
+                                      varType, *var->initList_);
       } else if (strInit != nullptr && isArray) {
-        arrayinit::Array1DInfo arrayInfo = arrayinit::get1DArrayInfo(varType);
+        arrays::Info1D arrayInfo = arrays::get1DInfo(varType);
         llvm::Type* elemLlvmType = arrayInfo.elemVarType->getType(generator);
-        arrayinit::storeLocalStringArrayInitializer(
-            generator, allocaInst, llvmVarType, elemLlvmType, arrayInfo.length,
-            strInit->str_);
+        arrays::storeLocalStringInitializer(generator, allocaInst, llvmVarType,
+                                            elemLlvmType, arrayInfo.length,
+                                            strInit->str_);
       } else if (var->initialExpr_ != nullptr) {
         llvm::Value* initializer = convert::typeCast(
             generator.getBuilder(), var->initialExpr_->genCode(generator),
@@ -274,15 +273,15 @@ llvm::Value* VarDecl::genCode(CodeGenerator& generator) {
     } else {
       llvm::Constant* initializer = nullptr;
       if (var->hasBraceInit()) {
-        initializer = arrayinit::buildBraceArrayInitializer(
+        initializer = arrays::buildBraceInitializer(
             generator, varType, llvmVarType, *var->initList_);
       } else if (strInit != nullptr && isArray) {
-        arrayinit::Array1DInfo arrayInfo = arrayinit::get1DArrayInfo(varType);
+        arrays::Info1D arrayInfo = arrays::get1DInfo(varType);
         llvm::Type* elemLlvmType = arrayInfo.elemVarType->getType(generator);
         if (elemLlvmType == nullptr) {
           throw std::logic_error("Define variable with unknown type!");
         }
-        initializer = arrayinit::buildGlobalStringArrayInitializer(
+        initializer = arrays::buildGlobalStringInitializer(
             elemLlvmType, arrayInfo.length, strInit->str_);
       } else if (var->initialExpr_ != nullptr) {
         llvm::Value* initialExpr = nullptr;
@@ -300,7 +299,7 @@ llvm::Value* VarDecl::genCode(CodeGenerator& generator) {
                                  " with value of different type!");
         }
         initializer =
-            arrayinit::asConstant(initialExpr, "Global variable initializer");
+            arrays::asConstant(initialExpr, "Global variable initializer");
       } else {
         // C static-storage objects with no initializer are zero-initialized
         // (C11 6.7.9/10). lcc is single-TU, so a zeroinitializer strong

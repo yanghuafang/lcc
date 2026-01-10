@@ -14,5 +14,5 @@ class Function;
 class FoldAddZeroPass : public llvm::PassInfoMixin<FoldAddZeroPass> {
  public:
   static llvm::PreservedAnalyses run(llvm::Function& function,
-                                     llvm::FunctionAnalysisManager&);
+                                     llvm::FunctionAnalysisManager& /*unused*/);
 };
