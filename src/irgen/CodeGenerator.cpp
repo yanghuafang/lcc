@@ -53,11 +53,7 @@ class ScopedGlobalInitBlock {
 
 CodeGenerator::CodeGenerator()
     : builder_(context_),
-      module_(std::make_unique<llvm::Module>("lcc", context_)),
-      globalBlock_(nullptr),
-      globalFunc_(nullptr),
-      currentBlock_(nullptr),
-      currentFunc_(nullptr) {}
+      module_(std::make_unique<llvm::Module>("lcc", context_)) {}
 
 // Out of line, not `= default` in the header: module_ and debugInfo_ are
 // unique_ptrs to types the header only forward-declares, so the deleters have
@@ -75,7 +71,7 @@ llvm::TypeSize CodeGenerator::getTypeSize(llvm::Type* type) {
   return module_->getDataLayout().getTypeAllocSize(type);
 }
 
-llvm::Function* CodeGenerator::getCurrentFunction() const {
+llvm::Function* CodeGenerator::getCurrentFunction() const noexcept {
   return currentFunc_;
 }
 
@@ -120,7 +116,7 @@ void CodeGenerator::setDebugLocation(const AST::SourceLoc& loc) {
     return;
   }
 
-  unsigned col = loc.col > 0 ? loc.col : 1;
+  const unsigned col = loc.col > 0 ? loc.col : 1;
   llvm::DIScope* scope = getCurrentDebugScope();
   if (scope == nullptr) {
     return;
@@ -138,7 +134,7 @@ void CodeGenerator::pushDebugLexicalBlock(const AST::SourceLoc& loc) {
     return;
   }
 
-  unsigned col = loc.col > 0 ? loc.col : 1;
+  const unsigned col = loc.col > 0 ? loc.col : 1;
   llvm::DIScope* block = debugInfo_->createLexicalBlock(parent, loc.line, col);
   if (block != nullptr) {
     debugScopeStack_.push_back(block);

@@ -23,7 +23,7 @@ class Module;
 // New PM IR passes in opt/passes/: a machine pass registers through the legacy
 // codegen PassManager and TargetPassConfig in backend/TargetBackend.cpp, not
 // through PassBuilder. Enabled with -machine-stats; see docs/LlvmTools.md
-class MachineInstrStatsPass : public llvm::MachineFunctionPass {
+class MachineInstrStatsPass final : public llvm::MachineFunctionPass {
  public:
   // LLVM identifies a legacy pass by this member's address; the value is
   // unused. New PM passes (FoldAddZeroPass, IrInstructionStatsPass) need no

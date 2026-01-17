@@ -5,6 +5,26 @@
 # people learning compilers. Each disabled family is listed with its reason, so
 # the exclusions can be re-argued rather than rediscovered.
 #
+# Only one check is taken from the google- family: google-explicit-constructor.
+# AST nodes are always built as `new Node(child)` from the grammar actions, so
+# no constructor in ast/Nodes.hpp is meant to convert; Constant alone declared
+# eight single-argument ones, over char, int, long, float, double and their
+# unsigned variants. The rest of that family is naming and formatting rules
+# this project does not follow.
+#
+# Note what the check does not reach: it flags only constructors callable with
+# exactly one argument. The headers also mark the multi-argument constructors
+# explicit, because C++11 lets those fire implicitly through
+# copy-list-initialization -- `f({lhs, rhs})` and `Add a = {lhs, rhs}` both
+# select one. No check enforces that half, so it falls to review.
+#
+# One check is taken from the cppcoreguidelines- family:
+# cppcoreguidelines-virtual-class-destructor. Every base here is deleted
+# polymorphically through Node* or TypeEnv*, so each one needs a public virtual
+# destructor; the check holds that. Note that a different check from the same
+# family is deliberately off for the opposite reason -- see
+# cppcoreguidelines-special-member-functions below.
+#
 # Deliberately NOT enabled:
 #
 #   modernize-use-trailing-return-type
@@ -28,6 +48,29 @@
 #       reads as the DOT line it produces. Splitting each into five `+=` calls
 #       to avoid temporaries would obscure that, and this runs once per AST node
 #       only under -v, so it is not a path worth optimizing for.
+#   cppcoreguidelines-special-member-functions
+#       Reports every one of the node classes for declaring a destructor
+#       without copy operations. The hazard is real, and it is fixed at the
+#       root instead: ast/Nodes.hpp deletes Node's copy constructor and copy
+#       assignment, which makes every node below it non-copyable and every
+#       shallow copy a compile error. The check is per-class and syntactic, so
+#       it goes on reporting derived classes regardless; satisfying it would
+#       mean repeating four declarations in each of them.
+#   modernize-use-nodiscard
+#       Wants [[nodiscard]] on all ~180 const member functions, overrides
+#       included. The attribute is applied here on the declaring base only,
+#       which is where the contract belongs and is sufficient: every call in
+#       this tree dispatches through Node*, Expr*, or VarType*, and a call
+#       through the base warns whether or not the override repeats it. The
+#       remaining findings would be 160 lines of annotation buying nothing.
+#   misc-const-correctness
+#       Applied to the tree by hand, but not enforced. The check cannot tell a
+#       value from an RAII guard, and wants `const ScopedSymbolTable scope(...)`
+#       on every one of them. Those objects are never read: they exist for their
+#       constructor and destructor, and const on one reads as a claim about a
+#       value that nobody was going to use. The findings that really were
+#       values are const; leaving the guards bare costs the enforcement and
+#       keeps the declarations saying what they do.
 #   readability-use-anyofallof
 #       Would replace a four-line `for` in DeclToIr.cpp with std::any_of and a
 #       lambda. The loop is the more approachable form for this audience.
@@ -37,7 +80,10 @@
 
 Checks: >
   -*,
+  cppcoreguidelines-virtual-class-destructor,
+  google-explicit-constructor,
   modernize-deprecated-headers,
+  modernize-use-default-member-init,
   modernize-use-auto,
   modernize-use-bool-literals,
   modernize-use-equals-default,
@@ -64,7 +110,23 @@ Checks: >
 
 # Never analyze flex/bison output; it is machine-generated and regenerated on
 # every configure.
-HeaderFilterRegex: 'src/(?!generated/).*\.hpp$'
+#
+# Two keys rather than one negative-lookahead pattern. clang-tidy matches these
+# with llvm::Regex, which is POSIX ERE and has no lookahead, and a pattern it
+# cannot compile does not fail the run: llvm::Regex::match() returns false for
+# every path instead. The earlier 'src/(?!generated/).*\.hpp$' therefore
+# suppressed every header diagnostic rather than excluding one directory, and
+# so reported clean while analyzing no header at all. Check any change to these
+# two lines by confirming a deliberate slip in a .hpp is still reported.
+HeaderFilterRegex: 'src/.*\.hpp$'
+ExcludeHeaderFilterRegex: 'src/generated/.*'
 
 WarningsAsErrors: ''
 FormatStyle: file
+
+# modernize-use-default-member-init writes `T* p{nullptr}` by default. Every
+# member initializer already in this tree uses assignment -- SourceLoc, the
+# Symbol variant, the option structs -- so pin the option rather than let the
+# check introduce a second spelling.
+CheckOptions:
+  modernize-use-default-member-init.UseAssignment: true

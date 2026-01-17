@@ -28,14 +28,15 @@ class Value;
 namespace convert {
 
 // Convert value to type. Returns nullptr if no conversion applies.
-llvm::Value* typeCast(
+[[nodiscard]] llvm::Value* typeCast(
     llvm::IRBuilder<>& builder, llvm::Value* value, llvm::Type* type,
     AST::BuiltinTypeId srcTypeId = AST::BuiltinTypeId::UNKNOWN,
     AST::BuiltinTypeId dstTypeId = AST::BuiltinTypeId::UNKNOWN);
 
 // Truth test for conditions: != 0 for integers and floats, != null for
 // pointers.
-llvm::Value* castToBool(llvm::IRBuilder<>& builder, llvm::Value* value);
+[[nodiscard]] llvm::Value* castToBool(llvm::IRBuilder<>& builder,
+                                      llvm::Value* value);
 
 // Widen value toward type, never narrow. Used where C promotes but must not
 // truncate.
@@ -44,12 +45,13 @@ llvm::Value* typeUpgrade(llvm::IRBuilder<>& builder, llvm::Value* value,
                          AST::BuiltinTypeId dstTypeId);
 
 // Applies the usual arithmetic conversions to a binary operand pair in place,
-// reporting the common type and its signedness. Returns false when the operands
-// are not both arithmetic, which is how the operator lowering in
-// irgen/Operators.hpp detects the pointer cases it must handle itself.
+// reporting the common type. Returns false when the operands are not both
+// arithmetic, which is how the operator lowering in irgen/Operators.hpp detects
+// the pointer cases it must handle itself. A caller that needs the signedness
+// of resultTypeId asks typerules::isUnsignedTypeId() for it.
 bool typeUpgrade(llvm::IRBuilder<>& builder, llvm::Value*& lhs,
                  llvm::Value*& rhs, AST::BuiltinTypeId lhsTypeId,
-                 AST::BuiltinTypeId rhsTypeId, AST::BuiltinTypeId& resultTypeId,
-                 bool& isUnsigned);
+                 AST::BuiltinTypeId rhsTypeId,
+                 AST::BuiltinTypeId& resultTypeId);
 
 }  // namespace convert

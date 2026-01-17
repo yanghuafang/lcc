@@ -24,11 +24,11 @@ std::string getId() {
 }  // namespace
 
 std::pair<std::string, std::string> Program::genGraph() const {
-  std::string root = "Program";
+  const std::string root = "Program";
   std::string tree = "Program [label = Program]\n";
   for (Decl* decl : *decls_) {
     if (decl != nullptr) {
-      std::pair<std::string, std::string> graph = decl->genGraph();
+      const std::pair<std::string, std::string> graph = decl->genGraph();
       tree += root + " -> " + graph.first + "\n";
       tree += graph.second;
     }
@@ -39,8 +39,8 @@ std::pair<std::string, std::string> Program::genGraph() const {
 // Declarations
 
 std::pair<std::string, std::string> FuncDecl::genGraph() const {
-  std::string id = getId();
-  std::string root = "FuncDecl_" + id;
+  const std::string id = getId();
+  const std::string root = "FuncDecl_" + id;
   std::string tree = root + " [label = FuncDecl";
   if (isStatic_) {
     tree += ", static = true";
@@ -48,23 +48,26 @@ std::pair<std::string, std::string> FuncDecl::genGraph() const {
   tree += "]\n";
 
   if (retType_ != nullptr) {
-    std::pair<std::string, std::string> retTypeGraph = retType_->genGraph();
+    const std::pair<std::string, std::string> retTypeGraph =
+        retType_->genGraph();
     tree += root + " -> " + retTypeGraph.first + "\n";
     tree += retTypeGraph.second;
   }
 
-  std::string funcNameNode = funcName_ + "_" + id;
+  const std::string funcNameNode = funcName_ + "_" + id;
   tree += funcNameNode + "[ label = " + funcName_ + "]\n";
   tree += root + " -> " + funcNameNode + "\n";
 
   if (paramList_ != nullptr) {
-    std::pair<std::string, std::string> paramListGraph = paramList_->genGraph();
+    const std::pair<std::string, std::string> paramListGraph =
+        paramList_->genGraph();
     tree += root + " -> " + paramListGraph.first + "\n";
     tree += paramListGraph.second;
   }
 
   if (funcBody_ != nullptr) {
-    std::pair<std::string, std::string> funcBodyGraph = funcBody_->genGraph();
+    const std::pair<std::string, std::string> funcBodyGraph =
+        funcBody_->genGraph();
     tree += root + " -> " + funcBodyGraph.first + "\n";
     tree += funcBodyGraph.second;
   }
@@ -73,18 +76,19 @@ std::pair<std::string, std::string> FuncDecl::genGraph() const {
 }
 
 std::pair<std::string, std::string> Param::genGraph() const {
-  std::string id = getId();
-  std::string root = "Param_" + id;
+  const std::string id = getId();
+  const std::string root = "Param_" + id;
   std::string tree = root + " [label = Param]\n";
 
   if (varType_ != nullptr) {
-    std::pair<std::string, std::string> varTypeGraph = varType_->genGraph();
+    const std::pair<std::string, std::string> varTypeGraph =
+        varType_->genGraph();
     tree += root + " -> " + varTypeGraph.first + "\n";
     tree += varTypeGraph.second;
   }
 
-  std::string varName = varName_.empty() ? "anonymous" : varName_;
-  std::string varNameNode = varName + "_" + id;
+  const std::string varName = varName_.empty() ? "anonymous" : varName_;
+  const std::string varNameNode = varName + "_" + id;
   tree += varNameNode + " [label = " + varName + "]\n";
   tree += root + " -> " + varNameNode + "\n";
 
@@ -92,21 +96,21 @@ std::pair<std::string, std::string> Param::genGraph() const {
 }
 
 std::pair<std::string, std::string> ParamList::genGraph() const {
-  std::string id = getId();
-  std::string root = "ParamList_" + id;
+  const std::string id = getId();
+  const std::string root = "ParamList_" + id;
   std::string tree = root + " [label = ParamList]\n";
 
   for (Param* param : *this) {
     if (param != nullptr) {
-      std::pair<std::string, std::string> graph = param->genGraph();
+      const std::pair<std::string, std::string> graph = param->genGraph();
       tree += root + " -> " + graph.first + "\n";
       tree += graph.second;
     }
   }
 
   if (isVariant_) {
-    std::string variant = "\"...\"";
-    std::string variantNode = "\"..._" + id + "\"";
+    const std::string variant = "\"...\"";
+    const std::string variantNode = "\"..._" + id + "\"";
     tree += variantNode + " [label = " + variant + "]\n";
     tree += root + " -> " + variantNode + "\n";
   }
@@ -115,13 +119,13 @@ std::pair<std::string, std::string> ParamList::genGraph() const {
 }
 
 std::pair<std::string, std::string> FuncBody::genGraph() const {
-  std::string id = getId();
-  std::string root = "FuncBody_" + id;
+  const std::string id = getId();
+  const std::string root = "FuncBody_" + id;
   std::string tree = root + " [label = FuncBody]\n";
 
   for (Stmt* stmt : *content_) {
     if (stmt != nullptr) {
-      std::pair<std::string, std::string> graph = stmt->genGraph();
+      const std::pair<std::string, std::string> graph = stmt->genGraph();
       tree += root + " -> " + graph.first + "\n";
       tree += graph.second;
     }
@@ -131,8 +135,8 @@ std::pair<std::string, std::string> FuncBody::genGraph() const {
 }
 
 std::pair<std::string, std::string> VarDecl::genGraph() const {
-  std::string id = getId();
-  std::string root = "VarDecl_" + id;
+  const std::string id = getId();
+  const std::string root = "VarDecl_" + id;
   std::string tree = root + " [label = VarDecl";
   if (isStatic_) {
     tree += ", static = true";
@@ -140,14 +144,15 @@ std::pair<std::string, std::string> VarDecl::genGraph() const {
   tree += "]\n";
 
   if (varType_ != nullptr) {
-    std::pair<std::string, std::string> varTypeGraph = varType_->genGraph();
+    const std::pair<std::string, std::string> varTypeGraph =
+        varType_->genGraph();
     tree += root + " -> " + varTypeGraph.first + "\n";
     tree += varTypeGraph.second;
   }
 
   for (VarInit* var : *varList_) {
     if (var != nullptr) {
-      std::pair<std::string, std::string> graph = var->genGraph();
+      const std::pair<std::string, std::string> graph = var->genGraph();
       tree += root + " -> " + graph.first + "\n";
       tree += graph.second;
     }
@@ -157,11 +162,11 @@ std::pair<std::string, std::string> VarDecl::genGraph() const {
 }
 
 std::pair<std::string, std::string> VarInit::genGraph() const {
-  std::string id = getId();
-  std::string root = "VarInit_" + id;
+  const std::string id = getId();
+  const std::string root = "VarInit_" + id;
   std::string tree = root + " [label = VarInit]\n";
 
-  std::string varNameNode = varName_ + "_" + id;
+  const std::string varNameNode = varName_ + "_" + id;
   tree += varNameNode + " [label = " + varName_ + "]\n";
   tree += root + " -> " + varNameNode + "\n";
 
@@ -174,13 +179,13 @@ std::pair<std::string, std::string> VarInit::genGraph() const {
       boundsLabel += std::to_string(arrayBounds_[i]);
     }
     boundsLabel += "]";
-    std::string boundsNode = "bounds_" + id;
+    const std::string boundsNode = "bounds_" + id;
     tree += boundsNode + " [label = \"" + boundsLabel + "\"]\n";
     tree += root + " -> " + boundsNode + "\n";
   }
 
   if (initialExpr_ != nullptr) {
-    std::pair<std::string, std::string> initialExprGraph =
+    const std::pair<std::string, std::string> initialExprGraph =
         initialExpr_->genGraph();
     tree += root + " -> " + initialExprGraph.first + "\n";
     tree += initialExprGraph.second;
@@ -189,7 +194,8 @@ std::pair<std::string, std::string> VarInit::genGraph() const {
   if (initList_ != nullptr) {
     for (InitElement* element : *initList_) {
       if (element != nullptr) {
-        std::pair<std::string, std::string> elementGraph = element->genGraph();
+        const std::pair<std::string, std::string> elementGraph =
+            element->genGraph();
         tree += root + " -> " + elementGraph.first + "\n";
         tree += elementGraph.second;
       }
@@ -200,12 +206,12 @@ std::pair<std::string, std::string> VarInit::genGraph() const {
 }
 
 std::pair<std::string, std::string> InitElement::genGraph() const {
-  std::string id = getId();
-  std::string root = "InitElement_" + id;
+  const std::string id = getId();
+  const std::string root = "InitElement_" + id;
   std::string tree = root + " [label = InitElement]\n";
 
   if (expr_ != nullptr) {
-    std::pair<std::string, std::string> exprGraph = expr_->genGraph();
+    const std::pair<std::string, std::string> exprGraph = expr_->genGraph();
     tree += root + " -> " + exprGraph.first + "\n";
     tree += exprGraph.second;
   }
@@ -213,7 +219,8 @@ std::pair<std::string, std::string> InitElement::genGraph() const {
   if (nested_ != nullptr) {
     for (InitElement* element : *nested_) {
       if (element != nullptr) {
-        std::pair<std::string, std::string> elementGraph = element->genGraph();
+        const std::pair<std::string, std::string> elementGraph =
+            element->genGraph();
         tree += root + " -> " + elementGraph.first + "\n";
         tree += elementGraph.second;
       }
@@ -224,12 +231,13 @@ std::pair<std::string, std::string> InitElement::genGraph() const {
 }
 
 std::pair<std::string, std::string> TypeDecl::genGraph() const {
-  std::string id = getId();
-  std::string root = "TypeDecl_" + id;
+  const std::string id = getId();
+  const std::string root = "TypeDecl_" + id;
   std::string tree = root + " [label = TypeDecl]\n";
 
   if (varType_ != nullptr) {
-    std::pair<std::string, std::string> varTypeGraph = varType_->genGraph();
+    const std::pair<std::string, std::string> varTypeGraph =
+        varType_->genGraph();
     tree += root + " -> " + varTypeGraph.first + "\n";
     tree += varTypeGraph.second;
   }
@@ -238,13 +246,13 @@ std::pair<std::string, std::string> TypeDecl::genGraph() const {
 }
 
 std::pair<std::string, std::string> TypedefDecl::genGraph() const {
-  std::string id = getId();
-  std::string root = "TypedefDecl_" + id;
+  const std::string id = getId();
+  const std::string root = "TypedefDecl_" + id;
   std::string tree =
       root + " [label = TypedefDecl, alias = \"" + aliasName_ + "\"]\n";
 
   if (underlyingType_ != nullptr) {
-    std::pair<std::string, std::string> varTypeGraph =
+    const std::pair<std::string, std::string> varTypeGraph =
         underlyingType_->genGraph();
     tree += root + " -> " + varTypeGraph.first + "\n";
     tree += varTypeGraph.second;
@@ -256,18 +264,18 @@ std::pair<std::string, std::string> TypedefDecl::genGraph() const {
 // Variable Types
 
 std::pair<std::string, std::string> BuiltinType::genGraph() const {
-  std::string id = getId();
-  std::string root = "BuiltinType_" + id;
+  const std::string id = getId();
+  const std::string root = "BuiltinType_" + id;
   std::string tree = root + " [label = BuiltinType]\n";
 
   if (isConst_) {
-    std::string isConst = "const";
-    std::string isConstNode = isConst + "_" + id;
+    const std::string isConst = "const";
+    const std::string isConstNode = isConst + "_" + id;
     tree += isConstNode + " [label = " + isConst + "]\n";
     tree += root + " -> " + isConstNode + "\n";
   }
 
-  std::string typeNameNode = "\"" + typeName_ + "_" + id + "\"";
+  const std::string typeNameNode = "\"" + typeName_ + "_" + id + "\"";
   tree += typeNameNode + " [label = \"" + typeName_ + "\"]\n";
   tree += root + " -> " + typeNameNode + "\n";
 
@@ -275,18 +283,18 @@ std::pair<std::string, std::string> BuiltinType::genGraph() const {
 }
 
 std::pair<std::string, std::string> PointerType::genGraph() const {
-  std::string id = getId();
-  std::string root = "PointerType_" + id;
+  const std::string id = getId();
+  const std::string root = "PointerType_" + id;
   std::string tree = root + " [label = PointerType]\n";
 
   if (isConst_) {
-    std::string isConst = "const";
-    std::string isConstNode = isConst + "_" + id;
+    const std::string isConst = "const";
+    const std::string isConstNode = isConst + "_" + id;
     tree += isConstNode + " [label = " + isConst + "]\n";
     tree += root + " -> " + isConstNode + "\n";
   }
 
-  std::string typeNameNode = "\"" + typeName_ + "_" + id + "\"";
+  const std::string typeNameNode = "\"" + typeName_ + "_" + id + "\"";
   tree += typeNameNode + " [label = \"" + typeName_ + "\"]\n";
   tree += root + " -> " + typeNameNode + "\n";
 
@@ -294,18 +302,18 @@ std::pair<std::string, std::string> PointerType::genGraph() const {
 }
 
 std::pair<std::string, std::string> ArrayType::genGraph() const {
-  std::string id = getId();
-  std::string root = "ArrayType_" + id;
+  const std::string id = getId();
+  const std::string root = "ArrayType_" + id;
   std::string tree = root + " [label = ArrayType]\n";
 
   if (isConst_) {
-    std::string isConst = "const";
-    std::string isConstNode = isConst + "_" + id;
+    const std::string isConst = "const";
+    const std::string isConstNode = isConst + "_" + id;
     tree += isConstNode + " [label = " + isConst + "]\n";
     tree += root + " -> " + isConstNode + "\n";
   }
 
-  std::string typeNameNode = "\"" + typeName_ + "_" + id + "\"";
+  const std::string typeNameNode = "\"" + typeName_ + "_" + id + "\"";
   tree += typeNameNode + " [label = \"" + typeName_ + "\"]\n";
   tree += root + " -> " + typeNameNode + "\n";
 
@@ -313,18 +321,18 @@ std::pair<std::string, std::string> ArrayType::genGraph() const {
 }
 
 std::pair<std::string, std::string> DefinedType::genGraph() const {
-  std::string id = getId();
-  std::string root = "DefinedType_" + id;
+  const std::string id = getId();
+  const std::string root = "DefinedType_" + id;
   std::string tree = root + " [label = DefinedType]\n";
 
   if (isConst_) {
-    std::string isConst = "const";
-    std::string isConstNode = isConst + "_" + id;
+    const std::string isConst = "const";
+    const std::string isConstNode = isConst + "_" + id;
     tree += isConstNode + " [label = " + isConst + "]\n";
     tree += root + " -> " + isConstNode + "\n";
   }
 
-  std::string typeNameNode = "\"" + typeName_ + "_" + id + "\"";
+  const std::string typeNameNode = "\"" + typeName_ + "_" + id + "\"";
   tree += typeNameNode + " [label = \"" + typeName_ + "\"]\n";
   tree += root + " -> " + typeNameNode + "\n";
 
@@ -332,24 +340,24 @@ std::pair<std::string, std::string> DefinedType::genGraph() const {
 }
 
 std::pair<std::string, std::string> StructType::genGraph() const {
-  std::string id = getId();
-  std::string root = "StructType_" + id;
+  const std::string id = getId();
+  const std::string root = "StructType_" + id;
   std::string tree = root + " [label = StructType]\n";
 
   if (isConst_) {
-    std::string isConst = "const";
-    std::string isConstNode = isConst + "_" + id;
+    const std::string isConst = "const";
+    const std::string isConstNode = isConst + "_" + id;
     tree += isConstNode + " [label = " + isConst + "]\n";
     tree += root + " -> " + isConstNode + "\n";
   }
 
-  std::string typeNameNode = "\"" + typeName_ + "_" + id + "\"";
+  const std::string typeNameNode = "\"" + typeName_ + "_" + id + "\"";
   tree += typeNameNode + " [label = \"" + typeName_ + "\"]\n";
   tree += root + " -> " + typeNameNode + "\n";
 
   for (FieldDecl* fieldDecl : *structBody_) {
     if (fieldDecl != nullptr) {
-      std::pair<std::string, std::string> graph = fieldDecl->genGraph();
+      const std::pair<std::string, std::string> graph = fieldDecl->genGraph();
       tree += root + " -> " + graph.first + "\n";
       tree += graph.second;
     }
@@ -359,24 +367,24 @@ std::pair<std::string, std::string> StructType::genGraph() const {
 }
 
 std::pair<std::string, std::string> UnionType::genGraph() const {
-  std::string id = getId();
-  std::string root = "UnionType_" + id;
+  const std::string id = getId();
+  const std::string root = "UnionType_" + id;
   std::string tree = root + " [label = UnionType]\n";
 
   if (isConst_) {
-    std::string isConst = "const";
-    std::string isConstNode = isConst + "_" + id;
+    const std::string isConst = "const";
+    const std::string isConstNode = isConst + "_" + id;
     tree += isConstNode + " [label = " + isConst + "]\n";
     tree += root + " -> " + isConstNode + "\n";
   }
 
-  std::string typeNameNode = "\"" + typeName_ + "_" + id + "\"";
+  const std::string typeNameNode = "\"" + typeName_ + "_" + id + "\"";
   tree += typeNameNode + " [label = \"" + typeName_ + "\"]\n";
   tree += root + " -> " + typeNameNode + "\n";
 
   for (FieldDecl* fieldDecl : *unionBody_) {
     if (fieldDecl != nullptr) {
-      std::pair<std::string, std::string> graph = fieldDecl->genGraph();
+      const std::pair<std::string, std::string> graph = fieldDecl->genGraph();
       tree += root + " -> " + graph.first + "\n";
       tree += graph.second;
     }
@@ -386,18 +394,19 @@ std::pair<std::string, std::string> UnionType::genGraph() const {
 }
 
 std::pair<std::string, std::string> FieldDecl::genGraph() const {
-  std::string id = getId();
-  std::string root = "FieldDecl_" + id;
+  const std::string id = getId();
+  const std::string root = "FieldDecl_" + id;
   std::string tree = root + " [label = FieldDecl]\n";
 
   if (varType_ != nullptr) {
-    std::pair<std::string, std::string> varTypeGraph = varType_->genGraph();
+    const std::pair<std::string, std::string> varTypeGraph =
+        varType_->genGraph();
     tree += root + " -> " + varTypeGraph.first + "\n";
     tree += varTypeGraph.second;
   }
 
   for (const std::string& member : *memberList_) {
-    std::string memberNode = member + "_" + id;
+    const std::string memberNode = member + "_" + id;
     tree += memberNode + " [label = " + member + "]\n";
     tree += root + " -> " + memberNode + "\n";
   }
@@ -406,24 +415,24 @@ std::pair<std::string, std::string> FieldDecl::genGraph() const {
 }
 
 std::pair<std::string, std::string> EnumType::genGraph() const {
-  std::string id = getId();
-  std::string root = "EnumType_" + id;
+  const std::string id = getId();
+  const std::string root = "EnumType_" + id;
   std::string tree = root + " [label = EnumType]\n";
 
   if (isConst_) {
-    std::string isConst = "const";
-    std::string isConstNode = isConst + "_" + id;
+    const std::string isConst = "const";
+    const std::string isConstNode = isConst + "_" + id;
     tree += isConstNode + " [label = " + isConst + "]\n";
     tree += root + " -> " + isConstNode + "\n";
   }
 
-  std::string typeNameNode = "\"" + typeName_ + "_" + id + "\"";
+  const std::string typeNameNode = "\"" + typeName_ + "_" + id + "\"";
   tree += typeNameNode + " [label = \"" + typeName_ + "\"]\n";
   tree += root + " -> " + typeNameNode + "\n";
 
   for (Enum* enumEntity : *enumList_) {
     if (enumEntity != nullptr) {
-      std::pair<std::string, std::string> graph = enumEntity->genGraph();
+      const std::pair<std::string, std::string> graph = enumEntity->genGraph();
       tree += root + " -> " + graph.first + "\n";
       tree += graph.second;
     }
@@ -433,16 +442,17 @@ std::pair<std::string, std::string> EnumType::genGraph() const {
 }
 
 std::pair<std::string, std::string> Enum::genGraph() const {
-  std::string id = getId();
-  std::string root = "Enum_" + id;
+  const std::string id = getId();
+  const std::string root = "Enum_" + id;
   std::string tree = root + " [label = Enum]\n";
 
-  std::string nameNode = name_ + "_" + id;
+  const std::string nameNode = name_ + "_" + id;
   tree += nameNode + " [label = " + name_ + "]\n";
   tree += root + " -> " + nameNode + "\n";
 
   if (hasValue_) {
-    std::string valueNode = "\"" + std::to_string(value_) + "_" + id + "\"";
+    const std::string valueNode =
+        "\"" + std::to_string(value_) + "_" + id + "\"";
     tree += valueNode + " [label = \"" + std::to_string(value_) + "\"]\n";
     tree += root + " -> " + valueNode + "\n";
   }
@@ -452,24 +462,27 @@ std::pair<std::string, std::string> Enum::genGraph() const {
 // Statements
 
 std::pair<std::string, std::string> IfStmt::genGraph() const {
-  std::string id = getId();
-  std::string root = "IfStmt_" + id;
+  const std::string id = getId();
+  const std::string root = "IfStmt_" + id;
   std::string tree = root + " [label = IfStmt]\n";
 
   if (condition_ != nullptr) {
-    std::pair<std::string, std::string> conditionGraph = condition_->genGraph();
+    const std::pair<std::string, std::string> conditionGraph =
+        condition_->genGraph();
     tree += root + " -> " + conditionGraph.first + "\n";
     tree += conditionGraph.second;
   }
 
   if (thenStmt_ != nullptr) {
-    std::pair<std::string, std::string> thenStmtGraph = thenStmt_->genGraph();
+    const std::pair<std::string, std::string> thenStmtGraph =
+        thenStmt_->genGraph();
     tree += root + " -> " + thenStmtGraph.first + "\n";
     tree += thenStmtGraph.second;
   }
 
   if (elseStmt_ != nullptr) {
-    std::pair<std::string, std::string> elseStmtGraph = elseStmt_->genGraph();
+    const std::pair<std::string, std::string> elseStmtGraph =
+        elseStmt_->genGraph();
     tree += root + " -> " + elseStmtGraph.first + "\n";
     tree += elseStmtGraph.second;
   }
@@ -478,19 +491,21 @@ std::pair<std::string, std::string> IfStmt::genGraph() const {
 }
 
 std::pair<std::string, std::string> SwitchStmt::genGraph() const {
-  std::string id = getId();
-  std::string root = "SwitchStmt_" + id;
+  const std::string id = getId();
+  const std::string root = "SwitchStmt_" + id;
   std::string tree = root + " [label = SwitchStmt]\n";
 
   if (matcher_ != nullptr) {
-    std::pair<std::string, std::string> matcherGraph = matcher_->genGraph();
+    const std::pair<std::string, std::string> matcherGraph =
+        matcher_->genGraph();
     tree += root + " -> " + matcherGraph.first + "\n";
     tree += matcherGraph.second;
   }
 
   for (CaseStmt* caseStmt : *caseStmtList_) {
     if (caseStmt != nullptr) {
-      std::pair<std::string, std::string> caseStmtGraph = caseStmt->genGraph();
+      const std::pair<std::string, std::string> caseStmtGraph =
+          caseStmt->genGraph();
       tree += root + " -> " + caseStmtGraph.first + "\n";
       tree += caseStmtGraph.second;
     }
@@ -500,19 +515,20 @@ std::pair<std::string, std::string> SwitchStmt::genGraph() const {
 }
 
 std::pair<std::string, std::string> CaseStmt::genGraph() const {
-  std::string id = getId();
-  std::string root = "CaseStmt_" + id;
+  const std::string id = getId();
+  const std::string root = "CaseStmt_" + id;
   std::string tree = root + " [label = CaseStmt]\n";
 
   if (condition_ != nullptr) {
-    std::pair<std::string, std::string> conditionGraph = condition_->genGraph();
+    const std::pair<std::string, std::string> conditionGraph =
+        condition_->genGraph();
     tree += root + " -> " + conditionGraph.first + "\n";
     tree += conditionGraph.second;
   }
 
   for (Stmt* stmt : *content_) {
     if (stmt != nullptr) {
-      std::pair<std::string, std::string> graph = stmt->genGraph();
+      const std::pair<std::string, std::string> graph = stmt->genGraph();
       tree += root + " -> " + graph.first + "\n";
       tree += graph.second;
     }
@@ -522,30 +538,33 @@ std::pair<std::string, std::string> CaseStmt::genGraph() const {
 }
 
 std::pair<std::string, std::string> ForStmt::genGraph() const {
-  std::string id = getId();
-  std::string root = "ForStmt_" + id;
+  const std::string id = getId();
+  const std::string root = "ForStmt_" + id;
   std::string tree = root + " [label = ForStmt]\n";
 
   if (initial_ != nullptr) {
-    std::pair<std::string, std::string> initialGraph = initial_->genGraph();
+    const std::pair<std::string, std::string> initialGraph =
+        initial_->genGraph();
     tree += root + " -> " + initialGraph.first + "\n";
     tree += initialGraph.second;
   }
 
   if (condition_ != nullptr) {
-    std::pair<std::string, std::string> conditionGraph = condition_->genGraph();
+    const std::pair<std::string, std::string> conditionGraph =
+        condition_->genGraph();
     tree += root + " -> " + conditionGraph.first + "\n";
     tree += conditionGraph.second;
   }
 
   if (update_ != nullptr) {
-    std::pair<std::string, std::string> updateGraph = update_->genGraph();
+    const std::pair<std::string, std::string> updateGraph = update_->genGraph();
     tree += root + " -> " + updateGraph.first + "\n";
     tree += updateGraph.second;
   }
 
   if (loopBody_ != nullptr) {
-    std::pair<std::string, std::string> loopBodyGraph = loopBody_->genGraph();
+    const std::pair<std::string, std::string> loopBodyGraph =
+        loopBody_->genGraph();
     tree += root + " -> " + loopBodyGraph.first + "\n";
     tree += loopBodyGraph.second;
   }
@@ -554,18 +573,20 @@ std::pair<std::string, std::string> ForStmt::genGraph() const {
 }
 
 std::pair<std::string, std::string> DoStmt::genGraph() const {
-  std::string id = getId();
-  std::string root = "DoStmt_" + id;
+  const std::string id = getId();
+  const std::string root = "DoStmt_" + id;
   std::string tree = root + " [label = DoStmt]\n";
 
   if (loopBody_ != nullptr) {
-    std::pair<std::string, std::string> loopBodyGraph = loopBody_->genGraph();
+    const std::pair<std::string, std::string> loopBodyGraph =
+        loopBody_->genGraph();
     tree += root + " -> " + loopBodyGraph.first + "\n";
     tree += loopBodyGraph.second;
   }
 
   if (condition_ != nullptr) {
-    std::pair<std::string, std::string> conditionGraph = condition_->genGraph();
+    const std::pair<std::string, std::string> conditionGraph =
+        condition_->genGraph();
     tree += root + " -> " + conditionGraph.first + "\n";
     tree += conditionGraph.second;
   }
@@ -574,18 +595,20 @@ std::pair<std::string, std::string> DoStmt::genGraph() const {
 }
 
 std::pair<std::string, std::string> WhileStmt::genGraph() const {
-  std::string id = getId();
-  std::string root = "WhileStmt_" + id;
+  const std::string id = getId();
+  const std::string root = "WhileStmt_" + id;
   std::string tree = root + " [label = WhileStmt]\n";
 
   if (condition_ != nullptr) {
-    std::pair<std::string, std::string> conditionGraph = condition_->genGraph();
+    const std::pair<std::string, std::string> conditionGraph =
+        condition_->genGraph();
     tree += root + " -> " + conditionGraph.first + "\n";
     tree += conditionGraph.second;
   }
 
   if (loopBody_ != nullptr) {
-    std::pair<std::string, std::string> loopBodyGraph = loopBody_->genGraph();
+    const std::pair<std::string, std::string> loopBodyGraph =
+        loopBody_->genGraph();
     tree += root + " -> " + loopBodyGraph.first + "\n";
     tree += loopBodyGraph.second;
   }
@@ -594,26 +617,26 @@ std::pair<std::string, std::string> WhileStmt::genGraph() const {
 }
 
 std::pair<std::string, std::string> ContinueStmt::genGraph() const {
-  std::string id = getId();
-  std::string root = "ContinueStmt_" + id;
-  std::string tree = root + " [label = ContinueStmt]\n";
+  const std::string id = getId();
+  const std::string root = "ContinueStmt_" + id;
+  const std::string tree = root + " [label = ContinueStmt]\n";
   return std::make_pair(root, tree);
 }
 
 std::pair<std::string, std::string> BreakStmt::genGraph() const {
-  std::string id = getId();
-  std::string root = "BreakStmt_" + id;
-  std::string tree = root + " [label = BreakStmt]\n";
+  const std::string id = getId();
+  const std::string root = "BreakStmt_" + id;
+  const std::string tree = root + " [label = BreakStmt]\n";
   return std::make_pair(root, tree);
 }
 
 std::pair<std::string, std::string> ReturnStmt::genGraph() const {
-  std::string id = getId();
-  std::string root = "ReturnStmt_" + id;
+  const std::string id = getId();
+  const std::string root = "ReturnStmt_" + id;
   std::string tree = root + " [label = ReturnStmt]\n";
 
   if (retVal_ != nullptr) {
-    std::pair<std::string, std::string> retValGraph = retVal_->genGraph();
+    const std::pair<std::string, std::string> retValGraph = retVal_->genGraph();
     tree += root + " -> " + retValGraph.first + "\n";
     tree += retValGraph.second;
   }
@@ -622,13 +645,13 @@ std::pair<std::string, std::string> ReturnStmt::genGraph() const {
 }
 
 std::pair<std::string, std::string> Block::genGraph() const {
-  std::string id = getId();
-  std::string root = "Block_" + id;
+  const std::string id = getId();
+  const std::string root = "Block_" + id;
   std::string tree = root + " [label = Block]\n";
 
   for (Stmt* stmt : *content_) {
     if (stmt != nullptr) {
-      std::pair<std::string, std::string> graph = stmt->genGraph();
+      const std::pair<std::string, std::string> graph = stmt->genGraph();
       tree += root + " -> " + graph.first + "\n";
       tree += graph.second;
     }
@@ -640,11 +663,11 @@ std::pair<std::string, std::string> Block::genGraph() const {
 // Expressions
 
 std::pair<std::string, std::string> Variable::genGraph() const {
-  std::string id = getId();
-  std::string root = "Variable_" + id;
+  const std::string id = getId();
+  const std::string root = "Variable_" + id;
   std::string tree = root + " [label = Variable]\n";
 
-  std::string varNameNode = varName_ + "_" + id;
+  const std::string varNameNode = varName_ + "_" + id;
   tree += varNameNode + " [label = " + varName_ + "]\n";
   tree += root + " -> " + varNameNode + "\n";
 
@@ -652,8 +675,8 @@ std::pair<std::string, std::string> Variable::genGraph() const {
 }
 
 std::pair<std::string, std::string> Constant::genGraph() const {
-  std::string id = getId();
-  std::string root = "Constant_" + id;
+  const std::string id = getId();
+  const std::string root = "Constant_" + id;
   std::string tree = root + " [label = Constant]\n";
 
   std::string node;
@@ -705,13 +728,13 @@ std::pair<std::string, std::string> Constant::genGraph() const {
 }
 
 std::pair<std::string, std::string> ConstStr::genGraph() const {
-  std::string id = getId();
-  std::string root = "ConstStr_" + id;
+  const std::string id = getId();
+  const std::string root = "ConstStr_" + id;
   std::string tree = root + " [label = ConstStr]\n";
 
   std::string str = str_;
   str.erase(std::remove(str.begin(), str.end(), '\n'), str.end());
-  std::string node = "str_" + id;
+  const std::string node = "str_" + id;
   tree += node + " [label = \"" + str + "\"]\n";
   tree += root + " -> " + node + "\n";
 
@@ -719,18 +742,18 @@ std::pair<std::string, std::string> ConstStr::genGraph() const {
 }
 
 std::pair<std::string, std::string> CommaExpr::genGraph() const {
-  std::string id = getId();
-  std::string root = "CommaExpr_" + id;
+  const std::string id = getId();
+  const std::string root = "CommaExpr_" + id;
   std::string tree = root + " [label = CommaExpr]\n";
 
   if (lhs_ != nullptr) {
-    std::pair<std::string, std::string> lhsGraph = lhs_->genGraph();
+    const std::pair<std::string, std::string> lhsGraph = lhs_->genGraph();
     tree += root + " -> " + lhsGraph.first + "\n";
     tree += lhsGraph.second;
   }
 
   if (rhs_ != nullptr) {
-    std::pair<std::string, std::string> rhsGraph = rhs_->genGraph();
+    const std::pair<std::string, std::string> rhsGraph = rhs_->genGraph();
     tree += root + " -> " + rhsGraph.first + "\n";
     tree += rhsGraph.second;
   }
@@ -739,17 +762,17 @@ std::pair<std::string, std::string> CommaExpr::genGraph() const {
 }
 
 std::pair<std::string, std::string> FuncCall::genGraph() const {
-  std::string id = getId();
-  std::string root = "FuncCall_" + id;
+  const std::string id = getId();
+  const std::string root = "FuncCall_" + id;
   std::string tree = root + " [label = FuncCall]\n";
 
-  std::string funcNameNode = funcName_ + "_" + id;
+  const std::string funcNameNode = funcName_ + "_" + id;
   tree += funcNameNode + "[ label = " + funcName_ + "]\n";
   tree += root + " -> " + funcNameNode + "\n";
 
   for (Expr* arg : *argList_) {
     if (arg != nullptr) {
-      std::pair<std::string, std::string> graph = arg->genGraph();
+      const std::pair<std::string, std::string> graph = arg->genGraph();
       tree += root + " -> " + graph.first + "\n";
       tree += graph.second;
     }
@@ -759,17 +782,17 @@ std::pair<std::string, std::string> FuncCall::genGraph() const {
 }
 
 std::pair<std::string, std::string> StructRef::genGraph() const {
-  std::string id = getId();
-  std::string root = "StructRef_" + id;
+  const std::string id = getId();
+  const std::string root = "StructRef_" + id;
   std::string tree = root + " [label = StructRef]\n";
 
   if (struct_ != nullptr) {
-    std::pair<std::string, std::string> graph = struct_->genGraph();
+    const std::pair<std::string, std::string> graph = struct_->genGraph();
     tree += root + " -> " + graph.first + "\n";
     tree += graph.second;
   }
 
-  std::string memberNameNode = memberName_ + "_" + id;
+  const std::string memberNameNode = memberName_ + "_" + id;
   tree += memberNameNode + "[ label = " + memberName_ + "]\n";
   tree += root + " -> " + memberNameNode + "\n";
 
@@ -777,17 +800,17 @@ std::pair<std::string, std::string> StructRef::genGraph() const {
 }
 
 std::pair<std::string, std::string> StructDeref::genGraph() const {
-  std::string id = getId();
-  std::string root = "StructDeref_" + id;
+  const std::string id = getId();
+  const std::string root = "StructDeref_" + id;
   std::string tree = root + " [label = StructDeref]\n";
 
   if (structPtr_ != nullptr) {
-    std::pair<std::string, std::string> graph = structPtr_->genGraph();
+    const std::pair<std::string, std::string> graph = structPtr_->genGraph();
     tree += root + " -> " + graph.first + "\n";
     tree += graph.second;
   }
 
-  std::string memberNameNode = memberName_ + "_" + id;
+  const std::string memberNameNode = memberName_ + "_" + id;
   tree += memberNameNode + "[ label = " + memberName_ + "]\n";
   tree += root + " -> " + memberNameNode + "\n";
 
@@ -795,18 +818,18 @@ std::pair<std::string, std::string> StructDeref::genGraph() const {
 }
 
 std::pair<std::string, std::string> Subscript::genGraph() const {
-  std::string id = getId();
-  std::string root = "Subscript_" + id;
+  const std::string id = getId();
+  const std::string root = "Subscript_" + id;
   std::string tree = root + " [label = Subscript]\n";
 
   if (array_ != nullptr) {
-    std::pair<std::string, std::string> arrayGraph = array_->genGraph();
+    const std::pair<std::string, std::string> arrayGraph = array_->genGraph();
     tree += root + " -> " + arrayGraph.first + "\n";
     tree += arrayGraph.second;
   }
 
   if (index_ != nullptr) {
-    std::pair<std::string, std::string> indexGraph = index_->genGraph();
+    const std::pair<std::string, std::string> indexGraph = index_->genGraph();
     tree += root + " -> " + indexGraph.first + "\n";
     tree += indexGraph.second;
   }
@@ -815,18 +838,20 @@ std::pair<std::string, std::string> Subscript::genGraph() const {
 }
 
 std::pair<std::string, std::string> TypeCast::genGraph() const {
-  std::string id = getId();
-  std::string root = "TypeCast_" + id;
+  const std::string id = getId();
+  const std::string root = "TypeCast_" + id;
   std::string tree = root + " [label = TypeCast]\n";
 
   if (varType_ != nullptr) {
-    std::pair<std::string, std::string> varTypeGraph = varType_->genGraph();
+    const std::pair<std::string, std::string> varTypeGraph =
+        varType_->genGraph();
     tree += root + " -> " + varTypeGraph.first + "\n";
     tree += varTypeGraph.second;
   }
 
   if (operand_ != nullptr) {
-    std::pair<std::string, std::string> operandGraph = operand_->genGraph();
+    const std::pair<std::string, std::string> operandGraph =
+        operand_->genGraph();
     tree += root + " -> " + operandGraph.first + "\n";
     tree += operandGraph.second;
   }
@@ -835,24 +860,25 @@ std::pair<std::string, std::string> TypeCast::genGraph() const {
 }
 
 std::pair<std::string, std::string> SizeOf::genGraph() const {
-  std::string id = getId();
-  std::string root = "SizeOf_" + id;
+  const std::string id = getId();
+  const std::string root = "SizeOf_" + id;
   std::string tree = root + " [label = SizeOf]\n";
 
   if (varType_ != nullptr) {
-    std::pair<std::string, std::string> varTypeGraph = varType_->genGraph();
+    const std::pair<std::string, std::string> varTypeGraph =
+        varType_->genGraph();
     tree += root + " -> " + varTypeGraph.first + "\n";
     tree += varTypeGraph.second;
   }
 
   if (expr_ != nullptr) {
-    std::pair<std::string, std::string> exprGraph = expr_->genGraph();
+    const std::pair<std::string, std::string> exprGraph = expr_->genGraph();
     tree += root + " -> " + exprGraph.first + "\n";
     tree += exprGraph.second;
   }
 
   if (!identifier_.empty()) {
-    std::string identifierNode = identifier_ + "_" + id;
+    const std::string identifierNode = identifier_ + "_" + id;
     tree += identifierNode + " [label = " + identifier_ + "]\n";
     tree += root + " -> " + identifierNode + "\n";
   }
@@ -861,12 +887,13 @@ std::pair<std::string, std::string> SizeOf::genGraph() const {
 }
 
 std::pair<std::string, std::string> UnaryPlus::genGraph() const {
-  std::string id = getId();
-  std::string root = "UnaryPlus_" + id;
+  const std::string id = getId();
+  const std::string root = "UnaryPlus_" + id;
   std::string tree = root + " [label = UnaryPlus]\n";
 
   if (operand_ != nullptr) {
-    std::pair<std::string, std::string> operandGraph = operand_->genGraph();
+    const std::pair<std::string, std::string> operandGraph =
+        operand_->genGraph();
     tree += root + " -> " + operandGraph.first + "\n";
     tree += operandGraph.second;
   }
@@ -875,12 +902,13 @@ std::pair<std::string, std::string> UnaryPlus::genGraph() const {
 }
 
 std::pair<std::string, std::string> UnaryMinus::genGraph() const {
-  std::string id = getId();
-  std::string root = "UnaryMinus_" + id;
+  const std::string id = getId();
+  const std::string root = "UnaryMinus_" + id;
   std::string tree = root + " [label = UnaryMinus]\n";
 
   if (operand_ != nullptr) {
-    std::pair<std::string, std::string> operandGraph = operand_->genGraph();
+    const std::pair<std::string, std::string> operandGraph =
+        operand_->genGraph();
     tree += root + " -> " + operandGraph.first + "\n";
     tree += operandGraph.second;
   }
@@ -889,12 +917,13 @@ std::pair<std::string, std::string> UnaryMinus::genGraph() const {
 }
 
 std::pair<std::string, std::string> PointerDeref::genGraph() const {
-  std::string id = getId();
-  std::string root = "PointerDeref_" + id;
+  const std::string id = getId();
+  const std::string root = "PointerDeref_" + id;
   std::string tree = root + " [label = PointerDeref]\n";
 
   if (operand_ != nullptr) {
-    std::pair<std::string, std::string> operandGraph = operand_->genGraph();
+    const std::pair<std::string, std::string> operandGraph =
+        operand_->genGraph();
     tree += root + " -> " + operandGraph.first + "\n";
     tree += operandGraph.second;
   }
@@ -903,12 +932,13 @@ std::pair<std::string, std::string> PointerDeref::genGraph() const {
 }
 
 std::pair<std::string, std::string> AddressOf::genGraph() const {
-  std::string id = getId();
-  std::string root = "AddressOf_" + id;
+  const std::string id = getId();
+  const std::string root = "AddressOf_" + id;
   std::string tree = root + " [label = AddressOf]\n";
 
   if (operand_ != nullptr) {
-    std::pair<std::string, std::string> operandGraph = operand_->genGraph();
+    const std::pair<std::string, std::string> operandGraph =
+        operand_->genGraph();
     tree += root + " -> " + operandGraph.first + "\n";
     tree += operandGraph.second;
   }
@@ -917,18 +947,18 @@ std::pair<std::string, std::string> AddressOf::genGraph() const {
 }
 
 std::pair<std::string, std::string> Assign::genGraph() const {
-  std::string id = getId();
-  std::string root = "Assign_" + id;
+  const std::string id = getId();
+  const std::string root = "Assign_" + id;
   std::string tree = root + " [label = Assign]\n";
 
   if (lhs_ != nullptr) {
-    std::pair<std::string, std::string> lhsGraph = lhs_->genGraph();
+    const std::pair<std::string, std::string> lhsGraph = lhs_->genGraph();
     tree += root + " -> " + lhsGraph.first + "\n";
     tree += lhsGraph.second;
   }
 
   if (rhs_ != nullptr) {
-    std::pair<std::string, std::string> rhsGraph = rhs_->genGraph();
+    const std::pair<std::string, std::string> rhsGraph = rhs_->genGraph();
     tree += root + " -> " + rhsGraph.first + "\n";
     tree += rhsGraph.second;
   }
@@ -937,18 +967,18 @@ std::pair<std::string, std::string> Assign::genGraph() const {
 }
 
 std::pair<std::string, std::string> Add::genGraph() const {
-  std::string id = getId();
-  std::string root = "Add_" + id;
+  const std::string id = getId();
+  const std::string root = "Add_" + id;
   std::string tree = root + " [label = Add]\n";
 
   if (lhs_ != nullptr) {
-    std::pair<std::string, std::string> lhsGraph = lhs_->genGraph();
+    const std::pair<std::string, std::string> lhsGraph = lhs_->genGraph();
     tree += root + " -> " + lhsGraph.first + "\n";
     tree += lhsGraph.second;
   }
 
   if (rhs_ != nullptr) {
-    std::pair<std::string, std::string> rhsGraph = rhs_->genGraph();
+    const std::pair<std::string, std::string> rhsGraph = rhs_->genGraph();
     tree += root + " -> " + rhsGraph.first + "\n";
     tree += rhsGraph.second;
   }
@@ -957,18 +987,18 @@ std::pair<std::string, std::string> Add::genGraph() const {
 }
 
 std::pair<std::string, std::string> Sub::genGraph() const {
-  std::string id = getId();
-  std::string root = "Sub_" + id;
+  const std::string id = getId();
+  const std::string root = "Sub_" + id;
   std::string tree = root + " [label = Sub]\n";
 
   if (lhs_ != nullptr) {
-    std::pair<std::string, std::string> lhsGraph = lhs_->genGraph();
+    const std::pair<std::string, std::string> lhsGraph = lhs_->genGraph();
     tree += root + " -> " + lhsGraph.first + "\n";
     tree += lhsGraph.second;
   }
 
   if (rhs_ != nullptr) {
-    std::pair<std::string, std::string> rhsGraph = rhs_->genGraph();
+    const std::pair<std::string, std::string> rhsGraph = rhs_->genGraph();
     tree += root + " -> " + rhsGraph.first + "\n";
     tree += rhsGraph.second;
   }
@@ -977,18 +1007,18 @@ std::pair<std::string, std::string> Sub::genGraph() const {
 }
 
 std::pair<std::string, std::string> Mul::genGraph() const {
-  std::string id = getId();
-  std::string root = "Mul_" + id;
+  const std::string id = getId();
+  const std::string root = "Mul_" + id;
   std::string tree = root + " [label = Mul]\n";
 
   if (lhs_ != nullptr) {
-    std::pair<std::string, std::string> lhsGraph = lhs_->genGraph();
+    const std::pair<std::string, std::string> lhsGraph = lhs_->genGraph();
     tree += root + " -> " + lhsGraph.first + "\n";
     tree += lhsGraph.second;
   }
 
   if (rhs_ != nullptr) {
-    std::pair<std::string, std::string> rhsGraph = rhs_->genGraph();
+    const std::pair<std::string, std::string> rhsGraph = rhs_->genGraph();
     tree += root + " -> " + rhsGraph.first + "\n";
     tree += rhsGraph.second;
   }
@@ -997,18 +1027,18 @@ std::pair<std::string, std::string> Mul::genGraph() const {
 }
 
 std::pair<std::string, std::string> Div::genGraph() const {
-  std::string id = getId();
-  std::string root = "Div_" + id;
+  const std::string id = getId();
+  const std::string root = "Div_" + id;
   std::string tree = root + " [label = Div]\n";
 
   if (lhs_ != nullptr) {
-    std::pair<std::string, std::string> lhsGraph = lhs_->genGraph();
+    const std::pair<std::string, std::string> lhsGraph = lhs_->genGraph();
     tree += root + " -> " + lhsGraph.first + "\n";
     tree += lhsGraph.second;
   }
 
   if (rhs_ != nullptr) {
-    std::pair<std::string, std::string> rhsGraph = rhs_->genGraph();
+    const std::pair<std::string, std::string> rhsGraph = rhs_->genGraph();
     tree += root + " -> " + rhsGraph.first + "\n";
     tree += rhsGraph.second;
   }
@@ -1017,18 +1047,18 @@ std::pair<std::string, std::string> Div::genGraph() const {
 }
 
 std::pair<std::string, std::string> Mod::genGraph() const {
-  std::string id = getId();
-  std::string root = "Mod_" + id;
+  const std::string id = getId();
+  const std::string root = "Mod_" + id;
   std::string tree = root + " [label = Mod]\n";
 
   if (lhs_ != nullptr) {
-    std::pair<std::string, std::string> lhsGraph = lhs_->genGraph();
+    const std::pair<std::string, std::string> lhsGraph = lhs_->genGraph();
     tree += root + " -> " + lhsGraph.first + "\n";
     tree += lhsGraph.second;
   }
 
   if (rhs_ != nullptr) {
-    std::pair<std::string, std::string> rhsGraph = rhs_->genGraph();
+    const std::pair<std::string, std::string> rhsGraph = rhs_->genGraph();
     tree += root + " -> " + rhsGraph.first + "\n";
     tree += rhsGraph.second;
   }
@@ -1037,12 +1067,13 @@ std::pair<std::string, std::string> Mod::genGraph() const {
 }
 
 std::pair<std::string, std::string> PostfixInc::genGraph() const {
-  std::string id = getId();
-  std::string root = "PostfixInc_" + id;
+  const std::string id = getId();
+  const std::string root = "PostfixInc_" + id;
   std::string tree = root + " [label = PostfixInc]\n";
 
   if (operand_ != nullptr) {
-    std::pair<std::string, std::string> operandGraph = operand_->genGraph();
+    const std::pair<std::string, std::string> operandGraph =
+        operand_->genGraph();
     tree += root + " -> " + operandGraph.first + "\n";
     tree += operandGraph.second;
   }
@@ -1051,12 +1082,13 @@ std::pair<std::string, std::string> PostfixInc::genGraph() const {
 }
 
 std::pair<std::string, std::string> PostfixDec::genGraph() const {
-  std::string id = getId();
-  std::string root = "PostfixDec_" + id;
+  const std::string id = getId();
+  const std::string root = "PostfixDec_" + id;
   std::string tree = root + " [label = PostfixDec]\n";
 
   if (operand_ != nullptr) {
-    std::pair<std::string, std::string> operandGraph = operand_->genGraph();
+    const std::pair<std::string, std::string> operandGraph =
+        operand_->genGraph();
     tree += root + " -> " + operandGraph.first + "\n";
     tree += operandGraph.second;
   }
@@ -1065,12 +1097,13 @@ std::pair<std::string, std::string> PostfixDec::genGraph() const {
 }
 
 std::pair<std::string, std::string> PrefixInc::genGraph() const {
-  std::string id = getId();
-  std::string root = "PrefixInc_" + id;
+  const std::string id = getId();
+  const std::string root = "PrefixInc_" + id;
   std::string tree = root + " [label = PrefixInc]\n";
 
   if (operand_ != nullptr) {
-    std::pair<std::string, std::string> operandGraph = operand_->genGraph();
+    const std::pair<std::string, std::string> operandGraph =
+        operand_->genGraph();
     tree += root + " -> " + operandGraph.first + "\n";
     tree += operandGraph.second;
   }
@@ -1079,12 +1112,13 @@ std::pair<std::string, std::string> PrefixInc::genGraph() const {
 }
 
 std::pair<std::string, std::string> PrefixDec::genGraph() const {
-  std::string id = getId();
-  std::string root = "PrefixDec_" + id;
+  const std::string id = getId();
+  const std::string root = "PrefixDec_" + id;
   std::string tree = root + " [label = PrefixDec]\n";
 
   if (operand_ != nullptr) {
-    std::pair<std::string, std::string> operandGraph = operand_->genGraph();
+    const std::pair<std::string, std::string> operandGraph =
+        operand_->genGraph();
     tree += root + " -> " + operandGraph.first + "\n";
     tree += operandGraph.second;
   }
@@ -1093,18 +1127,18 @@ std::pair<std::string, std::string> PrefixDec::genGraph() const {
 }
 
 std::pair<std::string, std::string> AddAssign::genGraph() const {
-  std::string id = getId();
-  std::string root = "AddAssign_" + id;
+  const std::string id = getId();
+  const std::string root = "AddAssign_" + id;
   std::string tree = root + " [label = AddAssign]\n";
 
   if (lhs_ != nullptr) {
-    std::pair<std::string, std::string> lhsGraph = lhs_->genGraph();
+    const std::pair<std::string, std::string> lhsGraph = lhs_->genGraph();
     tree += root + " -> " + lhsGraph.first + "\n";
     tree += lhsGraph.second;
   }
 
   if (rhs_ != nullptr) {
-    std::pair<std::string, std::string> rhsGraph = rhs_->genGraph();
+    const std::pair<std::string, std::string> rhsGraph = rhs_->genGraph();
     tree += root + " -> " + rhsGraph.first + "\n";
     tree += rhsGraph.second;
   }
@@ -1113,18 +1147,18 @@ std::pair<std::string, std::string> AddAssign::genGraph() const {
 }
 
 std::pair<std::string, std::string> SubAssign::genGraph() const {
-  std::string id = getId();
-  std::string root = "SubAssign_" + id;
+  const std::string id = getId();
+  const std::string root = "SubAssign_" + id;
   std::string tree = root + " [label = SubAssign]\n";
 
   if (lhs_ != nullptr) {
-    std::pair<std::string, std::string> lhsGraph = lhs_->genGraph();
+    const std::pair<std::string, std::string> lhsGraph = lhs_->genGraph();
     tree += root + " -> " + lhsGraph.first + "\n";
     tree += lhsGraph.second;
   }
 
   if (rhs_ != nullptr) {
-    std::pair<std::string, std::string> rhsGraph = rhs_->genGraph();
+    const std::pair<std::string, std::string> rhsGraph = rhs_->genGraph();
     tree += root + " -> " + rhsGraph.first + "\n";
     tree += rhsGraph.second;
   }
@@ -1133,18 +1167,18 @@ std::pair<std::string, std::string> SubAssign::genGraph() const {
 }
 
 std::pair<std::string, std::string> MulAssign::genGraph() const {
-  std::string id = getId();
-  std::string root = "MulAssign_" + id;
+  const std::string id = getId();
+  const std::string root = "MulAssign_" + id;
   std::string tree = root + " [label = MulAssign]\n";
 
   if (lhs_ != nullptr) {
-    std::pair<std::string, std::string> lhsGraph = lhs_->genGraph();
+    const std::pair<std::string, std::string> lhsGraph = lhs_->genGraph();
     tree += root + " -> " + lhsGraph.first + "\n";
     tree += lhsGraph.second;
   }
 
   if (rhs_ != nullptr) {
-    std::pair<std::string, std::string> rhsGraph = rhs_->genGraph();
+    const std::pair<std::string, std::string> rhsGraph = rhs_->genGraph();
     tree += root + " -> " + rhsGraph.first + "\n";
     tree += rhsGraph.second;
   }
@@ -1153,18 +1187,18 @@ std::pair<std::string, std::string> MulAssign::genGraph() const {
 }
 
 std::pair<std::string, std::string> DivAssign::genGraph() const {
-  std::string id = getId();
-  std::string root = "DivAssign_" + id;
+  const std::string id = getId();
+  const std::string root = "DivAssign_" + id;
   std::string tree = root + " [label = DivAssign]\n";
 
   if (lhs_ != nullptr) {
-    std::pair<std::string, std::string> lhsGraph = lhs_->genGraph();
+    const std::pair<std::string, std::string> lhsGraph = lhs_->genGraph();
     tree += root + " -> " + lhsGraph.first + "\n";
     tree += lhsGraph.second;
   }
 
   if (rhs_ != nullptr) {
-    std::pair<std::string, std::string> rhsGraph = rhs_->genGraph();
+    const std::pair<std::string, std::string> rhsGraph = rhs_->genGraph();
     tree += root + " -> " + rhsGraph.first + "\n";
     tree += rhsGraph.second;
   }
@@ -1173,18 +1207,18 @@ std::pair<std::string, std::string> DivAssign::genGraph() const {
 }
 
 std::pair<std::string, std::string> ModAssign::genGraph() const {
-  std::string id = getId();
-  std::string root = "ModAssign_" + id;
+  const std::string id = getId();
+  const std::string root = "ModAssign_" + id;
   std::string tree = root + " [label = ModAssign]\n";
 
   if (lhs_ != nullptr) {
-    std::pair<std::string, std::string> lhsGraph = lhs_->genGraph();
+    const std::pair<std::string, std::string> lhsGraph = lhs_->genGraph();
     tree += root + " -> " + lhsGraph.first + "\n";
     tree += lhsGraph.second;
   }
 
   if (rhs_ != nullptr) {
-    std::pair<std::string, std::string> rhsGraph = rhs_->genGraph();
+    const std::pair<std::string, std::string> rhsGraph = rhs_->genGraph();
     tree += root + " -> " + rhsGraph.first + "\n";
     tree += rhsGraph.second;
   }
@@ -1193,18 +1227,18 @@ std::pair<std::string, std::string> ModAssign::genGraph() const {
 }
 
 std::pair<std::string, std::string> BitwiseAnd::genGraph() const {
-  std::string id = getId();
-  std::string root = "BitwiseAnd_" + id;
+  const std::string id = getId();
+  const std::string root = "BitwiseAnd_" + id;
   std::string tree = root + " [label = BitwiseAnd]\n";
 
   if (lhs_ != nullptr) {
-    std::pair<std::string, std::string> lhsGraph = lhs_->genGraph();
+    const std::pair<std::string, std::string> lhsGraph = lhs_->genGraph();
     tree += root + " -> " + lhsGraph.first + "\n";
     tree += lhsGraph.second;
   }
 
   if (rhs_ != nullptr) {
-    std::pair<std::string, std::string> rhsGraph = rhs_->genGraph();
+    const std::pair<std::string, std::string> rhsGraph = rhs_->genGraph();
     tree += root + " -> " + rhsGraph.first + "\n";
     tree += rhsGraph.second;
   }
@@ -1213,18 +1247,18 @@ std::pair<std::string, std::string> BitwiseAnd::genGraph() const {
 }
 
 std::pair<std::string, std::string> BitwiseOr::genGraph() const {
-  std::string id = getId();
-  std::string root = "BitwiseOr_" + id;
+  const std::string id = getId();
+  const std::string root = "BitwiseOr_" + id;
   std::string tree = root + " [label = BitwiseOr]\n";
 
   if (lhs_ != nullptr) {
-    std::pair<std::string, std::string> lhsGraph = lhs_->genGraph();
+    const std::pair<std::string, std::string> lhsGraph = lhs_->genGraph();
     tree += root + " -> " + lhsGraph.first + "\n";
     tree += lhsGraph.second;
   }
 
   if (rhs_ != nullptr) {
-    std::pair<std::string, std::string> rhsGraph = rhs_->genGraph();
+    const std::pair<std::string, std::string> rhsGraph = rhs_->genGraph();
     tree += root + " -> " + rhsGraph.first + "\n";
     tree += rhsGraph.second;
   }
@@ -1233,18 +1267,18 @@ std::pair<std::string, std::string> BitwiseOr::genGraph() const {
 }
 
 std::pair<std::string, std::string> BitwiseXor::genGraph() const {
-  std::string id = getId();
-  std::string root = "BitwiseXor_" + id;
+  const std::string id = getId();
+  const std::string root = "BitwiseXor_" + id;
   std::string tree = root + " [label = BitwiseXor]\n";
 
   if (lhs_ != nullptr) {
-    std::pair<std::string, std::string> lhsGraph = lhs_->genGraph();
+    const std::pair<std::string, std::string> lhsGraph = lhs_->genGraph();
     tree += root + " -> " + lhsGraph.first + "\n";
     tree += lhsGraph.second;
   }
 
   if (rhs_ != nullptr) {
-    std::pair<std::string, std::string> rhsGraph = rhs_->genGraph();
+    const std::pair<std::string, std::string> rhsGraph = rhs_->genGraph();
     tree += root + " -> " + rhsGraph.first + "\n";
     tree += rhsGraph.second;
   }
@@ -1253,12 +1287,13 @@ std::pair<std::string, std::string> BitwiseXor::genGraph() const {
 }
 
 std::pair<std::string, std::string> BitwiseNot::genGraph() const {
-  std::string id = getId();
-  std::string root = "BitwiseNot_" + id;
+  const std::string id = getId();
+  const std::string root = "BitwiseNot_" + id;
   std::string tree = root + " [label = BitwiseNot]\n";
 
   if (operand_ != nullptr) {
-    std::pair<std::string, std::string> operandGraph = operand_->genGraph();
+    const std::pair<std::string, std::string> operandGraph =
+        operand_->genGraph();
     tree += root + " -> " + operandGraph.first + "\n";
     tree += operandGraph.second;
   }
@@ -1267,18 +1302,18 @@ std::pair<std::string, std::string> BitwiseNot::genGraph() const {
 }
 
 std::pair<std::string, std::string> BitwiseAndAssign::genGraph() const {
-  std::string id = getId();
-  std::string root = "BitwiseAndAssign_" + id;
+  const std::string id = getId();
+  const std::string root = "BitwiseAndAssign_" + id;
   std::string tree = root + " [label = BitwiseAndAssign]\n";
 
   if (lhs_ != nullptr) {
-    std::pair<std::string, std::string> lhsGraph = lhs_->genGraph();
+    const std::pair<std::string, std::string> lhsGraph = lhs_->genGraph();
     tree += root + " -> " + lhsGraph.first + "\n";
     tree += lhsGraph.second;
   }
 
   if (rhs_ != nullptr) {
-    std::pair<std::string, std::string> rhsGraph = rhs_->genGraph();
+    const std::pair<std::string, std::string> rhsGraph = rhs_->genGraph();
     tree += root + " -> " + rhsGraph.first + "\n";
     tree += rhsGraph.second;
   }
@@ -1287,18 +1322,18 @@ std::pair<std::string, std::string> BitwiseAndAssign::genGraph() const {
 }
 
 std::pair<std::string, std::string> BitwiseOrAssign::genGraph() const {
-  std::string id = getId();
-  std::string root = "BitwiseOrAssign_" + id;
+  const std::string id = getId();
+  const std::string root = "BitwiseOrAssign_" + id;
   std::string tree = root + " [label = BitwiseOrAssign]\n";
 
   if (lhs_ != nullptr) {
-    std::pair<std::string, std::string> lhsGraph = lhs_->genGraph();
+    const std::pair<std::string, std::string> lhsGraph = lhs_->genGraph();
     tree += root + " -> " + lhsGraph.first + "\n";
     tree += lhsGraph.second;
   }
 
   if (rhs_ != nullptr) {
-    std::pair<std::string, std::string> rhsGraph = rhs_->genGraph();
+    const std::pair<std::string, std::string> rhsGraph = rhs_->genGraph();
     tree += root + " -> " + rhsGraph.first + "\n";
     tree += rhsGraph.second;
   }
@@ -1307,18 +1342,18 @@ std::pair<std::string, std::string> BitwiseOrAssign::genGraph() const {
 }
 
 std::pair<std::string, std::string> BitwiseXorAssign::genGraph() const {
-  std::string id = getId();
-  std::string root = "BitwiseXorAssign_" + id;
+  const std::string id = getId();
+  const std::string root = "BitwiseXorAssign_" + id;
   std::string tree = root + " [label = BitwiseXorAssign]\n";
 
   if (lhs_ != nullptr) {
-    std::pair<std::string, std::string> lhsGraph = lhs_->genGraph();
+    const std::pair<std::string, std::string> lhsGraph = lhs_->genGraph();
     tree += root + " -> " + lhsGraph.first + "\n";
     tree += lhsGraph.second;
   }
 
   if (rhs_ != nullptr) {
-    std::pair<std::string, std::string> rhsGraph = rhs_->genGraph();
+    const std::pair<std::string, std::string> rhsGraph = rhs_->genGraph();
     tree += root + " -> " + rhsGraph.first + "\n";
     tree += rhsGraph.second;
   }
@@ -1327,18 +1362,18 @@ std::pair<std::string, std::string> BitwiseXorAssign::genGraph() const {
 }
 
 std::pair<std::string, std::string> LeftShift::genGraph() const {
-  std::string id = getId();
-  std::string root = "LeftShift_" + id;
+  const std::string id = getId();
+  const std::string root = "LeftShift_" + id;
   std::string tree = root + " [label = LeftShift]\n";
 
   if (lhs_ != nullptr) {
-    std::pair<std::string, std::string> lhsGraph = lhs_->genGraph();
+    const std::pair<std::string, std::string> lhsGraph = lhs_->genGraph();
     tree += root + " -> " + lhsGraph.first + "\n";
     tree += lhsGraph.second;
   }
 
   if (rhs_ != nullptr) {
-    std::pair<std::string, std::string> rhsGraph = rhs_->genGraph();
+    const std::pair<std::string, std::string> rhsGraph = rhs_->genGraph();
     tree += root + " -> " + rhsGraph.first + "\n";
     tree += rhsGraph.second;
   }
@@ -1347,18 +1382,18 @@ std::pair<std::string, std::string> LeftShift::genGraph() const {
 }
 
 std::pair<std::string, std::string> RightShift::genGraph() const {
-  std::string id = getId();
-  std::string root = "RightShift_" + id;
+  const std::string id = getId();
+  const std::string root = "RightShift_" + id;
   std::string tree = root + " [label = RightShift]\n";
 
   if (lhs_ != nullptr) {
-    std::pair<std::string, std::string> lhsGraph = lhs_->genGraph();
+    const std::pair<std::string, std::string> lhsGraph = lhs_->genGraph();
     tree += root + " -> " + lhsGraph.first + "\n";
     tree += lhsGraph.second;
   }
 
   if (rhs_ != nullptr) {
-    std::pair<std::string, std::string> rhsGraph = rhs_->genGraph();
+    const std::pair<std::string, std::string> rhsGraph = rhs_->genGraph();
     tree += root + " -> " + rhsGraph.first + "\n";
     tree += rhsGraph.second;
   }
@@ -1367,18 +1402,18 @@ std::pair<std::string, std::string> RightShift::genGraph() const {
 }
 
 std::pair<std::string, std::string> LeftShiftAssign::genGraph() const {
-  std::string id = getId();
-  std::string root = "LeftShiftAssign_" + id;
+  const std::string id = getId();
+  const std::string root = "LeftShiftAssign_" + id;
   std::string tree = root + " [label = LeftShiftAssign]\n";
 
   if (lhs_ != nullptr) {
-    std::pair<std::string, std::string> lhsGraph = lhs_->genGraph();
+    const std::pair<std::string, std::string> lhsGraph = lhs_->genGraph();
     tree += root + " -> " + lhsGraph.first + "\n";
     tree += lhsGraph.second;
   }
 
   if (rhs_ != nullptr) {
-    std::pair<std::string, std::string> rhsGraph = rhs_->genGraph();
+    const std::pair<std::string, std::string> rhsGraph = rhs_->genGraph();
     tree += root + " -> " + rhsGraph.first + "\n";
     tree += rhsGraph.second;
   }
@@ -1387,18 +1422,18 @@ std::pair<std::string, std::string> LeftShiftAssign::genGraph() const {
 }
 
 std::pair<std::string, std::string> RightShiftAssign::genGraph() const {
-  std::string id = getId();
-  std::string root = "RightShiftAssign_" + id;
+  const std::string id = getId();
+  const std::string root = "RightShiftAssign_" + id;
   std::string tree = root + " [label = RightShiftAssign]\n";
 
   if (lhs_ != nullptr) {
-    std::pair<std::string, std::string> lhsGraph = lhs_->genGraph();
+    const std::pair<std::string, std::string> lhsGraph = lhs_->genGraph();
     tree += root + " -> " + lhsGraph.first + "\n";
     tree += lhsGraph.second;
   }
 
   if (rhs_ != nullptr) {
-    std::pair<std::string, std::string> rhsGraph = rhs_->genGraph();
+    const std::pair<std::string, std::string> rhsGraph = rhs_->genGraph();
     tree += root + " -> " + rhsGraph.first + "\n";
     tree += rhsGraph.second;
   }
@@ -1407,18 +1442,18 @@ std::pair<std::string, std::string> RightShiftAssign::genGraph() const {
 }
 
 std::pair<std::string, std::string> LogicAnd::genGraph() const {
-  std::string id = getId();
-  std::string root = "LogicAnd_" + id;
+  const std::string id = getId();
+  const std::string root = "LogicAnd_" + id;
   std::string tree = root + " [label = LogicAnd]\n";
 
   if (lhs_ != nullptr) {
-    std::pair<std::string, std::string> lhsGraph = lhs_->genGraph();
+    const std::pair<std::string, std::string> lhsGraph = lhs_->genGraph();
     tree += root + " -> " + lhsGraph.first + "\n";
     tree += lhsGraph.second;
   }
 
   if (rhs_ != nullptr) {
-    std::pair<std::string, std::string> rhsGraph = rhs_->genGraph();
+    const std::pair<std::string, std::string> rhsGraph = rhs_->genGraph();
     tree += root + " -> " + rhsGraph.first + "\n";
     tree += rhsGraph.second;
   }
@@ -1427,18 +1462,18 @@ std::pair<std::string, std::string> LogicAnd::genGraph() const {
 }
 
 std::pair<std::string, std::string> LogicOr::genGraph() const {
-  std::string id = getId();
-  std::string root = "LogicOr_" + id;
+  const std::string id = getId();
+  const std::string root = "LogicOr_" + id;
   std::string tree = root + " [label = LogicOr]\n";
 
   if (lhs_ != nullptr) {
-    std::pair<std::string, std::string> lhsGraph = lhs_->genGraph();
+    const std::pair<std::string, std::string> lhsGraph = lhs_->genGraph();
     tree += root + " -> " + lhsGraph.first + "\n";
     tree += lhsGraph.second;
   }
 
   if (rhs_ != nullptr) {
-    std::pair<std::string, std::string> rhsGraph = rhs_->genGraph();
+    const std::pair<std::string, std::string> rhsGraph = rhs_->genGraph();
     tree += root + " -> " + rhsGraph.first + "\n";
     tree += rhsGraph.second;
   }
@@ -1447,12 +1482,13 @@ std::pair<std::string, std::string> LogicOr::genGraph() const {
 }
 
 std::pair<std::string, std::string> LogicNot::genGraph() const {
-  std::string id = getId();
-  std::string root = "LogicNot_" + id;
+  const std::string id = getId();
+  const std::string root = "LogicNot_" + id;
   std::string tree = root + " [label = LogicNot]\n";
 
   if (operand_ != nullptr) {
-    std::pair<std::string, std::string> operandGraph = operand_->genGraph();
+    const std::pair<std::string, std::string> operandGraph =
+        operand_->genGraph();
     tree += root + " -> " + operandGraph.first + "\n";
     tree += operandGraph.second;
   }
@@ -1461,18 +1497,18 @@ std::pair<std::string, std::string> LogicNot::genGraph() const {
 }
 
 std::pair<std::string, std::string> LogicEq::genGraph() const {
-  std::string id = getId();
-  std::string root = "LogicEq_" + id;
+  const std::string id = getId();
+  const std::string root = "LogicEq_" + id;
   std::string tree = root + " [label = LogicEq]\n";
 
   if (lhs_ != nullptr) {
-    std::pair<std::string, std::string> lhsGraph = lhs_->genGraph();
+    const std::pair<std::string, std::string> lhsGraph = lhs_->genGraph();
     tree += root + " -> " + lhsGraph.first + "\n";
     tree += lhsGraph.second;
   }
 
   if (rhs_ != nullptr) {
-    std::pair<std::string, std::string> rhsGraph = rhs_->genGraph();
+    const std::pair<std::string, std::string> rhsGraph = rhs_->genGraph();
     tree += root + " -> " + rhsGraph.first + "\n";
     tree += rhsGraph.second;
   }
@@ -1481,18 +1517,18 @@ std::pair<std::string, std::string> LogicEq::genGraph() const {
 }
 
 std::pair<std::string, std::string> LogicNotEq::genGraph() const {
-  std::string id = getId();
-  std::string root = "LogicNotEq_" + id;
+  const std::string id = getId();
+  const std::string root = "LogicNotEq_" + id;
   std::string tree = root + " [label = LogicNotEq]\n";
 
   if (lhs_ != nullptr) {
-    std::pair<std::string, std::string> lhsGraph = lhs_->genGraph();
+    const std::pair<std::string, std::string> lhsGraph = lhs_->genGraph();
     tree += root + " -> " + lhsGraph.first + "\n";
     tree += lhsGraph.second;
   }
 
   if (rhs_ != nullptr) {
-    std::pair<std::string, std::string> rhsGraph = rhs_->genGraph();
+    const std::pair<std::string, std::string> rhsGraph = rhs_->genGraph();
     tree += root + " -> " + rhsGraph.first + "\n";
     tree += rhsGraph.second;
   }
@@ -1501,18 +1537,18 @@ std::pair<std::string, std::string> LogicNotEq::genGraph() const {
 }
 
 std::pair<std::string, std::string> LogicLessThan::genGraph() const {
-  std::string id = getId();
-  std::string root = "LogicLessThan_" + id;
+  const std::string id = getId();
+  const std::string root = "LogicLessThan_" + id;
   std::string tree = root + " [label = LogicLessThan]\n";
 
   if (lhs_ != nullptr) {
-    std::pair<std::string, std::string> lhsGraph = lhs_->genGraph();
+    const std::pair<std::string, std::string> lhsGraph = lhs_->genGraph();
     tree += root + " -> " + lhsGraph.first + "\n";
     tree += lhsGraph.second;
   }
 
   if (rhs_ != nullptr) {
-    std::pair<std::string, std::string> rhsGraph = rhs_->genGraph();
+    const std::pair<std::string, std::string> rhsGraph = rhs_->genGraph();
     tree += root + " -> " + rhsGraph.first + "\n";
     tree += rhsGraph.second;
   }
@@ -1521,18 +1557,18 @@ std::pair<std::string, std::string> LogicLessThan::genGraph() const {
 }
 
 std::pair<std::string, std::string> LogicLessEq::genGraph() const {
-  std::string id = getId();
-  std::string root = "LogicLessEq_" + id;
+  const std::string id = getId();
+  const std::string root = "LogicLessEq_" + id;
   std::string tree = root + " [label = LogicLessEq]\n";
 
   if (lhs_ != nullptr) {
-    std::pair<std::string, std::string> lhsGraph = lhs_->genGraph();
+    const std::pair<std::string, std::string> lhsGraph = lhs_->genGraph();
     tree += root + " -> " + lhsGraph.first + "\n";
     tree += lhsGraph.second;
   }
 
   if (rhs_ != nullptr) {
-    std::pair<std::string, std::string> rhsGraph = rhs_->genGraph();
+    const std::pair<std::string, std::string> rhsGraph = rhs_->genGraph();
     tree += root + " -> " + rhsGraph.first + "\n";
     tree += rhsGraph.second;
   }
@@ -1541,18 +1577,18 @@ std::pair<std::string, std::string> LogicLessEq::genGraph() const {
 }
 
 std::pair<std::string, std::string> LogicGreaterThan::genGraph() const {
-  std::string id = getId();
-  std::string root = "LogicGreaterThan_" + id;
+  const std::string id = getId();
+  const std::string root = "LogicGreaterThan_" + id;
   std::string tree = root + " [label = LogicGreaterThan]\n";
 
   if (lhs_ != nullptr) {
-    std::pair<std::string, std::string> lhsGraph = lhs_->genGraph();
+    const std::pair<std::string, std::string> lhsGraph = lhs_->genGraph();
     tree += root + " -> " + lhsGraph.first + "\n";
     tree += lhsGraph.second;
   }
 
   if (rhs_ != nullptr) {
-    std::pair<std::string, std::string> rhsGraph = rhs_->genGraph();
+    const std::pair<std::string, std::string> rhsGraph = rhs_->genGraph();
     tree += root + " -> " + rhsGraph.first + "\n";
     tree += rhsGraph.second;
   }
@@ -1561,18 +1597,18 @@ std::pair<std::string, std::string> LogicGreaterThan::genGraph() const {
 }
 
 std::pair<std::string, std::string> LogicGreaterEq::genGraph() const {
-  std::string id = getId();
-  std::string root = "LogicGreaterEq_" + id;
+  const std::string id = getId();
+  const std::string root = "LogicGreaterEq_" + id;
   std::string tree = root + " [label = LogicGreaterEq]\n";
 
   if (lhs_ != nullptr) {
-    std::pair<std::string, std::string> lhsGraph = lhs_->genGraph();
+    const std::pair<std::string, std::string> lhsGraph = lhs_->genGraph();
     tree += root + " -> " + lhsGraph.first + "\n";
     tree += lhsGraph.second;
   }
 
   if (rhs_ != nullptr) {
-    std::pair<std::string, std::string> rhsGraph = rhs_->genGraph();
+    const std::pair<std::string, std::string> rhsGraph = rhs_->genGraph();
     tree += root + " -> " + rhsGraph.first + "\n";
     tree += rhsGraph.second;
   }
@@ -1581,24 +1617,27 @@ std::pair<std::string, std::string> LogicGreaterEq::genGraph() const {
 }
 
 std::pair<std::string, std::string> TernaryCondition::genGraph() const {
-  std::string id = getId();
-  std::string root = "TernaryCondition_" + id;
+  const std::string id = getId();
+  const std::string root = "TernaryCondition_" + id;
   std::string tree = root + " [label = TernaryCondition]\n";
 
   if (condition_ != nullptr) {
-    std::pair<std::string, std::string> conditionGraph = condition_->genGraph();
+    const std::pair<std::string, std::string> conditionGraph =
+        condition_->genGraph();
     tree += root + " -> " + conditionGraph.first + "\n";
     tree += conditionGraph.second;
   }
 
   if (trueExpr_ != nullptr) {
-    std::pair<std::string, std::string> trueExprGraph = trueExpr_->genGraph();
+    const std::pair<std::string, std::string> trueExprGraph =
+        trueExpr_->genGraph();
     tree += root + " -> " + trueExprGraph.first + "\n";
     tree += trueExprGraph.second;
   }
 
   if (falseExpr_ != nullptr) {
-    std::pair<std::string, std::string> falseExprGraph = falseExpr_->genGraph();
+    const std::pair<std::string, std::string> falseExprGraph =
+        falseExpr_->genGraph();
     tree += root + " -> " + falseExprGraph.first + "\n";
     tree += falseExprGraph.second;
   }

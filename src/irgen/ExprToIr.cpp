@@ -73,7 +73,7 @@ llvm::Value* genStructMemberPtr(CodeGenerator& generator,
 
   if (structVarType->isStructType()) {
     auto* structType = static_cast<StructType*>(structVarType);
-    size_t memberIndex = structType->getMemberIndex(memberName);
+    const size_t memberIndex = structType->getMemberIndex(memberName);
     if (memberIndex == static_cast<size_t>(-1)) {
       throw std::logic_error("The struct does not have a member named " +
                              memberName);

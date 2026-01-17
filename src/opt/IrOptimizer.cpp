@@ -61,7 +61,7 @@ void addCustomPipeline(llvm::PassBuilder& pb, llvm::ModulePassManager& mpm,
                        const std::string& userPipeline) {
   const std::string pipelineText = resolveCustomPipeline(userPipeline);
   if (auto err = pb.parsePassPipeline(mpm, pipelineText)) {
-    std::string message = llvm::toString(std::move(err));
+    const std::string message = llvm::toString(std::move(err));
     throw std::runtime_error("Invalid -O-passes pipeline \"" + userPipeline +
                              "\": " + message);
   }

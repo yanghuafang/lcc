@@ -43,7 +43,8 @@ void ControlFlowContext::leaveSwitch() {
   fallthroughBlockStack_.pop_back();
 }
 
-llvm::BasicBlock* ControlFlowContext::getSwitchFallthroughBlock() const {
+llvm::BasicBlock* ControlFlowContext::getSwitchFallthroughBlock()
+    const noexcept {
   if (fallthroughBlockStack_.empty()) {
     return nullptr;
   }
@@ -51,7 +52,7 @@ llvm::BasicBlock* ControlFlowContext::getSwitchFallthroughBlock() const {
   return fallthroughBlockStack_.back();
 }
 
-llvm::BasicBlock* ControlFlowContext::getContinueBlock() const {
+llvm::BasicBlock* ControlFlowContext::getContinueBlock() const noexcept {
   if (continueBlockStack_.empty()) {
     return nullptr;
   }
@@ -59,7 +60,7 @@ llvm::BasicBlock* ControlFlowContext::getContinueBlock() const {
   return continueBlockStack_.back();
 }
 
-llvm::BasicBlock* ControlFlowContext::getBreakBlock() const {
+llvm::BasicBlock* ControlFlowContext::getBreakBlock() const noexcept {
   if (breakBlockStack_.empty()) {
     return nullptr;
   }

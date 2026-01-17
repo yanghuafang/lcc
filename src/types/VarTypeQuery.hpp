@@ -31,25 +31,29 @@ class Type;
 // BuiltinTypeId and no AST node at all, so it is types/BuiltinTypeMap.hpp now.
 namespace vartype {
 
-AST::BuiltinTypeId varTypeToTypeId(const AST::VarType* varType);
+[[nodiscard]] AST::BuiltinTypeId varTypeToTypeId(const AST::VarType* varType);
 
 // Peels DefinedType aliases before the queries below.
-AST::VarType* resolveTypedefVarType(AST::VarType* varType, TypeEnv& env);
+[[nodiscard]] AST::VarType* resolveTypedefVarType(AST::VarType* varType,
+                                                  TypeEnv& env);
 
-AST::BuiltinTypeId resolvedVarTypeToTypeId(AST::VarType* varType, TypeEnv& env);
+[[nodiscard]] AST::BuiltinTypeId resolvedVarTypeToTypeId(AST::VarType* varType,
+                                                         TypeEnv& env);
 
 // The struct or union a VarType denotes, through typedef aliases and struct tag
 // names — a DefinedType such as "Employee" after "typedef struct Employee
 // Employee". Null when it denotes neither. Member access (. and ->) needs this
 // before it can look a field name up.
-AST::VarType* resolveAggregateVarType(AST::VarType* varType, TypeEnv& env);
+[[nodiscard]] AST::VarType* resolveAggregateVarType(AST::VarType* varType,
+                                                    TypeEnv& env);
 
 // LLVM element type for GEP / PtrDiff on a pointer expression (from AST, not
 // IR).
-llvm::Type* pointerArithmeticElementType(AST::VarType* ptrExprVarType,
-                                         TypeEnv& env);
+[[nodiscard]] llvm::Type* pointerArithmeticElementType(
+    AST::VarType* ptrExprVarType, TypeEnv& env);
 
 // LLVM type stored through ptr (load/store), after array-to-pointer decay.
-llvm::Type* memoryAccessType(AST::VarType* lvalueVarType, TypeEnv& env);
+[[nodiscard]] llvm::Type* memoryAccessType(AST::VarType* lvalueVarType,
+                                           TypeEnv& env);
 
 }  // namespace vartype

@@ -233,26 +233,39 @@ class Node {
   // Virtual so delete g_root (Program*) runs the concrete destructor chain.
   virtual ~Node();
 
+  // Nodes own their children as raw pointers and delete them in
+  // ast/Ownership.cpp, so a compiler-generated copy would be shallow: two
+  // nodes pointing at one child, each deleting it. Copy assignment would leak
+  // the children it overwrote on top of that. Neither is ever wanted -- the
+  // grammar actions build the tree once and every walker visits it in place --
+  // so both are deleted here at the root, which is what makes all 100+ node
+  // classes below non-copyable without repeating anything. Deleting the copy
+  // operations suppresses the implicit move ones too, so a node cannot be
+  // moved out of the tree either.
+  Node(const Node&) = delete;
+  Node& operator=(const Node&) = delete;
+
   void setLoc(unsigned line, unsigned col = 0) {
     loc_.line = line;
     loc_.col = col;
   }
 
-  const SourceLoc& loc() const { return loc_; }
+  [[nodiscard]] const SourceLoc& loc() const noexcept { return loc_; }
 
   // Interface to generate IR code.
   virtual llvm::Value* genCode(CodeGenerator& generator) = 0;
 
   // Generate Graphviz DOT for this subtree (implemented in dot/AstToDot.cpp,
   // not used by codegen). Returns (rootNodeId, dotFragment).
-  virtual std::pair<std::string, std::string> genGraph() const = 0;
+  [[nodiscard]] virtual std::pair<std::string, std::string> genGraph()
+      const = 0;
 
  protected:
   SourceLoc loc_;
 };
 
 // Grammar Root
-class Program : public Node {
+class Program final : public Node {
  public:
   Decls* decls_;
 
@@ -287,28 +300,27 @@ class Decl : public Stmt {
   ~Decl() override = default;
 };
 
-class FuncDecl : public Decl {
+class FuncDecl final : public Decl {
  public:
   VarType* retType_;
   std::string funcName_;
   ParamList* paramList_;
   FuncBody* funcBody_;
-  bool isStatic_;
+  bool isStatic_ = false;
 
   explicit FuncDecl(VarType* retType, const std::string& funcName,
                     ParamList* paramList, FuncBody* funcBody = nullptr)
       : retType_(retType),
         funcName_(funcName),
         paramList_(paramList),
-        funcBody_(funcBody),
-        isStatic_(false) {}
+        funcBody_(funcBody) {}
   ~FuncDecl() override;
 
   llvm::Value* genCode(CodeGenerator& generator) override;
   std::pair<std::string, std::string> genGraph() const override;
 };
 
-class Param : public Node {
+class Param final : public Node {
  public:
   VarType* varType_;
   std::string varName_;
@@ -322,11 +334,11 @@ class Param : public Node {
   std::pair<std::string, std::string> genGraph() const override;
 };
 
-class ParamList : public std::vector<Param*>, public Node {
+class ParamList final : public std::vector<Param*>, public Node {
  public:
-  bool isVariant_;
+  bool isVariant_ = false;
 
-  ParamList() : isVariant_(false) {}
+  ParamList() = default;
   ~ParamList() override;
 
   // Code already generated in FuncDecl::genCode.
@@ -336,7 +348,7 @@ class ParamList : public std::vector<Param*>, public Node {
   void setVariant() { isVariant_ = true; }
 };
 
-class FuncBody : public Node {
+class FuncBody final : public Node {
  public:
   Stmts* content_;
 
@@ -347,14 +359,14 @@ class FuncBody : public Node {
   std::pair<std::string, std::string> genGraph() const override;
 };
 
-class VarDecl : public Decl {
+class VarDecl final : public Decl {
  public:
   VarType* varType_;
   VarList* varList_;
-  bool isStatic_;
+  bool isStatic_ = false;
 
   explicit VarDecl(VarType* varType, VarList* varList)
-      : varType_(varType), varList_(varList), isStatic_(false) {}
+      : varType_(varType), varList_(varList) {}
   ~VarDecl() override;
 
   llvm::Value* genCode(CodeGenerator& generator) override;
@@ -362,7 +374,7 @@ class VarDecl : public Decl {
 };
 
 // One element of a brace initializer: scalar expr or nested InitList (2D row).
-class InitElement : public Node {
+class InitElement final : public Node {
  public:
   Expr* expr_;
   InitList* nested_;
@@ -371,7 +383,7 @@ class InitElement : public Node {
   explicit InitElement(InitList* nested) : expr_(nullptr), nested_(nested) {}
   ~InitElement() override;
 
-  bool isNested() const { return nested_ != nullptr; }
+  [[nodiscard]] bool isNested() const noexcept { return nested_ != nullptr; }
 
   llvm::Value* genCode(CodeGenerator& generator) override;
   std::pair<std::string, std::string> genGraph() const override;
@@ -379,7 +391,7 @@ class InitElement : public Node {
 
 // One name in a declaration list (int a[4], b = 1). Holds declarator suffix
 // (arrayBounds_) and initializer separate from the shared VarType base type.
-class VarInit : public Node {
+class VarInit final : public Node {
  public:
   std::string varName_;
   std::vector<size_t> arrayBounds_;
@@ -388,7 +400,7 @@ class VarInit : public Node {
   // Per-name array type from arrays::buildVarType(); addVariable()
   // keeps this pointer for the rest of codegen. Only the ArrayType wrappers
   // are owned here—the leaf base type remains VarDecl::varType_.
-  VarType* arrayVarType_;
+  VarType* arrayVarType_ = nullptr;
 
   explicit VarInit(const std::string& varName,
                    const std::vector<size_t>& arrayBounds,
@@ -396,14 +408,13 @@ class VarInit : public Node {
       : varName_(varName),
         arrayBounds_(arrayBounds),
         initialExpr_(initialExpr),
-        initList_(initList),
-        arrayVarType_(nullptr) {}
+        initList_(initList) {}
   ~VarInit() override;
 
   llvm::Value* genCode(CodeGenerator& generator) override { return nullptr; }
   std::pair<std::string, std::string> genGraph() const override;
 
-  bool hasBraceInit() const { return initList_ != nullptr; }
+  [[nodiscard]] bool hasBraceInit() const { return initList_ != nullptr; }
 };
 
 // Delete the ArrayType prefix arrays::buildVarType() nests around a
@@ -412,7 +423,7 @@ class VarInit : public Node {
 // finished chain; irgen/Arrays.cpp applies it to a partly built one.
 void releaseArrayTypeChain(VarType* built) noexcept;
 
-class TypeDecl : public Decl {
+class TypeDecl final : public Decl {
  public:
   VarType* varType_;
 
@@ -423,7 +434,7 @@ class TypeDecl : public Decl {
   std::pair<std::string, std::string> genGraph() const override;
 };
 
-class TypedefDecl : public Decl {
+class TypedefDecl final : public Decl {
  public:
   VarType* underlyingType_;
   std::string aliasName_;
@@ -448,33 +459,43 @@ class TypedefDecl : public Decl {
 
 class VarType : public Node {
  public:
-  bool isConst_;
+  bool isConst_ = false;
   std::string typeName_;  // User defined type name.
-  llvm::Type* llvmType_;
 
-  explicit VarType(const std::string& typeName)
-      : isConst_(false), typeName_(typeName), llvmType_(nullptr) {}
+  explicit VarType(const std::string& typeName) : typeName_(typeName) {}
   ~VarType() override;
 
   llvm::Value* genCode(CodeGenerator& generator) override { return nullptr; }
 
   virtual llvm::Type* getType(TypeEnv& env) = 0;
 
-  virtual bool isBuiltinType() const = 0;
-  virtual bool isPointerType() const = 0;
-  virtual bool isArrayType() const = 0;
-  virtual bool isDefinedType() const = 0;
-  virtual bool isStructType() const = 0;
-  virtual bool isUnionType() const = 0;
-  virtual bool isEnumType() const = 0;
+  [[nodiscard]] virtual bool isBuiltinType() const noexcept = 0;
+  [[nodiscard]] virtual bool isPointerType() const noexcept = 0;
+  [[nodiscard]] virtual bool isArrayType() const noexcept = 0;
+  [[nodiscard]] virtual bool isDefinedType() const noexcept = 0;
+  [[nodiscard]] virtual bool isStructType() const noexcept = 0;
+  [[nodiscard]] virtual bool isUnionType() const noexcept = 0;
+  [[nodiscard]] virtual bool isEnumType() const noexcept = 0;
 
-  virtual VarType* getElementVarType() const { return nullptr; }
-  virtual VarType* getMemberVarType(const std::string& memberName) const;
+  [[nodiscard]] virtual VarType* getElementVarType() const noexcept {
+    return nullptr;
+  }
+  [[nodiscard]] virtual VarType* getMemberVarType(
+      const std::string& memberName) const;
 
   void setConst() { isConst_ = true; }
+
+ protected:
+  // Memoized result of getType(), filled by the derived overrides in
+  // irgen/TypeToIr.cpp the first time a type is materialized. Unlike isConst_
+  // and typeName_ above, this is not part of the tree the parser builds — it
+  // is a cache, and the reason getType() is the one query on a type node that
+  // cannot be const. Nothing outside the hierarchy reads it, so nothing
+  // outside can be tempted to trust it before it is filled.
+  llvm::Type* llvmType_ = nullptr;
 };
 
-class BuiltinType : public VarType {
+class BuiltinType final : public VarType {
  public:
   BuiltinTypeId typeId_;
 
@@ -486,16 +507,16 @@ class BuiltinType : public VarType {
 
   llvm::Type* getType(TypeEnv& env) override;
 
-  bool isBuiltinType() const override { return true; }
-  bool isPointerType() const override { return false; }
-  bool isArrayType() const override { return false; }
-  bool isDefinedType() const override { return false; }
-  bool isStructType() const override { return false; }
-  bool isUnionType() const override { return false; }
-  bool isEnumType() const override { return false; }
+  bool isBuiltinType() const noexcept override { return true; }
+  bool isPointerType() const noexcept override { return false; }
+  bool isArrayType() const noexcept override { return false; }
+  bool isDefinedType() const noexcept override { return false; }
+  bool isStructType() const noexcept override { return false; }
+  bool isUnionType() const noexcept override { return false; }
+  bool isEnumType() const noexcept override { return false; }
 };
 
-class PointerType : public VarType {
+class PointerType final : public VarType {
  public:
   VarType* baseType_;
 
@@ -507,20 +528,20 @@ class PointerType : public VarType {
 
   llvm::Type* getType(TypeEnv& env) override;
 
-  bool isBuiltinType() const override { return false; }
-  bool isPointerType() const override { return true; }
-  bool isArrayType() const override { return false; }
-  bool isDefinedType() const override { return false; }
-  bool isStructType() const override { return false; }
-  bool isUnionType() const override { return false; }
-  bool isEnumType() const override { return false; }
+  bool isBuiltinType() const noexcept override { return false; }
+  bool isPointerType() const noexcept override { return true; }
+  bool isArrayType() const noexcept override { return false; }
+  bool isDefinedType() const noexcept override { return false; }
+  bool isStructType() const noexcept override { return false; }
+  bool isUnionType() const noexcept override { return false; }
+  bool isEnumType() const noexcept override { return false; }
 
-  VarType* getElementVarType() const override { return baseType_; }
+  VarType* getElementVarType() const noexcept override { return baseType_; }
 };
 
 // One array dimension; chained ArrayType nodes model multidim types.
 // getElementVarType() peels the outermost dimension (used by Subscript).
-class ArrayType : public VarType {
+class ArrayType final : public VarType {
  public:
   VarType* baseType_;
   size_t length_;
@@ -535,19 +556,19 @@ class ArrayType : public VarType {
 
   llvm::Type* getType(TypeEnv& env) override;
 
-  bool isBuiltinType() const override { return false; }
-  bool isPointerType() const override { return false; }
-  bool isArrayType() const override { return true; }
-  bool isDefinedType() const override { return false; }
-  bool isStructType() const override { return false; }
-  bool isUnionType() const override { return false; }
-  bool isEnumType() const override { return false; }
+  bool isBuiltinType() const noexcept override { return false; }
+  bool isPointerType() const noexcept override { return false; }
+  bool isArrayType() const noexcept override { return true; }
+  bool isDefinedType() const noexcept override { return false; }
+  bool isStructType() const noexcept override { return false; }
+  bool isUnionType() const noexcept override { return false; }
+  bool isEnumType() const noexcept override { return false; }
 
-  VarType* getElementVarType() const override { return baseType_; }
+  VarType* getElementVarType() const noexcept override { return baseType_; }
 };
 
 /* Identifier is name of user defined type */
-class DefinedType : public VarType {
+class DefinedType final : public VarType {
  public:
   explicit DefinedType(const std::string& typeName) : VarType(typeName) {}
   ~DefinedType() override = default;
@@ -556,16 +577,16 @@ class DefinedType : public VarType {
 
   llvm::Type* getType(TypeEnv& env) override;
 
-  bool isBuiltinType() const override { return false; }
-  bool isPointerType() const override { return false; }
-  bool isArrayType() const override { return false; }
-  bool isDefinedType() const override { return true; }
-  bool isStructType() const override { return false; }
-  bool isUnionType() const override { return false; }
-  bool isEnumType() const override { return false; }
+  bool isBuiltinType() const noexcept override { return false; }
+  bool isPointerType() const noexcept override { return false; }
+  bool isArrayType() const noexcept override { return false; }
+  bool isDefinedType() const noexcept override { return true; }
+  bool isStructType() const noexcept override { return false; }
+  bool isUnionType() const noexcept override { return false; }
+  bool isEnumType() const noexcept override { return false; }
 };
 
-class StructType : public VarType {
+class StructType final : public VarType {
  public:
   FieldDecls* structBody_;
 
@@ -577,23 +598,23 @@ class StructType : public VarType {
 
   llvm::Type* getType(TypeEnv& env) override;
 
-  bool isBuiltinType() const override { return false; }
-  bool isPointerType() const override { return false; }
-  bool isArrayType() const override { return false; }
-  bool isDefinedType() const override { return false; }
-  bool isStructType() const override { return true; }
-  bool isUnionType() const override { return false; }
-  bool isEnumType() const override { return false; }
+  bool isBuiltinType() const noexcept override { return false; }
+  bool isPointerType() const noexcept override { return false; }
+  bool isArrayType() const noexcept override { return false; }
+  bool isDefinedType() const noexcept override { return false; }
+  bool isStructType() const noexcept override { return true; }
+  bool isUnionType() const noexcept override { return false; }
+  bool isEnumType() const noexcept override { return false; }
 
   VarType* getMemberVarType(const std::string& memberName) const override;
 
   llvm::Type* genTypeHead(TypeEnv& env,
                           const std::string& typeName = "anonymous");
   llvm::Type* genTypeBody(TypeEnv& env);
-  size_t getMemberIndex(const std::string& memberName) const;
+  [[nodiscard]] size_t getMemberIndex(const std::string& memberName) const;
 };
 
-class UnionType : public VarType {
+class UnionType final : public VarType {
  public:
   FieldDecls* unionBody_;
 
@@ -605,13 +626,13 @@ class UnionType : public VarType {
 
   llvm::Type* getType(TypeEnv& env) override;
 
-  bool isBuiltinType() const override { return false; }
-  bool isPointerType() const override { return false; }
-  bool isArrayType() const override { return false; }
-  bool isDefinedType() const override { return false; }
-  bool isStructType() const override { return false; }
-  bool isUnionType() const override { return true; }
-  bool isEnumType() const override { return false; }
+  bool isBuiltinType() const noexcept override { return false; }
+  bool isPointerType() const noexcept override { return false; }
+  bool isArrayType() const noexcept override { return false; }
+  bool isDefinedType() const noexcept override { return false; }
+  bool isStructType() const noexcept override { return false; }
+  bool isUnionType() const noexcept override { return true; }
+  bool isEnumType() const noexcept override { return false; }
 
   VarType* getMemberVarType(const std::string& memberName) const override;
 
@@ -621,7 +642,7 @@ class UnionType : public VarType {
   llvm::Type* getMemberType(const std::string& memberName, TypeEnv& env) const;
 };
 
-class FieldDecl : public Decl {
+class FieldDecl final : public Decl {
  public:
   VarType* varType_;
   MemberList* memberList_;
@@ -634,7 +655,7 @@ class FieldDecl : public Decl {
   std::pair<std::string, std::string> genGraph() const override;
 };
 
-class EnumType : public VarType {
+class EnumType final : public VarType {
  public:
   EnumList* enumList_;
 
@@ -646,16 +667,16 @@ class EnumType : public VarType {
 
   llvm::Type* getType(TypeEnv& env) override;
 
-  bool isBuiltinType() const override { return false; }
-  bool isPointerType() const override { return false; }
-  bool isArrayType() const override { return false; }
-  bool isDefinedType() const override { return false; }
-  bool isStructType() const override { return false; }
-  bool isUnionType() const override { return false; }
-  bool isEnumType() const override { return true; }
+  bool isBuiltinType() const noexcept override { return false; }
+  bool isPointerType() const noexcept override { return false; }
+  bool isArrayType() const noexcept override { return false; }
+  bool isDefinedType() const noexcept override { return false; }
+  bool isStructType() const noexcept override { return false; }
+  bool isUnionType() const noexcept override { return false; }
+  bool isEnumType() const noexcept override { return true; }
 };
 
-class Enum : public Node {
+class Enum final : public Node {
  public:
   std::string name_;
   bool hasValue_;
@@ -679,7 +700,7 @@ class Enum : public Node {
 // switch off a stack on CodeGenerator.
 // ===========================================================================
 
-class IfStmt : public Stmt {
+class IfStmt final : public Stmt {
  public:
   Expr* condition_;
   Stmt* thenStmt_;
@@ -693,7 +714,7 @@ class IfStmt : public Stmt {
   std::pair<std::string, std::string> genGraph() const override;
 };
 
-class SwitchStmt : public Stmt {
+class SwitchStmt final : public Stmt {
  public:
   Expr* matcher_;
   CaseStmtList* caseStmtList_;
@@ -706,7 +727,7 @@ class SwitchStmt : public Stmt {
   std::pair<std::string, std::string> genGraph() const override;
 };
 
-class CaseStmt : public Stmt {
+class CaseStmt final : public Stmt {
  public:
   Expr* condition_;
   Stmts* content_;
@@ -719,7 +740,7 @@ class CaseStmt : public Stmt {
   std::pair<std::string, std::string> genGraph() const override;
 };
 
-class ForStmt : public Stmt {
+class ForStmt final : public Stmt {
  public:
   Stmt* initial_;
   Expr* condition_;
@@ -737,7 +758,7 @@ class ForStmt : public Stmt {
   std::pair<std::string, std::string> genGraph() const override;
 };
 
-class DoStmt : public Stmt {
+class DoStmt final : public Stmt {
  public:
   Stmt* loopBody_;
   Expr* condition_;
@@ -750,7 +771,7 @@ class DoStmt : public Stmt {
   std::pair<std::string, std::string> genGraph() const override;
 };
 
-class WhileStmt : public Stmt {
+class WhileStmt final : public Stmt {
  public:
   Expr* condition_;
   Stmt* loopBody_;
@@ -763,7 +784,7 @@ class WhileStmt : public Stmt {
   std::pair<std::string, std::string> genGraph() const override;
 };
 
-class ContinueStmt : public Stmt {
+class ContinueStmt final : public Stmt {
  public:
   ContinueStmt() = default;
   ~ContinueStmt() override = default;
@@ -772,7 +793,7 @@ class ContinueStmt : public Stmt {
   std::pair<std::string, std::string> genGraph() const override;
 };
 
-class BreakStmt : public Stmt {
+class BreakStmt final : public Stmt {
  public:
   BreakStmt() = default;
   ~BreakStmt() override = default;
@@ -781,7 +802,7 @@ class BreakStmt : public Stmt {
   std::pair<std::string, std::string> genGraph() const override;
 };
 
-class ReturnStmt : public Stmt {
+class ReturnStmt final : public Stmt {
  public:
   Expr* retVal_;
 
@@ -792,7 +813,7 @@ class ReturnStmt : public Stmt {
   std::pair<std::string, std::string> genGraph() const override;
 };
 
-class Block : public Stmt {
+class Block final : public Stmt {
  public:
   Stmts* content_;
 
@@ -831,10 +852,12 @@ class Expr : public Stmt {
   // genCode().
   virtual llvm::Value* genCodePtr(CodeGenerator& generator) = 0;
 
-  virtual VarType* getExprVarType(CodeGenerator& generator) const;
-  virtual VarType* getLValueVarType(CodeGenerator& generator) const;
-  virtual BuiltinTypeId getExprTypeId(CodeGenerator& generator) const;
-  BuiltinTypeId getLValueTypeId(CodeGenerator& generator) const;
+  [[nodiscard]] virtual VarType* getExprVarType(CodeGenerator& generator) const;
+  [[nodiscard]] virtual VarType* getLValueVarType(
+      CodeGenerator& generator) const;
+  [[nodiscard]] virtual BuiltinTypeId getExprTypeId(
+      CodeGenerator& generator) const;
+  [[nodiscard]] BuiltinTypeId getLValueTypeId(CodeGenerator& generator) const;
 
   // Rvalue form of an lvalue expression: evaluate genCodePtr(), then load
   // through it. This is the whole of genCode() for every node whose value is
@@ -863,6 +886,8 @@ class LhsRhsExpr : public Expr {
   Expr* rhs_;
 
   explicit LhsRhsExpr(Expr* lhs, Expr* rhs) : lhs_(lhs), rhs_(rhs) {}
+
+ public:
   ~LhsRhsExpr() override;
 };
 
@@ -886,7 +911,7 @@ class ThrowingUnaryExpr : public UnaryExpr {
  protected:
   explicit ThrowingUnaryExpr(Expr* operand) : UnaryExpr(operand) {}
 
-  virtual const char* nonLValueErrorMessage() const = 0;
+  [[nodiscard]] virtual const char* nonLValueErrorMessage() const = 0;
 
  public:
   ~ThrowingUnaryExpr() override = default;
@@ -898,7 +923,7 @@ class BinaryExpr : public LhsRhsExpr {
  protected:
   explicit BinaryExpr(Expr* lhs, Expr* rhs) : LhsRhsExpr(lhs, rhs) {}
 
-  virtual const char* nonLValueErrorMessage() const = 0;
+  [[nodiscard]] virtual const char* nonLValueErrorMessage() const = 0;
 
   llvm::Value* genBinaryCode(
       CodeGenerator& generator,
@@ -911,7 +936,7 @@ class BinaryExpr : public LhsRhsExpr {
   llvm::Value* genCodePtr(CodeGenerator& generator) override;
 };
 
-class Variable : public Expr {
+class Variable final : public Expr {
  public:
   std::string varName_;
 
@@ -991,7 +1016,7 @@ class Constant : public Expr {
   std::pair<std::string, std::string> genGraph() const override;
 };
 
-class ConstStr : public Constant {
+class ConstStr final : public Constant {
  public:
   std::string str_;
 
@@ -1006,7 +1031,7 @@ class ConstStr : public Constant {
   std::pair<std::string, std::string> genGraph() const override;
 };
 
-class CommaExpr : public LhsRhsExpr {
+class CommaExpr final : public LhsRhsExpr {
  public:
   explicit CommaExpr(Expr* lhs, Expr* rhs) : LhsRhsExpr(lhs, rhs) {}
   ~CommaExpr() override = default;
@@ -1019,7 +1044,7 @@ class CommaExpr : public LhsRhsExpr {
   std::pair<std::string, std::string> genGraph() const override;
 };
 
-class FuncCall : public Expr {
+class FuncCall final : public Expr {
  public:
   std::string funcName_;
   ExprList* argList_;
@@ -1037,7 +1062,7 @@ class FuncCall : public Expr {
 };
 
 // For structObj.member
-class StructRef : public Expr {
+class StructRef final : public Expr {
  public:
   Expr* struct_;
   std::string memberName_;
@@ -1056,7 +1081,7 @@ class StructRef : public Expr {
 };
 
 // For structPtr->member
-class StructDeref : public Expr {
+class StructDeref final : public Expr {
  public:
   Expr* structPtr_;
   std::string memberName_;
@@ -1076,7 +1101,7 @@ class StructDeref : public Expr {
 
 // Indexing: genCodePtr uses array_->genCode() (rvalue/decay) plus pointer
 // arithmetic; getLValueVarType peels one ArrayType so m[i][j] chains.
-class Subscript : public Expr {
+class Subscript final : public Expr {
  public:
   Expr* array_;
   Expr* index_;
@@ -1093,7 +1118,7 @@ class Subscript : public Expr {
   std::pair<std::string, std::string> genGraph() const override;
 };
 
-class TypeCast : public Expr {
+class TypeCast final : public Expr {
  public:
   VarType* varType_;
   Expr* operand_;
@@ -1110,7 +1135,7 @@ class TypeCast : public Expr {
   std::pair<std::string, std::string> genGraph() const override;
 };
 
-class SizeOf : public Expr {
+class SizeOf final : public Expr {
  public:
   VarType* varType_;
   Expr* expr_;
@@ -1132,7 +1157,7 @@ class SizeOf : public Expr {
   std::pair<std::string, std::string> genGraph() const override;
 };
 
-class UnaryPlus : public ThrowingUnaryExpr {
+class UnaryPlus final : public ThrowingUnaryExpr {
  public:
   explicit UnaryPlus(Expr* operand) : ThrowingUnaryExpr(operand) {}
   ~UnaryPlus() override = default;
@@ -1147,7 +1172,7 @@ class UnaryPlus : public ThrowingUnaryExpr {
   const char* nonLValueErrorMessage() const override;
 };
 
-class UnaryMinus : public ThrowingUnaryExpr {
+class UnaryMinus final : public ThrowingUnaryExpr {
  public:
   explicit UnaryMinus(Expr* operand) : ThrowingUnaryExpr(operand) {}
   ~UnaryMinus() override = default;
@@ -1164,7 +1189,7 @@ class UnaryMinus : public ThrowingUnaryExpr {
 };
 
 /* for *pointer */
-class PointerDeref : public UnaryExpr {
+class PointerDeref final : public UnaryExpr {
  public:
   explicit PointerDeref(Expr* operand) : UnaryExpr(operand) {}
   ~PointerDeref() override = default;
@@ -1179,7 +1204,7 @@ class PointerDeref : public UnaryExpr {
 };
 
 /* for &variable */
-class AddressOf : public ThrowingUnaryExpr {
+class AddressOf final : public ThrowingUnaryExpr {
  public:
   explicit AddressOf(Expr* operand) : ThrowingUnaryExpr(operand) {}
   ~AddressOf() override = default;
@@ -1207,7 +1232,7 @@ class LhsRhsAssign : public LhsRhsExpr {
   VarType* getLValueVarType(CodeGenerator& generator) const override;
 };
 
-class Assign : public LhsRhsAssign {
+class Assign final : public LhsRhsAssign {
  public:
   explicit Assign(Expr* lhs, Expr* rhs) : LhsRhsAssign(lhs, rhs) {}
   ~Assign() override = default;
@@ -1219,7 +1244,7 @@ class Assign : public LhsRhsAssign {
   std::pair<std::string, std::string> genGraph() const override;
 };
 
-class Add : public BinaryExpr {
+class Add final : public BinaryExpr {
  public:
   explicit Add(Expr* lhs, Expr* rhs) : BinaryExpr(lhs, rhs) {}
   ~Add() override = default;
@@ -1232,7 +1257,7 @@ class Add : public BinaryExpr {
   const char* nonLValueErrorMessage() const override;
 };
 
-class Sub : public BinaryExpr {
+class Sub final : public BinaryExpr {
  public:
   explicit Sub(Expr* lhs, Expr* rhs) : BinaryExpr(lhs, rhs) {}
   ~Sub() override = default;
@@ -1245,7 +1270,7 @@ class Sub : public BinaryExpr {
   const char* nonLValueErrorMessage() const override;
 };
 
-class Mul : public BinaryExpr {
+class Mul final : public BinaryExpr {
  public:
   explicit Mul(Expr* lhs, Expr* rhs) : BinaryExpr(lhs, rhs) {}
   ~Mul() override = default;
@@ -1258,7 +1283,7 @@ class Mul : public BinaryExpr {
   const char* nonLValueErrorMessage() const override;
 };
 
-class Div : public BinaryExpr {
+class Div final : public BinaryExpr {
  public:
   explicit Div(Expr* lhs, Expr* rhs) : BinaryExpr(lhs, rhs) {}
   ~Div() override = default;
@@ -1271,7 +1296,7 @@ class Div : public BinaryExpr {
   const char* nonLValueErrorMessage() const override;
 };
 
-class Mod : public BinaryExpr {
+class Mod final : public BinaryExpr {
  public:
   explicit Mod(Expr* lhs, Expr* rhs) : BinaryExpr(lhs, rhs) {}
   ~Mod() override = default;
@@ -1284,7 +1309,7 @@ class Mod : public BinaryExpr {
   const char* nonLValueErrorMessage() const override;
 };
 
-class PostfixInc : public ThrowingUnaryExpr {
+class PostfixInc final : public ThrowingUnaryExpr {
  public:
   explicit PostfixInc(Expr* operand) : ThrowingUnaryExpr(operand) {}
   ~PostfixInc() override = default;
@@ -1300,7 +1325,7 @@ class PostfixInc : public ThrowingUnaryExpr {
   const char* nonLValueErrorMessage() const override;
 };
 
-class PostfixDec : public ThrowingUnaryExpr {
+class PostfixDec final : public ThrowingUnaryExpr {
  public:
   explicit PostfixDec(Expr* operand) : ThrowingUnaryExpr(operand) {}
   ~PostfixDec() override = default;
@@ -1316,7 +1341,7 @@ class PostfixDec : public ThrowingUnaryExpr {
   const char* nonLValueErrorMessage() const override;
 };
 
-class PrefixInc : public UnaryExpr {
+class PrefixInc final : public UnaryExpr {
  public:
   explicit PrefixInc(Expr* operand) : UnaryExpr(operand) {}
   ~PrefixInc() override = default;
@@ -1330,7 +1355,7 @@ class PrefixInc : public UnaryExpr {
   std::pair<std::string, std::string> genGraph() const override;
 };
 
-class PrefixDec : public UnaryExpr {
+class PrefixDec final : public UnaryExpr {
  public:
   explicit PrefixDec(Expr* operand) : UnaryExpr(operand) {}
   ~PrefixDec() override = default;
@@ -1354,7 +1379,7 @@ class CompoundAssign : public LhsRhsAssign {
   ~CompoundAssign() override = default;
 };
 
-class AddAssign : public CompoundAssign {
+class AddAssign final : public CompoundAssign {
  public:
   explicit AddAssign(Expr* lhs, Expr* rhs) : CompoundAssign(lhs, rhs) {}
   ~AddAssign() override = default;
@@ -1364,7 +1389,7 @@ class AddAssign : public CompoundAssign {
   std::pair<std::string, std::string> genGraph() const override;
 };
 
-class SubAssign : public CompoundAssign {
+class SubAssign final : public CompoundAssign {
  public:
   explicit SubAssign(Expr* lhs, Expr* rhs) : CompoundAssign(lhs, rhs) {}
   ~SubAssign() override = default;
@@ -1374,7 +1399,7 @@ class SubAssign : public CompoundAssign {
   std::pair<std::string, std::string> genGraph() const override;
 };
 
-class MulAssign : public CompoundAssign {
+class MulAssign final : public CompoundAssign {
  public:
   explicit MulAssign(Expr* lhs, Expr* rhs) : CompoundAssign(lhs, rhs) {}
   ~MulAssign() override = default;
@@ -1384,7 +1409,7 @@ class MulAssign : public CompoundAssign {
   std::pair<std::string, std::string> genGraph() const override;
 };
 
-class DivAssign : public CompoundAssign {
+class DivAssign final : public CompoundAssign {
  public:
   explicit DivAssign(Expr* lhs, Expr* rhs) : CompoundAssign(lhs, rhs) {}
   ~DivAssign() override = default;
@@ -1394,7 +1419,7 @@ class DivAssign : public CompoundAssign {
   std::pair<std::string, std::string> genGraph() const override;
 };
 
-class ModAssign : public CompoundAssign {
+class ModAssign final : public CompoundAssign {
  public:
   explicit ModAssign(Expr* lhs, Expr* rhs) : CompoundAssign(lhs, rhs) {}
   ~ModAssign() override = default;
@@ -1404,7 +1429,7 @@ class ModAssign : public CompoundAssign {
   std::pair<std::string, std::string> genGraph() const override;
 };
 
-class BitwiseAnd : public BinaryExpr {
+class BitwiseAnd final : public BinaryExpr {
  public:
   explicit BitwiseAnd(Expr* lhs, Expr* rhs) : BinaryExpr(lhs, rhs) {}
   ~BitwiseAnd() override = default;
@@ -1417,7 +1442,7 @@ class BitwiseAnd : public BinaryExpr {
   const char* nonLValueErrorMessage() const override;
 };
 
-class BitwiseOr : public BinaryExpr {
+class BitwiseOr final : public BinaryExpr {
  public:
   explicit BitwiseOr(Expr* lhs, Expr* rhs) : BinaryExpr(lhs, rhs) {}
   ~BitwiseOr() override = default;
@@ -1430,7 +1455,7 @@ class BitwiseOr : public BinaryExpr {
   const char* nonLValueErrorMessage() const override;
 };
 
-class BitwiseXor : public BinaryExpr {
+class BitwiseXor final : public BinaryExpr {
  public:
   explicit BitwiseXor(Expr* lhs, Expr* rhs) : BinaryExpr(lhs, rhs) {}
   ~BitwiseXor() override = default;
@@ -1443,7 +1468,7 @@ class BitwiseXor : public BinaryExpr {
   const char* nonLValueErrorMessage() const override;
 };
 
-class BitwiseNot : public ThrowingUnaryExpr {
+class BitwiseNot final : public ThrowingUnaryExpr {
  public:
   explicit BitwiseNot(Expr* operand) : ThrowingUnaryExpr(operand) {}
   ~BitwiseNot() override = default;
@@ -1456,7 +1481,7 @@ class BitwiseNot : public ThrowingUnaryExpr {
   const char* nonLValueErrorMessage() const override;
 };
 
-class BitwiseAndAssign : public CompoundAssign {
+class BitwiseAndAssign final : public CompoundAssign {
  public:
   explicit BitwiseAndAssign(Expr* lhs, Expr* rhs) : CompoundAssign(lhs, rhs) {}
   ~BitwiseAndAssign() override = default;
@@ -1466,7 +1491,7 @@ class BitwiseAndAssign : public CompoundAssign {
   std::pair<std::string, std::string> genGraph() const override;
 };
 
-class BitwiseOrAssign : public CompoundAssign {
+class BitwiseOrAssign final : public CompoundAssign {
  public:
   explicit BitwiseOrAssign(Expr* lhs, Expr* rhs) : CompoundAssign(lhs, rhs) {}
   ~BitwiseOrAssign() override = default;
@@ -1476,7 +1501,7 @@ class BitwiseOrAssign : public CompoundAssign {
   std::pair<std::string, std::string> genGraph() const override;
 };
 
-class BitwiseXorAssign : public CompoundAssign {
+class BitwiseXorAssign final : public CompoundAssign {
  public:
   explicit BitwiseXorAssign(Expr* lhs, Expr* rhs) : CompoundAssign(lhs, rhs) {}
   ~BitwiseXorAssign() override = default;
@@ -1486,7 +1511,7 @@ class BitwiseXorAssign : public CompoundAssign {
   std::pair<std::string, std::string> genGraph() const override;
 };
 
-class LeftShift : public BinaryExpr {
+class LeftShift final : public BinaryExpr {
  public:
   explicit LeftShift(Expr* lhs, Expr* rhs) : BinaryExpr(lhs, rhs) {}
   ~LeftShift() override = default;
@@ -1499,7 +1524,7 @@ class LeftShift : public BinaryExpr {
   const char* nonLValueErrorMessage() const override;
 };
 
-class RightShift : public BinaryExpr {
+class RightShift final : public BinaryExpr {
  public:
   explicit RightShift(Expr* lhs, Expr* rhs) : BinaryExpr(lhs, rhs) {}
   ~RightShift() override = default;
@@ -1512,7 +1537,7 @@ class RightShift : public BinaryExpr {
   const char* nonLValueErrorMessage() const override;
 };
 
-class LeftShiftAssign : public CompoundAssign {
+class LeftShiftAssign final : public CompoundAssign {
  public:
   explicit LeftShiftAssign(Expr* lhs, Expr* rhs) : CompoundAssign(lhs, rhs) {}
   ~LeftShiftAssign() override = default;
@@ -1522,7 +1547,7 @@ class LeftShiftAssign : public CompoundAssign {
   std::pair<std::string, std::string> genGraph() const override;
 };
 
-class RightShiftAssign : public CompoundAssign {
+class RightShiftAssign final : public CompoundAssign {
  public:
   explicit RightShiftAssign(Expr* lhs, Expr* rhs) : CompoundAssign(lhs, rhs) {}
   ~RightShiftAssign() override = default;
@@ -1536,7 +1561,7 @@ class LogicExpr : public LhsRhsExpr {
  protected:
   explicit LogicExpr(Expr* lhs, Expr* rhs) : LhsRhsExpr(lhs, rhs) {}
 
-  virtual const char* nonLValueErrorMessage() const = 0;
+  [[nodiscard]] virtual const char* nonLValueErrorMessage() const = 0;
 
   llvm::Value* genBoolBinaryCode(
       CodeGenerator& generator,
@@ -1553,7 +1578,7 @@ class LogicExpr : public LhsRhsExpr {
   llvm::Value* genCodePtr(CodeGenerator& generator) override;
 };
 
-class LogicAnd : public LogicExpr {
+class LogicAnd final : public LogicExpr {
  public:
   explicit LogicAnd(Expr* lhs, Expr* rhs) : LogicExpr(lhs, rhs) {}
   ~LogicAnd() override = default;
@@ -1566,7 +1591,7 @@ class LogicAnd : public LogicExpr {
   const char* nonLValueErrorMessage() const override;
 };
 
-class LogicOr : public LogicExpr {
+class LogicOr final : public LogicExpr {
  public:
   explicit LogicOr(Expr* lhs, Expr* rhs) : LogicExpr(lhs, rhs) {}
   ~LogicOr() override = default;
@@ -1579,7 +1604,7 @@ class LogicOr : public LogicExpr {
   const char* nonLValueErrorMessage() const override;
 };
 
-class LogicNot : public ThrowingUnaryExpr {
+class LogicNot final : public ThrowingUnaryExpr {
  public:
   explicit LogicNot(Expr* operand) : ThrowingUnaryExpr(operand) {}
   ~LogicNot() override = default;
@@ -1594,7 +1619,7 @@ class LogicNot : public ThrowingUnaryExpr {
   const char* nonLValueErrorMessage() const override;
 };
 
-class LogicEq : public LogicExpr {
+class LogicEq final : public LogicExpr {
  public:
   explicit LogicEq(Expr* lhs, Expr* rhs) : LogicExpr(lhs, rhs) {}
   ~LogicEq() override = default;
@@ -1607,7 +1632,7 @@ class LogicEq : public LogicExpr {
   const char* nonLValueErrorMessage() const override;
 };
 
-class LogicNotEq : public LogicExpr {
+class LogicNotEq final : public LogicExpr {
  public:
   explicit LogicNotEq(Expr* lhs, Expr* rhs) : LogicExpr(lhs, rhs) {}
   ~LogicNotEq() override = default;
@@ -1620,7 +1645,7 @@ class LogicNotEq : public LogicExpr {
   const char* nonLValueErrorMessage() const override;
 };
 
-class LogicLessThan : public LogicExpr {
+class LogicLessThan final : public LogicExpr {
  public:
   explicit LogicLessThan(Expr* lhs, Expr* rhs) : LogicExpr(lhs, rhs) {}
   ~LogicLessThan() override = default;
@@ -1633,7 +1658,7 @@ class LogicLessThan : public LogicExpr {
   const char* nonLValueErrorMessage() const override;
 };
 
-class LogicLessEq : public LogicExpr {
+class LogicLessEq final : public LogicExpr {
  public:
   explicit LogicLessEq(Expr* lhs, Expr* rhs) : LogicExpr(lhs, rhs) {}
   ~LogicLessEq() override = default;
@@ -1646,7 +1671,7 @@ class LogicLessEq : public LogicExpr {
   const char* nonLValueErrorMessage() const override;
 };
 
-class LogicGreaterThan : public LogicExpr {
+class LogicGreaterThan final : public LogicExpr {
  public:
   explicit LogicGreaterThan(Expr* lhs, Expr* rhs) : LogicExpr(lhs, rhs) {}
   ~LogicGreaterThan() override = default;
@@ -1659,7 +1684,7 @@ class LogicGreaterThan : public LogicExpr {
   const char* nonLValueErrorMessage() const override;
 };
 
-class LogicGreaterEq : public LogicExpr {
+class LogicGreaterEq final : public LogicExpr {
  public:
   explicit LogicGreaterEq(Expr* lhs, Expr* rhs) : LogicExpr(lhs, rhs) {}
   ~LogicGreaterEq() override = default;
@@ -1672,7 +1697,7 @@ class LogicGreaterEq : public LogicExpr {
   const char* nonLValueErrorMessage() const override;
 };
 
-class TernaryCondition : public Expr {
+class TernaryCondition final : public Expr {
  public:
   Expr* condition_;
   Expr* trueExpr_;

@@ -2,6 +2,7 @@
 
 #include <cstddef>
 #include <string>
+#include <string_view>
 #include <vector>
 
 // See irgen/SymbolTable.hpp for the two-stack layout and why the aggregate
@@ -30,7 +31,7 @@ void SymbolTable::popScope() {
 // forming an iterator before the first element is undefined even when it is
 // never dereferenced. rbegin()/rend() expresses the same walk with no
 // out-of-range iterator in it, and needs no empty-stack guard either.
-llvm::Type* SymbolTable::findType(const std::string& typeName) {
+llvm::Type* SymbolTable::findType(std::string_view typeName) {
   for (auto iter = scopeStack_.rbegin(); iter != scopeStack_.rend(); ++iter) {
     auto pairIter = iter->find(typeName);
     if (pairIter != iter->end()) {
@@ -56,7 +57,7 @@ bool SymbolTable::addType(const std::string& typeName, llvm::Type* type) {
   return true;
 }
 
-AST::VarType* SymbolTable::findTypedefAlias(const std::string& aliasName) {
+AST::VarType* SymbolTable::findTypedefAlias(std::string_view aliasName) {
   for (auto iter = typedefScopeStack_.rbegin();
        iter != typedefScopeStack_.rend(); ++iter) {
     auto pairIter = iter->find(aliasName);
@@ -84,7 +85,7 @@ bool SymbolTable::addTypedefAlias(const std::string& aliasName,
 }
 
 bool SymbolTable::hasTypedefAliasInCurrentScope(
-    const std::string& aliasName) const {
+    std::string_view aliasName) const {
   if (typedefScopeStack_.empty()) {
     return false;
   }
@@ -93,7 +94,7 @@ bool SymbolTable::hasTypedefAliasInCurrentScope(
   return topTable.find(aliasName) != topTable.end();
 }
 
-llvm::Value* SymbolTable::findVariable(const std::string& varName) {
+llvm::Value* SymbolTable::findVariable(std::string_view varName) {
   for (auto iter = scopeStack_.rbegin(); iter != scopeStack_.rend(); ++iter) {
     auto pairIter = iter->find(varName);
     if (pairIter != iter->end()) {
@@ -124,7 +125,7 @@ bool SymbolTable::addVariable(const std::string& varName, llvm::Value* var,
   return true;
 }
 
-AST::VarType* SymbolTable::findVariableType(const std::string& varName) {
+AST::VarType* SymbolTable::findVariableType(std::string_view varName) {
   for (auto iter = scopeStack_.rbegin(); iter != scopeStack_.rend(); ++iter) {
     auto pairIter = iter->find(varName);
     if (pairIter != iter->end()) {
@@ -142,7 +143,7 @@ void SymbolTable::setFuncSignature(
   funcParamTypes_[funcName] = paramTypes;
 }
 
-AST::VarType* SymbolTable::findFuncRetType(const std::string& funcName) {
+AST::VarType* SymbolTable::findFuncRetType(std::string_view funcName) {
   auto iter = funcRetTypes_.find(funcName);
   if (iter != funcRetTypes_.end()) {
     return iter->second;
@@ -151,7 +152,7 @@ AST::VarType* SymbolTable::findFuncRetType(const std::string& funcName) {
   return nullptr;
 }
 
-AST::VarType* SymbolTable::findFuncParamType(const std::string& funcName,
+AST::VarType* SymbolTable::findFuncParamType(std::string_view funcName,
                                              size_t index) {
   auto iter = funcParamTypes_.find(funcName);
   if (iter == funcParamTypes_.end() || index >= iter->second.size()) {
@@ -161,7 +162,7 @@ AST::VarType* SymbolTable::findFuncParamType(const std::string& funcName,
   return iter->second[index];
 }
 
-llvm::Value* SymbolTable::findConstant(const std::string& varName) {
+llvm::Value* SymbolTable::findConstant(std::string_view varName) {
   for (auto iter = scopeStack_.rbegin(); iter != scopeStack_.rend(); ++iter) {
     auto pairIter = iter->find(varName);
     if (pairIter != iter->end()) {
@@ -217,7 +218,7 @@ bool SymbolTable::addUnionType(llvm::StructType* llvmType,
   return unionTypeTable_.try_emplace(llvmType, astType).second;
 }
 
-llvm::Function* SymbolTable::findFunction(const std::string& funcName) {
+llvm::Function* SymbolTable::findFunction(std::string_view funcName) {
   for (auto iter = scopeStack_.rbegin(); iter != scopeStack_.rend(); ++iter) {
     auto pairIter = iter->find(funcName);
     if (pairIter != iter->end()) {

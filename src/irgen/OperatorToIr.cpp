@@ -110,7 +110,7 @@ llvm::Value* UnaryExpr::genIncDecCode(CodeGenerator& generator, bool increment,
     // Non-integers have no integer width; fall back to 64 so getOneValue yields
     // an i64 "1". createAdd/createSub then reinterpret it: a one-element GEP
     // step for pointers, or a promoted 1.0 for floats.
-    size_t valueBitWidth =
+    const size_t valueBitWidth =
         value->getType()->isIntegerTy()
             ? static_cast<llvm::IntegerType*>(value->getType())->getBitWidth()
             : 64;

@@ -3,6 +3,7 @@
 #include <cstddef>
 #include <map>
 #include <string>
+#include <string_view>
 #include <variant>
 #include <vector>
 
@@ -61,39 +62,40 @@ class SymbolTable {
 
   // --- Types (struct/union/enum tags) ---
 
-  llvm::Type* findType(const std::string& typeName);
+  [[nodiscard]] llvm::Type* findType(std::string_view typeName);
 
   // False if the name is already taken in the *current* scope.
   bool addType(const std::string& typeName, llvm::Type* type);
 
   // --- Typedef aliases ---
 
-  AST::VarType* findTypedefAlias(const std::string& aliasName);
+  [[nodiscard]] AST::VarType* findTypedefAlias(std::string_view aliasName);
 
   bool addTypedefAlias(const std::string& aliasName, AST::VarType* varType);
 
   // True when aliasName is a typedef in the innermost scope only.
-  bool hasTypedefAliasInCurrentScope(const std::string& aliasName) const;
+  [[nodiscard]] bool hasTypedefAliasInCurrentScope(
+      std::string_view aliasName) const;
 
   // --- Variables ---
 
-  llvm::Value* findVariable(const std::string& varName);
+  [[nodiscard]] llvm::Value* findVariable(std::string_view varName);
 
   bool addVariable(const std::string& varName, llvm::Value* var,
                    AST::VarType* varType = nullptr);
 
   // The C type recorded alongside the variable's storage.
-  AST::VarType* findVariableType(const std::string& varName);
+  [[nodiscard]] AST::VarType* findVariableType(std::string_view varName);
 
   // --- Constants (enum members) ---
 
-  llvm::Value* findConstant(const std::string& varName);
+  [[nodiscard]] llvm::Value* findConstant(std::string_view varName);
 
   bool addConstant(const std::string& varName, llvm::Value* var);
 
   // --- Functions ---
 
-  llvm::Function* findFunction(const std::string& funcName);
+  [[nodiscard]] llvm::Function* findFunction(std::string_view funcName);
 
   bool addFunction(const std::string& funcName, llvm::Function* func);
 
@@ -102,17 +104,18 @@ class SymbolTable {
   void setFuncSignature(const std::string& funcName, AST::VarType* retType,
                         const std::vector<AST::VarType*>& paramTypes);
 
-  AST::VarType* findFuncRetType(const std::string& funcName);
+  [[nodiscard]] AST::VarType* findFuncRetType(std::string_view funcName);
 
-  AST::VarType* findFuncParamType(const std::string& funcName, size_t index);
+  [[nodiscard]] AST::VarType* findFuncParamType(std::string_view funcName,
+                                                size_t index);
 
   // --- Aggregate registries (unscoped; llvm::StructType* -> AST node) ---
 
-  AST::StructType* findStructType(llvm::StructType* type);
+  [[nodiscard]] AST::StructType* findStructType(llvm::StructType* type);
 
   bool addStructType(llvm::StructType* llvmType, AST::StructType* astType);
 
-  AST::UnionType* findUnionType(llvm::StructType* type);
+  [[nodiscard]] AST::UnionType* findUnionType(llvm::StructType* type);
 
   bool addUnionType(llvm::StructType* llvmType, AST::UnionType* astType);
 
@@ -143,27 +146,27 @@ class SymbolTable {
                            : Content{std::in_place_type<Variable>, value}),
           varType_(varType) {}
 
-    llvm::Function* getFunction() const noexcept {
+    [[nodiscard]] llvm::Function* getFunction() const noexcept {
       const auto* func = std::get_if<llvm::Function*>(&content_);
       return func != nullptr ? *func : nullptr;
     }
 
-    llvm::Type* getType() const noexcept {
+    [[nodiscard]] llvm::Type* getType() const noexcept {
       const auto* type = std::get_if<llvm::Type*>(&content_);
       return type != nullptr ? *type : nullptr;
     }
 
-    llvm::Value* getVariable() const noexcept {
+    [[nodiscard]] llvm::Value* getVariable() const noexcept {
       const auto* variable = std::get_if<Variable>(&content_);
       return variable != nullptr ? variable->value : nullptr;
     }
 
-    llvm::Value* getConstant() const noexcept {
+    [[nodiscard]] llvm::Value* getConstant() const noexcept {
       const auto* constant = std::get_if<Constant>(&content_);
       return constant != nullptr ? constant->value : nullptr;
     }
 
-    AST::VarType* getVarType() const noexcept { return varType_; }
+    [[nodiscard]] AST::VarType* getVarType() const noexcept { return varType_; }
 
    private:
     // Constructors rather than aggregates: std::in_place_type below
@@ -189,8 +192,8 @@ class SymbolTable {
   // popped, never shared, so there is nothing for a pointer to express here
   // except a chance to leak one. Unwinding out of a half-finished walk drains
   // them without help from a destructor.
-  using Scope = std::map<std::string, Symbol>;
-  using TypedefScope = std::map<std::string, AST::VarType*>;
+  using Scope = std::map<std::string, Symbol, std::less<>>;
+  using TypedefScope = std::map<std::string, AST::VarType*, std::less<>>;
 
   using StructTypeTable = std::map<llvm::StructType*, AST::StructType*>;
   using UnionTypeTable = std::map<llvm::StructType*, AST::UnionType*>;
@@ -201,8 +204,9 @@ class SymbolTable {
   StructTypeTable structTypeTable_;
   UnionTypeTable unionTypeTable_;
 
-  std::map<std::string, AST::VarType*> funcRetTypes_;
-  std::map<std::string, std::vector<AST::VarType*>> funcParamTypes_;
+  std::map<std::string, AST::VarType*, std::less<>> funcRetTypes_;
+  std::map<std::string, std::vector<AST::VarType*>, std::less<>>
+      funcParamTypes_;
 };
 
 // RAII guard for the scope stack. It lives here rather than at the call sites
