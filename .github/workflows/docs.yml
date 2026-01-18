@@ -1,0 +1,28 @@
+name: Docs
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+
+jobs:
+  # Doxygen exits 0 after warning about a broken \param or reference, so docs.sh
+  # gates on the warning log instead. One platform, for the same reason as the
+  # lint gates: the findings do not depend on the host.
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # Not install-deps-ubuntu.sh: it pulls LLVM 20 for a build this job never
+      # runs. doxygen and dot are everything docs.sh asks for, which is the
+      # same trade docs.sh makes in not sourcing build-env.sh.
+      - name: Install Doxygen and Graphviz
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y doxygen graphviz
+
+      - name: Generate the API reference
+        working-directory: scripts
+        run: ./docs.sh

@@ -1,0 +1,66 @@
+# Doxygen configuration for lcc. Run with scripts/docs.sh, which invokes
+# doxygen from the repository root so every path below is repo-relative.
+#
+# Only non-default settings appear here. Doxygen supplies the rest, so this
+# file stays readable and a `doxygen -u` regeneration is never needed to see
+# what lcc actually chose.
+
+PROJECT_NAME           = lcc
+PROJECT_BRIEF          = "Learn C Compiler: flex, bison, and LLVM 20"
+OUTPUT_DIRECTORY       = ../lcc-build/docs
+
+# src/ is the include root, so stripping it makes documented headers read the
+# way the #include lines do: "irgen/Operators.hpp", not a long absolute path.
+# The landing page is a file rather than a \mainpage block in a header:
+# Doxygen's index.html is otherwise the project name and nothing else.
+INPUT                  = src docs/doxygen/ApiMainPage.md
+USE_MDFILE_AS_MAINPAGE = docs/doxygen/ApiMainPage.md
+STRIP_FROM_PATH        = src
+RECURSIVE              = YES
+FILE_PATTERNS          = *.hpp *.cpp *.md
+
+# flex and bison output. Never edited by hand, regenerated on every configure,
+# and 20k lines of machine-written code that would swamp everything else.
+EXCLUDE                = src/generated
+
+# Document what is documented, nothing else. EXTRACT_ALL would manufacture an
+# empty page for all ~470 declarations and bury the ones that say something.
+EXTRACT_ALL            = NO
+EXTRACT_STATIC         = YES
+HIDE_UNDOC_MEMBERS     = YES
+HIDE_UNDOC_CLASSES     = YES
+
+# The first sentence of a /// block is the brief; the rest is the detail. This
+# is what lets existing prose become documentation without adding \brief to it.
+JAVADOC_AUTOBRIEF      = YES
+MARKDOWN_SUPPORT       = YES
+BUILTIN_STL_SUPPORT    = YES
+
+# graphviz is already a build dependency (the test scripts render AST graphs
+# with dot), so the inheritance diagrams cost nothing extra to enable -- and
+# the Node hierarchy is six levels deep, which is exactly what they are for.
+HAVE_DOT               = YES
+UML_LOOK               = YES
+DOT_IMAGE_FORMAT       = svg
+INTERACTIVE_SVG        = YES
+
+# The class diagrams are wanted; the directory ones are not. Left on, Doxygen
+# emits a page per pair of directories that include each other -- seven here,
+# each restating a single #include edge. What they would tell a reader is the
+# layering, and that is already prose in two places: the table on the landing
+# page and the dependency section of docs/Architecture.md. The eleven
+# per-directory listings are a different thing, and are unaffected by this.
+DIRECTORY_GRAPH        = NO
+
+GENERATE_LATEX         = NO
+GENERATE_HTML          = YES
+
+# Warnings are the gate: scripts/docs.sh fails when this file is non-empty, in
+# the same way tidy.sh treats clang-tidy's stdout. Undocumented entities are
+# not warned about, since documenting all 470 is not the goal.
+QUIET                  = YES
+WARNINGS               = YES
+WARN_IF_UNDOCUMENTED   = NO
+WARN_IF_DOC_ERROR      = YES
+WARN_NO_PARAMDOC       = YES
+WARN_LOGFILE           = ../lcc-build/docs/doxygen-warnings.log

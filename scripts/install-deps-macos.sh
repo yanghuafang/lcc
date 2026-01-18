@@ -31,6 +31,6 @@ fi
 # flex/bison are keg-only on macOS; build-env.sh prepends their Homebrew bins to
 # PATH. argparse is optional (CMake FetchContent falls back), but the formula
 # exists, so install it to match the CMake find_package path.
-brew install flex bison llvm@20 argparse graphviz cmake
+brew install flex bison llvm@20 argparse graphviz doxygen cmake
 
 echo "macOS dependencies installed. Build with: ./build-lcc.sh"

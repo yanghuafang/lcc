@@ -36,6 +36,7 @@ sudo apt-get install -y \
   flex \
   bison \
   graphviz \
+  doxygen \
   clang \
   git \
   llvm-20 \

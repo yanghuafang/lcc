@@ -121,7 +121,7 @@ See [M14 vectorization study](#auto-vectorization-study-m14) for scalar vs vecto
 
 ### CI smoke checks
 
-CI runs the formatting check, the build, the clang-tidy gate, the full compile/link/run suite, and every smoke script, split across the workflows in `.github/workflows/` and covering Ubuntu and macOS. [Testing.md § CI](Testing.md#ci) names them.
+CI runs the formatting check, the build, the clang-tidy and documentation gates, the full compile/link/run suite, and every smoke script, split across the workflows in `.github/workflows/` and covering Ubuntu and macOS. [Testing.md § CI](Testing.md#ci) names them.
 
 Local equivalents:
 

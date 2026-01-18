@@ -165,7 +165,8 @@ lcc/
 ├── tests/             # suite programs (+1 study fixture); each prints "<name> PASS" or "FAIL"
 │   └── graphs/        # Assertion-free fixtures, one per language area, for AST graphs only
 ├── benchmarks/        # Larger workloads for bench.sh (M15)
-├── scripts/           # build-lcc.sh, compile/link/run-tests.sh, format.sh, tidy.sh, bench
+├── scripts/           # build-lcc.sh, compile/link/run-tests.sh, format.sh,
+│                          # tidy.sh, docs.sh, bench.sh
 ├── docs/              # Guides (start with LearningPlan.md)
 ├── debug/             # Committed IR / asm goldens for the suite; AST graphs in debug/graphs/
 ├── CMakeLists.txt     # flex/bison codegen + LLVM configuration
@@ -189,21 +190,13 @@ lcc/
 | [docs/FrontendNotes.md](docs/FrontendNotes.md) | How the front-end reached its current feature set |
 | [docs/MiddleBackendNotes.md](docs/MiddleBackendNotes.md) | What each middle/back-end milestone built, with acceptance criteria |
 
-[docs/README.md](docs/README.md) indexes the same guides with a milestone-to-doc map.
+[docs/README.md](docs/README.md) indexes the same guides with a milestone-to-doc map. `scripts/docs.sh` renders the header comments into a browsable API reference, with diagrams of the six-level `Node` hierarchy that the sources cannot show.
 
 ## Requirements
 
 **macOS** (Homebrew) or **Ubuntu LTS**, with **LLVM 20**, **CMake 3.22+**, a **C++17** compiler, and a system linker (`clang` or `gcc`) for lcc's PIC objects. flex, bison, argparse, graphviz and doxygen come from the setup scripts.
 
-| Needed | Note |
-| --- | --- |
-| LLVM **20**, CMake **3.22+**, **C++17** | |
-| flex, bison | required at **configure** time — CMake regenerates the lexer and parser on every run |
-| a system linker (`clang` or `gcc`) | links lcc's PIC objects |
-| argparse | used if installed; CMake downloads it otherwise |
-| graphviz | supplies `dot`, which the test scripts call to render AST images |
-
-Setup commands: [docs/Install.md](docs/Install.md).
+Full list and setup commands: [docs/Install.md](docs/Install.md).
 
 ## Project status
 
