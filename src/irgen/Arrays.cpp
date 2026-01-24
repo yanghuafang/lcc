@@ -34,8 +34,6 @@ llvm::Constant* asConstant(llvm::Value* value, const std::string& context) {
   return constant;
 }
 
-bool isInferredBound(size_t bound) { return bound == AST::kInferredArrayBound; }
-
 bool isCharElementType(AST::VarType* baseType) {
   return vartype::varTypeToTypeId(baseType) == AST::BuiltinTypeId::CHAR;
 }
@@ -45,6 +43,10 @@ AST::ConstStr* asConstStr(AST::Expr* expr) {
 }
 
 namespace {
+
+// True for the `[]` sentinel a declarator leaves behind, before resolveBounds
+// has replaced it with a length read off the initializer.
+bool isInferredBound(size_t bound) { return bound == AST::kInferredArrayBound; }
 
 // Element type plus every dimension of a (possibly multi-dimensional) array.
 struct ArrayTypeInfo {

@@ -9,6 +9,7 @@
 #include "backend/TargetBackend.hpp"
 #include "dot/DotFileWriter.hpp"
 #include "driver/Pipeline.hpp"
+#include "frontend/Diagnostics.hpp"
 #include "frontend/TokenStrings.hpp"
 #include "irgen/CodeGenerator.hpp"
 
@@ -30,8 +31,15 @@
 //   1  no arguments — help text printed to stdout, not an error
 //   2  bad command line: unparseable flags, or -O-passes combined with -O0..Oz
 //   3  cannot open the -i source file
-//   4  lex/parse failed (yyparse returned non-zero)
-//   5  writing the -v AST graph failed
+//   4  lex/parse failed — either yyparse returned non-zero, or the lexer
+//      rejected a literal. The second half needs saying: the lexer recovers
+//      by substituting 0 and returning a valid token, so a parse can succeed
+//      with errors behind it, and lcc used to emit an object from the
+//      substituted values and exit 0
+//   5  writing the -v AST graph threw — but the common failure does not reach
+//      here: dotfile::write reports an unopenable path on stderr and returns,
+//      so an unwritable -v path still prints success and exits 0. Contrast
+//      stage 8, where pipeline::dumpIr throws and the code is reachable
 //   6  IR generation or the middle end failed — including an unresolvable
 //      --target, since the module is configured for its target before the AST
 //      walk begins (sizeof and DWARF offsets both need the data layout)
@@ -267,6 +275,19 @@ int main(int argc, char* argv[]) {
 
   if (ret != 0) {
     std::cerr << "yyparse failed with ret " << ret << '\n';
+    return 4;
+  }
+
+  // A clean yyparse is not the same as a clean front end. The lexer reports a
+  // malformed or out-of-range literal and then hands the parser a valid token
+  // with 0 in it, so the grammar never learns anything went wrong — which is
+  // deliberate, and lets one run name every bad literal rather than stopping
+  // at the first. Refusing to compile is this file's job, because it is the
+  // only place that sees both halves.
+  if (const size_t frontendErrors = frontend::errorCount();
+      frontendErrors != 0) {
+    std::cerr << "Front end reported " << frontendErrors
+              << " error(s); not compiling." << '\n';
     return 4;
   }
 

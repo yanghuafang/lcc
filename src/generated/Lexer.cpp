@@ -652,25 +652,31 @@ char *yytext;
 #include <cstring>
 #include <string>
 
-#include <stdio.h>
-
+// Defined in frontend/Parser.y. Both the grammar and the literal helpers below
+// report through it, which is what makes it the one place a front-end
+// diagnostic passes through.
 void yyerror(const char* s);
 
-// Everything this file defines for itself. An anonymous namespace rather
-// than `static` on each definition: it is one mechanism covering functions
-// and file-scope state alike, it is what every other file in this tree
-// uses, and a definition added later cannot forget it the way it can
-// forget a keyword.
-namespace {
-
-int yycolumn = 1;
-
 // Bison %locations reads yylloc per token; yylineno alone does not populate it.
+// Expanded down in the rules section, where the yycolumn it writes is the one
+// declared in the anonymous namespace below.
 #define YY_USER_ACTION                          \
   yylloc.first_line = yylloc.last_line = yylineno; \
   yylloc.first_column = yycolumn;               \
   yylloc.last_column = yycolumn + yyleng - 1;   \
   yycolumn += yyleng;
+
+// Everything this file defines for itself. An anonymous namespace rather than
+// `static` on each definition: it is one mechanism covering functions and
+// file-scope state alike, it is what every other file in this tree uses, and a
+// definition added later cannot forget it the way it can forget a keyword.
+//
+// escapeDecode is what forgetting looked like. It alone had no `static`, so it
+// had external linkage and was exported from the object file -- `nm` showed it
+// as T where every helper beside it was t -- for no reason at all.
+namespace {
+
+int yycolumn = 1;
 
  /* Map the character after '\\' in a char/string escape to its value. */
 char escapeDecode(char c) {
@@ -836,7 +842,9 @@ bool parseDoubleLiteral(const char* text, size_t len, double& out) {
     return true;
 }
 
-// Unsuffixed hex: pick the narrowest lcc token that fits (C integer promotion).
+// Unsuffixed hex: pick the narrowest lcc token the value fits. That is C11
+// 6.4.4.1p5 on the type of an integer constant — not the integer promotion in
+// types/TypeRules.hpp, which widens narrow types inside an expression.
 int returnLexHexConstant(const char* text, size_t len) {
     if (len > 0 && text[0] == '-') {
         long signedVal = 0;
@@ -884,10 +892,11 @@ int returnLexHexConstant(const char* text, size_t len) {
     yylval.ulongVal = 0;
     return ULONGVAL;
 }
-}  // namespace
-#line 888 "generated/Lexer.cpp"
 
-#line 890 "generated/Lexer.cpp"
+}  // namespace
+#line 897 "generated/Lexer.cpp"
+
+#line 899 "generated/Lexer.cpp"
 
 #define INITIAL 0
 #define COMMENT 1
@@ -1105,14 +1114,14 @@ YY_DECL
 		}
 
 	{
-#line 255 "frontend/Lexer.l"
+#line 264 "frontend/Lexer.l"
 
 
-#line 258 "frontend/Lexer.l"
+#line 267 "frontend/Lexer.l"
  /* Rules Section */
 
  /** Punctuations **/
-#line 1115 "generated/Lexer.cpp"
+#line 1124 "generated/Lexer.cpp"
 
 	while ( /*CONSTCOND*/1 )		/* loops until end-of-file is reached */
 		{
@@ -1181,391 +1190,391 @@ do_action:	/* This label is used only to access EOF actions. */
 
 case 1:
 YY_RULE_SETUP
-#line 261 "frontend/Lexer.l"
+#line 270 "frontend/Lexer.l"
 { return COMMA; }
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 262 "frontend/Lexer.l"
+#line 271 "frontend/Lexer.l"
 { return COLON; }
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 263 "frontend/Lexer.l"
+#line 272 "frontend/Lexer.l"
 { return SEMICOLON; }
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 264 "frontend/Lexer.l"
+#line 273 "frontend/Lexer.l"
 { return QUESTION; }
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 265 "frontend/Lexer.l"
+#line 274 "frontend/Lexer.l"
 { return ELLIPSES; }
 	YY_BREAK
 /** Pointer and Address Relevant **/
 case 6:
 YY_RULE_SETUP
-#line 268 "frontend/Lexer.l"
+#line 277 "frontend/Lexer.l"
 { return DOT; }
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 269 "frontend/Lexer.l"
+#line 278 "frontend/Lexer.l"
 { return ASTERISK; }
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 270 "frontend/Lexer.l"
+#line 279 "frontend/Lexer.l"
 { return AMPERSAND; }
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 271 "frontend/Lexer.l"
+#line 280 "frontend/Lexer.l"
 { return ARROW; }
 	YY_BREAK
 /** Brackets **/
 case 10:
 YY_RULE_SETUP
-#line 274 "frontend/Lexer.l"
+#line 283 "frontend/Lexer.l"
 { return LPARENTHESES; }
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 275 "frontend/Lexer.l"
+#line 284 "frontend/Lexer.l"
 { return RPARENTHESES; }
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 276 "frontend/Lexer.l"
+#line 285 "frontend/Lexer.l"
 { return LBRACKET; }
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 277 "frontend/Lexer.l"
+#line 286 "frontend/Lexer.l"
 { return RBRACKET; }
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
-#line 278 "frontend/Lexer.l"
+#line 287 "frontend/Lexer.l"
 { return LBRACE; }
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
-#line 279 "frontend/Lexer.l"
+#line 288 "frontend/Lexer.l"
 { return RBRACE; }
 	YY_BREAK
 /** Arithmetic Operations **/
 case 16:
 YY_RULE_SETUP
-#line 283 "frontend/Lexer.l"
+#line 292 "frontend/Lexer.l"
 { return ASSIGN; }
 	YY_BREAK
 case 17:
 YY_RULE_SETUP
-#line 285 "frontend/Lexer.l"
+#line 294 "frontend/Lexer.l"
 { return ADD; }
 	YY_BREAK
 case 18:
 YY_RULE_SETUP
-#line 286 "frontend/Lexer.l"
+#line 295 "frontend/Lexer.l"
 { return SUB; }
 	YY_BREAK
 case 19:
 YY_RULE_SETUP
-#line 287 "frontend/Lexer.l"
+#line 296 "frontend/Lexer.l"
 { return DIV; }
 	YY_BREAK
 case 20:
 YY_RULE_SETUP
-#line 288 "frontend/Lexer.l"
+#line 297 "frontend/Lexer.l"
 { return MOD; }
 	YY_BREAK
 case 21:
 YY_RULE_SETUP
-#line 290 "frontend/Lexer.l"
+#line 299 "frontend/Lexer.l"
 { return DADD; }
 	YY_BREAK
 case 22:
 YY_RULE_SETUP
-#line 291 "frontend/Lexer.l"
+#line 300 "frontend/Lexer.l"
 { return DSUB; }
 	YY_BREAK
 case 23:
 YY_RULE_SETUP
-#line 293 "frontend/Lexer.l"
+#line 302 "frontend/Lexer.l"
 { return ADDEQ; }
 	YY_BREAK
 case 24:
 YY_RULE_SETUP
-#line 294 "frontend/Lexer.l"
+#line 303 "frontend/Lexer.l"
 { return SUBEQ; }
 	YY_BREAK
 case 25:
 YY_RULE_SETUP
-#line 295 "frontend/Lexer.l"
+#line 304 "frontend/Lexer.l"
 { return MULEQ; }
 	YY_BREAK
 case 26:
 YY_RULE_SETUP
-#line 296 "frontend/Lexer.l"
+#line 305 "frontend/Lexer.l"
 { return DIVEQ; }
 	YY_BREAK
 case 27:
 YY_RULE_SETUP
-#line 297 "frontend/Lexer.l"
+#line 306 "frontend/Lexer.l"
 { return MODEQ; }
 	YY_BREAK
 /** Bitwise Operations **/
 case 28:
 YY_RULE_SETUP
-#line 301 "frontend/Lexer.l"
+#line 310 "frontend/Lexer.l"
 { return BOR; }
 	YY_BREAK
 case 29:
 YY_RULE_SETUP
-#line 302 "frontend/Lexer.l"
+#line 311 "frontend/Lexer.l"
 { return BXOR; }
 	YY_BREAK
 case 30:
 YY_RULE_SETUP
-#line 303 "frontend/Lexer.l"
+#line 312 "frontend/Lexer.l"
 { return BNOT; }
 	YY_BREAK
 case 31:
 YY_RULE_SETUP
-#line 305 "frontend/Lexer.l"
+#line 314 "frontend/Lexer.l"
 { return BANDEQ; }
 	YY_BREAK
 case 32:
 YY_RULE_SETUP
-#line 306 "frontend/Lexer.l"
+#line 315 "frontend/Lexer.l"
 { return BOREQ; }
 	YY_BREAK
 case 33:
 YY_RULE_SETUP
-#line 307 "frontend/Lexer.l"
+#line 316 "frontend/Lexer.l"
 { return BXOREQ; }
 	YY_BREAK
 /** Bit Shift Operations **/
 case 34:
 YY_RULE_SETUP
-#line 311 "frontend/Lexer.l"
+#line 320 "frontend/Lexer.l"
 { return SHL; }
 	YY_BREAK
 case 35:
 YY_RULE_SETUP
-#line 312 "frontend/Lexer.l"
+#line 321 "frontend/Lexer.l"
 { return SHR; }
 	YY_BREAK
 case 36:
 YY_RULE_SETUP
-#line 314 "frontend/Lexer.l"
+#line 323 "frontend/Lexer.l"
 { return SHLEQ; }
 	YY_BREAK
 case 37:
 YY_RULE_SETUP
-#line 315 "frontend/Lexer.l"
+#line 324 "frontend/Lexer.l"
 { return SHREQ; }
 	YY_BREAK
 /** Logic Operations **/
 case 38:
 YY_RULE_SETUP
-#line 319 "frontend/Lexer.l"
+#line 328 "frontend/Lexer.l"
 { return AND; }
 	YY_BREAK
 case 39:
 YY_RULE_SETUP
-#line 320 "frontend/Lexer.l"
+#line 329 "frontend/Lexer.l"
 { return OR; }
 	YY_BREAK
 case 40:
 YY_RULE_SETUP
-#line 321 "frontend/Lexer.l"
+#line 330 "frontend/Lexer.l"
 { return NOT; }
 	YY_BREAK
 /** Relational Operators **/
 case 41:
 YY_RULE_SETUP
-#line 325 "frontend/Lexer.l"
+#line 334 "frontend/Lexer.l"
 { return EQ; }
 	YY_BREAK
 case 42:
 YY_RULE_SETUP
-#line 326 "frontend/Lexer.l"
+#line 335 "frontend/Lexer.l"
 { return NEQ; }
 	YY_BREAK
 case 43:
 YY_RULE_SETUP
-#line 327 "frontend/Lexer.l"
+#line 336 "frontend/Lexer.l"
 { return LT; }
 	YY_BREAK
 case 44:
 YY_RULE_SETUP
-#line 328 "frontend/Lexer.l"
+#line 337 "frontend/Lexer.l"
 { return LE; }
 	YY_BREAK
 case 45:
 YY_RULE_SETUP
-#line 329 "frontend/Lexer.l"
+#line 338 "frontend/Lexer.l"
 { return GT; }
 	YY_BREAK
 case 46:
 YY_RULE_SETUP
-#line 330 "frontend/Lexer.l"
+#line 339 "frontend/Lexer.l"
 { return GE; }
 	YY_BREAK
 /** C keywords **/
 case 47:
 YY_RULE_SETUP
-#line 334 "frontend/Lexer.l"
+#line 343 "frontend/Lexer.l"
 { return CHAR; }
 	YY_BREAK
 case 48:
 YY_RULE_SETUP
-#line 335 "frontend/Lexer.l"
+#line 344 "frontend/Lexer.l"
 { return SHORT; }
 	YY_BREAK
 case 49:
 YY_RULE_SETUP
-#line 336 "frontend/Lexer.l"
+#line 345 "frontend/Lexer.l"
 { return INT; }
 	YY_BREAK
 case 50:
 YY_RULE_SETUP
-#line 337 "frontend/Lexer.l"
+#line 346 "frontend/Lexer.l"
 { return LONG; }
 	YY_BREAK
 case 51:
 YY_RULE_SETUP
-#line 339 "frontend/Lexer.l"
+#line 348 "frontend/Lexer.l"
 { return UNSIGNED; }
 	YY_BREAK
 case 52:
 YY_RULE_SETUP
-#line 340 "frontend/Lexer.l"
+#line 349 "frontend/Lexer.l"
 { return CONST; }
 	YY_BREAK
 case 53:
 YY_RULE_SETUP
-#line 341 "frontend/Lexer.l"
+#line 350 "frontend/Lexer.l"
 { return STATIC; }
 	YY_BREAK
 case 54:
 YY_RULE_SETUP
-#line 342 "frontend/Lexer.l"
+#line 351 "frontend/Lexer.l"
 { return VOID; }
 	YY_BREAK
 case 55:
 YY_RULE_SETUP
-#line 344 "frontend/Lexer.l"
+#line 353 "frontend/Lexer.l"
 { return FLOAT; }
 	YY_BREAK
 case 56:
 YY_RULE_SETUP
-#line 345 "frontend/Lexer.l"
+#line 354 "frontend/Lexer.l"
 { return DOUBLE; }
 	YY_BREAK
 case 57:
 YY_RULE_SETUP
-#line 347 "frontend/Lexer.l"
+#line 356 "frontend/Lexer.l"
 { return BOOL; }
 	YY_BREAK
 case 58:
 YY_RULE_SETUP
-#line 348 "frontend/Lexer.l"
+#line 357 "frontend/Lexer.l"
 { return TRUE; }
 	YY_BREAK
 case 59:
 YY_RULE_SETUP
-#line 349 "frontend/Lexer.l"
+#line 358 "frontend/Lexer.l"
 { return FALSE; }
 	YY_BREAK
 case 60:
 YY_RULE_SETUP
-#line 351 "frontend/Lexer.l"
+#line 360 "frontend/Lexer.l"
 { return IF; }
 	YY_BREAK
 case 61:
 YY_RULE_SETUP
-#line 352 "frontend/Lexer.l"
+#line 361 "frontend/Lexer.l"
 { return ELSE; }
 	YY_BREAK
 case 62:
 YY_RULE_SETUP
-#line 354 "frontend/Lexer.l"
+#line 363 "frontend/Lexer.l"
 { return SWITCH; }
 	YY_BREAK
 case 63:
 YY_RULE_SETUP
-#line 355 "frontend/Lexer.l"
+#line 364 "frontend/Lexer.l"
 { return CASE; }
 	YY_BREAK
 case 64:
 YY_RULE_SETUP
-#line 356 "frontend/Lexer.l"
+#line 365 "frontend/Lexer.l"
 { return DEFAULT; }
 	YY_BREAK
 case 65:
 YY_RULE_SETUP
-#line 358 "frontend/Lexer.l"
+#line 367 "frontend/Lexer.l"
 { return FOR; }
 	YY_BREAK
 case 66:
 YY_RULE_SETUP
-#line 359 "frontend/Lexer.l"
+#line 368 "frontend/Lexer.l"
 { return DO; }
 	YY_BREAK
 case 67:
 YY_RULE_SETUP
-#line 360 "frontend/Lexer.l"
+#line 369 "frontend/Lexer.l"
 { return WHILE; }
 	YY_BREAK
 case 68:
 YY_RULE_SETUP
-#line 362 "frontend/Lexer.l"
+#line 371 "frontend/Lexer.l"
 { return CONTINUE; }
 	YY_BREAK
 case 69:
 YY_RULE_SETUP
-#line 363 "frontend/Lexer.l"
+#line 372 "frontend/Lexer.l"
 { return BREAK; }
 	YY_BREAK
 case 70:
 YY_RULE_SETUP
-#line 364 "frontend/Lexer.l"
+#line 373 "frontend/Lexer.l"
 { return RETURN; }
 	YY_BREAK
 case 71:
 YY_RULE_SETUP
-#line 366 "frontend/Lexer.l"
+#line 375 "frontend/Lexer.l"
 { return STRUCT; }
 	YY_BREAK
 case 72:
 YY_RULE_SETUP
-#line 367 "frontend/Lexer.l"
+#line 376 "frontend/Lexer.l"
 { return UNION; }
 	YY_BREAK
 case 73:
 YY_RULE_SETUP
-#line 368 "frontend/Lexer.l"
+#line 377 "frontend/Lexer.l"
 { return ENUM; }
 	YY_BREAK
 case 74:
 YY_RULE_SETUP
-#line 369 "frontend/Lexer.l"
+#line 378 "frontend/Lexer.l"
 { return TYPEDEF; }
 	YY_BREAK
 case 75:
 YY_RULE_SETUP
-#line 371 "frontend/Lexer.l"
+#line 380 "frontend/Lexer.l"
 { return SIZEOF; }
 	YY_BREAK
 /** Identifier **/
 case 76:
 YY_RULE_SETUP
-#line 374 "frontend/Lexer.l"
+#line 383 "frontend/Lexer.l"
 {
     yylval.idVal = tokenstrings::create(yytext, yyleng);
     return IDENTIFIER;
@@ -1579,7 +1588,7 @@ YY_RULE_SETUP
     UnaryMinus production instead would fix it. */
 case 77:
 YY_RULE_SETUP
-#line 385 "frontend/Lexer.l"
+#line 394 "frontend/Lexer.l"
 {
     if (!parseIntLiteral(yytext, yyleng, yylval.intVal)) {
         yylval.intVal = 0;
@@ -1590,7 +1599,7 @@ YY_RULE_SETUP
 /** Hex Integer Number (unsuffixed; width from value) **/
 case 78:
 YY_RULE_SETUP
-#line 393 "frontend/Lexer.l"
+#line 402 "frontend/Lexer.l"
 {
     return returnLexHexConstant(yytext, yyleng);
 }
@@ -1598,7 +1607,7 @@ YY_RULE_SETUP
 /** Hex unsigned long **/
 case 79:
 YY_RULE_SETUP
-#line 398 "frontend/Lexer.l"
+#line 407 "frontend/Lexer.l"
 {
     if (!parseUnsignedLongLiteral(yytext, yyleng, yylval.ulongVal)) {
         yylval.ulongVal = 0;
@@ -1609,7 +1618,7 @@ YY_RULE_SETUP
 /** Hex unsigned int **/
 case 80:
 YY_RULE_SETUP
-#line 406 "frontend/Lexer.l"
+#line 415 "frontend/Lexer.l"
 {
     if (!parseUnsignedIntLiteral(yytext, yyleng, yylval.uintVal)) {
         yylval.uintVal = 0;
@@ -1620,7 +1629,7 @@ YY_RULE_SETUP
 /** Hex long **/
 case 81:
 YY_RULE_SETUP
-#line 414 "frontend/Lexer.l"
+#line 423 "frontend/Lexer.l"
 {
     if (!parseLongLiteral(yytext, yyleng, yylval.longVal)) {
         yylval.longVal = 0;
@@ -1631,7 +1640,7 @@ YY_RULE_SETUP
 /** Unsigned Integer Number **/
 case 82:
 YY_RULE_SETUP
-#line 422 "frontend/Lexer.l"
+#line 431 "frontend/Lexer.l"
 {
     if (!parseUnsignedIntLiteral(yytext, yyleng, yylval.uintVal)) {
         yylval.uintVal = 0;
@@ -1642,7 +1651,7 @@ YY_RULE_SETUP
 /** Long Number **/
 case 83:
 YY_RULE_SETUP
-#line 430 "frontend/Lexer.l"
+#line 439 "frontend/Lexer.l"
 {
     if (!parseLongLiteral(yytext, yyleng, yylval.longVal)) {
         yylval.longVal = 0;
@@ -1653,7 +1662,7 @@ YY_RULE_SETUP
 /** Unsigned Long Number **/
 case 84:
 YY_RULE_SETUP
-#line 438 "frontend/Lexer.l"
+#line 447 "frontend/Lexer.l"
 {
     if (!parseUnsignedLongLiteral(yytext, yyleng, yylval.ulongVal)) {
         yylval.ulongVal = 0;
@@ -1664,7 +1673,7 @@ YY_RULE_SETUP
 /** Float Number **/
 case 85:
 YY_RULE_SETUP
-#line 446 "frontend/Lexer.l"
+#line 455 "frontend/Lexer.l"
 {
     if (!parseFloatLiteral(yytext, yyleng, yylval.floatVal)) {
         yylval.floatVal = 0.0f;
@@ -1675,7 +1684,7 @@ YY_RULE_SETUP
 /** Double Number **/
 case 86:
 YY_RULE_SETUP
-#line 454 "frontend/Lexer.l"
+#line 463 "frontend/Lexer.l"
 {
     if (!parseDoubleLiteral(yytext, yyleng, yylval.doubleVal)) {
         yylval.doubleVal = 0.0;
@@ -1686,49 +1695,49 @@ YY_RULE_SETUP
 /** Characters to ignore **/
 case 87:
 YY_RULE_SETUP
-#line 462 "frontend/Lexer.l"
+#line 471 "frontend/Lexer.l"
 { ; }
 	YY_BREAK
 case 88:
 /* rule 88 can match eol */
 YY_RULE_SETUP
-#line 463 "frontend/Lexer.l"
+#line 472 "frontend/Lexer.l"
 { yycolumn = 1; }
 	YY_BREAK
 case 89:
 YY_RULE_SETUP
-#line 464 "frontend/Lexer.l"
+#line 473 "frontend/Lexer.l"
 { BEGIN(COMMENT); }  /* multi-line; start condition, not one-line rule */
 	YY_BREAK
 case 90:
 YY_RULE_SETUP
-#line 465 "frontend/Lexer.l"
+#line 474 "frontend/Lexer.l"
 { BEGIN(INITIAL); }
 	YY_BREAK
 case 91:
 /* rule 91 can match eol */
 YY_RULE_SETUP
-#line 466 "frontend/Lexer.l"
+#line 475 "frontend/Lexer.l"
 { yycolumn = 1; }
 	YY_BREAK
 case 92:
 YY_RULE_SETUP
-#line 467 "frontend/Lexer.l"
+#line 476 "frontend/Lexer.l"
 { ; }
 	YY_BREAK
 case YY_STATE_EOF(COMMENT):
-#line 468 "frontend/Lexer.l"
+#line 477 "frontend/Lexer.l"
 { BEGIN(INITIAL); }
 	YY_BREAK
 case 93:
 YY_RULE_SETUP
-#line 469 "frontend/Lexer.l"
+#line 478 "frontend/Lexer.l"
 { ; }
 	YY_BREAK
 /** Character **/
 case 94:
 YY_RULE_SETUP
-#line 473 "frontend/Lexer.l"
+#line 482 "frontend/Lexer.l"
 {
     yylval.charVal = escapeDecode(yytext[2]);
     return CHARACTER;
@@ -1737,7 +1746,7 @@ YY_RULE_SETUP
 case 95:
 /* rule 95 can match eol */
 YY_RULE_SETUP
-#line 478 "frontend/Lexer.l"
+#line 487 "frontend/Lexer.l"
 {
     yylval.charVal = yytext[1];
     return CHARACTER;
@@ -1750,7 +1759,7 @@ YY_RULE_SETUP
 case 96:
 /* rule 96 can match eol */
 YY_RULE_SETUP
-#line 487 "frontend/Lexer.l"
+#line 496 "frontend/Lexer.l"
 {
     yylval.strVal = tokenstrings::createEmpty();
     for (int i = 1; i < yyleng - 1; ++i) {
@@ -1770,10 +1779,10 @@ YY_RULE_SETUP
     plus a `. { yyerror("stray character"); }` rule would report it instead. */
 case 97:
 YY_RULE_SETUP
-#line 505 "frontend/Lexer.l"
+#line 514 "frontend/Lexer.l"
 ECHO;
 	YY_BREAK
-#line 1776 "generated/Lexer.cpp"
+#line 1785 "generated/Lexer.cpp"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
@@ -2790,7 +2799,7 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 505 "frontend/Lexer.l"
+#line 514 "frontend/Lexer.l"
 
 
  /* Subroutines Section */

@@ -85,10 +85,6 @@ enum class IntCmpPred { EQ, NE, LT, LE, GT, GE };
                                        AST::BuiltinTypeId lhsTypeId,
                                        AST::BuiltinTypeId rhsTypeId);
 
-[[nodiscard]] llvm::Value* createIntegerCmp(llvm::IRBuilder<>& builder,
-                                            IntCmpPred pred, llvm::Value* lhs,
-                                            llvm::Value* rhs, bool isUnsigned);
-
 [[nodiscard]] llvm::Value* createAdd(llvm::IRBuilder<>& builder,
                                      llvm::Value* lhs, llvm::Value* rhs,
                                      AST::VarType* lhsVarType,

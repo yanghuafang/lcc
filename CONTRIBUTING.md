@@ -55,6 +55,7 @@ Each step accepts a single file name so you can iterate quickly:
 CI (GitHub Actions) also runs these smoke checks on every push and pull request against Ubuntu and macOS — run them locally before submitting:
 
 ```bash
+./check-lex-errors.sh          # a rejected literal fails the build
 ./check-debug-info.sh          # DWARF present with -g
 ./check-asm-smoke.sh           # -S emits assembly
 ./check-machine-pass-smoke.sh  # -machine-stats leaves the object byte-identical (M17)

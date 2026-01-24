@@ -58,10 +58,6 @@ struct Info1D {
   size_t length;
 };
 
-/// True for the `[]` sentinel a declarator leaves behind, before
-/// resolveBounds has replaced it with a length from the initializer.
-[[nodiscard]] bool isInferredBound(size_t bound);
-
 [[nodiscard]] bool isCharElementType(AST::VarType* baseType);
 
 /// Non-null only when expr is a string literal, which is what distinguishes

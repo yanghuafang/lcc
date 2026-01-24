@@ -8,7 +8,6 @@
 #include <llvm/Support/raw_ostream.h>
 
 #include <iostream>
-#include <memory>
 #include <stdexcept>
 
 #include "opt/passes/FoldAddZeroPass.hpp"
