@@ -78,6 +78,19 @@ if ! grep -q 'invalid integer literal' <<<"${output}"; then
   exit 1
 fi
 
+# The three bad literals sit on lines 2, 3 and 4 of the source above, each
+# starting at column 11. Asserting the exact positions rather than just the
+# shape is what catches a yycolumn that drifts: a prefix of the right form
+# pointing at the wrong token reads as correct, and is worse than no position.
+for position in 2:11 3:11 4:11; do
+  if ! grep -q "${source_file}:${position}: error: invalid integer literal" \
+       <<<"${output}"; then
+    echo "Expected a diagnostic at ${position} in clang's file:line:column form." >&2
+    echo "${output}" >&2
+    exit 1
+  fi
+done
+
 if ! grep -q 'Front end reported 3 error(s)' <<<"${output}"; then
   echo "Expected all three rejected literals to be counted." >&2
   echo "${output}" >&2

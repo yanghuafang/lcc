@@ -5,12 +5,11 @@
 
 #include "frontend/Diagnostics.hpp"
 
-// The one funnel for front-end diagnostics: bison calls this for a syntax
-// error, and frontend/Lexer.l calls it for a literal it had to reject. The
-// counting inside reportError is what lets the driver refuse to compile after
-// a rejected literal, which the lexer recovers from; see
-// frontend/Diagnostics.hpp.
-void yyerror(const char* s) { frontend::reportError(s); }
+// Declared here and defined in the Subroutines Section at the bottom, which is
+// the only place it can read yylloc: bison emits this prologue above its own
+// YYLTYPE declaration, so the type does not exist yet at this point in the
+// generated file.
+void yyerror(const char* s);
 
 int yylex(void);
 
@@ -648,3 +647,15 @@ Constant:   CHARACTER           { $$ = new AST::Constant($1); }
 %%
 
  /* Subroutines Section */
+
+// The one funnel for front-end diagnostics: bison calls this for a syntax
+// error, and frontend/Lexer.l calls it for a literal it had to reject. Both
+// report a position without either one passing one, because yylloc already
+// holds the current token's -- filled by YY_USER_ACTION in Lexer.l for every
+// token the scanner returns.
+//
+// first_line rather than last_line: an error belongs at where the offending
+// token starts, which is where a reader's eye and an editor's cursor both go.
+void yyerror(const char* s) {
+  frontend::reportError(s, yylloc.first_line, yylloc.first_column);
+}

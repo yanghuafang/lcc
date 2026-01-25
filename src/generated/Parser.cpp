@@ -73,18 +73,17 @@
 
 #include "frontend/Diagnostics.hpp"
 
-// The one funnel for front-end diagnostics: bison calls this for a syntax
-// error, and frontend/Lexer.l calls it for a literal it had to reject. The
-// counting inside reportError is what lets the driver refuse to compile after
-// a rejected literal, which the lexer recovers from; see
-// frontend/Diagnostics.hpp.
-void yyerror(const char* s) { frontend::reportError(s); }
+// Declared here and defined in the Subroutines Section at the bottom, which is
+// the only place it can read yylloc: bison emits this prologue above its own
+// YYLTYPE declaration, so the type does not exist yet at this point in the
+// generated file.
+void yyerror(const char* s);
 
 int yylex(void);
 
 AST::Program* g_root;
 
-#line 88 "generated/Parser.cpp"
+#line 87 "generated/Parser.cpp"
 
 # ifndef YY_CAST
 #  ifdef __cplusplus
@@ -637,24 +636,24 @@ static const yytype_int8 yytranslate[] =
 /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_int16 yyrline[] =
 {
-       0,   253,   253,   256,   257,   260,   261,   262,   263,   268,
-     270,   273,   278,   282,   286,   289,   294,   297,   300,   305,
-     310,   311,   314,   315,   317,   318,   320,   321,   323,   324,
-     325,   331,   333,   334,   339,   341,   343,   346,   354,   356,
-     361,   363,   371,   373,   375,   378,   380,   386,   388,   390,
-     391,   392,   395,   396,   400,   401,   402,   403,   404,   405,
-     406,   407,   408,   409,   410,   411,   412,   417,   419,   422,
-     424,   429,   431,   432,   437,   439,   440,   443,   444,   454,
-     455,   458,   459,   460,   461,   462,   463,   464,   465,   466,
-     467,   468,   469,   470,   473,   476,   483,   489,   491,   494,
-     497,   502,   505,   508,   513,   518,   524,   528,   532,   534,
-     539,   554,   555,   556,   558,   559,   561,   563,   565,   567,
-     569,   571,   573,   575,   577,   579,   581,   583,   584,   586,
-     588,   590,   591,   592,   594,   596,   598,   600,   601,   602,
-     603,   604,   605,   607,   608,   609,   610,   611,   612,   613,
-     614,   615,   616,   617,   618,   619,   620,   621,   622,   623,
-     624,   625,   626,   630,   632,   633,   636,   637,   638,   639,
-     640,   641,   642,   643,   644,   645
+       0,   252,   252,   255,   256,   259,   260,   261,   262,   267,
+     269,   272,   277,   281,   285,   288,   293,   296,   299,   304,
+     309,   310,   313,   314,   316,   317,   319,   320,   322,   323,
+     324,   330,   332,   333,   338,   340,   342,   345,   353,   355,
+     360,   362,   370,   372,   374,   377,   379,   385,   387,   389,
+     390,   391,   394,   395,   399,   400,   401,   402,   403,   404,
+     405,   406,   407,   408,   409,   410,   411,   416,   418,   421,
+     423,   428,   430,   431,   436,   438,   439,   442,   443,   453,
+     454,   457,   458,   459,   460,   461,   462,   463,   464,   465,
+     466,   467,   468,   469,   472,   475,   482,   488,   490,   493,
+     496,   501,   504,   507,   512,   517,   523,   527,   531,   533,
+     538,   553,   554,   555,   557,   558,   560,   562,   564,   566,
+     568,   570,   572,   574,   576,   578,   580,   582,   583,   585,
+     587,   589,   590,   591,   593,   595,   597,   599,   600,   601,
+     602,   603,   604,   606,   607,   608,   609,   610,   611,   612,
+     613,   614,   615,   616,   617,   618,   619,   620,   621,   622,
+     623,   624,   625,   629,   631,   632,   635,   636,   637,   638,
+     639,   640,   641,   642,   643,   644
 };
 #endif
 
@@ -1924,231 +1923,231 @@ yydestruct (const char *yymsg,
   switch (yykind)
     {
     case YYSYMBOL_Decls: /* Decls  */
-#line 145 "frontend/Parser.y"
+#line 144 "frontend/Parser.y"
             { delete ((*yyvaluep).decls); }
-#line 1930 "generated/Parser.cpp"
+#line 1929 "generated/Parser.cpp"
         break;
 
     case YYSYMBOL_Decl: /* Decl  */
-#line 145 "frontend/Parser.y"
+#line 144 "frontend/Parser.y"
             { delete ((*yyvaluep).decl); }
-#line 1936 "generated/Parser.cpp"
+#line 1935 "generated/Parser.cpp"
         break;
 
     case YYSYMBOL_TypedefDecl: /* TypedefDecl  */
-#line 145 "frontend/Parser.y"
+#line 144 "frontend/Parser.y"
             { delete ((*yyvaluep).typedefDecl); }
-#line 1942 "generated/Parser.cpp"
+#line 1941 "generated/Parser.cpp"
         break;
 
     case YYSYMBOL_FuncDecl: /* FuncDecl  */
-#line 146 "frontend/Parser.y"
+#line 145 "frontend/Parser.y"
             { delete ((*yyvaluep).funcDecl); }
-#line 1948 "generated/Parser.cpp"
+#line 1947 "generated/Parser.cpp"
         break;
 
     case YYSYMBOL_FuncBody: /* FuncBody  */
-#line 146 "frontend/Parser.y"
+#line 145 "frontend/Parser.y"
             { delete ((*yyvaluep).funcBody); }
-#line 1954 "generated/Parser.cpp"
+#line 1953 "generated/Parser.cpp"
         break;
 
     case YYSYMBOL_VarDecl: /* VarDecl  */
-#line 146 "frontend/Parser.y"
+#line 145 "frontend/Parser.y"
             { delete ((*yyvaluep).varDecl); }
-#line 1960 "generated/Parser.cpp"
+#line 1959 "generated/Parser.cpp"
         break;
 
     case YYSYMBOL_TypeDecl: /* TypeDecl  */
-#line 145 "frontend/Parser.y"
+#line 144 "frontend/Parser.y"
             { delete ((*yyvaluep).typeDecl); }
-#line 1966 "generated/Parser.cpp"
+#line 1965 "generated/Parser.cpp"
         break;
 
     case YYSYMBOL_VarType: /* VarType  */
-#line 146 "frontend/Parser.y"
+#line 145 "frontend/Parser.y"
             { delete ((*yyvaluep).varType); }
-#line 1972 "generated/Parser.cpp"
+#line 1971 "generated/Parser.cpp"
         break;
 
     case YYSYMBOL__VarType: /* _VarType  */
-#line 146 "frontend/Parser.y"
+#line 145 "frontend/Parser.y"
             { delete ((*yyvaluep).varType); }
-#line 1978 "generated/Parser.cpp"
+#line 1977 "generated/Parser.cpp"
         break;
 
     case YYSYMBOL_VarList: /* VarList  */
-#line 147 "frontend/Parser.y"
+#line 146 "frontend/Parser.y"
             { delete ((*yyvaluep).varList); }
-#line 1984 "generated/Parser.cpp"
+#line 1983 "generated/Parser.cpp"
         break;
 
     case YYSYMBOL_VarInit: /* VarInit  */
-#line 147 "frontend/Parser.y"
+#line 146 "frontend/Parser.y"
             { delete ((*yyvaluep).varInit); }
-#line 1990 "generated/Parser.cpp"
+#line 1989 "generated/Parser.cpp"
         break;
 
     case YYSYMBOL_InitList: /* InitList  */
-#line 149 "frontend/Parser.y"
+#line 148 "frontend/Parser.y"
             { delete ((*yyvaluep).initList); }
-#line 1996 "generated/Parser.cpp"
+#line 1995 "generated/Parser.cpp"
         break;
 
     case YYSYMBOL_InitItem: /* InitItem  */
-#line 149 "frontend/Parser.y"
+#line 148 "frontend/Parser.y"
             { delete ((*yyvaluep).initElement); }
-#line 2002 "generated/Parser.cpp"
+#line 2001 "generated/Parser.cpp"
         break;
 
     case YYSYMBOL_ArrayBoundList: /* ArrayBoundList  */
-#line 147 "frontend/Parser.y"
+#line 146 "frontend/Parser.y"
             { delete ((*yyvaluep).arrayBoundList); }
-#line 2008 "generated/Parser.cpp"
+#line 2007 "generated/Parser.cpp"
         break;
 
     case YYSYMBOL_ParamList: /* ParamList  */
-#line 147 "frontend/Parser.y"
+#line 146 "frontend/Parser.y"
             { delete ((*yyvaluep).paramList); }
-#line 2014 "generated/Parser.cpp"
+#line 2013 "generated/Parser.cpp"
         break;
 
     case YYSYMBOL_Param: /* Param  */
-#line 147 "frontend/Parser.y"
+#line 146 "frontend/Parser.y"
             { delete ((*yyvaluep).param); }
-#line 2020 "generated/Parser.cpp"
+#line 2019 "generated/Parser.cpp"
         break;
 
     case YYSYMBOL_BuiltinType: /* BuiltinType  */
-#line 148 "frontend/Parser.y"
+#line 147 "frontend/Parser.y"
             { delete ((*yyvaluep).builtinType); }
-#line 2026 "generated/Parser.cpp"
+#line 2025 "generated/Parser.cpp"
         break;
 
     case YYSYMBOL_FieldDecls: /* FieldDecls  */
-#line 148 "frontend/Parser.y"
+#line 147 "frontend/Parser.y"
             { delete ((*yyvaluep).fieldDecls); }
-#line 2032 "generated/Parser.cpp"
+#line 2031 "generated/Parser.cpp"
         break;
 
     case YYSYMBOL_FieldDecl: /* FieldDecl  */
-#line 148 "frontend/Parser.y"
+#line 147 "frontend/Parser.y"
             { delete ((*yyvaluep).fieldDecl); }
-#line 2038 "generated/Parser.cpp"
+#line 2037 "generated/Parser.cpp"
         break;
 
     case YYSYMBOL_MemberList: /* MemberList  */
-#line 148 "frontend/Parser.y"
+#line 147 "frontend/Parser.y"
             { delete ((*yyvaluep).memberList); }
-#line 2044 "generated/Parser.cpp"
+#line 2043 "generated/Parser.cpp"
         break;
 
     case YYSYMBOL_EnumList: /* EnumList  */
-#line 153 "frontend/Parser.y"
+#line 152 "frontend/Parser.y"
             { delete ((*yyvaluep).enumList); }
-#line 2050 "generated/Parser.cpp"
+#line 2049 "generated/Parser.cpp"
         break;
 
     case YYSYMBOL_Enum: /* Enum  */
-#line 153 "frontend/Parser.y"
+#line 152 "frontend/Parser.y"
             { delete ((*yyvaluep).enumeration); }
-#line 2056 "generated/Parser.cpp"
+#line 2055 "generated/Parser.cpp"
         break;
 
     case YYSYMBOL_Stmts: /* Stmts  */
-#line 150 "frontend/Parser.y"
+#line 149 "frontend/Parser.y"
             { delete ((*yyvaluep).stmts); }
-#line 2062 "generated/Parser.cpp"
+#line 2061 "generated/Parser.cpp"
         break;
 
     case YYSYMBOL_Stmt: /* Stmt  */
-#line 150 "frontend/Parser.y"
+#line 149 "frontend/Parser.y"
             { delete ((*yyvaluep).stmt); }
-#line 2068 "generated/Parser.cpp"
+#line 2067 "generated/Parser.cpp"
         break;
 
     case YYSYMBOL_IfStmt: /* IfStmt  */
-#line 150 "frontend/Parser.y"
+#line 149 "frontend/Parser.y"
             { delete ((*yyvaluep).ifStmt); }
-#line 2074 "generated/Parser.cpp"
+#line 2073 "generated/Parser.cpp"
         break;
 
     case YYSYMBOL_SwitchStmt: /* SwitchStmt  */
-#line 150 "frontend/Parser.y"
+#line 149 "frontend/Parser.y"
             { delete ((*yyvaluep).switchStmt); }
-#line 2080 "generated/Parser.cpp"
+#line 2079 "generated/Parser.cpp"
         break;
 
     case YYSYMBOL_CaseStmtList: /* CaseStmtList  */
-#line 150 "frontend/Parser.y"
+#line 149 "frontend/Parser.y"
             { delete ((*yyvaluep).caseStmtList); }
-#line 2086 "generated/Parser.cpp"
+#line 2085 "generated/Parser.cpp"
         break;
 
     case YYSYMBOL_CaseStmt: /* CaseStmt  */
-#line 151 "frontend/Parser.y"
+#line 150 "frontend/Parser.y"
             { delete ((*yyvaluep).caseStmt); }
-#line 2092 "generated/Parser.cpp"
+#line 2091 "generated/Parser.cpp"
         break;
 
     case YYSYMBOL_ForStmt: /* ForStmt  */
-#line 151 "frontend/Parser.y"
+#line 150 "frontend/Parser.y"
             { delete ((*yyvaluep).forStmt); }
-#line 2098 "generated/Parser.cpp"
+#line 2097 "generated/Parser.cpp"
         break;
 
     case YYSYMBOL_DoStmt: /* DoStmt  */
-#line 151 "frontend/Parser.y"
+#line 150 "frontend/Parser.y"
             { delete ((*yyvaluep).doStmt); }
-#line 2104 "generated/Parser.cpp"
+#line 2103 "generated/Parser.cpp"
         break;
 
     case YYSYMBOL_WhileStmt: /* WhileStmt  */
-#line 151 "frontend/Parser.y"
+#line 150 "frontend/Parser.y"
             { delete ((*yyvaluep).whileStmt); }
-#line 2110 "generated/Parser.cpp"
+#line 2109 "generated/Parser.cpp"
         break;
 
     case YYSYMBOL_ContinueStmt: /* ContinueStmt  */
-#line 152 "frontend/Parser.y"
+#line 151 "frontend/Parser.y"
             { delete ((*yyvaluep).continueStmt); }
-#line 2116 "generated/Parser.cpp"
+#line 2115 "generated/Parser.cpp"
         break;
 
     case YYSYMBOL_BreakStmt: /* BreakStmt  */
-#line 152 "frontend/Parser.y"
+#line 151 "frontend/Parser.y"
             { delete ((*yyvaluep).breakStmt); }
-#line 2122 "generated/Parser.cpp"
+#line 2121 "generated/Parser.cpp"
         break;
 
     case YYSYMBOL_ReturnStmt: /* ReturnStmt  */
-#line 152 "frontend/Parser.y"
+#line 151 "frontend/Parser.y"
             { delete ((*yyvaluep).returnStmt); }
-#line 2128 "generated/Parser.cpp"
+#line 2127 "generated/Parser.cpp"
         break;
 
     case YYSYMBOL_Block: /* Block  */
-#line 146 "frontend/Parser.y"
+#line 145 "frontend/Parser.y"
             { delete ((*yyvaluep).block); }
-#line 2134 "generated/Parser.cpp"
+#line 2133 "generated/Parser.cpp"
         break;
 
     case YYSYMBOL_Expr: /* Expr  */
-#line 149 "frontend/Parser.y"
+#line 148 "frontend/Parser.y"
             { delete ((*yyvaluep).expr); }
-#line 2140 "generated/Parser.cpp"
+#line 2139 "generated/Parser.cpp"
         break;
 
     case YYSYMBOL_ExprList: /* ExprList  */
-#line 149 "frontend/Parser.y"
+#line 148 "frontend/Parser.y"
             { delete ((*yyvaluep).exprList); }
-#line 2146 "generated/Parser.cpp"
+#line 2145 "generated/Parser.cpp"
         break;
 
     case YYSYMBOL_Constant: /* Constant  */
-#line 149 "frontend/Parser.y"
+#line 148 "frontend/Parser.y"
             { delete ((*yyvaluep).constant); }
-#line 2152 "generated/Parser.cpp"
+#line 2151 "generated/Parser.cpp"
         break;
 
       default:
@@ -2444,1079 +2443,1079 @@ yyreduce:
   switch (yyn)
     {
   case 2: /* Program: Decls  */
-#line 253 "frontend/Parser.y"
+#line 252 "frontend/Parser.y"
                                 { (yyval.program) = new AST::Program((yyvsp[0].decls)); g_root = (yyval.program); }
-#line 2450 "generated/Parser.cpp"
+#line 2449 "generated/Parser.cpp"
     break;
 
   case 3: /* Decls: Decls Decl  */
-#line 256 "frontend/Parser.y"
+#line 255 "frontend/Parser.y"
                                 { (yyval.decls) = (yyvsp[-1].decls); (yyval.decls)->push_back((yyvsp[0].decl)); }
-#line 2456 "generated/Parser.cpp"
+#line 2455 "generated/Parser.cpp"
     break;
 
   case 4: /* Decls: %empty  */
-#line 257 "frontend/Parser.y"
+#line 256 "frontend/Parser.y"
                                 { (yyval.decls) = new AST::Decls(); }
-#line 2462 "generated/Parser.cpp"
+#line 2461 "generated/Parser.cpp"
     break;
 
   case 5: /* Decl: FuncDecl  */
-#line 260 "frontend/Parser.y"
+#line 259 "frontend/Parser.y"
                                 { (yyval.decl) = (yyvsp[0].funcDecl); }
-#line 2468 "generated/Parser.cpp"
+#line 2467 "generated/Parser.cpp"
     break;
 
   case 6: /* Decl: VarDecl  */
-#line 261 "frontend/Parser.y"
+#line 260 "frontend/Parser.y"
                                 { (yyval.decl) = (yyvsp[0].varDecl); }
-#line 2474 "generated/Parser.cpp"
+#line 2473 "generated/Parser.cpp"
     break;
 
   case 7: /* Decl: TypeDecl  */
-#line 262 "frontend/Parser.y"
+#line 261 "frontend/Parser.y"
                                 { (yyval.decl) = (yyvsp[0].typeDecl); }
-#line 2480 "generated/Parser.cpp"
+#line 2479 "generated/Parser.cpp"
     break;
 
   case 8: /* Decl: TypedefDecl  */
-#line 263 "frontend/Parser.y"
+#line 262 "frontend/Parser.y"
                                 { (yyval.decl) = (yyvsp[0].typedefDecl); }
-#line 2486 "generated/Parser.cpp"
+#line 2485 "generated/Parser.cpp"
     break;
 
   case 9: /* TypedefDecl: TYPEDEF VarType IDENTIFIER SEMICOLON  */
-#line 269 "frontend/Parser.y"
+#line 268 "frontend/Parser.y"
                                 { (yyval.typedefDecl) = new AST::TypedefDecl((yyvsp[-2].varType), *(yyvsp[-1].idVal)); }
-#line 2492 "generated/Parser.cpp"
+#line 2491 "generated/Parser.cpp"
     break;
 
   case 10: /* TypedefDecl: TYPEDEF STRUCT IDENTIFIER LBRACE FieldDecls RBRACE IDENTIFIER SEMICOLON  */
-#line 271 "frontend/Parser.y"
+#line 270 "frontend/Parser.y"
                                 { (yyval.typedefDecl) = new AST::TypedefDecl(
                                       new AST::StructType((yyvsp[-3].fieldDecls), *(yyvsp[-5].idVal)), *(yyvsp[-1].idVal)); }
-#line 2499 "generated/Parser.cpp"
+#line 2498 "generated/Parser.cpp"
     break;
 
   case 11: /* TypedefDecl: TYPEDEF UNION IDENTIFIER LBRACE FieldDecls RBRACE IDENTIFIER SEMICOLON  */
-#line 274 "frontend/Parser.y"
+#line 273 "frontend/Parser.y"
                                 { (yyval.typedefDecl) = new AST::TypedefDecl(
                                       new AST::UnionType((yyvsp[-3].fieldDecls), *(yyvsp[-5].idVal)), *(yyvsp[-1].idVal)); }
-#line 2506 "generated/Parser.cpp"
+#line 2505 "generated/Parser.cpp"
     break;
 
   case 12: /* FuncDecl: STATIC VarType IDENTIFIER LPARENTHESES ParamList RPARENTHESES SEMICOLON  */
-#line 279 "frontend/Parser.y"
+#line 278 "frontend/Parser.y"
                                 { (yyval.funcDecl) = new AST::FuncDecl((yyvsp[-5].varType), *(yyvsp[-4].idVal), (yyvsp[-2].paramList));
                                   (yyval.funcDecl)->isStatic_ = true;
                                   (yyval.funcDecl)->setLoc((yylsp[-4]).first_line, (yylsp[-4]).first_column); }
-#line 2514 "generated/Parser.cpp"
+#line 2513 "generated/Parser.cpp"
     break;
 
   case 13: /* FuncDecl: STATIC VarType IDENTIFIER LPARENTHESES ParamList RPARENTHESES FuncBody  */
-#line 283 "frontend/Parser.y"
+#line 282 "frontend/Parser.y"
                                 { (yyval.funcDecl) = new AST::FuncDecl((yyvsp[-5].varType), *(yyvsp[-4].idVal), (yyvsp[-2].paramList), (yyvsp[0].funcBody));
                                   (yyval.funcDecl)->isStatic_ = true;
                                   (yyval.funcDecl)->setLoc((yylsp[-4]).first_line, (yylsp[-4]).first_column); }
-#line 2522 "generated/Parser.cpp"
+#line 2521 "generated/Parser.cpp"
     break;
 
   case 14: /* FuncDecl: VarType IDENTIFIER LPARENTHESES ParamList RPARENTHESES SEMICOLON  */
-#line 287 "frontend/Parser.y"
+#line 286 "frontend/Parser.y"
                                 { (yyval.funcDecl) = new AST::FuncDecl((yyvsp[-5].varType), *(yyvsp[-4].idVal), (yyvsp[-2].paramList));
                                   (yyval.funcDecl)->setLoc((yylsp[-4]).first_line, (yylsp[-4]).first_column); }
-#line 2529 "generated/Parser.cpp"
+#line 2528 "generated/Parser.cpp"
     break;
 
   case 15: /* FuncDecl: VarType IDENTIFIER LPARENTHESES ParamList RPARENTHESES FuncBody  */
-#line 290 "frontend/Parser.y"
+#line 289 "frontend/Parser.y"
                                 { (yyval.funcDecl) = new AST::FuncDecl((yyvsp[-5].varType), *(yyvsp[-4].idVal), (yyvsp[-2].paramList), (yyvsp[0].funcBody));
                                   (yyval.funcDecl)->setLoc((yylsp[-4]).first_line, (yylsp[-4]).first_column); }
-#line 2536 "generated/Parser.cpp"
+#line 2535 "generated/Parser.cpp"
     break;
 
   case 16: /* FuncBody: LBRACE Stmts RBRACE  */
-#line 294 "frontend/Parser.y"
+#line 293 "frontend/Parser.y"
                                 { (yyval.funcBody) = new AST::FuncBody((yyvsp[-1].stmts)); }
-#line 2542 "generated/Parser.cpp"
+#line 2541 "generated/Parser.cpp"
     break;
 
   case 17: /* VarDecl: STATIC VarType VarList SEMICOLON  */
-#line 298 "frontend/Parser.y"
+#line 297 "frontend/Parser.y"
                                 { (yyval.varDecl) = new AST::VarDecl((yyvsp[-2].varType), (yyvsp[-1].varList)); (yyval.varDecl)->isStatic_ = true;
                                   (yyval.varDecl)->setLoc((yylsp[-2]).first_line, (yylsp[-2]).first_column); }
-#line 2549 "generated/Parser.cpp"
+#line 2548 "generated/Parser.cpp"
     break;
 
   case 18: /* VarDecl: VarType VarList SEMICOLON  */
-#line 301 "frontend/Parser.y"
+#line 300 "frontend/Parser.y"
                                 { (yyval.varDecl) = new AST::VarDecl((yyvsp[-2].varType), (yyvsp[-1].varList));
                                   (yyval.varDecl)->setLoc((yylsp[-2]).first_line, (yylsp[-2]).first_column); }
-#line 2556 "generated/Parser.cpp"
+#line 2555 "generated/Parser.cpp"
     break;
 
   case 19: /* TypeDecl: _VarType SEMICOLON  */
-#line 305 "frontend/Parser.y"
+#line 304 "frontend/Parser.y"
                                 { (yyval.typeDecl) = new AST::TypeDecl((yyvsp[-1].varType)); }
-#line 2562 "generated/Parser.cpp"
+#line 2561 "generated/Parser.cpp"
     break;
 
   case 20: /* VarType: _VarType  */
-#line 310 "frontend/Parser.y"
+#line 309 "frontend/Parser.y"
                                 { (yyval.varType) = (yyvsp[0].varType); }
-#line 2568 "generated/Parser.cpp"
+#line 2567 "generated/Parser.cpp"
     break;
 
   case 21: /* VarType: CONST _VarType  */
-#line 311 "frontend/Parser.y"
+#line 310 "frontend/Parser.y"
                                 { (yyval.varType) = (yyvsp[0].varType); (yyval.varType)->setConst(); }
-#line 2574 "generated/Parser.cpp"
+#line 2573 "generated/Parser.cpp"
     break;
 
   case 22: /* _VarType: BuiltinType  */
-#line 314 "frontend/Parser.y"
+#line 313 "frontend/Parser.y"
                                 { (yyval.varType) = (yyvsp[0].builtinType); }
-#line 2580 "generated/Parser.cpp"
+#line 2579 "generated/Parser.cpp"
     break;
 
   case 23: /* _VarType: STRUCT IDENTIFIER LBRACE FieldDecls RBRACE  */
-#line 316 "frontend/Parser.y"
+#line 315 "frontend/Parser.y"
                                 { (yyval.varType) = new AST::StructType((yyvsp[-1].fieldDecls), *(yyvsp[-3].idVal)); }
-#line 2586 "generated/Parser.cpp"
+#line 2585 "generated/Parser.cpp"
     break;
 
   case 24: /* _VarType: STRUCT IDENTIFIER  */
-#line 317 "frontend/Parser.y"
+#line 316 "frontend/Parser.y"
                                 { (yyval.varType) = new AST::DefinedType(*(yyvsp[0].idVal)); }
-#line 2592 "generated/Parser.cpp"
+#line 2591 "generated/Parser.cpp"
     break;
 
   case 25: /* _VarType: UNION IDENTIFIER LBRACE FieldDecls RBRACE  */
-#line 319 "frontend/Parser.y"
+#line 318 "frontend/Parser.y"
                                 { (yyval.varType) = new AST::UnionType((yyvsp[-1].fieldDecls), *(yyvsp[-3].idVal)); }
-#line 2598 "generated/Parser.cpp"
+#line 2597 "generated/Parser.cpp"
     break;
 
   case 26: /* _VarType: UNION IDENTIFIER  */
-#line 320 "frontend/Parser.y"
+#line 319 "frontend/Parser.y"
                                 { (yyval.varType) = new AST::DefinedType(*(yyvsp[0].idVal)); }
-#line 2604 "generated/Parser.cpp"
+#line 2603 "generated/Parser.cpp"
     break;
 
   case 27: /* _VarType: ENUM IDENTIFIER LBRACE EnumList RBRACE  */
-#line 322 "frontend/Parser.y"
+#line 321 "frontend/Parser.y"
                                 { (yyval.varType) = new AST::EnumType((yyvsp[-1].enumList), *(yyvsp[-3].idVal)); }
-#line 2610 "generated/Parser.cpp"
+#line 2609 "generated/Parser.cpp"
     break;
 
   case 28: /* _VarType: ENUM IDENTIFIER  */
-#line 323 "frontend/Parser.y"
+#line 322 "frontend/Parser.y"
                                 { (yyval.varType) = new AST::DefinedType(*(yyvsp[0].idVal)); }
-#line 2616 "generated/Parser.cpp"
+#line 2615 "generated/Parser.cpp"
     break;
 
   case 29: /* _VarType: _VarType ASTERISK  */
-#line 324 "frontend/Parser.y"
+#line 323 "frontend/Parser.y"
                                 { (yyval.varType) = new AST::PointerType((yyvsp[-1].varType)); }
-#line 2622 "generated/Parser.cpp"
+#line 2621 "generated/Parser.cpp"
     break;
 
   case 30: /* _VarType: IDENTIFIER  */
-#line 325 "frontend/Parser.y"
+#line 324 "frontend/Parser.y"
                                 { (yyval.varType) = new AST::DefinedType(*(yyvsp[0].idVal)); }
-#line 2628 "generated/Parser.cpp"
+#line 2627 "generated/Parser.cpp"
     break;
 
   case 31: /* VarList: VarList COMMA VarInit  */
-#line 332 "frontend/Parser.y"
+#line 331 "frontend/Parser.y"
                                 { (yyval.varList) = (yyvsp[-2].varList); (yyval.varList)->push_back((yyvsp[0].varInit)); }
-#line 2634 "generated/Parser.cpp"
+#line 2633 "generated/Parser.cpp"
     break;
 
   case 32: /* VarList: VarInit  */
-#line 333 "frontend/Parser.y"
+#line 332 "frontend/Parser.y"
                                 { (yyval.varList) = new AST::VarList(); (yyval.varList)->push_back((yyvsp[0].varInit)); }
-#line 2640 "generated/Parser.cpp"
+#line 2639 "generated/Parser.cpp"
     break;
 
   case 33: /* VarList: %empty  */
-#line 334 "frontend/Parser.y"
+#line 333 "frontend/Parser.y"
                                 { (yyval.varList) = new AST::VarList(); }
-#line 2646 "generated/Parser.cpp"
+#line 2645 "generated/Parser.cpp"
     break;
 
   case 34: /* VarInit: IDENTIFIER ArrayBoundList  */
-#line 340 "frontend/Parser.y"
+#line 339 "frontend/Parser.y"
                                 { (yyval.varInit) = new AST::VarInit(*(yyvsp[-1].idVal), *(yyvsp[0].arrayBoundList)); delete (yyvsp[0].arrayBoundList); }
-#line 2652 "generated/Parser.cpp"
+#line 2651 "generated/Parser.cpp"
     break;
 
   case 35: /* VarInit: IDENTIFIER ArrayBoundList ASSIGN Expr  */
-#line 342 "frontend/Parser.y"
+#line 341 "frontend/Parser.y"
                                 { (yyval.varInit) = new AST::VarInit(*(yyvsp[-3].idVal), *(yyvsp[-2].arrayBoundList), (yyvsp[0].expr)); delete (yyvsp[-2].arrayBoundList); }
-#line 2658 "generated/Parser.cpp"
+#line 2657 "generated/Parser.cpp"
     break;
 
   case 36: /* VarInit: IDENTIFIER ArrayBoundList ASSIGN LBRACE InitList RBRACE  */
-#line 344 "frontend/Parser.y"
+#line 343 "frontend/Parser.y"
                                 { (yyval.varInit) = new AST::VarInit(*(yyvsp[-5].idVal), *(yyvsp[-4].arrayBoundList), nullptr, (yyvsp[-1].initList));
                                   delete (yyvsp[-4].arrayBoundList); }
-#line 2665 "generated/Parser.cpp"
+#line 2664 "generated/Parser.cpp"
     break;
 
   case 37: /* VarInit: IDENTIFIER ArrayBoundList ASSIGN LBRACE RBRACE  */
-#line 347 "frontend/Parser.y"
+#line 346 "frontend/Parser.y"
                                 { (yyval.varInit) = new AST::VarInit(*(yyvsp[-4].idVal), *(yyvsp[-3].arrayBoundList), nullptr,
                                                         new AST::InitList());
                                   delete (yyvsp[-3].arrayBoundList); }
-#line 2673 "generated/Parser.cpp"
+#line 2672 "generated/Parser.cpp"
     break;
 
   case 38: /* InitList: InitList COMMA InitItem  */
-#line 355 "frontend/Parser.y"
+#line 354 "frontend/Parser.y"
                                 { (yyval.initList) = (yyvsp[-2].initList); (yyval.initList)->push_back((yyvsp[0].initElement)); }
-#line 2679 "generated/Parser.cpp"
+#line 2678 "generated/Parser.cpp"
     break;
 
   case 39: /* InitList: InitItem  */
-#line 357 "frontend/Parser.y"
+#line 356 "frontend/Parser.y"
                                 { (yyval.initList) = new AST::InitList(); (yyval.initList)->push_back((yyvsp[0].initElement)); }
-#line 2685 "generated/Parser.cpp"
+#line 2684 "generated/Parser.cpp"
     break;
 
   case 40: /* InitItem: Expr  */
-#line 362 "frontend/Parser.y"
+#line 361 "frontend/Parser.y"
                                 { (yyval.initElement) = new AST::InitElement((yyvsp[0].expr)); }
-#line 2691 "generated/Parser.cpp"
+#line 2690 "generated/Parser.cpp"
     break;
 
   case 41: /* InitItem: LBRACE InitList RBRACE  */
-#line 364 "frontend/Parser.y"
+#line 363 "frontend/Parser.y"
                                 { (yyval.initElement) = new AST::InitElement((yyvsp[-1].initList)); }
-#line 2697 "generated/Parser.cpp"
+#line 2696 "generated/Parser.cpp"
     break;
 
   case 42: /* ArrayBoundList: ArrayBoundList ArrayBound  */
-#line 372 "frontend/Parser.y"
+#line 371 "frontend/Parser.y"
                                 { (yyval.arrayBoundList) = (yyvsp[-1].arrayBoundList); (yyval.arrayBoundList)->push_back((yyvsp[0].sizeVal)); }
-#line 2703 "generated/Parser.cpp"
+#line 2702 "generated/Parser.cpp"
     break;
 
   case 43: /* ArrayBoundList: ArrayBound  */
-#line 374 "frontend/Parser.y"
+#line 373 "frontend/Parser.y"
                                 { (yyval.arrayBoundList) = new std::vector<size_t>(); (yyval.arrayBoundList)->push_back((yyvsp[0].sizeVal)); }
-#line 2709 "generated/Parser.cpp"
+#line 2708 "generated/Parser.cpp"
     break;
 
   case 44: /* ArrayBoundList: %empty  */
-#line 375 "frontend/Parser.y"
+#line 374 "frontend/Parser.y"
                                 { (yyval.arrayBoundList) = new std::vector<size_t>(); }
-#line 2715 "generated/Parser.cpp"
+#line 2714 "generated/Parser.cpp"
     break;
 
   case 45: /* ArrayBound: LBRACKET INTEGER RBRACKET  */
-#line 379 "frontend/Parser.y"
+#line 378 "frontend/Parser.y"
                                 { (yyval.sizeVal) = static_cast<size_t>((yyvsp[-1].intVal)); }
-#line 2721 "generated/Parser.cpp"
+#line 2720 "generated/Parser.cpp"
     break;
 
   case 46: /* ArrayBound: LBRACKET RBRACKET  */
-#line 381 "frontend/Parser.y"
+#line 380 "frontend/Parser.y"
                                 { (yyval.sizeVal) = AST::kInferredArrayBound; }
-#line 2727 "generated/Parser.cpp"
+#line 2726 "generated/Parser.cpp"
     break;
 
   case 47: /* ParamList: ParamList COMMA Param  */
-#line 387 "frontend/Parser.y"
+#line 386 "frontend/Parser.y"
                                 { (yyval.paramList) = (yyvsp[-2].paramList); (yyval.paramList)->push_back((yyvsp[0].param)); }
-#line 2733 "generated/Parser.cpp"
+#line 2732 "generated/Parser.cpp"
     break;
 
   case 48: /* ParamList: ParamList COMMA ELLIPSES  */
-#line 389 "frontend/Parser.y"
+#line 388 "frontend/Parser.y"
                                 { (yyval.paramList) = (yyvsp[-2].paramList); (yyval.paramList)->setVariant(); }
-#line 2739 "generated/Parser.cpp"
+#line 2738 "generated/Parser.cpp"
     break;
 
   case 49: /* ParamList: Param  */
-#line 390 "frontend/Parser.y"
+#line 389 "frontend/Parser.y"
                                 { (yyval.paramList) = new AST::ParamList(); (yyval.paramList)->push_back((yyvsp[0].param)); }
-#line 2745 "generated/Parser.cpp"
+#line 2744 "generated/Parser.cpp"
     break;
 
   case 50: /* ParamList: ELLIPSES  */
-#line 391 "frontend/Parser.y"
+#line 390 "frontend/Parser.y"
                                 { (yyval.paramList) = new AST::ParamList(); (yyval.paramList)->setVariant(); }
-#line 2751 "generated/Parser.cpp"
+#line 2750 "generated/Parser.cpp"
     break;
 
   case 51: /* ParamList: %empty  */
-#line 392 "frontend/Parser.y"
+#line 391 "frontend/Parser.y"
                                 { (yyval.paramList) = new AST::ParamList(); }
-#line 2757 "generated/Parser.cpp"
+#line 2756 "generated/Parser.cpp"
     break;
 
   case 52: /* Param: VarType IDENTIFIER  */
-#line 395 "frontend/Parser.y"
+#line 394 "frontend/Parser.y"
                                 { (yyval.param) = new AST::Param((yyvsp[-1].varType), *(yyvsp[0].idVal)); }
-#line 2763 "generated/Parser.cpp"
+#line 2762 "generated/Parser.cpp"
     break;
 
   case 53: /* Param: VarType  */
-#line 396 "frontend/Parser.y"
+#line 395 "frontend/Parser.y"
                                 { (yyval.param) = new AST::Param((yyvsp[0].varType)); }
-#line 2769 "generated/Parser.cpp"
+#line 2768 "generated/Parser.cpp"
     break;
 
   case 54: /* BuiltinType: CHAR  */
-#line 400 "frontend/Parser.y"
+#line 399 "frontend/Parser.y"
                                 { (yyval.builtinType) = new AST::BuiltinType(AST::BuiltinTypeId::CHAR, "char"); }
-#line 2775 "generated/Parser.cpp"
+#line 2774 "generated/Parser.cpp"
     break;
 
   case 55: /* BuiltinType: SHORT  */
-#line 401 "frontend/Parser.y"
+#line 400 "frontend/Parser.y"
                                 { (yyval.builtinType) = new AST::BuiltinType(AST::BuiltinTypeId::SHORT, "short"); }
-#line 2781 "generated/Parser.cpp"
+#line 2780 "generated/Parser.cpp"
     break;
 
   case 56: /* BuiltinType: INT  */
-#line 402 "frontend/Parser.y"
+#line 401 "frontend/Parser.y"
                                 { (yyval.builtinType) = new AST::BuiltinType(AST::BuiltinTypeId::INT, "int"); }
-#line 2787 "generated/Parser.cpp"
+#line 2786 "generated/Parser.cpp"
     break;
 
   case 57: /* BuiltinType: LONG  */
-#line 403 "frontend/Parser.y"
+#line 402 "frontend/Parser.y"
                                 { (yyval.builtinType) = new AST::BuiltinType(AST::BuiltinTypeId::LONG, "long"); }
-#line 2793 "generated/Parser.cpp"
+#line 2792 "generated/Parser.cpp"
     break;
 
   case 58: /* BuiltinType: UNSIGNED  */
-#line 404 "frontend/Parser.y"
+#line 403 "frontend/Parser.y"
                                 { (yyval.builtinType) = new AST::BuiltinType(AST::BuiltinTypeId::UINT, "uint"); }
-#line 2799 "generated/Parser.cpp"
+#line 2798 "generated/Parser.cpp"
     break;
 
   case 59: /* BuiltinType: UNSIGNED CHAR  */
-#line 405 "frontend/Parser.y"
+#line 404 "frontend/Parser.y"
                                 { (yyval.builtinType) = new AST::BuiltinType(AST::BuiltinTypeId::UCHAR, "uchar"); }
-#line 2805 "generated/Parser.cpp"
+#line 2804 "generated/Parser.cpp"
     break;
 
   case 60: /* BuiltinType: UNSIGNED SHORT  */
-#line 406 "frontend/Parser.y"
+#line 405 "frontend/Parser.y"
                                 { (yyval.builtinType) = new AST::BuiltinType(AST::BuiltinTypeId::USHORT, "ushort"); }
-#line 2811 "generated/Parser.cpp"
+#line 2810 "generated/Parser.cpp"
     break;
 
   case 61: /* BuiltinType: UNSIGNED INT  */
-#line 407 "frontend/Parser.y"
+#line 406 "frontend/Parser.y"
                                 { (yyval.builtinType) = new AST::BuiltinType(AST::BuiltinTypeId::UINT, "uint"); }
-#line 2817 "generated/Parser.cpp"
+#line 2816 "generated/Parser.cpp"
     break;
 
   case 62: /* BuiltinType: UNSIGNED LONG  */
-#line 408 "frontend/Parser.y"
+#line 407 "frontend/Parser.y"
                                 { (yyval.builtinType) = new AST::BuiltinType(AST::BuiltinTypeId::ULONG, "ulong"); }
-#line 2823 "generated/Parser.cpp"
+#line 2822 "generated/Parser.cpp"
     break;
 
   case 63: /* BuiltinType: FLOAT  */
-#line 409 "frontend/Parser.y"
+#line 408 "frontend/Parser.y"
                                 { (yyval.builtinType) = new AST::BuiltinType(AST::BuiltinTypeId::FLOAT, "float"); }
-#line 2829 "generated/Parser.cpp"
+#line 2828 "generated/Parser.cpp"
     break;
 
   case 64: /* BuiltinType: DOUBLE  */
-#line 410 "frontend/Parser.y"
+#line 409 "frontend/Parser.y"
                                 { (yyval.builtinType) = new AST::BuiltinType(AST::BuiltinTypeId::DOUBLE, "double"); }
-#line 2835 "generated/Parser.cpp"
+#line 2834 "generated/Parser.cpp"
     break;
 
   case 65: /* BuiltinType: BOOL  */
-#line 411 "frontend/Parser.y"
+#line 410 "frontend/Parser.y"
                                 { (yyval.builtinType) = new AST::BuiltinType(AST::BuiltinTypeId::BOOL, "bool"); }
-#line 2841 "generated/Parser.cpp"
+#line 2840 "generated/Parser.cpp"
     break;
 
   case 66: /* BuiltinType: VOID  */
-#line 412 "frontend/Parser.y"
+#line 411 "frontend/Parser.y"
                                 { (yyval.builtinType) = new AST::BuiltinType(AST::BuiltinTypeId::VOID, "void"); }
-#line 2847 "generated/Parser.cpp"
+#line 2846 "generated/Parser.cpp"
     break;
 
   case 67: /* FieldDecls: FieldDecls FieldDecl  */
-#line 418 "frontend/Parser.y"
+#line 417 "frontend/Parser.y"
                                 { (yyval.fieldDecls) = (yyvsp[-1].fieldDecls); if ((yyvsp[0].fieldDecl) != nullptr) (yyval.fieldDecls)->push_back((yyvsp[0].fieldDecl)); }
-#line 2853 "generated/Parser.cpp"
+#line 2852 "generated/Parser.cpp"
     break;
 
   case 68: /* FieldDecls: %empty  */
-#line 419 "frontend/Parser.y"
+#line 418 "frontend/Parser.y"
                                 { (yyval.fieldDecls) = new AST::FieldDecls(); }
-#line 2859 "generated/Parser.cpp"
+#line 2858 "generated/Parser.cpp"
     break;
 
   case 69: /* FieldDecl: VarType MemberList SEMICOLON  */
-#line 423 "frontend/Parser.y"
+#line 422 "frontend/Parser.y"
                                 { (yyval.fieldDecl) = new AST::FieldDecl((yyvsp[-2].varType), (yyvsp[-1].memberList)); }
-#line 2865 "generated/Parser.cpp"
+#line 2864 "generated/Parser.cpp"
     break;
 
   case 70: /* FieldDecl: SEMICOLON  */
-#line 424 "frontend/Parser.y"
+#line 423 "frontend/Parser.y"
                                 { (yyval.fieldDecl) = nullptr; }
-#line 2871 "generated/Parser.cpp"
+#line 2870 "generated/Parser.cpp"
     break;
 
   case 71: /* MemberList: MemberList COMMA IDENTIFIER  */
-#line 430 "frontend/Parser.y"
+#line 429 "frontend/Parser.y"
                                 { (yyval.memberList) = (yyvsp[-2].memberList); (yyval.memberList)->push_back(*(yyvsp[0].idVal)); }
-#line 2877 "generated/Parser.cpp"
+#line 2876 "generated/Parser.cpp"
     break;
 
   case 72: /* MemberList: IDENTIFIER  */
-#line 431 "frontend/Parser.y"
+#line 430 "frontend/Parser.y"
                                 { (yyval.memberList) = new AST::MemberList(); (yyval.memberList)->push_back(*(yyvsp[0].idVal)); }
-#line 2883 "generated/Parser.cpp"
+#line 2882 "generated/Parser.cpp"
     break;
 
   case 73: /* MemberList: %empty  */
-#line 432 "frontend/Parser.y"
+#line 431 "frontend/Parser.y"
                                 { (yyval.memberList) = new AST::MemberList(); }
-#line 2889 "generated/Parser.cpp"
+#line 2888 "generated/Parser.cpp"
     break;
 
   case 74: /* EnumList: EnumList COMMA Enum  */
-#line 438 "frontend/Parser.y"
+#line 437 "frontend/Parser.y"
                                 { (yyval.enumList) = (yyvsp[-2].enumList); (yyval.enumList)->push_back((yyvsp[0].enumeration)); }
-#line 2895 "generated/Parser.cpp"
+#line 2894 "generated/Parser.cpp"
     break;
 
   case 75: /* EnumList: Enum  */
-#line 439 "frontend/Parser.y"
+#line 438 "frontend/Parser.y"
                                 { (yyval.enumList) = new AST::EnumList(); (yyval.enumList)->push_back((yyvsp[0].enumeration)); }
-#line 2901 "generated/Parser.cpp"
+#line 2900 "generated/Parser.cpp"
     break;
 
   case 76: /* EnumList: %empty  */
-#line 440 "frontend/Parser.y"
+#line 439 "frontend/Parser.y"
                                 { (yyval.enumList) = new AST::EnumList(); }
-#line 2907 "generated/Parser.cpp"
+#line 2906 "generated/Parser.cpp"
     break;
 
   case 77: /* Enum: IDENTIFIER  */
-#line 443 "frontend/Parser.y"
+#line 442 "frontend/Parser.y"
                                 { (yyval.enumeration) = new AST::Enum(*(yyvsp[0].idVal)); }
-#line 2913 "generated/Parser.cpp"
+#line 2912 "generated/Parser.cpp"
     break;
 
   case 78: /* Enum: IDENTIFIER ASSIGN INTEGER  */
-#line 445 "frontend/Parser.y"
+#line 444 "frontend/Parser.y"
                                 { (yyval.enumeration) = new AST::Enum(*(yyvsp[-2].idVal), true, (yyvsp[0].intVal)); }
-#line 2919 "generated/Parser.cpp"
+#line 2918 "generated/Parser.cpp"
     break;
 
   case 79: /* Stmts: Stmts Stmt  */
-#line 454 "frontend/Parser.y"
+#line 453 "frontend/Parser.y"
                                 { (yyval.stmts) = (yyvsp[-1].stmts); if ((yyvsp[0].stmt) != nullptr) (yyval.stmts)->push_back((yyvsp[0].stmt)); }
-#line 2925 "generated/Parser.cpp"
+#line 2924 "generated/Parser.cpp"
     break;
 
   case 80: /* Stmts: %empty  */
-#line 455 "frontend/Parser.y"
+#line 454 "frontend/Parser.y"
                                 { (yyval.stmts) = new AST::Stmts(); }
-#line 2931 "generated/Parser.cpp"
+#line 2930 "generated/Parser.cpp"
     break;
 
   case 81: /* Stmt: Expr SEMICOLON  */
-#line 458 "frontend/Parser.y"
+#line 457 "frontend/Parser.y"
                                 { (yyval.stmt) = (yyvsp[-1].expr); (yyval.stmt)->setLoc((yylsp[-1]).first_line, (yylsp[-1]).first_column); }
-#line 2937 "generated/Parser.cpp"
+#line 2936 "generated/Parser.cpp"
     break;
 
   case 82: /* Stmt: IfStmt  */
-#line 459 "frontend/Parser.y"
+#line 458 "frontend/Parser.y"
                                 { (yyval.stmt) = (yyvsp[0].ifStmt); }
-#line 2943 "generated/Parser.cpp"
+#line 2942 "generated/Parser.cpp"
     break;
 
   case 83: /* Stmt: SwitchStmt  */
-#line 460 "frontend/Parser.y"
+#line 459 "frontend/Parser.y"
                                 { (yyval.stmt) = (yyvsp[0].switchStmt); }
-#line 2949 "generated/Parser.cpp"
+#line 2948 "generated/Parser.cpp"
     break;
 
   case 84: /* Stmt: ForStmt  */
-#line 461 "frontend/Parser.y"
+#line 460 "frontend/Parser.y"
                                 { (yyval.stmt) = (yyvsp[0].forStmt); }
-#line 2955 "generated/Parser.cpp"
+#line 2954 "generated/Parser.cpp"
     break;
 
   case 85: /* Stmt: DoStmt  */
-#line 462 "frontend/Parser.y"
+#line 461 "frontend/Parser.y"
                                 { (yyval.stmt) = (yyvsp[0].doStmt); }
-#line 2961 "generated/Parser.cpp"
+#line 2960 "generated/Parser.cpp"
     break;
 
   case 86: /* Stmt: WhileStmt  */
-#line 463 "frontend/Parser.y"
+#line 462 "frontend/Parser.y"
                                 { (yyval.stmt) = (yyvsp[0].whileStmt); }
-#line 2967 "generated/Parser.cpp"
+#line 2966 "generated/Parser.cpp"
     break;
 
   case 87: /* Stmt: ContinueStmt  */
-#line 464 "frontend/Parser.y"
+#line 463 "frontend/Parser.y"
                                 { (yyval.stmt) = (yyvsp[0].continueStmt); }
-#line 2973 "generated/Parser.cpp"
+#line 2972 "generated/Parser.cpp"
     break;
 
   case 88: /* Stmt: BreakStmt  */
-#line 465 "frontend/Parser.y"
+#line 464 "frontend/Parser.y"
                                 { (yyval.stmt) = (yyvsp[0].breakStmt); }
-#line 2979 "generated/Parser.cpp"
+#line 2978 "generated/Parser.cpp"
     break;
 
   case 89: /* Stmt: ReturnStmt  */
-#line 466 "frontend/Parser.y"
+#line 465 "frontend/Parser.y"
                                 { (yyval.stmt) = (yyvsp[0].returnStmt); }
-#line 2985 "generated/Parser.cpp"
+#line 2984 "generated/Parser.cpp"
     break;
 
   case 90: /* Stmt: Block  */
-#line 467 "frontend/Parser.y"
+#line 466 "frontend/Parser.y"
                                 { (yyval.stmt) = (yyvsp[0].block); }
-#line 2991 "generated/Parser.cpp"
+#line 2990 "generated/Parser.cpp"
     break;
 
   case 91: /* Stmt: TypeDecl  */
-#line 468 "frontend/Parser.y"
+#line 467 "frontend/Parser.y"
                                 { (yyval.stmt) = (yyvsp[0].typeDecl); }
-#line 2997 "generated/Parser.cpp"
+#line 2996 "generated/Parser.cpp"
     break;
 
   case 92: /* Stmt: VarDecl  */
-#line 469 "frontend/Parser.y"
+#line 468 "frontend/Parser.y"
                                 { (yyval.stmt) = (yyvsp[0].varDecl); }
-#line 3003 "generated/Parser.cpp"
+#line 3002 "generated/Parser.cpp"
     break;
 
   case 93: /* Stmt: SEMICOLON  */
-#line 470 "frontend/Parser.y"
+#line 469 "frontend/Parser.y"
                                 { (yyval.stmt) = nullptr; }
-#line 3009 "generated/Parser.cpp"
+#line 3008 "generated/Parser.cpp"
     break;
 
   case 94: /* IfStmt: IF LPARENTHESES Expr RPARENTHESES Stmt ELSE Stmt  */
-#line 474 "frontend/Parser.y"
+#line 473 "frontend/Parser.y"
                                 { (yyval.ifStmt) = new AST::IfStmt((yyvsp[-4].expr), (yyvsp[-2].stmt), (yyvsp[0].stmt));
                                   (yyval.ifStmt)->setLoc((yylsp[-6]).first_line, (yylsp[-6]).first_column); }
-#line 3016 "generated/Parser.cpp"
+#line 3015 "generated/Parser.cpp"
     break;
 
   case 95: /* IfStmt: IF LPARENTHESES Expr RPARENTHESES Stmt  */
-#line 477 "frontend/Parser.y"
+#line 476 "frontend/Parser.y"
                                 { (yyval.ifStmt) = new AST::IfStmt((yyvsp[-2].expr), (yyvsp[0].stmt));
                                   (yyval.ifStmt)->setLoc((yylsp[-4]).first_line, (yylsp[-4]).first_column); }
-#line 3023 "generated/Parser.cpp"
+#line 3022 "generated/Parser.cpp"
     break;
 
   case 96: /* SwitchStmt: SWITCH LPARENTHESES Expr RPARENTHESES LBRACE CaseStmtList RBRACE  */
-#line 484 "frontend/Parser.y"
+#line 483 "frontend/Parser.y"
                                 { (yyval.switchStmt) = new AST::SwitchStmt((yyvsp[-4].expr), (yyvsp[-1].caseStmtList));
                                   (yyval.switchStmt)->setLoc((yylsp[-6]).first_line, (yylsp[-6]).first_column); }
-#line 3030 "generated/Parser.cpp"
+#line 3029 "generated/Parser.cpp"
     break;
 
   case 97: /* CaseStmtList: CaseStmtList CaseStmt  */
-#line 490 "frontend/Parser.y"
+#line 489 "frontend/Parser.y"
                                 { (yyval.caseStmtList) = (yyvsp[-1].caseStmtList); (yyval.caseStmtList)->push_back((yyvsp[0].caseStmt)); }
-#line 3036 "generated/Parser.cpp"
+#line 3035 "generated/Parser.cpp"
     break;
 
   case 98: /* CaseStmtList: %empty  */
-#line 491 "frontend/Parser.y"
+#line 490 "frontend/Parser.y"
                                 { (yyval.caseStmtList) = new AST::CaseStmtList(); }
-#line 3042 "generated/Parser.cpp"
+#line 3041 "generated/Parser.cpp"
     break;
 
   case 99: /* CaseStmt: CASE Expr COLON Stmts  */
-#line 495 "frontend/Parser.y"
+#line 494 "frontend/Parser.y"
                                 { (yyval.caseStmt) = new AST::CaseStmt((yyvsp[-2].expr), (yyvsp[0].stmts));
                                   (yyval.caseStmt)->setLoc((yylsp[-3]).first_line, (yylsp[-3]).first_column); }
-#line 3049 "generated/Parser.cpp"
+#line 3048 "generated/Parser.cpp"
     break;
 
   case 100: /* CaseStmt: DEFAULT COLON Stmts  */
-#line 498 "frontend/Parser.y"
+#line 497 "frontend/Parser.y"
                                 { (yyval.caseStmt) = new AST::CaseStmt(nullptr, (yyvsp[0].stmts));
                                   (yyval.caseStmt)->setLoc((yylsp[-2]).first_line, (yylsp[-2]).first_column); }
-#line 3056 "generated/Parser.cpp"
+#line 3055 "generated/Parser.cpp"
     break;
 
   case 101: /* ForStmt: FOR LPARENTHESES Expr SEMICOLON Expr SEMICOLON Expr RPARENTHESES Stmt  */
-#line 503 "frontend/Parser.y"
+#line 502 "frontend/Parser.y"
                                 { (yyval.forStmt) = new AST::ForStmt((yyvsp[-6].expr), (yyvsp[-4].expr), (yyvsp[-2].expr), (yyvsp[0].stmt));
                                   (yyval.forStmt)->setLoc((yylsp[-8]).first_line, (yylsp[-8]).first_column); }
-#line 3063 "generated/Parser.cpp"
+#line 3062 "generated/Parser.cpp"
     break;
 
   case 102: /* ForStmt: FOR LPARENTHESES SEMICOLON Expr SEMICOLON Expr RPARENTHESES Stmt  */
-#line 506 "frontend/Parser.y"
+#line 505 "frontend/Parser.y"
                                 { (yyval.forStmt) = new AST::ForStmt(nullptr, (yyvsp[-4].expr), (yyvsp[-2].expr), (yyvsp[0].stmt));
                                   (yyval.forStmt)->setLoc((yylsp[-7]).first_line, (yylsp[-7]).first_column); }
-#line 3070 "generated/Parser.cpp"
+#line 3069 "generated/Parser.cpp"
     break;
 
   case 103: /* ForStmt: FOR LPARENTHESES VarDecl Expr SEMICOLON Expr RPARENTHESES Stmt  */
-#line 509 "frontend/Parser.y"
+#line 508 "frontend/Parser.y"
                                 { (yyval.forStmt) = new AST::ForStmt((yyvsp[-5].varDecl), (yyvsp[-4].expr), (yyvsp[-2].expr), (yyvsp[0].stmt));
                                   (yyval.forStmt)->setLoc((yylsp[-7]).first_line, (yylsp[-7]).first_column); }
-#line 3077 "generated/Parser.cpp"
+#line 3076 "generated/Parser.cpp"
     break;
 
   case 104: /* DoStmt: DO Stmt WHILE LPARENTHESES Expr RPARENTHESES SEMICOLON  */
-#line 514 "frontend/Parser.y"
+#line 513 "frontend/Parser.y"
                                 { (yyval.doStmt) = new AST::DoStmt((yyvsp[-5].stmt), (yyvsp[-2].expr));
                                   (yyval.doStmt)->setLoc((yylsp[-6]).first_line, (yylsp[-6]).first_column); }
-#line 3084 "generated/Parser.cpp"
+#line 3083 "generated/Parser.cpp"
     break;
 
   case 105: /* WhileStmt: WHILE LPARENTHESES Expr RPARENTHESES Stmt  */
-#line 519 "frontend/Parser.y"
+#line 518 "frontend/Parser.y"
                                 { (yyval.whileStmt) = new AST::WhileStmt((yyvsp[-2].expr), (yyvsp[0].stmt));
                                   (yyval.whileStmt)->setLoc((yylsp[-4]).first_line, (yylsp[-4]).first_column); }
-#line 3091 "generated/Parser.cpp"
+#line 3090 "generated/Parser.cpp"
     break;
 
   case 106: /* ContinueStmt: CONTINUE SEMICOLON  */
-#line 524 "frontend/Parser.y"
+#line 523 "frontend/Parser.y"
                                 { (yyval.continueStmt) = new AST::ContinueStmt();
                                   (yyval.continueStmt)->setLoc((yylsp[-1]).first_line, (yylsp[-1]).first_column); }
-#line 3098 "generated/Parser.cpp"
+#line 3097 "generated/Parser.cpp"
     break;
 
   case 107: /* BreakStmt: BREAK SEMICOLON  */
-#line 528 "frontend/Parser.y"
+#line 527 "frontend/Parser.y"
                                 { (yyval.breakStmt) = new AST::BreakStmt();
                                   (yyval.breakStmt)->setLoc((yylsp[-1]).first_line, (yylsp[-1]).first_column); }
-#line 3105 "generated/Parser.cpp"
+#line 3104 "generated/Parser.cpp"
     break;
 
   case 108: /* ReturnStmt: RETURN SEMICOLON  */
-#line 532 "frontend/Parser.y"
+#line 531 "frontend/Parser.y"
                                 { (yyval.returnStmt) = new AST::ReturnStmt();
                                   (yyval.returnStmt)->setLoc((yylsp[-1]).first_line, (yylsp[-1]).first_column); }
-#line 3112 "generated/Parser.cpp"
+#line 3111 "generated/Parser.cpp"
     break;
 
   case 109: /* ReturnStmt: RETURN Expr SEMICOLON  */
-#line 535 "frontend/Parser.y"
+#line 534 "frontend/Parser.y"
                                 { (yyval.returnStmt) = new AST::ReturnStmt((yyvsp[-1].expr));
                                   (yyval.returnStmt)->setLoc((yylsp[-2]).first_line, (yylsp[-2]).first_column); }
-#line 3119 "generated/Parser.cpp"
+#line 3118 "generated/Parser.cpp"
     break;
 
   case 110: /* Block: LBRACE Stmts RBRACE  */
-#line 539 "frontend/Parser.y"
+#line 538 "frontend/Parser.y"
                                 { (yyval.block) = new AST::Block((yyvsp[-1].stmts));
                                   (yyval.block)->setLoc((yylsp[-2]).first_line, (yylsp[-2]).first_column); }
-#line 3126 "generated/Parser.cpp"
+#line 3125 "generated/Parser.cpp"
     break;
 
   case 111: /* Expr: IDENTIFIER  */
-#line 554 "frontend/Parser.y"
+#line 553 "frontend/Parser.y"
                                 { (yyval.expr) = new AST::Variable(*(yyvsp[0].idVal)); }
-#line 3132 "generated/Parser.cpp"
+#line 3131 "generated/Parser.cpp"
     break;
 
   case 112: /* Expr: Constant  */
-#line 555 "frontend/Parser.y"
+#line 554 "frontend/Parser.y"
                                 { (yyval.expr) = (yyvsp[0].constant); }
-#line 3138 "generated/Parser.cpp"
+#line 3137 "generated/Parser.cpp"
     break;
 
   case 113: /* Expr: LPARENTHESES Expr RPARENTHESES  */
-#line 557 "frontend/Parser.y"
+#line 556 "frontend/Parser.y"
                                 { (yyval.expr) = (yyvsp[-1].expr); }
-#line 3144 "generated/Parser.cpp"
+#line 3143 "generated/Parser.cpp"
     break;
 
   case 114: /* Expr: Expr COMMA Expr  */
-#line 558 "frontend/Parser.y"
+#line 557 "frontend/Parser.y"
                                 { (yyval.expr) = new AST::CommaExpr((yyvsp[-2].expr), (yyvsp[0].expr)); }
-#line 3150 "generated/Parser.cpp"
+#line 3149 "generated/Parser.cpp"
     break;
 
   case 115: /* Expr: IDENTIFIER LPARENTHESES ExprList RPARENTHESES  */
-#line 560 "frontend/Parser.y"
+#line 559 "frontend/Parser.y"
                                 { (yyval.expr) = new AST::FuncCall(*(yyvsp[-3].idVal), (yyvsp[-1].exprList)); }
-#line 3156 "generated/Parser.cpp"
+#line 3155 "generated/Parser.cpp"
     break;
 
   case 116: /* Expr: Expr DOT IDENTIFIER  */
-#line 562 "frontend/Parser.y"
+#line 561 "frontend/Parser.y"
                                 { (yyval.expr) = new AST::StructRef((yyvsp[-2].expr), *(yyvsp[0].idVal)); }
-#line 3162 "generated/Parser.cpp"
+#line 3161 "generated/Parser.cpp"
     break;
 
   case 117: /* Expr: Expr ARROW IDENTIFIER  */
-#line 564 "frontend/Parser.y"
+#line 563 "frontend/Parser.y"
                                 { (yyval.expr) = new AST::StructDeref((yyvsp[-2].expr), *(yyvsp[0].idVal)); }
-#line 3168 "generated/Parser.cpp"
+#line 3167 "generated/Parser.cpp"
     break;
 
   case 118: /* Expr: Expr LBRACKET Expr RBRACKET  */
-#line 566 "frontend/Parser.y"
+#line 565 "frontend/Parser.y"
                                 { (yyval.expr) = new AST::Subscript((yyvsp[-3].expr), (yyvsp[-1].expr)); }
-#line 3174 "generated/Parser.cpp"
+#line 3173 "generated/Parser.cpp"
     break;
 
   case 119: /* Expr: LPARENTHESES VarType RPARENTHESES Expr  */
-#line 568 "frontend/Parser.y"
+#line 567 "frontend/Parser.y"
                                 { (yyval.expr) = new AST::TypeCast((yyvsp[-2].varType), (yyvsp[0].expr)); }
-#line 3180 "generated/Parser.cpp"
+#line 3179 "generated/Parser.cpp"
     break;
 
   case 120: /* Expr: SIZEOF LPARENTHESES VarType RPARENTHESES  */
-#line 570 "frontend/Parser.y"
+#line 569 "frontend/Parser.y"
                                 { (yyval.expr) = new AST::SizeOf((yyvsp[-1].varType)); }
-#line 3186 "generated/Parser.cpp"
+#line 3185 "generated/Parser.cpp"
     break;
 
   case 121: /* Expr: SIZEOF LPARENTHESES Expr RPARENTHESES  */
-#line 572 "frontend/Parser.y"
+#line 571 "frontend/Parser.y"
                                 { (yyval.expr) = new AST::SizeOf((yyvsp[-1].expr)); }
-#line 3192 "generated/Parser.cpp"
+#line 3191 "generated/Parser.cpp"
     break;
 
   case 122: /* Expr: SIZEOF LPARENTHESES IDENTIFIER RPARENTHESES  */
-#line 574 "frontend/Parser.y"
+#line 573 "frontend/Parser.y"
                                 { (yyval.expr) = new AST::SizeOf(*(yyvsp[-1].idVal)); }
-#line 3198 "generated/Parser.cpp"
+#line 3197 "generated/Parser.cpp"
     break;
 
   case 123: /* Expr: ADD Expr  */
-#line 576 "frontend/Parser.y"
+#line 575 "frontend/Parser.y"
                                 { (yyval.expr) = new AST::UnaryPlus((yyvsp[0].expr)); }
-#line 3204 "generated/Parser.cpp"
+#line 3203 "generated/Parser.cpp"
     break;
 
   case 124: /* Expr: SUB Expr  */
-#line 578 "frontend/Parser.y"
+#line 577 "frontend/Parser.y"
                                 { (yyval.expr) = new AST::UnaryMinus((yyvsp[0].expr)); }
-#line 3210 "generated/Parser.cpp"
+#line 3209 "generated/Parser.cpp"
     break;
 
   case 125: /* Expr: ASTERISK Expr  */
-#line 580 "frontend/Parser.y"
+#line 579 "frontend/Parser.y"
                                 { (yyval.expr) = new AST::PointerDeref((yyvsp[0].expr)); }
-#line 3216 "generated/Parser.cpp"
+#line 3215 "generated/Parser.cpp"
     break;
 
   case 126: /* Expr: AMPERSAND Expr  */
-#line 582 "frontend/Parser.y"
+#line 581 "frontend/Parser.y"
                                 { (yyval.expr) = new AST::AddressOf((yyvsp[0].expr)); }
-#line 3222 "generated/Parser.cpp"
+#line 3221 "generated/Parser.cpp"
     break;
 
   case 127: /* Expr: Expr ASSIGN Expr  */
-#line 583 "frontend/Parser.y"
+#line 582 "frontend/Parser.y"
                                 { (yyval.expr) = new AST::Assign((yyvsp[-2].expr), (yyvsp[0].expr)); }
-#line 3228 "generated/Parser.cpp"
+#line 3227 "generated/Parser.cpp"
     break;
 
   case 128: /* Expr: Expr ADD Expr  */
-#line 585 "frontend/Parser.y"
+#line 584 "frontend/Parser.y"
                                 { (yyval.expr) = new AST::Add((yyvsp[-2].expr), (yyvsp[0].expr)); }
-#line 3234 "generated/Parser.cpp"
+#line 3233 "generated/Parser.cpp"
     break;
 
   case 129: /* Expr: Expr SUB Expr  */
-#line 587 "frontend/Parser.y"
+#line 586 "frontend/Parser.y"
                                 { (yyval.expr) = new AST::Sub((yyvsp[-2].expr), (yyvsp[0].expr)); }
-#line 3240 "generated/Parser.cpp"
+#line 3239 "generated/Parser.cpp"
     break;
 
   case 130: /* Expr: Expr ASTERISK Expr  */
-#line 589 "frontend/Parser.y"
+#line 588 "frontend/Parser.y"
                                 { (yyval.expr) = new AST::Mul((yyvsp[-2].expr), (yyvsp[0].expr)); }
-#line 3246 "generated/Parser.cpp"
+#line 3245 "generated/Parser.cpp"
     break;
 
   case 131: /* Expr: Expr DIV Expr  */
-#line 590 "frontend/Parser.y"
+#line 589 "frontend/Parser.y"
                                 { (yyval.expr) = new AST::Div((yyvsp[-2].expr), (yyvsp[0].expr)); }
-#line 3252 "generated/Parser.cpp"
+#line 3251 "generated/Parser.cpp"
     break;
 
   case 132: /* Expr: Expr MOD Expr  */
-#line 591 "frontend/Parser.y"
+#line 590 "frontend/Parser.y"
                                 { (yyval.expr) = new AST::Mod((yyvsp[-2].expr), (yyvsp[0].expr)); }
-#line 3258 "generated/Parser.cpp"
+#line 3257 "generated/Parser.cpp"
     break;
 
   case 133: /* Expr: Expr DADD  */
-#line 593 "frontend/Parser.y"
+#line 592 "frontend/Parser.y"
                                 { (yyval.expr) = new AST::PostfixInc((yyvsp[-1].expr)); }
-#line 3264 "generated/Parser.cpp"
+#line 3263 "generated/Parser.cpp"
     break;
 
   case 134: /* Expr: Expr DSUB  */
-#line 595 "frontend/Parser.y"
+#line 594 "frontend/Parser.y"
                                 { (yyval.expr) = new AST::PostfixDec((yyvsp[-1].expr)); }
-#line 3270 "generated/Parser.cpp"
+#line 3269 "generated/Parser.cpp"
     break;
 
   case 135: /* Expr: DADD Expr  */
-#line 597 "frontend/Parser.y"
+#line 596 "frontend/Parser.y"
                                 { (yyval.expr) = new AST::PrefixInc((yyvsp[0].expr)); }
-#line 3276 "generated/Parser.cpp"
+#line 3275 "generated/Parser.cpp"
     break;
 
   case 136: /* Expr: DSUB Expr  */
-#line 599 "frontend/Parser.y"
+#line 598 "frontend/Parser.y"
                                 { (yyval.expr) = new AST::PrefixDec((yyvsp[0].expr)); }
-#line 3282 "generated/Parser.cpp"
+#line 3281 "generated/Parser.cpp"
     break;
 
   case 137: /* Expr: Expr ADDEQ Expr  */
-#line 600 "frontend/Parser.y"
+#line 599 "frontend/Parser.y"
                                 { (yyval.expr) = new AST::AddAssign((yyvsp[-2].expr), (yyvsp[0].expr)); }
-#line 3288 "generated/Parser.cpp"
+#line 3287 "generated/Parser.cpp"
     break;
 
   case 138: /* Expr: Expr SUBEQ Expr  */
-#line 601 "frontend/Parser.y"
+#line 600 "frontend/Parser.y"
                                 { (yyval.expr) = new AST::SubAssign((yyvsp[-2].expr), (yyvsp[0].expr)); }
-#line 3294 "generated/Parser.cpp"
+#line 3293 "generated/Parser.cpp"
     break;
 
   case 139: /* Expr: Expr MULEQ Expr  */
-#line 602 "frontend/Parser.y"
+#line 601 "frontend/Parser.y"
                                 { (yyval.expr) = new AST::MulAssign((yyvsp[-2].expr), (yyvsp[0].expr)); }
-#line 3300 "generated/Parser.cpp"
+#line 3299 "generated/Parser.cpp"
     break;
 
   case 140: /* Expr: Expr DIVEQ Expr  */
-#line 603 "frontend/Parser.y"
+#line 602 "frontend/Parser.y"
                                 { (yyval.expr) = new AST::DivAssign((yyvsp[-2].expr), (yyvsp[0].expr)); }
-#line 3306 "generated/Parser.cpp"
+#line 3305 "generated/Parser.cpp"
     break;
 
   case 141: /* Expr: Expr MODEQ Expr  */
-#line 604 "frontend/Parser.y"
+#line 603 "frontend/Parser.y"
                                 { (yyval.expr) = new AST::ModAssign((yyvsp[-2].expr), (yyvsp[0].expr)); }
-#line 3312 "generated/Parser.cpp"
+#line 3311 "generated/Parser.cpp"
     break;
 
   case 142: /* Expr: Expr AMPERSAND Expr  */
-#line 606 "frontend/Parser.y"
+#line 605 "frontend/Parser.y"
                                 { (yyval.expr) = new AST::BitwiseAnd((yyvsp[-2].expr), (yyvsp[0].expr)); }
-#line 3318 "generated/Parser.cpp"
+#line 3317 "generated/Parser.cpp"
     break;
 
   case 143: /* Expr: Expr BOR Expr  */
-#line 607 "frontend/Parser.y"
+#line 606 "frontend/Parser.y"
                                 { (yyval.expr) = new AST::BitwiseOr((yyvsp[-2].expr), (yyvsp[0].expr)); }
-#line 3324 "generated/Parser.cpp"
+#line 3323 "generated/Parser.cpp"
     break;
 
   case 144: /* Expr: Expr BXOR Expr  */
-#line 608 "frontend/Parser.y"
+#line 607 "frontend/Parser.y"
                                 { (yyval.expr) = new AST::BitwiseXor((yyvsp[-2].expr), (yyvsp[0].expr)); }
-#line 3330 "generated/Parser.cpp"
+#line 3329 "generated/Parser.cpp"
     break;
 
   case 145: /* Expr: BNOT Expr  */
-#line 609 "frontend/Parser.y"
+#line 608 "frontend/Parser.y"
                                 { (yyval.expr) = new AST::BitwiseNot((yyvsp[0].expr)); }
-#line 3336 "generated/Parser.cpp"
+#line 3335 "generated/Parser.cpp"
     break;
 
   case 146: /* Expr: Expr BANDEQ Expr  */
-#line 610 "frontend/Parser.y"
+#line 609 "frontend/Parser.y"
                                 { (yyval.expr) = new AST::BitwiseAndAssign((yyvsp[-2].expr), (yyvsp[0].expr)); }
-#line 3342 "generated/Parser.cpp"
+#line 3341 "generated/Parser.cpp"
     break;
 
   case 147: /* Expr: Expr BOREQ Expr  */
-#line 611 "frontend/Parser.y"
+#line 610 "frontend/Parser.y"
                                 { (yyval.expr) = new AST::BitwiseOrAssign((yyvsp[-2].expr), (yyvsp[0].expr)); }
-#line 3348 "generated/Parser.cpp"
+#line 3347 "generated/Parser.cpp"
     break;
 
   case 148: /* Expr: Expr BXOREQ Expr  */
-#line 612 "frontend/Parser.y"
+#line 611 "frontend/Parser.y"
                                 { (yyval.expr) = new AST::BitwiseXorAssign((yyvsp[-2].expr), (yyvsp[0].expr)); }
-#line 3354 "generated/Parser.cpp"
+#line 3353 "generated/Parser.cpp"
     break;
 
   case 149: /* Expr: Expr SHL Expr  */
-#line 613 "frontend/Parser.y"
+#line 612 "frontend/Parser.y"
                                 { (yyval.expr) = new AST::LeftShift((yyvsp[-2].expr), (yyvsp[0].expr)); }
-#line 3360 "generated/Parser.cpp"
+#line 3359 "generated/Parser.cpp"
     break;
 
   case 150: /* Expr: Expr SHR Expr  */
-#line 614 "frontend/Parser.y"
+#line 613 "frontend/Parser.y"
                                 { (yyval.expr) = new AST::RightShift((yyvsp[-2].expr), (yyvsp[0].expr)); }
-#line 3366 "generated/Parser.cpp"
+#line 3365 "generated/Parser.cpp"
     break;
 
   case 151: /* Expr: Expr SHLEQ Expr  */
-#line 615 "frontend/Parser.y"
+#line 614 "frontend/Parser.y"
                                 { (yyval.expr) = new AST::LeftShiftAssign((yyvsp[-2].expr), (yyvsp[0].expr)); }
-#line 3372 "generated/Parser.cpp"
+#line 3371 "generated/Parser.cpp"
     break;
 
   case 152: /* Expr: Expr SHREQ Expr  */
-#line 616 "frontend/Parser.y"
+#line 615 "frontend/Parser.y"
                                 { (yyval.expr) = new AST::RightShiftAssign((yyvsp[-2].expr), (yyvsp[0].expr)); }
-#line 3378 "generated/Parser.cpp"
+#line 3377 "generated/Parser.cpp"
     break;
 
   case 153: /* Expr: Expr AND Expr  */
-#line 617 "frontend/Parser.y"
+#line 616 "frontend/Parser.y"
                                 { (yyval.expr) = new AST::LogicAnd((yyvsp[-2].expr), (yyvsp[0].expr)); }
-#line 3384 "generated/Parser.cpp"
+#line 3383 "generated/Parser.cpp"
     break;
 
   case 154: /* Expr: Expr OR Expr  */
-#line 618 "frontend/Parser.y"
+#line 617 "frontend/Parser.y"
                                 { (yyval.expr) = new AST::LogicOr((yyvsp[-2].expr), (yyvsp[0].expr)); }
-#line 3390 "generated/Parser.cpp"
+#line 3389 "generated/Parser.cpp"
     break;
 
   case 155: /* Expr: NOT Expr  */
-#line 619 "frontend/Parser.y"
+#line 618 "frontend/Parser.y"
                                 { (yyval.expr) = new AST::LogicNot((yyvsp[0].expr)); }
-#line 3396 "generated/Parser.cpp"
+#line 3395 "generated/Parser.cpp"
     break;
 
   case 156: /* Expr: Expr EQ Expr  */
-#line 620 "frontend/Parser.y"
+#line 619 "frontend/Parser.y"
                                 { (yyval.expr) = new AST::LogicEq((yyvsp[-2].expr), (yyvsp[0].expr)); }
-#line 3402 "generated/Parser.cpp"
+#line 3401 "generated/Parser.cpp"
     break;
 
   case 157: /* Expr: Expr NEQ Expr  */
-#line 621 "frontend/Parser.y"
+#line 620 "frontend/Parser.y"
                                 { (yyval.expr) = new AST::LogicNotEq((yyvsp[-2].expr), (yyvsp[0].expr)); }
-#line 3408 "generated/Parser.cpp"
+#line 3407 "generated/Parser.cpp"
     break;
 
   case 158: /* Expr: Expr LT Expr  */
-#line 622 "frontend/Parser.y"
+#line 621 "frontend/Parser.y"
                                 { (yyval.expr) = new AST::LogicLessThan((yyvsp[-2].expr), (yyvsp[0].expr)); }
-#line 3414 "generated/Parser.cpp"
+#line 3413 "generated/Parser.cpp"
     break;
 
   case 159: /* Expr: Expr LE Expr  */
-#line 623 "frontend/Parser.y"
+#line 622 "frontend/Parser.y"
                                 { (yyval.expr) = new AST::LogicLessEq((yyvsp[-2].expr), (yyvsp[0].expr)); }
-#line 3420 "generated/Parser.cpp"
+#line 3419 "generated/Parser.cpp"
     break;
 
   case 160: /* Expr: Expr GT Expr  */
-#line 624 "frontend/Parser.y"
+#line 623 "frontend/Parser.y"
                                 { (yyval.expr) = new AST::LogicGreaterThan((yyvsp[-2].expr), (yyvsp[0].expr)); }
-#line 3426 "generated/Parser.cpp"
+#line 3425 "generated/Parser.cpp"
     break;
 
   case 161: /* Expr: Expr GE Expr  */
-#line 625 "frontend/Parser.y"
+#line 624 "frontend/Parser.y"
                                 { (yyval.expr) = new AST::LogicGreaterEq((yyvsp[-2].expr), (yyvsp[0].expr)); }
-#line 3432 "generated/Parser.cpp"
+#line 3431 "generated/Parser.cpp"
     break;
 
   case 162: /* Expr: Expr QUESTION Expr COLON Expr  */
-#line 627 "frontend/Parser.y"
+#line 626 "frontend/Parser.y"
                                 { (yyval.expr) = new AST::TernaryCondition((yyvsp[-4].expr), (yyvsp[-2].expr), (yyvsp[0].expr)); }
-#line 3438 "generated/Parser.cpp"
+#line 3437 "generated/Parser.cpp"
     break;
 
   case 163: /* ExprList: ExprList COMMA Expr  */
-#line 631 "frontend/Parser.y"
+#line 630 "frontend/Parser.y"
                                 { (yyval.exprList) = (yyvsp[-2].exprList); (yyval.exprList)->push_back((yyvsp[0].expr)); }
-#line 3444 "generated/Parser.cpp"
+#line 3443 "generated/Parser.cpp"
     break;
 
   case 164: /* ExprList: Expr  */
-#line 632 "frontend/Parser.y"
+#line 631 "frontend/Parser.y"
                                 { (yyval.exprList) = new AST::ExprList(); (yyval.exprList)->push_back((yyvsp[0].expr)); }
-#line 3450 "generated/Parser.cpp"
+#line 3449 "generated/Parser.cpp"
     break;
 
   case 165: /* ExprList: %empty  */
-#line 633 "frontend/Parser.y"
+#line 632 "frontend/Parser.y"
                                 { (yyval.exprList) = new AST::ExprList(); }
-#line 3456 "generated/Parser.cpp"
+#line 3455 "generated/Parser.cpp"
     break;
 
   case 166: /* Constant: CHARACTER  */
-#line 636 "frontend/Parser.y"
+#line 635 "frontend/Parser.y"
                                 { (yyval.constant) = new AST::Constant((yyvsp[0].charVal)); }
-#line 3462 "generated/Parser.cpp"
+#line 3461 "generated/Parser.cpp"
     break;
 
   case 167: /* Constant: INTEGER  */
-#line 637 "frontend/Parser.y"
+#line 636 "frontend/Parser.y"
                                 { (yyval.constant) = new AST::Constant((yyvsp[0].intVal)); }
-#line 3468 "generated/Parser.cpp"
+#line 3467 "generated/Parser.cpp"
     break;
 
   case 168: /* Constant: UINTEGER  */
-#line 638 "frontend/Parser.y"
+#line 637 "frontend/Parser.y"
                                 { (yyval.constant) = new AST::Constant((yyvsp[0].uintVal)); }
-#line 3474 "generated/Parser.cpp"
+#line 3473 "generated/Parser.cpp"
     break;
 
   case 169: /* Constant: LONGVAL  */
-#line 639 "frontend/Parser.y"
+#line 638 "frontend/Parser.y"
                                 { (yyval.constant) = new AST::Constant((yyvsp[0].longVal)); }
-#line 3480 "generated/Parser.cpp"
+#line 3479 "generated/Parser.cpp"
     break;
 
   case 170: /* Constant: ULONGVAL  */
-#line 640 "frontend/Parser.y"
+#line 639 "frontend/Parser.y"
                                 { (yyval.constant) = new AST::Constant((yyvsp[0].ulongVal)); }
-#line 3486 "generated/Parser.cpp"
+#line 3485 "generated/Parser.cpp"
     break;
 
   case 171: /* Constant: FLOATVAL  */
-#line 641 "frontend/Parser.y"
+#line 640 "frontend/Parser.y"
                                 { (yyval.constant) = new AST::Constant((yyvsp[0].floatVal)); }
-#line 3492 "generated/Parser.cpp"
+#line 3491 "generated/Parser.cpp"
     break;
 
   case 172: /* Constant: DOUBLEVAL  */
-#line 642 "frontend/Parser.y"
+#line 641 "frontend/Parser.y"
                                 { (yyval.constant) = new AST::Constant((yyvsp[0].doubleVal)); }
-#line 3498 "generated/Parser.cpp"
+#line 3497 "generated/Parser.cpp"
     break;
 
   case 173: /* Constant: STRING  */
-#line 643 "frontend/Parser.y"
+#line 642 "frontend/Parser.y"
                                 { (yyval.constant) = new AST::ConstStr(*(yyvsp[0].strVal)); }
-#line 3504 "generated/Parser.cpp"
+#line 3503 "generated/Parser.cpp"
     break;
 
   case 174: /* Constant: TRUE  */
-#line 644 "frontend/Parser.y"
+#line 643 "frontend/Parser.y"
                                 { (yyval.constant) = new AST::Constant(true); }
-#line 3510 "generated/Parser.cpp"
+#line 3509 "generated/Parser.cpp"
     break;
 
   case 175: /* Constant: FALSE  */
-#line 645 "frontend/Parser.y"
+#line 644 "frontend/Parser.y"
                                 { (yyval.constant) = new AST::Constant(false); }
-#line 3516 "generated/Parser.cpp"
+#line 3515 "generated/Parser.cpp"
     break;
 
 
-#line 3520 "generated/Parser.cpp"
+#line 3519 "generated/Parser.cpp"
 
       default: break;
     }
@@ -3745,7 +3744,19 @@ yyreturnlab:
   return yyresult;
 }
 
-#line 648 "frontend/Parser.y"
+#line 647 "frontend/Parser.y"
 
 
  /* Subroutines Section */
+
+// The one funnel for front-end diagnostics: bison calls this for a syntax
+// error, and frontend/Lexer.l calls it for a literal it had to reject. Both
+// report a position without either one passing one, because yylloc already
+// holds the current token's -- filled by YY_USER_ACTION in Lexer.l for every
+// token the scanner returns.
+//
+// first_line rather than last_line: an error belongs at where the offending
+// token starts, which is where a reader's eye and an editor's cursor both go.
+void yyerror(const char* s) {
+  frontend::reportError(s, yylloc.first_line, yylloc.first_column);
+}

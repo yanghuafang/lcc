@@ -336,9 +336,9 @@ The front-end language set and the M0–M18 middle/back-end track are complete, 
 
 ### Real diagnostics
 
-Today `yyerror` prints a single `ERROR: <msg>` line. The parser already tracks `%locations` (per-token line/column in `yylloc`), so a future effort could:
+`yyerror` funnels through `frontend::reportError` and already emits `file:line:col: error: …`, using the `%locations` the parser tracks in `yylloc`. What is still missing:
 
-- emit `file:line:col: error: …` with the offending source line and a `^` caret,
+- echo the offending source line with a `^` caret under the column,
 - keep parsing after an error (Bison `error` productions / synchronization) to report more than the first problem,
 - format lexer, parser, and codegen errors consistently.
 

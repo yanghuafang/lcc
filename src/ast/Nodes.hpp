@@ -332,7 +332,10 @@ class Param final : public Node {
   ~Param() override;
 
   /// Code already generated in FuncDecl::genCode.
-  llvm::Value* genCode(CodeGenerator& generator) override { return nullptr; }
+  llvm::Value* genCode(CodeGenerator& generator) override {
+    (void)generator;
+    return nullptr;
+  }
   std::pair<std::string, std::string> genGraph() const override;
 };
 
@@ -344,7 +347,10 @@ class ParamList final : public std::vector<Param*>, public Node {
   ~ParamList() override;
 
   /// Code already generated in FuncDecl::genCode.
-  llvm::Value* genCode(CodeGenerator& generator) override { return nullptr; }
+  llvm::Value* genCode(CodeGenerator& generator) override {
+    (void)generator;
+    return nullptr;
+  }
   std::pair<std::string, std::string> genGraph() const override;
 
   void setVariant() { isVariant_ = true; }
@@ -413,7 +419,10 @@ class VarInit final : public Node {
         initList_(initList) {}
   ~VarInit() override;
 
-  llvm::Value* genCode(CodeGenerator& generator) override { return nullptr; }
+  llvm::Value* genCode(CodeGenerator& generator) override {
+    (void)generator;
+    return nullptr;
+  }
   std::pair<std::string, std::string> genGraph() const override;
 
   [[nodiscard]] bool hasBraceInit() const { return initList_ != nullptr; }
@@ -474,7 +483,10 @@ class VarType : public Node {
   explicit VarType(const std::string& typeName) : typeName_(typeName) {}
   ~VarType() override;
 
-  llvm::Value* genCode(CodeGenerator& generator) override { return nullptr; }
+  llvm::Value* genCode(CodeGenerator& generator) override {
+    (void)generator;
+    return nullptr;
+  }
 
   virtual llvm::Type* getType(TypeEnv& env) = 0;
 
@@ -662,7 +674,10 @@ class FieldDecl final : public Decl {
       : varType_(varType), memberList_(memberList) {}
   ~FieldDecl() override;
 
-  llvm::Value* genCode(CodeGenerator& generator) override { return nullptr; }
+  llvm::Value* genCode(CodeGenerator& generator) override {
+    (void)generator;
+    return nullptr;
+  }
   std::pair<std::string, std::string> genGraph() const override;
 };
 
@@ -698,7 +713,10 @@ class Enum final : public Node {
   ~Enum() override = default;
 
   /// Code already generated in EnumType::getType
-  llvm::Value* genCode(CodeGenerator& generator) override { return nullptr; }
+  llvm::Value* genCode(CodeGenerator& generator) override {
+    (void)generator;
+    return nullptr;
+  }
   std::pair<std::string, std::string> genGraph() const override;
 };
 

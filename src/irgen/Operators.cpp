@@ -136,6 +136,7 @@ llvm::Value* createSub(llvm::IRBuilder<>& builder, llvm::Value* lhs,
                        llvm::Value* rhs, AST::VarType* lhsVarType,
                        AST::VarType* rhsVarType, TypeEnv& env,
                        BuiltinTypeId lhsTypeId, BuiltinTypeId rhsTypeId) {
+  (void)rhsVarType;
   if (lhs->getType()->isPointerTy() && rhs->getType()->isIntegerTy()) {
     llvm::Type* elementTy =
         vartype::pointerArithmeticElementType(lhsVarType, env);
