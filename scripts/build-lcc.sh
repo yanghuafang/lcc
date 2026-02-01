@@ -21,9 +21,48 @@
 #
 # Override the job count with LCC_BUILD_JOBS=N.
 
+# Stop at the first failing step, on an unset variable, and on a failure
+# anywhere in a pipe. Without -e the script ran every step regardless: a
+# configure that failed -- a wrong LLVM, a missing bison -- was followed by
+# `cmake --build` anyway, and the message the user ended on was make's
+# complaint about re-running configure, with CMake's own error scrolled off
+# the top. The same gap covered the `cd` pair below, which would have run
+# bison in scripts/ had ../src been missing.
+#
+# -u earns its place on the job count: `--parallel "${build_jobss}"` is a typo
+# that expands to empty without it, and an unbound variable with it. It is
+# inherited by the sourced build-env.sh, which is why that file now reads
+# ${CPPFLAGS:-} the way it already read ${EXT_CPPFLAGS:-} beside it.
 set -euo pipefail
 
 source ./build-env.sh || exit 1
+
+usage() {
+  cat <<'EOF'
+Usage: build-lcc.sh [--debug|--release|--relwithdebinfo] [--parse]
+                    [--asan] [--ubsan] [--werror]
+
+Configure and build lcc with CMake, into a sibling of the repo.
+
+Build modes (at most one, default --release):
+  --debug           CMAKE_BUILD_TYPE=Debug
+  --release         CMAKE_BUILD_TYPE=Release
+  --relwithdebinfo  CMAKE_BUILD_TYPE=RelWithDebInfo
+
+Options:
+  --parse     Also regenerate src/generated/Parser.counterexamples, bison's
+              explanation of each grammar conflict (docs/ParserConflicts.md).
+  --asan      Build lcc with AddressSanitizer.
+  --ubsan     Build lcc with UndefinedBehaviorSanitizer; combinable with --asan.
+  --werror    Fail the build on any compiler warning.
+  -h, --help  Show this help.
+
+Environment:
+  LCC_BUILD_DIR   Where to build (default: ../../lcc-build beside the repo).
+  LCC_BUILD_JOBS  Parallel jobs (default: one per logical core).
+  LLVM_DIR        LLVMConfig.cmake to use; PATH follows it.
+EOF
+}
 
 build_type="Release"
 build_mode=""
@@ -77,10 +116,13 @@ while [[ $# -gt 0 ]]; do
       werror=ON
       shift
       ;;
+    -h|--help)
+      usage
+      exit 0
+      ;;
     *)
       echo "Unknown option: $1" >&2
-      echo "Usage: $0 [--debug|--release|--relwithdebinfo] [--parse] [--asan]" \
-           "[--ubsan] [--werror]" >&2
+      usage >&2
       exit 1
       ;;
   esac
