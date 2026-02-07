@@ -32,7 +32,7 @@ script_dir="$(cd "$(dirname "$0")" && pwd)"
 source "${script_dir}/build-env.sh" || exit 1
 
 repo_root="$(cd "${script_dir}/.." && pwd)"
-build_dir="$(cd "${repo_root}/.." && pwd)/lcc-build"
+build_dir="${LCC_BUILD_DIR}"
 
 fix=false
 files=()
@@ -98,7 +98,7 @@ fi
 compile_db="${build_dir}/compile_commands.json"
 unanalyzable=()
 stale_db=false
-for file in ${files[@]+"${files[@]}"}; do
+for file in "${files[@]}"; do
   if [[ ! -f "$file" ]]; then
     unanalyzable+=("${file} — no such file")
     continue
@@ -114,14 +114,14 @@ done
 
 if [[ ${#unanalyzable[@]} -gt 0 ]]; then
   echo "clang-tidy cannot analyze ${#unanalyzable[@]} of ${#files[@]} file(s):" >&2
-  printf '  %s\n' ${unanalyzable[@]+"${unanalyzable[@]}"} >&2
+  printf '  %s\n' "${unanalyzable[@]}" >&2
   if [[ "$stale_db" == true ]]; then
     echo "Re-run ./build-lcc.sh to refresh ${compile_db}." >&2
   fi
   exit 1
 fi
 
-tidy_args=(-p "${build_dir}" ${extra_args[@]+"${extra_args[@]}"} --quiet)
+tidy_args=(-p "${build_dir}" "${extra_args[@]}" --quiet)
 if [[ "$fix" == true ]]; then
   tidy_args+=(--fix --fix-errors)
 fi
@@ -146,8 +146,11 @@ trap cleanup EXIT
 # independent signals: findings on stdout, trouble on stderr, and clang-tidy's
 # own exit status. Any one of them alone misses cases the other two catch.
 echo "Running clang-tidy over ${#files[@]} file(s)..."
+# `|| tidy_status=$?` rather than a bare call followed by $?: a non-zero
+# clang-tidy is an expected outcome here, and set -e would abort on it before
+# the status could be read.
 tidy_status=0
-clang-tidy "${tidy_args[@]}" ${files[@]+"${files[@]}"} \
+clang-tidy "${tidy_args[@]}" "${files[@]}" \
   >"${work_dir}/stdout" 2>"${work_dir}/stderr" || tidy_status=$?
 
 # Findings are expected output in --fix mode (they are what just got fixed), so
@@ -163,6 +166,9 @@ broken=0
 # Everything on stderr except the known-benign progress and tally lines is worth
 # showing; keeping the filter narrow means an unfamiliar message surfaces rather
 # than being swallowed the way all of stderr used to be.
+# `|| true` because grep exits 1 when it prints nothing, and printing nothing is
+# the ordinary outcome here: a clean run's stderr is all progress and tally
+# lines, every one of which this filters out.
 grep -vE '^(\[[0-9]+/[0-9]+\] Processing file |[0-9]+ warnings? generated\.|Suppressed [0-9]+ warnings? )' \
   "${work_dir}/stderr" >"${work_dir}/stderr-notable" || true
 

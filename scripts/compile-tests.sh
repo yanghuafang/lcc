@@ -13,8 +13,6 @@
 #   ./compile-tests.sh 0.hello_world.c # just one
 #   ./compile-tests.sh --release       # -O2 instead of -g; see docs/Testing.md
 
-set -euo pipefail
-
 source ./tests-compile-link-run.sh
 
 compileAll() {
@@ -22,6 +20,22 @@ compileAll() {
   do
     compile $source
   done
+}
+
+usage() {
+  cat <<'EOF'
+Usage: compile-tests.sh [--debug|--release] [TEST.c]
+
+Compile the test suite with lcc (stage 1 of 3), writing objects plus the AST
+graph, IR and assembly artifacts under debug/.
+
+Options:
+  --debug     Compile with -g -O0 (default).
+  --release   Compile with -O2; see docs/Testing.md for the golden naming.
+  -h, --help  Show this help.
+
+With no TEST.c, compiles every test. Then run link-tests.sh and run-tests.sh.
+EOF
 }
 
 compile_mode=""
@@ -37,6 +51,10 @@ while [[ $# -gt 0 ]]; do
       compile_mode="$1"
       shift
       ;;
+    -h|--help)
+      usage
+      exit 0
+      ;;
     *)
       remaining+=("$1")
       shift
@@ -49,9 +67,9 @@ if [[ -z "$compile_mode" ]]; then
 fi
 setCompileMode "$compile_mode" || exit 1
 
-set -e
+set -euo pipefail
 
-mkdir -p ${LCC_BUILD_DIR}/debug
+mkdir -p "${LCC_BUILD_DIR}/debug"
 
 if [ ${#remaining[@]} -eq 0 ]; then
   compileAll

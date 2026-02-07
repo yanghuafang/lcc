@@ -11,8 +11,6 @@
 
 set -euo pipefail
 
-set -eo pipefail
-
 script_dir="$(cd "$(dirname "$0")" && pwd)"
 # shellcheck source=build-env.sh
 source "${script_dir}/build-env.sh"
@@ -190,7 +188,7 @@ if [ "${smoke}" -eq 0 ]; then
   echo
 fi
 
-for bench in ${benchmarks[@]+"${benchmarks[@]}"}; do
+for bench in "${benchmarks[@]}"; do
   bench_one "${bench}"
 done
 

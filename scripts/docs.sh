@@ -20,7 +20,31 @@ set -euo pipefail
 
 script_dir="$(cd "$(dirname "$0")" && pwd)"
 repo_root="$(cd "${script_dir}/.." && pwd)"
-docs_dir="$(cd "${repo_root}/.." && pwd)/lcc-build/docs"
+# Honors LCC_BUILD_DIR without sourcing build-env.sh, which this script
+# deliberately does not need: doxygen and dot are the only tools here, and
+# requiring LLVM 20 to build documentation would be a worse trade.
+docs_dir="${LCC_BUILD_DIR:-$(cd "${repo_root}/.." && pwd)/lcc-build}/docs"
+
+usage() {
+  cat <<'EOF'
+Usage: docs.sh [--open]
+
+Generate the Doxygen API reference for the public headers under src/, into
+$LCC_BUILD_DIR/docs/html. Fails if Doxygen writes anything to its warning log.
+
+Options:
+  --open      Open the generated index in a browser afterwards.
+  -h, --help  Show this help.
+
+Environment:
+  LCC_BUILD_DIR  Where docs/ is written (default: ../../lcc-build beside repo).
+EOF
+}
+
+if [[ "${1:-}" == "-h" || "${1:-}" == "--help" ]]; then
+  usage
+  exit 0
+fi
 
 open_after=false
 if [[ "${1:-}" == "--open" ]]; then
@@ -63,7 +87,18 @@ rm -rf "${docs_dir}/html"
 
 # Paths in the Doxyfile are repo-relative, so run from there.
 cd "${repo_root}"
-doxygen docs/doxygen/Doxyfile
+
+# The Doxyfile names its own output directory, which is right for anyone
+# running `doxygen docs/doxygen/Doxyfile` by hand. Appending the two keys on
+# stdin lets LCC_BUILD_DIR win here without the Doxyfile depending on it being
+# set:
+# doxygen reads a config from "-", and a later assignment overrides an earlier
+# one.
+{
+  cat docs/doxygen/Doxyfile
+  echo "OUTPUT_DIRECTORY = ${docs_dir}"
+  echo "WARN_LOGFILE = ${log}"
+} | doxygen -
 
 if [[ -s "${log}" ]]; then
   echo "Doxygen reported problems:" >&2

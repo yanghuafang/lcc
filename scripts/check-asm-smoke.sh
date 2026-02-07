@@ -10,8 +10,6 @@
 
 set -euo pipefail
 
-set -eo pipefail
-
 script_dir="$(cd "$(dirname "$0")" && pwd)"
 source "${script_dir}/build-env.sh"
 

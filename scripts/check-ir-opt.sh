@@ -23,8 +23,6 @@
 
 set -euo pipefail
 
-set -eo pipefail
-
 script_dir="$(cd "$(dirname "$0")" && pwd)"
 # shellcheck source=tests-compile-link-run.sh
 source "${script_dir}/tests-compile-link-run.sh"
@@ -115,7 +113,7 @@ if [ "${mode}" = "count" ]; then
   printf "%-34s %8s %8s  %s\n" "test" "golden" "current" "status"
 fi
 
-for source in ${selected[@]+"${selected[@]}"}; do
+for source in "${selected[@]}"; do
   base="${source%.c}"
   src="${tests_dir}/${source}"
   if [ ! -f "${src}" ]; then
