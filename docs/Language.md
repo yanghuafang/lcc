@@ -74,6 +74,10 @@ Unlike industrial compilers (clang, gcc) that use recursive-descent parsing, `lc
   Any other operator after the identifier parses fine (`(a + 7)`, `(a == 3)`, `(a > 3)`), as does a parenthesized expression that does not begin with a bare identifier (`(7 * a)`, `(*p * 7)`, `(arr[0] * 7)`). Work around it by reordering the operands, dropping the parentheses, or assigning to a temporary. Root cause: state 133 in `Parser.output` — see [ParserConflicts.md](ParserConflicts.md#4-identifier-type-name-or-expression-4-reducereduce).
 - Typedef names used as variables in the same scope (rejected; same root cause as above).
 - `extern`: `lcc` requires function declaration for linkage; extern variables are not allowed. Supporting them means a linkage and multi-translation-unit model, and manual declarations cover what the tests need.
+- **Unsuffixed decimal literals wider than `int`.** Unsuffixed *hex* promotes to
+  the narrowest type that fits, but decimal does not: `3000000000` and
+  `-2147483648` are both rejected as out of range. Add an `l` suffix
+  (`3000000000L`), use hex, or write `INT_MIN` as `-2147483647 - 1`.
 - **Short-circuit evaluation of `&&`, `||`, and `?:`.** Unlike everything else in
   this list, these compile — and then evaluate both operands, or both ternary
   arms, because all three are lowered eagerly with LLVM `select`. The guarding
