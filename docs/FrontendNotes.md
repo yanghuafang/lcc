@@ -2,7 +2,7 @@
 
 This document is a **completed record** of how lcc's **C language and front-end** support was built, ordered by **dependencies**, **learning value**, and **risk**. Read it for background on why the front-end looks the way it does; for what the compiler accepts today, see [Language.md](Language.md).
 
-**Status:** priorities 1–5 below are **complete** (arrays through `-g` debug info). Deferred language work (3D arrays, preprocessor, `extern`) stays under [Explicitly out of scope](#explicitly-out-of-scope-for-now).
+**Status:** priorities 1–5 below are **complete** (arrays through `-g` debug info), and what was added after that track closed is recorded under [Later front-end work](#later-front-end-work). Deferred language work (3D arrays, preprocessor, `extern`) stays under [Explicitly out of scope](#explicitly-out-of-scope-for-now).
 
 **The middle-end, optimization, and back-end track** that followed this one is likewise complete: milestones M0–M18 in [LearningPlan.md](LearningPlan.md), implementation details in [MiddleBackendNotes.md](MiddleBackendNotes.md).
 
@@ -30,6 +30,7 @@ Before extending, it helps to know what the current codebase already supports:
 | Type names in expressions | `_VarType: IDENTIFIER` for registered tags and typedef aliases |
 | `-g` CLI flag | Parsed in `driver/main.cpp`; passed to `CodeGenerator` — emits compile unit, stepping, locals/params, struct members, and lexical blocks; skips LLVM opts when set |
 | **LLVM 20** toolchain | Opaque pointers in IR; pointee types tracked on AST `VarType` (`vartype::memoryAccessType`, etc.); requires C++17 |
+| Short-circuit evaluation | The two logical operators and `?:` skip the operand C says they may skip (`tests/45.short_circuit.c`) |
 
 See [ParserConflicts.md](ParserConflicts.md) for parser ambiguities that several of these steps had to work around (especially `typedef`).
 
@@ -314,6 +315,22 @@ Orthogonal to types and initializers. Teaches linkage and lifetime without block
 ### Why it came last
 
 Pure infrastructure — no new C syntax. Valuable for debugging, but does not unlock new language tests. Reasonable to pull earlier if tooling pain is high during steps 1–3.
+
+---
+
+## Later front-end work
+
+Priorities 1–5 above were a planned track, worked in dependency order. What follows was added after it closed, each item prompted by something a reader or the differential check found rather than by the plan.
+
+### Short-circuit `&&`, `||` and `?:` (done)
+
+**Goal:** the operand C says may be skipped is not evaluated.
+
+All three lowered eagerly with `select`, so the guarding idioms guarded nothing: `p != 0 && *p` dereferenced a null `p`, and `f() ? g() : h()` called both arms. Inside a function each now lowers to a conditional branch, a block for the operand that may be skipped, and a phi — the shape `StmtToIr` already builds for `if`/`else`.
+
+At file scope the lowering stays a `select`: there is no block to branch between, which is what lets `int g = 1 && 0;` remain a constant initializer.
+
+`tests/45.short_circuit.c` counts calls rather than checking values. The values were always right; only the skipped side effects tell the two lowerings apart.
 
 ---
 

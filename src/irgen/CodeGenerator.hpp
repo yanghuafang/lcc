@@ -148,6 +148,12 @@ class CodeGenerator final : public TypeEnv {
   /// Switch insert point back to current local block.
   void switchInsertPointToCurrentBlock();
 
+  /// True while an initializer is being emitted into the global block above.
+  /// Nothing there survives as instructions — the value has to fold to an
+  /// llvm::Constant — so the lowerings that would otherwise branch (`&&`,
+  /// `||`, `?:` in irgen/LogicToIr.cpp) stay eager when this is set.
+  [[nodiscard]] bool inGlobalInitBlock() const noexcept;
+
   /// Walk the AST and emit it into the module. This is the whole of irgen's
   /// contribution: what happens to the module afterwards (middle end, object /
   /// assembly emission) is sequenced by driver/Pipeline.hpp.

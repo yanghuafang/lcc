@@ -1,5 +1,8 @@
+#include <llvm/IR/BasicBlock.h>
+#include <llvm/IR/Function.h>
 #include <llvm/IR/IRBuilder.h>
 #include <llvm/IR/InstrTypes.h>
+#include <llvm/IR/Instructions.h>
 #include <llvm/IR/Value.h>
 
 #include <functional>
@@ -9,12 +12,14 @@
 #include "irgen/CodeGenerator.hpp"
 #include "irgen/Operators.hpp"
 #include "irgen/TypeConversion.hpp"
+#include "types/BuiltinTypeMap.hpp"
+#include "types/TypeRules.hpp"
 
 // The operators that yield a truth value: &&, ||, !, the six comparisons, and
 // the conditional ?: that consumes one. Split from the arithmetic operators in
 // irgen/OperatorToIr.cpp because everything about them is different — the
 // result type is always int regardless of the operands, the comparisons need
-// pointer-aware conversion rules, and three of them deviate from C.
+// pointer-aware conversion rules, and three of them create control flow.
 //
 // == Why the results are widened ==
 //
@@ -24,24 +29,23 @@
 // operator selection agree with the value actually produced. Leaving the i1 in
 // place would let it be *sign* extended later, making `int r = a < b` store -1.
 //
-// == The three lazy-evaluation deviations from C ==
+// == The three operators that branch ==
 //
-// Three, not all of lcc's: the deviations that come from evaluating eagerly
-// live here, and the rest live with the rules they bend — types/TypeRules.hpp
-// for the conversion ladder, irgen/Operators.hpp for the shift operands, and
-// irgen/StmtToIr.cpp for switch's default label.
+// `&&`, `||` and `?:` do not evaluate all of their operands. C requires that:
+// `p != 0 && *p` must not dereference a null `p`, and `f() ? g() : h()` calls
+// exactly one of g and h. So each lowers to real control flow — a conditional
+// branch, a block for the operand that may be skipped, and a phi joining the
+// paths — which is the shape irgen/StmtToIr.cpp already builds for if/else:
 //
-// lcc lowers the "lazy" operators eagerly, with select instead of branches, so
-// an untaken operand's side effects still run:
+//   - && and ||   LogicExpr::genShortCircuitCode
+//   - ?:          TernaryCondition::genTernaryBranch
 //
-//   - && and ||   LogicExpr::genBoolBinaryCode  (CreateLogicalAnd/Or)
-//   - ?:          TernaryCondition::genTernarySelect  (CreateSelect)
-//
-// So `p != NULL && *p` is not safe here, and `f() ? g() : h()` calls both g and
-// h. Fixing either means splitting into basic blocks and joining with a phi —
-// the same shape StmtToIr.cpp already builds for if/else. The comma operator in
-// irgen/ExprToIr.cpp, by contrast, is correct: it evaluates the left side for
-// effect and yields the right.
+// Two consequences worth knowing. The phi's incoming block is whichever block
+// the operand *finished* in, not the one it started in, because an operand may
+// itself be one of these three and leave the builder in its own join block.
+// And inside a constant initializer there is no control flow to branch through
+// — see CodeGenerator::inGlobalInitBlock — so both fall back to the eager
+// select form there, which the IRBuilder's folder reduces to a constant.
 
 namespace AST {
 
@@ -75,17 +79,45 @@ llvm::Value* LogicExpr::genCodePtr(CodeGenerator& generator) {
   throw std::logic_error(nonLValueErrorMessage());
 }
 
-llvm::Value* LogicExpr::genBoolBinaryCode(
-    CodeGenerator& generator,
-    const std::function<llvm::Value*(llvm::Value*, llvm::Value*)>& combine) {
-  // Both operands are evaluated here before combine() (a select-based
-  // CreateLogicalAnd/Or), so && and || do NOT short-circuit as in C: the RHS
-  // and its side effects always run.
-  llvm::Value* lhs =
-      convert::castToBool(generator.getBuilder(), lhs_->genCode(generator));
-  llvm::Value* rhs =
-      convert::castToBool(generator.getBuilder(), rhs_->genCode(generator));
-  return boolToInt(generator.getBuilder(), combine(lhs, rhs));
+// && and || differ only in which lhs value settles the answer on its own, so
+// one function serves both: isAnd picks the branch targets and the value the
+// expression is worth when the rhs is skipped.
+llvm::Value* LogicExpr::genShortCircuitCode(CodeGenerator& generator,
+                                            bool isAnd) {
+  llvm::IRBuilder<>& builder = generator.getBuilder();
+
+  if (generator.inGlobalInitBlock()) {
+    llvm::Value* lhs = convert::castToBool(builder, lhs_->genCode(generator));
+    llvm::Value* rhs = convert::castToBool(builder, rhs_->genCode(generator));
+    return boolToInt(builder, isAnd ? builder.CreateLogicalAnd(lhs, rhs)
+                                    : builder.CreateLogicalOr(lhs, rhs));
+  }
+
+  llvm::Value* lhs = convert::castToBool(builder, lhs_->genCode(generator));
+  // After the lhs, not before: a nested && or ?: on the left leaves the builder
+  // in its own join block, and that block is the phi's predecessor.
+  llvm::BasicBlock* lhsExit = builder.GetInsertBlock();
+  llvm::Function* func = generator.getCurrentFunction();
+  llvm::BasicBlock* rhsBlock = llvm::BasicBlock::Create(
+      generator.getContext(), isAnd ? "land.rhs" : "lor.rhs", func);
+  llvm::BasicBlock* endBlock = llvm::BasicBlock::Create(
+      generator.getContext(), isAnd ? "land.end" : "lor.end", func);
+
+  builder.CreateCondBr(lhs, isAnd ? rhsBlock : endBlock,
+                       isAnd ? endBlock : rhsBlock);
+
+  builder.SetInsertPoint(rhsBlock);
+  llvm::Value* rhs = convert::castToBool(builder, rhs_->genCode(generator));
+  llvm::BasicBlock* rhsExit = builder.GetInsertBlock();
+  builder.CreateBr(endBlock);
+
+  builder.SetInsertPoint(endBlock);
+  llvm::PHINode* phi = builder.CreatePHI(builder.getInt1Ty(), 2);
+  // Reaching the join straight from the lhs means the shortcut was taken, and
+  // the shortcut settles the answer: false for &&, true for ||.
+  phi->addIncoming(builder.getInt1(!isAnd), lhsExit);
+  phi->addIncoming(rhs, rhsExit);
+  return boolToInt(builder, phi);
 }
 
 llvm::Value* LogicExpr::genEqualityCode(CodeGenerator& generator) {
@@ -147,17 +179,11 @@ const char* LogicGreaterEq::nonLValueErrorMessage() const {
 }
 
 llvm::Value* LogicAnd::genCode(CodeGenerator& generator) {
-  return genBoolBinaryCode(
-      generator, [&generator](llvm::Value* lhs, llvm::Value* rhs) {
-        return generator.getBuilder().CreateLogicalAnd(lhs, rhs);
-      });
+  return genShortCircuitCode(generator, /*isAnd=*/true);
 }
 
 llvm::Value* LogicOr::genCode(CodeGenerator& generator) {
-  return genBoolBinaryCode(
-      generator, [&generator](llvm::Value* lhs, llvm::Value* rhs) {
-        return generator.getBuilder().CreateLogicalOr(lhs, rhs);
-      });
+  return genShortCircuitCode(generator, /*isAnd=*/false);
 }
 
 llvm::Value* LogicNot::genCode(CodeGenerator& generator) {
@@ -197,42 +223,101 @@ llvm::Value* LogicGreaterEq::genCode(CodeGenerator& generator) {
                            static_cast<int>(llvm::CmpInst::FCMP_OGE), ">=");
 }
 
-llvm::Value* TernaryCondition::genTernarySelect(
+llvm::Value* TernaryCondition::genTernaryBranch(
     CodeGenerator& generator,
     const std::function<llvm::Value*(Expr*)>& evalBranch,
     const char* typeMismatchMessage) const {
-  llvm::Value* condition = convert::castToBool(generator.getBuilder(),
-                                               condition_->genCode(generator));
+  llvm::IRBuilder<>& builder = generator.getBuilder();
+  llvm::Value* condition =
+      convert::castToBool(builder, condition_->genCode(generator));
   if (condition == nullptr) {
     throw std::logic_error(
         "Condition is not a bool expression in ternary condition expression!");
   }
 
-  // Both arms are evaluated before CreateSelect, so unlike C's ?: the untaken
-  // branch's side effects still run. Result types are unified via typeUpgrade.
-  llvm::Value* trueVal = evalBranch(trueExpr_);
-  llvm::Value* falseVal = evalBranch(falseExpr_);
-  BuiltinTypeId resultTypeId = BuiltinTypeId::UNKNOWN;
-  if (trueVal->getType() == falseVal->getType() ||
-      convert::typeUpgrade(generator.getBuilder(), trueVal, falseVal,
-                           trueExpr_->getExprTypeId(generator),
-                           falseExpr_->getExprTypeId(generator),
-                           resultTypeId)) {
-    return generator.getBuilder().CreateSelect(condition, trueVal, falseVal);
+  if (generator.inGlobalInitBlock()) {
+    llvm::Value* trueVal = evalBranch(trueExpr_);
+    llvm::Value* falseVal = evalBranch(falseExpr_);
+    BuiltinTypeId resultTypeId = BuiltinTypeId::UNKNOWN;
+    if (trueVal->getType() == falseVal->getType() ||
+        convert::typeUpgrade(
+            builder, trueVal, falseVal, trueExpr_->getExprTypeId(generator),
+            falseExpr_->getExprTypeId(generator), resultTypeId)) {
+      return builder.CreateSelect(condition, trueVal, falseVal);
+    }
+    throw std::logic_error(typeMismatchMessage);
   }
 
-  throw std::logic_error(typeMismatchMessage);
+  llvm::Function* func = generator.getCurrentFunction();
+  llvm::BasicBlock* trueBlock =
+      llvm::BasicBlock::Create(generator.getContext(), "cond.true", func);
+  llvm::BasicBlock* falseBlock =
+      llvm::BasicBlock::Create(generator.getContext(), "cond.false", func);
+  llvm::BasicBlock* endBlock =
+      llvm::BasicBlock::Create(generator.getContext(), "cond.end", func);
+  builder.CreateCondBr(condition, trueBlock, falseBlock);
+
+  // Each arm runs in its own block, which is the whole point — the untaken one
+  // never executes. Neither arm branches to the join yet: unifying the two
+  // result types may need a conversion, and that conversion has to be emitted
+  // into the arm that produced the value, not into the join where the other
+  // path never computed it.
+  builder.SetInsertPoint(trueBlock);
+  llvm::Value* trueVal = evalBranch(trueExpr_);
+  llvm::BasicBlock* trueExit = builder.GetInsertBlock();
+
+  builder.SetInsertPoint(falseBlock);
+  llvm::Value* falseVal = evalBranch(falseExpr_);
+  llvm::BasicBlock* falseExit = builder.GetInsertBlock();
+
+  llvm::Type* resultType = trueVal->getType();
+  BuiltinTypeId resultTypeId = BuiltinTypeId::UNKNOWN;
+  if (trueVal->getType() != falseVal->getType()) {
+    // Same ladder convert::typeUpgrade walks for an operand pair, applied one
+    // arm at a time so each cast lands in its own block.
+    resultTypeId = typerules::usualArithmeticConversion(
+        trueExpr_->getExprTypeId(generator),
+        falseExpr_->getExprTypeId(generator));
+    resultType = builtinmap::toLlvmType(resultTypeId, generator.getContext());
+    if (resultType == nullptr) {
+      throw std::logic_error(typeMismatchMessage);
+    }
+  }
+
+  builder.SetInsertPoint(trueExit);
+  trueVal =
+      convert::typeCast(builder, trueVal, resultType,
+                        trueExpr_->getExprTypeId(generator), resultTypeId);
+  if (trueVal == nullptr) {
+    throw std::logic_error(typeMismatchMessage);
+  }
+  builder.CreateBr(endBlock);
+
+  builder.SetInsertPoint(falseExit);
+  falseVal =
+      convert::typeCast(builder, falseVal, resultType,
+                        falseExpr_->getExprTypeId(generator), resultTypeId);
+  if (falseVal == nullptr) {
+    throw std::logic_error(typeMismatchMessage);
+  }
+  builder.CreateBr(endBlock);
+
+  builder.SetInsertPoint(endBlock);
+  llvm::PHINode* phi = builder.CreatePHI(resultType, 2);
+  phi->addIncoming(trueVal, trueExit);
+  phi->addIncoming(falseVal, falseExit);
+  return phi;
 }
 
 llvm::Value* TernaryCondition::genCode(CodeGenerator& generator) {
-  return genTernarySelect(
+  return genTernaryBranch(
       generator, [&generator](Expr* expr) { return expr->genCode(generator); },
       "Unmatched type of true and false expressions for ternary operator "
       "\"? :\"");
 }
 
 llvm::Value* TernaryCondition::genCodePtr(CodeGenerator& generator) {
-  return genTernarySelect(
+  return genTernaryBranch(
       generator,
       [&generator](Expr* expr) { return expr->genCodePtr(generator); },
       "Unmatched type of true and false expressions for ternary operator "

@@ -146,20 +146,25 @@ Ltmp18:
 Ltmp19:
 LBB2_2:
 	.loc	1 33 10 is_stmt 1
-	ldr	w8, [sp, #12]
 	ldr	w9, [sp, #12]
-	str	w9, [sp, #8]
-	subs	w8, w8, #6
-	b.le	LBB2_5
+	mov	w8, #0
+	subs	w9, w9, #6
+	str	w8, [sp, #8]
+	b.le	LBB2_4
 	b	LBB2_3
 LBB2_3:
+	ldr	w8, [sp, #12]
+	subs	w8, w8, #14
+	cset	w8, le
+	str	w8, [sp, #8]
+	b	LBB2_4
+LBB2_4:
 	.loc	1 0 10 is_stmt 0
 	ldr	w8, [sp, #8]
 	.loc	1 33 10
-	subs	w8, w8, #14
-	b.gt	LBB2_5
-	b	LBB2_4
-LBB2_4:
+	tbz	w8, #0, LBB2_6
+	b	LBB2_5
+LBB2_5:
 Ltmp20:
 	.loc	1 34 5 is_stmt 1
 	ldr	w0, [sp, #12]
@@ -167,22 +172,27 @@ Ltmp20:
 	add	sp, sp, #16
 	ret
 Ltmp21:
-LBB2_5:
-	.loc	1 35 10 is_stmt 1
-	ldr	w8, [sp, #12]
-	ldr	w9, [sp, #12]
-	str	w9, [sp, #4]
-	subs	w8, w8, #14
-	b.le	LBB2_8
-	b	LBB2_6
 LBB2_6:
+	.loc	1 35 10 is_stmt 1
+	ldr	w9, [sp, #12]
+	mov	w8, #0
+	subs	w9, w9, #14
+	str	w8, [sp, #4]
+	b.le	LBB2_8
+	b	LBB2_7
+LBB2_7:
+	ldr	w8, [sp, #12]
+	subs	w8, w8, #18
+	cset	w8, le
+	str	w8, [sp, #4]
+	b	LBB2_8
+LBB2_8:
 	.loc	1 0 10 is_stmt 0
 	ldr	w8, [sp, #4]
 	.loc	1 35 10
-	subs	w8, w8, #18
-	b.gt	LBB2_8
-	b	LBB2_7
-LBB2_7:
+	tbz	w8, #0, LBB2_10
+	b	LBB2_9
+LBB2_9:
 Ltmp22:
 	.loc	1 36 5 is_stmt 1
 	ldr	w0, [sp, #12]
@@ -190,39 +200,44 @@ Ltmp22:
 	add	sp, sp, #16
 	ret
 Ltmp23:
-LBB2_8:
+LBB2_10:
 	.loc	1 37 10 is_stmt 1
-	ldr	w8, [sp, #12]
 	ldr	w9, [sp, #12]
-	str	w9, [sp]
-	subs	w8, w8, #18
-	b.le	LBB2_11
-	b	LBB2_9
-LBB2_9:
+	mov	w8, #0
+	subs	w9, w9, #18
+	str	w8, [sp]
+	b.le	LBB2_12
+	b	LBB2_11
+LBB2_11:
+	ldr	w8, [sp, #12]
+	subs	w8, w8, #35
+	cset	w8, le
+	str	w8, [sp]
+	b	LBB2_12
+LBB2_12:
 	.loc	1 0 10 is_stmt 0
 	ldr	w8, [sp]
 	.loc	1 37 10
-	subs	w8, w8, #35
-	b.gt	LBB2_11
-	b	LBB2_10
-LBB2_10:
+	tbz	w8, #0, LBB2_14
+	b	LBB2_13
+LBB2_13:
 Ltmp24:
 	.loc	1 38 5 is_stmt 1
 	ldr	w0, [sp, #12]
 	.loc	1 38 5 epilogue_begin is_stmt 0
 	add	sp, sp, #16
 	ret
-LBB2_11:
-	.loc	1 38 5 is_stmt 1
-	b	LBB2_12
-LBB2_12:
-	b	LBB2_13
-LBB2_13:
-	b	LBB2_14
 LBB2_14:
+	.loc	1 38 5 is_stmt 1
 	b	LBB2_15
-Ltmp25:
 LBB2_15:
+	b	LBB2_16
+LBB2_16:
+	b	LBB2_17
+LBB2_17:
+	b	LBB2_18
+Ltmp25:
+LBB2_18:
 	.loc	1 40 3
 	ldr	w0, [sp, #12]
 	.loc	1 40 3 epilogue_begin is_stmt 0

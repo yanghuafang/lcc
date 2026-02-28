@@ -101,6 +101,10 @@ void CodeGenerator::switchInsertPointToCurrentBlock() {
   builder_.SetInsertPoint(currentBlock_);
 }
 
+bool CodeGenerator::inGlobalInitBlock() const noexcept {
+  return globalBlock_ != nullptr && builder_.GetInsertBlock() == globalBlock_;
+}
+
 void CodeGenerator::setDebugLocation(const AST::SourceLoc& loc) {
   if (!isDebugInfoEnabled() || loc.line == 0) {
     return;
