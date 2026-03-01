@@ -52,9 +52,10 @@ Each step accepts a single file name so you can iterate quickly:
 
 `compile-tests.sh` defaults to debug mode (`-g -O0`); pass `--release` for `-O2`.
 
-CI (GitHub Actions) also runs these smoke checks on every push and pull request against Ubuntu and macOS — run them locally before submitting:
+CI (GitHub Actions) also runs these checks on every push and pull request against Ubuntu and macOS — run them locally before submitting:
 
 ```bash
+./check-differential.sh        # lcc vs the system compiler on tests/differential/
 ./check-lex-errors.sh          # a rejected literal fails the build
 ./check-debug-info.sh          # DWARF present with -g
 ./check-asm-smoke.sh           # -S emits assembly

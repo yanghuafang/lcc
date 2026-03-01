@@ -18,6 +18,7 @@ All commands below assume `cd lcc/scripts`.
 | `check-asm-smoke.sh` | Smoke test: `-O2 -S` on one test; verify non-empty asm (M18 CI) |
 | `check-machine-pass-smoke.sh` | Smoke test: `-machine-stats` emits a summary and leaves the object byte-identical (M17 CI) |
 | `check-ir-opt.sh` | IR opt regression: recompile `-O2`, compare IR vs committed `debug/` goldens (M16) |
+| `check-differential.sh` | Compile `tests/differential/*` with lcc and the system compiler, run both, compare output |
 | `mir-study.sh` | Study helper: print MIR before/after regalloc via `llc` (M13) |
 | `bench.sh` | Benchmark `benchmarks/*` (compile time, IR count, runtime); `--smoke` for CI — see [Benchmarks.md](Benchmarks.md) |
 | `format.sh` | `clang-format` plus trailing-whitespace strip; `--check` reports without writing |
@@ -111,7 +112,7 @@ They are compiled but never linked or run, since they assert nothing — behavio
 ./check-lex-errors.sh
 ```
 
-Compiles a file holding three out-of-range integer literals and checks that `lcc` exits **4** and writes no object file.
+Two shapes of one contract. First, a file holding three out-of-range integer literals: `lcc` must exit **4** and write no object. Then a file holding three bytes no lexer rule matches, with the same two assertions plus a third — that `lcc` wrote nothing to stdout. Before the catch-all rule existed, flex's default one echoed the stray byte there and carried on, so the program compiled, exited 0, and the byte came back mixed into lcc's own output.
 
 The regression suite cannot cover this, which is how the bug it guards survived: every file in `tests/` is meant to compile, so nothing there exercises a front end that reports an error and keeps going. The lexer does exactly that — it reports a malformed or out-of-range literal, substitutes `0`, and hands the parser a valid token, so `yyparse()` returns 0 and every later stage sees a clean parse. `lcc` used to emit an object from the substituted values and exit 0.
 
@@ -178,9 +179,54 @@ The final-IR goldens (`*.debug.ll`, `*.release.ll`) embed the full host triple, 
 
 See [Benchmarks.md](Benchmarks.md) for workloads, timed runs, and recording results.
 
+### Differential check
+
+```bash
+./check-differential.sh                 # every program
+./check-differential.sh shifts.c        # one of them
+```
+
+Compiles each program under `tests/differential/` twice — once with `lcc`, once
+with the system compiler — runs both, and compares stdout and exit status. Any
+difference is a miscompilation in `lcc`.
+
+The numbered suite cannot cover this ground. Every program in `tests/` checks
+itself and prints `PASS` or `FAIL`, which catches only a value someone already
+knew was wrong: a construct nobody thought to test passes silently, and so does
+one whose expected value was worked out with `lcc` itself. The programs here
+assert nothing. They print computed values, and the system compiler supplies
+the answers — so a semantics fix can be verified rather than asserted by
+running the check before the change and after.
+
+| Program | Covers |
+| --------- | -------- |
+| `baseline.c` | A control: semantics `lcc` already gets right, so it must always agree |
+| `conversions.c` | Integer conversions across signedness and width |
+| `shifts.c` | `<<` and `>>` with mixed operand types |
+| `usual_conversions.c` | The usual arithmetic conversions on mixed signed/unsigned pairs |
+| `switch_order.c` | `case` and `default` label order |
+
+`baseline.c` is what tells a broken harness apart from a real divergence: if it
+ever reports a difference, the reference compiler or the capture is at fault,
+not the operand types its neighbours are testing.
+
+Set `LCC_REFERENCE_CC` to compare against something other than `LCC_LINKER`.
+
+All five programs agreed once the conversion, shift and `switch` lowering were
+fixed — the check reported four diverging programs when it was written and
+reports none now — so it runs in CI on every platform in the matrix.
+
+The reference compile passes `-fsigned-char`. Plain `char` is signed or
+unsigned by platform, and `lcc` has made its choice: `char` is signed
+everywhere, and the supported subset has no `signed char` to say so with. The
+current runners happen to agree, but on a host where they did not, `char c =
+-1` widened to `unsigned long` would come back `255` from the reference and
+`ULONG_MAX` from `lcc` — an ABI difference that reads exactly like a
+miscompilation.
+
 ## CI
 
-GitHub Actions runs one workflow per gate. `.github/workflows/build.yml` is the matrix on `ubuntu-latest` and `macos-latest`: install, build, compile, link, run, `check-lex-errors.sh`, `check-debug-info.sh`, `check-asm-smoke.sh`, `check-machine-pass-smoke.sh`, and `bench.sh --smoke`. `.github/workflows/lint.yml` runs `format.sh --check` and `tidy.sh`, and `.github/workflows/docs.yml` runs `docs.sh`. `.github/workflows/sanitizer.yml` builds `lcc` under ASan and UBSan on both platforms and compiles the suite in both modes with the instrumented binary. See [Install.md](Install.md) for dependencies.
+GitHub Actions runs one workflow per gate. `.github/workflows/build.yml` is the matrix on `ubuntu-latest` and `macos-latest`: install, build, compile, link, run, `check-differential.sh`, `check-lex-errors.sh`, `check-debug-info.sh`, `check-asm-smoke.sh`, `check-machine-pass-smoke.sh`, and `bench.sh --smoke`. `.github/workflows/lint.yml` runs `format.sh --check` and `tidy.sh`, and `.github/workflows/docs.yml` runs `docs.sh`. `.github/workflows/sanitizer.yml` builds `lcc` under ASan and UBSan on both platforms and compiles the suite in both modes with the instrumented binary. See [Install.md](Install.md) for dependencies.
 
 `format.sh --check` is a job of its own rather than a step in the build, so a formatting slip fails in seconds rather than after a full LLVM link. `tidy.sh` needs the compile database a build produces, so its job builds `lcc` again. It and `docs.sh` run on `ubuntu-latest` only — their findings are host-independent, so a second and third copy would add cost without signal.
 

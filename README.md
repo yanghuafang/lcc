@@ -163,7 +163,8 @@ lcc/
 │   │   └── DotFileWriter.*      # writes the assembled DOT graph to disk
 │   └── generated/               # flex/bison output — never edit (Lexer.cpp, Parser.*)
 ├── tests/             # suite programs (+1 study fixture); each prints "<name> PASS" or "FAIL"
-│   └── graphs/        # Assertion-free fixtures, one per language area, for AST graphs only
+│   ├── graphs/        # Assertion-free fixtures, one per language area, for AST graphs only
+│   └── differential/  # Programs compared against the system compiler; no assertions
 ├── benchmarks/        # Larger workloads for bench.sh (M15)
 ├── scripts/           # build-lcc.sh, compile/link/run-tests.sh, format.sh,
 │                          # tidy.sh, docs.sh, bench.sh
