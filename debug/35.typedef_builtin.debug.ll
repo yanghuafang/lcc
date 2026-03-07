@@ -22,7 +22,7 @@ entry:
   %3 = load ptr, ptr %p, align 8, !dbg !16
   %4 = load i64, ptr %nbytes, align 8, !dbg !16
   %5 = load i32, ptr %step, align 4, !dbg !16
-  %6 = zext i32 %5 to i64, !dbg !16
+  %6 = sext i32 %5 to i64, !dbg !16
   %7 = add i64 %4, %6, !dbg !16
   %8 = trunc i64 %7 to i32, !dbg !16
   store i32 %8, ptr %3, align 4, !dbg !16

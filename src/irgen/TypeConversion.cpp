@@ -13,25 +13,19 @@ namespace convert {
 namespace {
 
 // CreateIntCast picks sext or zext from the signedness of the value being
-// cast — a property of the source type alone. The destination's signedness
-// does not enter into it: C converts a negative value to a wider unsigned
-// type by sign-extending and reinterpreting, not by zero-extending.
+// widened, which is a property of the source type alone. The destination's
+// signedness does not enter into it: C converts a negative value to a wider
+// unsigned type by sign-extending and then reinterpreting it, so
+// `(unsigned long)(char)-1` is ULONG_MAX and not 255.
 //
-// The isSigned expression below ANDs both ends anyway, so a char holding -1
-// widened to unsigned long zero-extends to 255 where C requires ULONG_MAX.
+// BOOL is the one source that looks signed here and must still zero-extend —
+// `true` widens to 1, never to -1.
 bool isSrcSignedForCast(BuiltinTypeId srcTypeId) {
   if (srcTypeId == BuiltinTypeId::UNKNOWN) {
     return true;
   }
   return !typerules::isUnsignedTypeId(srcTypeId) &&
          srcTypeId != BuiltinTypeId::BOOL;
-}
-
-bool isDstSignedForCast(BuiltinTypeId dstTypeId) {
-  if (dstTypeId == BuiltinTypeId::UNKNOWN) {
-    return true;
-  }
-  return !typerules::isUnsignedTypeId(dstTypeId);
 }
 
 }  // namespace
@@ -46,11 +40,7 @@ llvm::Value* typeCast(llvm::IRBuilder<>& builder, llvm::Value* value,
     return castToBool(builder, value);
   }
   if (value->getType()->isIntegerTy() && type->isIntegerTy()) {
-    // CreateIntCast's third argument is signedness of the value, not just C
-    // type.
-    const bool isSigned =
-        isSrcSignedForCast(srcTypeId) && isDstSignedForCast(dstTypeId);
-    return builder.CreateIntCast(value, type, isSigned);
+    return builder.CreateIntCast(value, type, isSrcSignedForCast(srcTypeId));
   }
   if (value->getType()->isIntegerTy() && type->isFloatingPointTy()) {
     if (srcTypeId == BuiltinTypeId::BOOL ||
