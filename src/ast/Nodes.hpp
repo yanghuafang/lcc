@@ -1556,6 +1556,8 @@ class LeftShift final : public BinaryExpr {
   explicit LeftShift(Expr* lhs, Expr* rhs) : BinaryExpr(lhs, rhs) {}
   ~LeftShift() override = default;
 
+  BuiltinTypeId getExprTypeId(CodeGenerator& generator) const override;
+
   llvm::Value* genCode(CodeGenerator& generator) override;
 
   std::pair<std::string, std::string> genGraph() const override;
@@ -1568,6 +1570,8 @@ class RightShift final : public BinaryExpr {
  public:
   explicit RightShift(Expr* lhs, Expr* rhs) : BinaryExpr(lhs, rhs) {}
   ~RightShift() override = default;
+
+  BuiltinTypeId getExprTypeId(CodeGenerator& generator) const override;
 
   llvm::Value* genCode(CodeGenerator& generator) override;
 

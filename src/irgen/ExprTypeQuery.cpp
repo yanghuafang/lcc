@@ -79,6 +79,17 @@ BuiltinTypeId BinaryExpr::getExprTypeId(CodeGenerator& generator) const {
   return binaryExprTypeId(lhs_, rhs_, generator);
 }
 
+// The two exceptions to the line above. C11 6.5.7p3 gives a shift the promoted
+// type of its *left* operand rather than the common type of the pair, so
+// `int >> unsigned` stays int and neither widens nor turns unsigned.
+BuiltinTypeId LeftShift::getExprTypeId(CodeGenerator& generator) const {
+  return typerules::integerPromotion(lhs_->getExprTypeId(generator));
+}
+
+BuiltinTypeId RightShift::getExprTypeId(CodeGenerator& generator) const {
+  return typerules::integerPromotion(lhs_->getExprTypeId(generator));
+}
+
 VarType* Variable::getExprVarType(CodeGenerator& generator) const {
   return generator.symbols().findVariableType(varName_);
 }
