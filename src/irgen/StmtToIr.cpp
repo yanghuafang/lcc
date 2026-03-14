@@ -199,22 +199,22 @@ llvm::Value* SwitchStmt::genCode(CodeGenerator& generator) {
   // uniform with the other conditionals and costs nothing at -O1 and above,
   // where LLVM recognizes the chain and rebuilds a real switch.
   //
-  // Two parallel block arrays, both with one extra slot at the end:
+  // The blocks involved:
   //
-  //   comparisionBlocks[i]  evaluate case i's test    (slot 0 is the current
-  //                         block, so the first test needs no branch into it)
-  //   caseBlocks[i]         case i's body
-  //   ...[n]                both end at "switch.end"
+  //   caseBlocks[i]         case i's body, in source order
+  //   caseBlocks[n]         "switch.end"
+  //   comparisionBlocks[k]  the k'th test (slot 0 is the current block, so the
+  //                         first test needs no branch into it)
   //
-  // Test i branches to caseBlocks[i] on match, else to comparisionBlocks[i+1] —
-  // walking the chain. `default` emits an unconditional branch instead, which
-  // makes every test after it unreachable.
-  //
-  // That is a deviation from C. 6.8.4.2p5 tries every case label first and
-  // reaches default only when none matched, so
-  // `switch (2) { default: …; case 2: …; }` runs case 2 in C and default here.
-  // Emitting default's branch as the tail of the chain rather than at its
-  // textual position is what would fix it.
+  // Dispatch order is not body order, which is the whole subtlety here. C
+  // tries every `case` label before it settles for `default`, wherever default
+  // happens to be written (C11 6.8.4.2p5), so the chain walks the cases in
+  // source order and leaves default out of it; what the last test falls
+  // through to is default's body, or switch.end when there is none. Bodies
+  // stay in source order regardless, because that is what fall-through means —
+  // `switch (2) { default: a; case 2: b; }` dispatches straight to b and then
+  // runs nothing else, while `switch (9)` on the same statement runs a and
+  // falls into b.
   //
   // Fallthrough is why bodies do not branch to switch.end when they finish:
   // each body is told its *successor* body (caseBlocks[i + 1]) by the
@@ -230,43 +230,59 @@ llvm::Value* SwitchStmt::genCode(CodeGenerator& generator) {
 
   caseBlocks.push_back(blocks.create("switch.end"));
 
+  // The labels the chain tests, in source order, and the default it leaves
+  // out. Two defaults are not legal C; the first wins rather than the last.
+  std::vector<size_t> testedCases;
+  size_t defaultCase = caseStmtList_->size();
+  for (size_t i = 0; i < caseStmtList_->size(); ++i) {
+    if (caseStmtList_->at(i)->condition_ != nullptr) {
+      testedCases.push_back(i);
+    } else if (defaultCase == caseStmtList_->size()) {
+      defaultCase = i;
+    }
+  }
+
+  // Where dispatch lands once every test has failed.
+  llvm::BasicBlock* noMatchBlock = defaultCase < caseStmtList_->size()
+                                       ? caseBlocks[defaultCase]
+                                       : caseBlocks.back();
+
   std::vector<llvm::BasicBlock*> comparisionBlocks;
   // The first comparison code should be in current insertion block.
   comparisionBlocks.push_back(generator.getBuilder().GetInsertBlock());
-  // One block short of the case count: slot 0 above already holds test 0, and
-  // the slot past the last test is switch.end, appended below. Creating a block
-  // per case instead would leave the final test branching to a block that is
-  // never inserted into the function.
-  for (size_t i = 1; i < caseStmtList_->size(); ++i) {
+  // One block short of the test count: slot 0 above already holds test 0, and
+  // the slot past the last test is noMatchBlock, appended below. Creating a
+  // block per test instead would leave the final one branching to a block that
+  // is never inserted into the function.
+  for (size_t k = 1; k < testedCases.size(); ++k) {
     comparisionBlocks.push_back(
-        blocks.create("switch.compare." + std::to_string(i - 1)));
+        blocks.create("switch.compare." + std::to_string(k - 1)));
   }
 
-  // comparisionBlocks and caseBlocks hold the same block after switch
-  // statement.
-  comparisionBlocks.push_back(caseBlocks.back());
+  comparisionBlocks.push_back(noMatchBlock);
 
-  for (size_t i = 0; i < caseStmtList_->size(); ++i) {
-    if (i > 0) {
+  if (testedCases.empty()) {
+    // Nothing to compare against: an empty switch, or one whose only label is
+    // default. The loop below would leave the current block unterminated.
+    generator.getBuilder().CreateBr(noMatchBlock);
+  }
+
+  for (size_t k = 0; k < testedCases.size(); ++k) {
+    if (k > 0) {
       // The first comparison is already in current insertion block.
       // So only set insertion block and insertion point since the second
       // comparison.
-      blocks.attach(comparisionBlocks[i]);
-      generator.getBuilder().SetInsertPoint(comparisionBlocks[i]);
+      blocks.attach(comparisionBlocks[k]);
+      generator.getBuilder().SetInsertPoint(comparisionBlocks[k]);
     }
 
-    if (caseStmtList_->at(i)->condition_ != nullptr) {
-      generator.getBuilder().CreateCondBr(
-          ops::createCmpEq(
-              generator.getBuilder(), matcher,
-              caseStmtList_->at(i)->condition_->genCode(generator),
-              matcher_->getExprTypeId(generator),
-              caseStmtList_->at(i)->condition_->getExprTypeId(generator)),
-          caseBlocks[i], comparisionBlocks[i + 1]);
-    } else {
-      // Unconditional branch for default statement.
-      generator.getBuilder().CreateBr(caseBlocks[i]);
-    }
+    CaseStmt* tested = caseStmtList_->at(testedCases[k]);
+    generator.getBuilder().CreateCondBr(
+        ops::createCmpEq(generator.getBuilder(), matcher,
+                         tested->condition_->genCode(generator),
+                         matcher_->getExprTypeId(generator),
+                         tested->condition_->getExprTypeId(generator)),
+        caseBlocks[testedCases[k]], comparisionBlocks[k + 1]);
   }
 
   ScopedSymbolTable switchScope(generator.symbols());

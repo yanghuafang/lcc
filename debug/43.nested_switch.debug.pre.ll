@@ -25,24 +25,18 @@ entry:
 
 switch.compare.0:                                 ; preds = %entry
   %4 = icmp eq i32 %2, 2, !dbg !13
-  br i1 %4, label %case.14, label %switch.compare.1, !dbg !13
-
-switch.compare.1:                                 ; preds = %switch.compare.0
-  br label %case.25, !dbg !13
+  br i1 %4, label %case.13, label %case.24, !dbg !13
 
 case.0:                                           ; preds = %entry
   %5 = load i32, ptr %inner, align 4, !dbg !14
   %6 = icmp eq i32 %5, 1, !dbg !14
-  br i1 %6, label %case.03, label %switch.compare.01, !dbg !14
+  br i1 %6, label %case.02, label %switch.compare.01, !dbg !14
 
 switch.compare.01:                                ; preds = %case.0
   %7 = icmp eq i32 %5, 2, !dbg !14
-  br i1 %7, label %case.1, label %switch.compare.12, !dbg !14
+  br i1 %7, label %case.1, label %case.2, !dbg !14
 
-switch.compare.12:                                ; preds = %switch.compare.01
-  br label %case.2, !dbg !14
-
-case.03:                                          ; preds = %case.0
+case.02:                                          ; preds = %case.0
   %8 = load i32, ptr %r, align 4, !dbg !15
   %9 = add i32 %8, 1, !dbg !15
   store i32 %9, ptr %r, align 4, !dbg !15
@@ -56,35 +50,35 @@ case.1:                                           ; preds = %switch.compare.01
   %13 = load i32, ptr %r, align 4, !dbg !17
   br label %switch.end, !dbg !18
 
-case.2:                                           ; preds = %switch.compare.12
+case.2:                                           ; preds = %switch.compare.01
   %14 = load i32, ptr %r, align 4, !dbg !19
   %15 = add i32 %14, 4, !dbg !19
   store i32 %15, ptr %r, align 4, !dbg !19
   %16 = load i32, ptr %r, align 4, !dbg !19
   br label %switch.end, !dbg !20
 
-switch.end:                                       ; preds = %case.2, %case.1, %case.03
+switch.end:                                       ; preds = %case.2, %case.1, %case.02
   %17 = load i32, ptr %r, align 4, !dbg !21
   %18 = add i32 %17, 10, !dbg !21
   store i32 %18, ptr %r, align 4, !dbg !21
   %19 = load i32, ptr %r, align 4, !dbg !21
-  br label %case.14, !dbg !21
+  br label %case.13, !dbg !21
 
-case.14:                                          ; preds = %switch.end, %switch.compare.0
+case.13:                                          ; preds = %switch.end, %switch.compare.0
   %20 = load i32, ptr %r, align 4, !dbg !22
   %21 = add i32 %20, 100, !dbg !22
   store i32 %21, ptr %r, align 4, !dbg !22
   %22 = load i32, ptr %r, align 4, !dbg !22
-  br label %switch.end6, !dbg !23
+  br label %switch.end5, !dbg !23
 
-case.25:                                          ; preds = %switch.compare.1
+case.24:                                          ; preds = %switch.compare.0
   %23 = load i32, ptr %r, align 4, !dbg !24
   %24 = add i32 %23, 1000, !dbg !24
   store i32 %24, ptr %r, align 4, !dbg !24
   %25 = load i32, ptr %r, align 4, !dbg !24
-  br label %switch.end6, !dbg !25
+  br label %switch.end5, !dbg !25
 
-switch.end6:                                      ; preds = %case.25, %case.14
+switch.end5:                                      ; preds = %case.24, %case.13
   %26 = load i32, ptr %r, align 4, !dbg !26
   ret i32 %26, !dbg !26
 }
@@ -99,61 +93,58 @@ entry:
   store i32 0, ptr %r, align 4, !dbg !31
   %1 = load i32, ptr %x, align 4, !dbg !34
   %2 = icmp eq i32 %1, 1, !dbg !34
-  br i1 %2, label %case.0, label %switch.compare.0, !dbg !34
-
-switch.compare.0:                                 ; preds = %entry
-  br label %case.15, !dbg !34
+  br i1 %2, label %case.0, label %case.14, !dbg !34
 
 case.0:                                           ; preds = %entry
   %3 = load i32, ptr %x, align 4, !dbg !35
   %4 = icmp eq i32 %3, 1, !dbg !35
-  br i1 %4, label %case.02, label %switch.compare.01, !dbg !35
+  br i1 %4, label %case.01, label %switch.compare.0, !dbg !35
 
-switch.compare.01:                                ; preds = %case.0
+switch.compare.0:                                 ; preds = %case.0
   %5 = icmp eq i32 %3, 2, !dbg !35
-  br i1 %5, label %case.1, label %switch.end4, !dbg !35
+  br i1 %5, label %case.1, label %switch.end3, !dbg !35
 
-case.02:                                          ; preds = %case.0
+case.01:                                          ; preds = %case.0
   %6 = load i32, ptr %x, align 4, !dbg !36
   %7 = icmp eq i32 %6, 1, !dbg !36
-  br i1 %7, label %case.03, label %switch.end, !dbg !36
+  br i1 %7, label %case.02, label %switch.end, !dbg !36
 
-case.03:                                          ; preds = %case.02
+case.02:                                          ; preds = %case.01
   %8 = load i32, ptr %r, align 4, !dbg !37
   %9 = add i32 %8, 1, !dbg !37
   store i32 %9, ptr %r, align 4, !dbg !37
   %10 = load i32, ptr %r, align 4, !dbg !37
   br label %switch.end, !dbg !38
 
-switch.end:                                       ; preds = %case.03, %case.02
+switch.end:                                       ; preds = %case.02, %case.01
   %11 = load i32, ptr %r, align 4, !dbg !39
   %12 = add i32 %11, 2, !dbg !39
   store i32 %12, ptr %r, align 4, !dbg !39
   %13 = load i32, ptr %r, align 4, !dbg !39
   br label %case.1, !dbg !39
 
-case.1:                                           ; preds = %switch.end, %switch.compare.01
+case.1:                                           ; preds = %switch.end, %switch.compare.0
   %14 = load i32, ptr %r, align 4, !dbg !40
   %15 = add i32 %14, 4, !dbg !40
   store i32 %15, ptr %r, align 4, !dbg !40
   %16 = load i32, ptr %r, align 4, !dbg !40
-  br label %switch.end4, !dbg !41
+  br label %switch.end3, !dbg !41
 
-switch.end4:                                      ; preds = %case.1, %switch.compare.01
+switch.end3:                                      ; preds = %case.1, %switch.compare.0
   %17 = load i32, ptr %r, align 4, !dbg !42
   %18 = add i32 %17, 8, !dbg !42
   store i32 %18, ptr %r, align 4, !dbg !42
   %19 = load i32, ptr %r, align 4, !dbg !42
-  br label %switch.end6, !dbg !43
+  br label %switch.end5, !dbg !43
 
-case.15:                                          ; preds = %switch.compare.0
+case.14:                                          ; preds = %entry
   %20 = load i32, ptr %r, align 4, !dbg !44
   %21 = add i32 %20, 16, !dbg !44
   store i32 %21, ptr %r, align 4, !dbg !44
   %22 = load i32, ptr %r, align 4, !dbg !44
-  br label %switch.end6, !dbg !45
+  br label %switch.end5, !dbg !45
 
-switch.end6:                                      ; preds = %case.15, %switch.end4
+switch.end5:                                      ; preds = %case.14, %switch.end3
   %23 = load i32, ptr %r, align 4, !dbg !46
   ret i32 %23, !dbg !46
 }
@@ -180,10 +171,7 @@ for.loop:                                         ; preds = %for.cond
 
 switch.compare.0:                                 ; preds = %for.loop
   %4 = icmp eq i32 %2, 3, !dbg !54
-  br i1 %4, label %case.1, label %switch.compare.1, !dbg !54
-
-switch.compare.1:                                 ; preds = %switch.compare.0
-  br label %case.2, !dbg !54
+  br i1 %4, label %case.1, label %case.2, !dbg !54
 
 case.0:                                           ; preds = %for.loop
   %5 = load i32, ptr %i, align 4, !dbg !56
@@ -203,7 +191,7 @@ switch.end:                                       ; preds = %case.01, %case.0
 case.1:                                           ; preds = %switch.compare.0
   br label %for.update, !dbg !60
 
-case.2:                                           ; preds = %switch.compare.1
+case.2:                                           ; preds = %switch.compare.0
   %10 = load i32, ptr %total, align 4, !dbg !61
   %11 = add i32 %10, 10, !dbg !61
   store i32 %11, ptr %total, align 4, !dbg !61

@@ -92,37 +92,35 @@ Ltmp10:
 	ldr	w8, [sp, #8]
 	str	w8, [sp, #4]
 	subs	w8, w8, #1
-	b.eq	LBB1_3
+	b.eq	LBB1_2
 	b	LBB1_1
 LBB1_1:
 	.loc	1 0 3 is_stmt 0
 	ldr	w8, [sp, #4]
 	.loc	1 24 3
 	subs	w8, w8, #2
-	b.eq	LBB1_4
-	b	LBB1_2
+	b.eq	LBB1_3
+	b	LBB1_4
 LBB1_2:
-	b	LBB1_5
-LBB1_3:
 	.loc	1 26 7 is_stmt 1
 	ldr	w8, [sp, #12]
 	add	w8, w8, #1
 	str	w8, [sp, #12]
-	b	LBB1_4
-LBB1_4:
+	b	LBB1_3
+LBB1_3:
 	.loc	1 28 7
 	ldr	w8, [sp, #12]
 	add	w8, w8, #10
 	str	w8, [sp, #12]
 	.loc	1 29 7
-	b	LBB1_6
-LBB1_5:
+	b	LBB1_5
+LBB1_4:
 	.loc	1 31 7
 	mov	w8, #99
 	str	w8, [sp, #12]
 	.loc	1 32 7
-	b	LBB1_6
-LBB1_6:
+	b	LBB1_5
+LBB1_5:
 	.loc	1 34 3
 	ldr	w0, [sp, #12]
 	.loc	1 34 3 epilogue_begin is_stmt 0
@@ -150,36 +148,34 @@ Ltmp13:
 	ldr	w8, [sp, #8]
 	str	w8, [sp, #4]
 	subs	w8, w8, #1
-	b.eq	LBB2_3
+	b.eq	LBB2_2
 	b	LBB2_1
 LBB2_1:
 	.loc	1 0 3 is_stmt 0
 	ldr	w8, [sp, #4]
 	.loc	1 40 3
 	subs	w8, w8, #2
-	b.eq	LBB2_4
-	b	LBB2_2
+	b.eq	LBB2_3
+	b	LBB2_4
 LBB2_2:
-	b	LBB2_5
-LBB2_3:
 	.loc	1 42 7 is_stmt 1
 	mov	w8, #10
 	str	w8, [sp, #12]
 	.loc	1 43 7
-	b	LBB2_6
-LBB2_4:
+	b	LBB2_5
+LBB2_3:
 	.loc	1 45 7
 	mov	w8, #20
 	str	w8, [sp, #12]
 	.loc	1 46 7
-	b	LBB2_6
-LBB2_5:
+	b	LBB2_5
+LBB2_4:
 	.loc	1 48 7
 	mov	w8, #99
 	str	w8, [sp, #12]
 	.loc	1 49 7
-	b	LBB2_6
-LBB2_6:
+	b	LBB2_5
+LBB2_5:
 	.loc	1 51 3
 	ldr	w0, [sp, #12]
 	.loc	1 51 3 epilogue_begin is_stmt 0
@@ -207,7 +203,7 @@ LBB3_1:
 	.loc	1 56 8
 	ldr	w8, [sp, #12]
 	subs	w8, w8, #6
-	b.ge	LBB3_12
+	b.ge	LBB3_11
 	b	LBB3_2
 LBB3_2:
 Ltmp17:
@@ -215,56 +211,54 @@ Ltmp17:
 	ldr	w8, [sp, #12]
 	str	w8, [sp, #4]
 	subs	w8, w8, #1
-	b.eq	LBB3_6
+	b.eq	LBB3_5
 	b	LBB3_3
 LBB3_3:
 	.loc	1 0 5 is_stmt 0
 	ldr	w8, [sp, #4]
 	.loc	1 57 5
 	subs	w8, w8, #3
-	b.eq	LBB3_7
+	b.eq	LBB3_6
 	b	LBB3_4
 LBB3_4:
 	.loc	1 0 5
 	ldr	w8, [sp, #4]
 	.loc	1 57 5
 	subs	w8, w8, #5
-	b.eq	LBB3_8
-	b	LBB3_5
+	b.eq	LBB3_7
+	b	LBB3_8
 LBB3_5:
-	b	LBB3_9
-LBB3_6:
 	.loc	1 59 9 is_stmt 1
-	b	LBB3_11
-LBB3_7:
-	.loc	1 61 9
 	b	LBB3_10
-LBB3_8:
+LBB3_6:
+	.loc	1 61 9
+	b	LBB3_9
+LBB3_7:
 	.loc	1 63 9
 	ldr	w8, [sp, #8]
 	add	w8, w8, #100
 	str	w8, [sp, #8]
 	.loc	1 64 9
-	b	LBB3_10
-LBB3_9:
+	b	LBB3_9
+LBB3_8:
 	.loc	1 66 9
 	ldr	w8, [sp, #8]
 	ldr	w9, [sp, #12]
 	add	w8, w8, w9
 	str	w8, [sp, #8]
 	.loc	1 67 9
+	b	LBB3_9
+LBB3_9:
+	.loc	1 67 9
 	b	LBB3_10
 LBB3_10:
-	.loc	1 67 9
-	b	LBB3_11
-LBB3_11:
 	.loc	1 67 9
 	ldr	w8, [sp, #12]
 	add	w8, w8, #1
 	str	w8, [sp, #12]
 	b	LBB3_1
 Ltmp18:
-LBB3_12:
+LBB3_11:
 	.loc	1 70 3
 	ldr	w0, [sp, #8]
 	.loc	1 70 3 epilogue_begin is_stmt 0
@@ -291,80 +285,78 @@ Ltmp21:
 	.loc	1 76 3
 	ldr	w8, [sp, #4]
 	subs	w8, w8, #1
-	b.eq	LBB4_2
+	b.ne	LBB4_12
 	b	LBB4_1
 LBB4_1:
-	b	LBB4_13
-LBB4_2:
 Ltmp22:
 	.loc	1 78 7
 	str	wzr, [sp, #8]
 	.loc	1 79 12
 	str	wzr, [sp, #12]
-	b	LBB4_3
-LBB4_3:
+	b	LBB4_2
+LBB4_2:
 	.loc	1 79 12
 	ldr	w8, [sp, #12]
 	subs	w8, w8, #5
-	b.ge	LBB4_12
-	b	LBB4_4
-LBB4_4:
+	b.ge	LBB4_11
+	b	LBB4_3
+LBB4_3:
 Ltmp23:
 	.loc	1 80 9
 	ldr	w8, [sp, #12]
 	subs	w8, w8, #2
-	b.ne	LBB4_6
-	b	LBB4_5
-LBB4_5:
+	b.ne	LBB4_5
+	b	LBB4_4
+LBB4_4:
 Ltmp24:
 	.loc	1 81 11
-	b	LBB4_11
-LBB4_6:
+	b	LBB4_10
+LBB4_5:
 	.loc	1 81 11
-	b	LBB4_7
+	b	LBB4_6
 Ltmp25:
-LBB4_7:
+LBB4_6:
 	.loc	1 83 9
 	ldr	w8, [sp, #12]
 	subs	w8, w8, #4
-	b.ne	LBB4_9
-	b	LBB4_8
-LBB4_8:
+	b.ne	LBB4_8
+	b	LBB4_7
+LBB4_7:
 Ltmp26:
 	.loc	1 84 11
-	b	LBB4_12
-LBB4_9:
+	b	LBB4_11
+LBB4_8:
 	.loc	1 84 11
-	b	LBB4_10
+	b	LBB4_9
 Ltmp27:
-LBB4_10:
+LBB4_9:
 	.loc	1 86 9
 	ldr	w8, [sp, #8]
 	ldr	w9, [sp, #12]
 	add	w8, w8, w9
 	str	w8, [sp, #8]
-	b	LBB4_11
-LBB4_11:
+	b	LBB4_10
+LBB4_10:
 	.loc	1 86 9
 	ldr	w8, [sp, #12]
 	add	w8, w8, #1
 	str	w8, [sp, #12]
-	b	LBB4_3
+	b	LBB4_2
 Ltmp28:
-LBB4_12:
+LBB4_11:
 	.loc	1 88 7
 	ldr	w8, [sp, #8]
 	str	w8, [sp]
 Ltmp29:
 	.loc	1 89 7
-	b	LBB4_14
-LBB4_13:
+	b	LBB4_13
+LBB4_12:
 	.loc	1 91 7
 	mov	w8, #-1
 	str	w8, [sp]
 	.loc	1 92 7
-	b	LBB4_14
-LBB4_14:
+	b	LBB4_13
+LBB4_13:
 	.loc	1 94 3
 	ldr	w0, [sp]
 	.loc	1 94 3 epilogue_begin is_stmt 0

@@ -43,15 +43,12 @@ entry:
   store i32 %0, ptr %x, align 4
   %1 = load i32, ptr %x, align 4
   %2 = icmp eq i32 %1, 1
-  br i1 %2, label %case.0, label %switch.compare.0
-
-switch.compare.0:                                 ; preds = %entry
-  br label %case.1
+  br i1 %2, label %case.0, label %case.1
 
 case.0:                                           ; preds = %entry
   ret i32 100
 
-case.1:                                           ; preds = %switch.compare.0
+case.1:                                           ; preds = %entry
   ret i32 200
 }
 

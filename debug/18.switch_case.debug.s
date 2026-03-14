@@ -16,122 +16,120 @@ Ltmp1:
 	ldr	w8, [sp, #8]
 	str	w8, [sp, #4]
 	subs	w8, w8, #1
-	b.eq	LBB0_11
+	b.eq	LBB0_10
 	b	LBB0_1
 LBB0_1:
 	.loc	1 0 3 is_stmt 0
 	ldr	w8, [sp, #4]
 	.loc	1 8 3
 	subs	w8, w8, #2
-	b.eq	LBB0_12
+	b.eq	LBB0_11
 	b	LBB0_2
 LBB0_2:
 	.loc	1 0 3
 	ldr	w8, [sp, #4]
 	.loc	1 8 3
 	subs	w8, w8, #3
-	b.eq	LBB0_13
+	b.eq	LBB0_12
 	b	LBB0_3
 LBB0_3:
 	.loc	1 0 3
 	ldr	w8, [sp, #4]
 	.loc	1 8 3
 	subs	w8, w8, #4
-	b.eq	LBB0_14
+	b.eq	LBB0_13
 	b	LBB0_4
 LBB0_4:
 	.loc	1 0 3
 	ldr	w8, [sp, #4]
 	.loc	1 8 3
 	subs	w8, w8, #5
-	b.eq	LBB0_15
+	b.eq	LBB0_14
 	b	LBB0_5
 LBB0_5:
 	.loc	1 0 3
 	ldr	w8, [sp, #4]
 	.loc	1 8 3
 	subs	w8, w8, #6
-	b.eq	LBB0_16
+	b.eq	LBB0_15
 	b	LBB0_6
 LBB0_6:
 	.loc	1 0 3
 	ldr	w8, [sp, #4]
 	.loc	1 8 3
 	subs	w8, w8, #7
-	b.eq	LBB0_17
+	b.eq	LBB0_16
 	b	LBB0_7
 LBB0_7:
 	.loc	1 0 3
 	ldr	w8, [sp, #4]
 	.loc	1 8 3
 	subs	w8, w8, #8
-	b.eq	LBB0_18
+	b.eq	LBB0_17
 	b	LBB0_8
 LBB0_8:
 	.loc	1 0 3
 	ldr	w8, [sp, #4]
 	.loc	1 8 3
 	subs	w8, w8, #9
-	b.eq	LBB0_19
+	b.eq	LBB0_18
 	b	LBB0_9
 LBB0_9:
 	.loc	1 0 3
 	ldr	w8, [sp, #4]
 	.loc	1 8 3
 	subs	w8, w8, #10
-	b.eq	LBB0_20
-	b	LBB0_10
+	b.eq	LBB0_19
+	b	LBB0_20
 LBB0_10:
-	b	LBB0_21
-LBB0_11:
 	.loc	1 9 5 is_stmt 1
+	b	LBB0_11
+LBB0_11:
+	.loc	1 10 5
 	b	LBB0_12
 LBB0_12:
-	.loc	1 10 5
+	.loc	1 11 5
 	b	LBB0_13
 LBB0_13:
-	.loc	1 11 5
+	.loc	1 12 5
 	b	LBB0_14
 LBB0_14:
-	.loc	1 12 5
-	b	LBB0_15
-LBB0_15:
 	.loc	1 14 7
 	mov	w8, #68
 	strb	w8, [sp, #15]
 	.loc	1 15 7
-	b	LBB0_22
-LBB0_16:
+	b	LBB0_21
+LBB0_15:
 	.loc	1 17 7
 	mov	w8, #67
 	strb	w8, [sp, #15]
 	.loc	1 18 7
-	b	LBB0_22
-LBB0_17:
+	b	LBB0_21
+LBB0_16:
 	.loc	1 19 5
-	b	LBB0_18
-LBB0_18:
+	b	LBB0_17
+LBB0_17:
 	.loc	1 21 7
 	mov	w8, #66
 	strb	w8, [sp, #15]
 	.loc	1 22 7
-	b	LBB0_22
-LBB0_19:
+	b	LBB0_21
+LBB0_18:
 	.loc	1 23 5
-	b	LBB0_20
-LBB0_20:
+	b	LBB0_19
+LBB0_19:
 	.loc	1 25 7
 	mov	w8, #65
 	strb	w8, [sp, #15]
 	.loc	1 26 7
-	b	LBB0_22
-LBB0_21:
+	b	LBB0_21
+LBB0_20:
 	.loc	1 28 7
 	mov	w8, #69
 	strb	w8, [sp, #15]
 	.loc	1 29 7
-	b	LBB0_22
-LBB0_22:
+	b	LBB0_21
+LBB0_21:
 	.loc	1 31 3
 	ldrb	w0, [sp, #15]
 	.loc	1 31 3 epilogue_begin is_stmt 0
