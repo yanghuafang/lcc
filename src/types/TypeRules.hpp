@@ -22,8 +22,7 @@
 /// types/TypeRules.cpp spends that ability on static_asserts, which check the
 /// ladder below at build time instead of leaving it to the test suite.
 ///
-/// Three deliberate simplifications, all visible below — the third is on
-/// usualArithmeticConversion itself:
+/// Two deliberate simplifications, both visible below:
 ///   - float never survives a binary operation; any floating operand yields
 ///     double. Real C keeps float when neither operand is double.
 ///   - char/short/bool are the only types promoted; C's bit-fields and enums
@@ -95,12 +94,13 @@ using AST::BuiltinTypeId;
 ///
 ///   double  >  unsigned long  >  long  >  unsigned int  >  int
 ///
-/// The long rung is the subtle one. `long` and `unsigned int` have the same
-/// rank position here, and C says the signed type wins only if it can represent
-/// every value of the unsigned one. lcc targets LP64, where long is 64-bit and
-/// unsigned int is 32-bit, so long *can* — yet this returns ULONG instead. That
-/// is a deliberate simplification, and it is why the check below tests
-/// isUnsignedTypeId on either operand rather than comparing widths.
+/// The long rung is the subtle one, and the reason it is not simply "either
+/// operand is long, so the answer is long" by luck. C converts to the signed
+/// type only when that type can represent every value of the unsigned one
+/// (C11 6.3.1.8). lcc targets LP64, where long is 64 bits and unsigned int is
+/// 32, so it can — and the rung above has already taken every pair involving
+/// unsigned long, which is exactly the case where it cannot. What reaches here
+/// is long against int or unsigned int, and long covers both.
 ///
 /// Signedness is not reported separately. A caller choosing udiv over sdiv,
 /// lshr over ashr, or icmp ult over slt asks isUnsignedTypeId() about the type
@@ -120,9 +120,6 @@ using AST::BuiltinTypeId;
     return BuiltinTypeId::ULONG;
   }
   if (lhsTypeId == BuiltinTypeId::LONG || rhsTypeId == BuiltinTypeId::LONG) {
-    if (isUnsignedTypeId(lhsTypeId) || isUnsignedTypeId(rhsTypeId)) {
-      return BuiltinTypeId::ULONG;
-    }
     return BuiltinTypeId::LONG;
   }
   if (isUnsignedTypeId(lhsTypeId) || isUnsignedTypeId(rhsTypeId)) {

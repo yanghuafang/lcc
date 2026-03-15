@@ -66,10 +66,15 @@ static_assert(typerules::usualArithmeticConversion(BuiltinTypeId::FLOAT,
 static_assert(typerules::usualArithmeticConversion(BuiltinTypeId::FLOAT,
                                                    BuiltinTypeId::FLOAT) ==
               BuiltinTypeId::DOUBLE);
-// The documented LP64 simplification: long could represent every unsigned int
-// on this target, yet the pair converts to unsigned long rather than long.
+// long against unsigned int converts to long: on LP64 long represents every
+// unsigned int value, so C11 6.3.1.8 picks the signed type. The rung above has
+// already claimed the pairs where it would not.
 static_assert(typerules::usualArithmeticConversion(BuiltinTypeId::LONG,
                                                    BuiltinTypeId::UINT) ==
+              BuiltinTypeId::LONG);
+// That rung, pinned: an unsigned side as wide as the signed one still wins.
+static_assert(typerules::usualArithmeticConversion(BuiltinTypeId::LONG,
+                                                   BuiltinTypeId::ULONG) ==
               BuiltinTypeId::ULONG);
 
 // The ladder is symmetric in its operands.
@@ -88,6 +93,8 @@ static_assert(typerules::isUnsignedTypeId(typerules::usualArithmeticConversion(
     BuiltinTypeId::INT, BuiltinTypeId::UINT)));
 static_assert(!typerules::isUnsignedTypeId(typerules::usualArithmeticConversion(
     BuiltinTypeId::INT, BuiltinTypeId::LONG)));
+static_assert(!typerules::isUnsignedTypeId(typerules::usualArithmeticConversion(
+    BuiltinTypeId::LONG, BuiltinTypeId::UINT)));
 static_assert(!typerules::isUnsignedTypeId(typerules::usualArithmeticConversion(
     BuiltinTypeId::FLOAT, BuiltinTypeId::UINT)));
 
