@@ -16,13 +16,13 @@
 /// it had just complained about.
 ///
 /// yyerror is the one funnel every front-end diagnostic passes through: the
-/// literal checks in frontend/Lexer.l, and every syntax error bison
-/// raises. Counting there covers all of them, and covers a call site added
-/// later without that site having to remember -- the same reasoning
-/// frontend/TokenStrings.hpp gives for owning token text centrally, where no
-/// rule owns anything so no rule can leak. It is also why every one of them
-/// gained a source location at once: yyerror reads yylloc, so no call site
-/// passes a position of its own.
+/// literal checks in frontend/Lexer.l, the catch-all rule that rejects a byte
+/// no other rule matches, and every syntax error bison raises. Counting there
+/// covers all of them, and covers a call site added later without that site
+/// having to remember -- the same reasoning frontend/TokenStrings.hpp gives
+/// for owning token text centrally, where no rule owns anything so no rule can
+/// leak. It is also why every one of them gained a source location at once:
+/// yyerror reads yylloc, so no call site passes a position of its own.
 ///
 /// The driver reads errorCount() once yyparse() returns and refuses to compile
 /// when it is non-zero; see the exit-code table in driver/main.cpp.
