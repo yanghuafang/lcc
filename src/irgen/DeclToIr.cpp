@@ -118,6 +118,17 @@ llvm::Value* FuncDecl::genCode(CodeGenerator& generator) {
     func->eraseFromParent();
     func = generator.getModule().getFunction(funcName_);
 
+    // Null means the name was taken by something that is not a function, and
+    // in lcc that is a file-scope variable — the only other global it creates.
+    // LLVM renames on any GlobalValue clash, but getFunction only ever finds
+    // Functions, so the rename is all the evidence there is that something is
+    // there at all.
+    if (func == nullptr) {
+      throw std::logic_error("Name " + funcName_ +
+                             " is already declared as a variable, so it "
+                             "cannot also be a function!");
+    }
+
     if (func->getFunctionType() != funcType) {
       throw std::logic_error("Redefine function " + funcName_ +
                              " with different params!");
