@@ -75,7 +75,8 @@ void emitObject(llvm::Module& module, const std::string& fileName,
 void emitAssembly(llvm::Module& module, const std::string& fileName,
                   const TargetBackendOptions& options);
 
-/// Write textual IR to fileName (no-op when empty), verifying the module.
+/// Write textual IR to fileName (no-op when empty). Verification is genIr's
+/// job, and runs whether or not any dump was asked for.
 void dumpIr(llvm::Module& module, const std::string& fileName);
 
 }  // namespace pipeline

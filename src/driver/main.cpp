@@ -31,10 +31,10 @@
 //   1  no arguments — help text printed to stdout, not an error
 //   2  bad command line: unparseable flags, or -O-passes combined with -O0..Oz
 //   3  cannot open the -i source file
-//   4  lex/parse failed — either yyparse returned non-zero, or the lexer
-//      rejected a literal. The second half needs saying: the lexer recovers
-//      by substituting 0 and returning a valid token, so a parse can succeed
-//      with errors behind it, and lcc used to emit an object from the
+//   4  lex/parse failed — yyparse returned non-zero, or the lexer rejected a
+//      literal or a byte no rule matches. The lexer half needs saying: it
+//      recovers by substituting 0 and returning a valid token, so a parse can
+//      succeed with errors behind it, and lcc used to emit an object from the
 //      substituted values and exit 0
 //   5  writing the -v AST graph threw — but the common failure does not reach
 //      here: dotfile::write reports an unopenable path on stderr and returns,
@@ -42,7 +42,9 @@
 //      stage 8, where pipeline::dumpIr throws and the code is reachable
 //   6  IR generation or the middle end failed — including an unresolvable
 //      --target, since the module is configured for its target before the AST
-//      walk begins (sizeof and DWARF offsets both need the data layout)
+//      walk begins (sizeof and DWARF offsets both need the data layout), and
+//      including a module that fails llvm::verifyModule, which genIr checks
+//      before the back end can see it
 //   7  object emission failed
 //   8  writing the -l IR dump failed
 //   9  assembly emission failed
