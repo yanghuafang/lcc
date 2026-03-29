@@ -48,6 +48,10 @@
 # clangd / language-server index cache
 .cache/
 
-# Coverage profiles from an instrumented build.
+# Coverage profiles. An instrumented lcc writes default.profraw into whatever
+# directory it was launched from whenever LLVM_PROFILE_FILE is unset, so one
+# lands in scripts/ the first time anyone runs that binary by hand.
+# scripts/coverage.sh sets the variable and keeps its own profiles in the build
+# directory; these patterns are for the stray ones.
 *.profraw
 *.profdata

@@ -40,7 +40,7 @@ source ./build-env.sh || exit 1
 usage() {
   cat <<'EOF'
 Usage: build-lcc.sh [--debug|--release|--relwithdebinfo] [--parse]
-                    [--asan] [--ubsan] [--werror]
+                    [--asan] [--ubsan] [--coverage] [--werror]
 
 Configure and build lcc with CMake, into a sibling of the repo.
 
@@ -54,6 +54,8 @@ Options:
               explanation of each grammar conflict (docs/ParserConflicts.md).
   --asan      Build lcc with AddressSanitizer.
   --ubsan     Build lcc with UndefinedBehaviorSanitizer; combinable with --asan.
+  --coverage  Build lcc with source-based coverage instrumentation. Use
+              scripts/coverage.sh instead unless you want the build alone.
   --werror    Fail the build on any compiler warning.
   -h, --help  Show this help.
 
@@ -69,6 +71,7 @@ build_mode=""
 parse_counterexamples=false
 asan=OFF
 ubsan=OFF
+coverage=OFF
 werror=OFF
 
 while [[ $# -gt 0 ]]; do
@@ -112,6 +115,10 @@ while [[ $# -gt 0 ]]; do
       ubsan=ON
       shift
       ;;
+    --coverage)
+      coverage=ON
+      shift
+      ;;
     --werror)
       werror=ON
       shift
@@ -140,6 +147,7 @@ cmake -S ../ -B "${LCC_BUILD_DIR}" \
   -DLLVM_DIR="${LLVM_DIR}" \
   -DLCC_ASAN="${asan}" \
   -DLCC_UBSAN="${ubsan}" \
+  -DLCC_COVERAGE="${coverage}" \
   -DLCC_WERROR="${werror}" \
   -DCMAKE_EXE_LINKER_FLAGS="" \
   -DCMAKE_SHARED_LINKER_FLAGS="" \

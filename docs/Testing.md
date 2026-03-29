@@ -19,6 +19,7 @@ All commands below assume `cd lcc/scripts`.
 | `check-machine-pass-smoke.sh` | Smoke test: `-machine-stats` emits a summary and leaves the object byte-identical (M17 CI) |
 | `check-ir-opt.sh` | IR opt regression: recompile `-O2`, compare IR vs committed `debug/` goldens (M16) |
 | `check-differential.sh` | Compile `tests/differential/*` with lcc and the system compiler, run both, compare output |
+| `coverage.sh` | Build an instrumented `lcc`, compile the suite with it, report which of `lcc`'s own lines that reaches |
 | `mir-study.sh` | Study helper: print MIR before/after regalloc via `llc` (M13) |
 | `bench.sh` | Benchmark `benchmarks/*` (compile time, IR count, runtime); `--smoke` for CI — see [Benchmarks.md](Benchmarks.md) |
 | `format.sh` | `clang-format` plus trailing-whitespace strip; `--check` reports without writing |
@@ -224,9 +225,53 @@ current runners happen to agree, but on a host where they did not, `char c =
 `ULONG_MAX` from `lcc` — an ABI difference that reads exactly like a
 miscompilation.
 
+### Coverage
+
+```bash
+./coverage.sh             # build instrumented, run the suite, print the report
+./coverage.sh --html      # also write a line-by-line report
+./coverage.sh --no-build  # reuse the instrumented binary from a previous run
+```
+
+Builds `lcc` with `-fprofile-instr-generate -fcoverage-mapping` into its own
+directory, compiles every registered test in both modes plus the graph
+fixtures, then reports with `llvm-cov`. It measures **`lcc`'s own source**, not
+the test programs — the question is which of `lcc`'s lines run while it
+compiles `tests/*.c`.
+
+Only the compile stage is instrumented, because that is where `lcc`'s code is.
+`link-tests.sh` hands the work to the system linker and `run-tests.sh` to the
+compiled program; neither executes a line of `lcc`.
+
+No percentage is recorded here, deliberately. It moves with every test and
+every source file added, nothing enforces it, and a stale figure in a document
+is worse than no figure. Run the script for the current number. What is worth
+writing down is the part that does not drift — the code the suite cannot reach
+by construction:
+
+| Not reached by the suite | Why |
+| -------------------------- | ----- |
+| `opt/passes/IrInstructionStatsPass.cpp` | Needs `-ir-stats`, which **no script passes** |
+| `opt/passes/FoldAddZeroPass.cpp` | Needs `-fold-add-zero`; `bench.sh` passes it, the suite does not |
+| `backend/passes/MachineInstrStatsPass.cpp` | Needs `-machine-stats`; `check-machine-pass-smoke.sh` passes it |
+| Most of `opt/IrOptimizer.cpp` | The suite compiles at `-O0` and `-O2` only, never `-O1`, `-Os`, `-Oz`, or `-O-passes` |
+| Most of `frontend/Diagnostics.cpp` | No program in `tests/` fails to lex or parse |
+| The `--target` / `-mcpu` / `-mattr` paths in `backend/TargetBackend.cpp` | The suite never retargets |
+
+The first three are the ones worth noting: `lcc`'s own passes are the milestone
+work, and the numbered suite runs none of them. Two are covered from CI by the
+smoke scripts above. `IrInstructionStatsPass` is covered by nothing.
+
+`src/generated/` is left out of the report — flex and bison tables have
+unreachable-by-construction states that say nothing about the test suite.
+
+`.github/workflows/analysis.yml` runs it as a report, not a gate: there is no
+threshold to enforce, and the instrumented build is a second full build of
+`lcc`, so it stands apart from the workflow that gates a change.
+
 ## CI
 
-GitHub Actions runs one workflow per gate. `.github/workflows/build.yml` is the matrix on `ubuntu-latest` and `macos-latest`: install, build, compile, link, run, `check-differential.sh`, `check-lex-errors.sh`, `check-debug-info.sh`, `check-asm-smoke.sh`, `check-machine-pass-smoke.sh`, and `bench.sh --smoke`. `.github/workflows/lint.yml` runs `format.sh --check` and `tidy.sh`, and `.github/workflows/docs.yml` runs `docs.sh`. `.github/workflows/sanitizer.yml` builds `lcc` under ASan and UBSan on both platforms and compiles the suite in both modes with the instrumented binary. See [Install.md](Install.md) for dependencies.
+GitHub Actions runs one workflow per gate. `.github/workflows/build.yml` is the matrix on `ubuntu-latest` and `macos-latest`: install, build, compile, link, run, `check-differential.sh`, `check-lex-errors.sh`, `check-debug-info.sh`, `check-asm-smoke.sh`, `check-machine-pass-smoke.sh`, and `bench.sh --smoke`. `.github/workflows/lint.yml` runs `format.sh --check` and `tidy.sh`, and `.github/workflows/docs.yml` runs `docs.sh`. `.github/workflows/sanitizer.yml` builds `lcc` under ASan and UBSan on both platforms and compiles the suite in both modes with the instrumented binary. `.github/workflows/analysis.yml` reports coverage. See [Install.md](Install.md) for dependencies.
 
 `format.sh --check` is a job of its own rather than a step in the build, so a formatting slip fails in seconds rather than after a full LLVM link. `tidy.sh` needs the compile database a build produces, so its job builds `lcc` again. It and `docs.sh` run on `ubuntu-latest` only — their findings are host-independent, so a second and third copy would add cost without signal.
 

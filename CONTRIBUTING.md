@@ -63,7 +63,7 @@ CI (GitHub Actions) also runs these checks on every push and pull request agains
 ./bench.sh --smoke             # benchmarks compile/link/run (no timing gate)
 ```
 
-Optional IR regression check against the committed goldens: `./check-ir-opt.sh` (see [docs/Testing.md](docs/Testing.md)).
+Optional IR regression check against the committed goldens: `./check-ir-opt.sh` (see [docs/Testing.md](docs/Testing.md)). To see which of `lcc`'s own lines the suite reaches, `./coverage.sh` (see [docs/Testing.md](docs/Testing.md#coverage)).
 
 ## Adding a test
 

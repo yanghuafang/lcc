@@ -1,0 +1,44 @@
+name: Analysis
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+
+jobs:
+  # A number to read, not a threshold to pass: coverage.sh prints a per-file
+  # report and asserts nothing, because the figure moves with every test and
+  # every source file added. Running it here keeps it from rotting: an
+  # instrumented build that stopped compiling would otherwise surface only when
+  # someone next went looking for the report.
+  #
+  # Its own workflow rather than a step in Build: this is a second full build
+  # of lcc, several times slower than the ordinary one, and nothing gates on it.
+  coverage:
+    name: Coverage
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # llvm-profdata and llvm-cov ship with LLVM 20, which this installs for
+      # the instrumented build in any case.
+      - name: Install dependencies
+        working-directory: scripts
+        run: ./install-deps-ubuntu.sh
+
+      # Source-based coverage is a Clang feature. Left to itself CMake takes the
+      # runner's default c++, which is GCC, and neither -fprofile-instr-generate
+      # nor -fcoverage-mapping is an option it has. Clang 20 rather than the
+      # distro default, so the .profraw it writes is a version the llvm-profdata
+      # that merges it was built to read. Named here rather than in coverage.sh
+      # because it is this job's choice of compiler, not the script's.
+      - name: Install Clang 20
+        run: sudo apt-get install -y clang-20
+
+      - name: Report coverage
+        working-directory: scripts
+        env:
+          CC: clang-20
+          CXX: clang++-20
+        run: ./coverage.sh

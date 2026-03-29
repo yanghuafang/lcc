@@ -187,6 +187,25 @@ if(LCC_UBSAN)
   message(STATUS "UndefinedBehaviorSanitizer enabled")
 endif()
 
+# Source-based coverage build: -DLCC_COVERAGE=ON, or build-lcc.sh --coverage.
+#
+# Measures how much of lcc's own source the test suite reaches while compiling
+# tests/*.c. The instrumentation flag makes every lcc run write a .profraw; the
+# mapping flag is what lets llvm-cov attribute those counters back to lines.
+# Both are needed, and the link line needs the first one again or the runtime
+# that writes the file is never pulled in.
+#
+# scripts/coverage.sh builds this Debug and in its own directory: optimized
+# builds attribute an inlined line to the call site, which reports coverage for
+# source that was never separately compiled.
+option(LCC_COVERAGE "Build lcc with source-based coverage instrumentation" OFF)
+if(LCC_COVERAGE)
+  target_compile_options(${CMAKE_PROJECT_NAME} PRIVATE
+    -fprofile-instr-generate -fcoverage-mapping)
+  target_link_options(${CMAKE_PROJECT_NAME} PRIVATE -fprofile-instr-generate)
+  message(STATUS "Source-based coverage enabled")
+endif()
+
 # Map components rather than LLVM_AVAILABLE_LIBS, which links every archive
 # twice on Homebrew (static list + libLLVM.dylib). all-targets is deliberate
 # and not "only what lcc uses": --target accepts any triple registered in the
