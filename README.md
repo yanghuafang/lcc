@@ -9,13 +9,13 @@ A teaching C compiler built with **flex**, **bison**, and **LLVM 20**.
 
 ## Why this project
 
-| Trait | What it means |
-| --- | --- |
-| **Small enough to read** | A bottom-up **LALR** grammar (flex/bison) instead of a hand-written recursive-descent parser keeps the front-end short enough to study and modify. |
-| **A real toolchain** | Emits genuine **LLVM 20** IR and native object files through `IRBuilder` and `TargetMachine` — not a toy backend. |
-| **Cleanly layered** | `src/` is an acyclic dependency graph: `ast/` includes nothing outside itself, `irgen/` does not know the middle end or back end exist, and the phase ordering lives in one file (`driver/Pipeline.cpp`). You can study or change one layer at a time. |
-| **Guided curriculum** | A 19-milestone learning plan (**M0–M18**) takes you from a first build to custom LLVM passes and codegen — see [docs/LearningPlan.md](docs/LearningPlan.md). |
-| **Inspectable** | Dump AST graphs (Graphviz), pre/post-optimization IR, assembly, and IR / machine-instruction stats straight from the CLI. |
+Compiler tutorials usually stop at an interpreter or a toy backend; real compilers are too large to read. `lcc` sits in between — a complete source-to-object pipeline you can read end to end.
+
+- **It finishes the job.** `.c` in, linkable `.o` out, through real `IRBuilder` and `TargetMachine` calls.
+- **The grammar is declarative.** A bison LALR grammar states C's syntax as rules rather than burying it in recursive-descent control flow. The cost is real and documented — see [docs/ParserConflicts.md](docs/ParserConflicts.md).
+- **The layers come apart.** `src/` is an acyclic dependency graph: `ast/` includes nothing outside itself, and `irgen/` has no idea the middle end or back end exist. You can read one layer without loading the others.
+- **Every stage is dumpable.** AST graph, pre- and post-optimization IR, assembly, and instruction stats, all from CLI flags.
+- **There is a path through it.** 19 milestones from first build to writing your own LLVM passes — see [docs/LearningPlan.md](docs/LearningPlan.md).
 
 ## How it works
 

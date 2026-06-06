@@ -340,10 +340,8 @@ These are **deliberately deferred** — architectural non-goals, each with a rea
 
 | Feature | Reason to defer |
 | --------- | ----------------- |
-
 | Separate semantic-analysis pass | Add only when a feature requires it (e.g. heavy typedef disambiguation) — see architecture notes in `ast/Nodes.hpp` |
 | Split `Expr` from `Stmt` | Large churn; low ROI unless rewriting the frontend for pedagogy |
-
 
 ---
 
