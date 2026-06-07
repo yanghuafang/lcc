@@ -2,7 +2,7 @@
 
 This document is a **completed record** of how lcc's **C language and front-end** support was built, ordered by **dependencies**, **learning value**, and **risk**. Read it for background on why the front-end looks the way it does; for what the compiler accepts today, see [Language.md](Language.md).
 
-**Status:** priorities 1–5 below are **complete** (arrays through `-g` debug info), and what was added after that track closed is recorded under [Later front-end work](#later-front-end-work). Deferred language work (3D arrays, preprocessor, `extern`) stays under [Explicitly out of scope](#explicitly-out-of-scope-for-now).
+**Status:** priorities 1–5 below are **complete** (arrays through `-g` debug info), and what was added after that track closed is recorded under [Later front-end work](#later-front-end-work). Deferred language work (3D array initializers, preprocessor, `extern`) stays under [Explicitly out of scope](#explicitly-out-of-scope-for-now).
 
 **The middle-end, optimization, and back-end track** that followed this one is likewise complete: milestones M0–M18 in [LearningPlan.md](LearningPlan.md), implementation details in [MiddleBackendNotes.md](MiddleBackendNotes.md).
 
@@ -31,6 +31,8 @@ Before extending, it helps to know what the current codebase already supports:
 | `-g` CLI flag | Parsed in `driver/main.cpp`; passed to `CodeGenerator` — emits compile unit, stepping, locals/params, struct members, and lexical blocks; skips LLVM opts when set |
 | **LLVM 20** toolchain | Opaque pointers in IR; pointee types tracked on AST `VarType` (`vartype::memoryAccessType`, etc.); requires C++17 |
 | Short-circuit evaluation | The two logical operators and `?:` skip the operand C says they may skip (`tests/45.short_circuit.c`) |
+| 3D and deeper arrays | Declaration, subscript and `sizeof` at any depth (`tests/46.array_3d.c`); the brace initializer still stops at two |
+| Parenthesized names | `(a)` reads as an expression rather than a cast (`tests/47.paren_expr.c`) |
 
 See [ParserConflicts.md](ParserConflicts.md) for parser ambiguities that several of these steps had to work around (especially `typedef`).
 
@@ -169,7 +171,7 @@ int a[][5] = { {1}, {2,3} };
 
 ### 3D arrays (declaration done, initializer deferred)
 
-`int a[2][8][5];`, subscripting and `sizeof` work at any depth: nested `ArrayBoundList` already parsed three bounds, and the GEP lowering needed nothing new.
+`int a[2][8][5];`, subscripting and `sizeof` work at any depth: nested `ArrayBoundList` already parsed three bounds, and the GEP lowering needed nothing new. `tests/46.array_3d.c` pins that, deliberately using no brace initializer.
 
 The **brace initializer** is what stops at two dimensions, and stays deferred — the 2D flatten helper would have to generalize, and a third rank teaches nothing the second has not.
 
@@ -181,7 +183,7 @@ The **brace initializer** is what stops at two dimensions, and stays deferred �
 
 ## 3. `typedef` and `size_t`
 
-Split into **3a** (grammar + alias table + `VarType` spellings) and **3b** (defined-type typedefs + expression disambiguation). `size_t` ships in **3a** via `typedef unsigned long size_t;`. Remaining limits (State 133, typedef-as-variable in the same scope) are documented in [Language.md](Language.md) and [ParserConflicts.md](ParserConflicts.md).
+Split into **3a** (grammar + alias table + `VarType` spellings) and **3b** (defined-type typedefs + expression disambiguation). `size_t` ships in **3a** via `typedef unsigned long size_t;`. Remaining limits (the identifier conflicts, typedef-as-variable in the same scope) are documented in [Language.md](Language.md) and [ParserConflicts.md](ParserConflicts.md).
 
 ### 3a — `typedef` of `VarType` spellings (including `size_t`) — **done**
 
@@ -331,6 +333,16 @@ All three lowered eagerly with `select`, so the guarding idioms guarded nothing:
 At file scope the lowering stays a `select`: there is no block to branch between, which is what lets `int g = 1 && 0;` remain a constant initializer.
 
 `tests/45.short_circuit.c` counts calls rather than checking values. The values were always right; only the skipped side effects tell the two lowerings apart.
+
+### Parenthesized names (done)
+
+**Goal:** `(a)` reads as a parenthesized expression unless `a` names a type.
+
+On lookahead `)` the parser reduced `IDENTIFIER` to a type name and committed to a cast, so `r = (a);`, `if ((a) > 0)` and `f((a))` were syntax errors — ordinary C, no `typedef` involved. Giving `( IDENTIFIER )` its own productions defers the choice by one token, and the token after `)` settles it.
+
+Six tokens stay ambiguous — `*`, `&`, `+`, `-`, `++`, `--` — because each can also begin a unary expression. Telling `(a) + 1` from `(T) + 1` needs to know whether `a` names a type, and lcc has no symbol table while parsing. See [ParserConflicts.md](ParserConflicts.md) for why the conflict count rising from 48/6 to 56/7 was the right trade.
+
+`tests/47.paren_expr.c`.
 
 ---
 

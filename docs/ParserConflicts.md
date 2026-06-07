@@ -8,14 +8,14 @@ lcc's grammar is intentionally compact: declarations, statements, and expression
 
 | Kind | Count | Bison default |
 |------|------:|---------------|
-| Shift/reduce | 48 | Prefer **shift** |
-| Reduce/reduce | 6 | Prefer the **first** grammar rule |
+| Shift/reduce | 56 | Prefer **shift** |
+| Reduce/reduce | 7 | Prefer the **first** grammar rule |
 
 As of the current grammar, `./build-lcc.sh` (which runs `bison -d frontend/Parser.y -v` via CMake) prints:
 
 ```
-Parser.y: warning: 48 shift/reduce conflicts [-Wconflicts-sr]
-Parser.y: warning: 6 reduce/reduce conflicts [-Wconflicts-rr]
+Parser.y: warning: 56 shift/reduce conflicts [-Wconflicts-sr]
+Parser.y: warning: 7 reduce/reduce conflicts [-Wconflicts-rr]
 ```
 
 State numbers in `Parser.output` **change when the grammar grows** (new rules insert states). Regenerate with `bison -d frontend/Parser.y -v` and search for `conflicts:` rather than relying on fixed state IDs from an older report.
@@ -44,7 +44,7 @@ cd ../scripts
 ./build-lcc.sh
 ```
 
-`Parser.output` lists every LR state. Lines like `State 133 conflicts: 4 reduce/reduce` mark states where the parser had to guess. Bracketed actions such as `[reduce using rule 110 (Expr)]` show the action Bison **did not** take by default.
+`Parser.output` lists every LR state. Lines like `State 254 conflicts: 3 reduce/reduce` mark states where the parser had to guess. Bracketed actions such as `[reduce using rule 110 (Expr)]` show the action Bison **did not** take by default.
 
 ## Background: what is a conflict?
 
@@ -70,26 +70,29 @@ You can override defaults with precedence (`%left`, `%right`, `%nonassoc`) or ex
 ## Conflict map (high level)
 
 ```
-48 shift/reduce
-├── 40  Expr • [ subscript ]     (subscript vs completed unary/binary operand)
+56 shift/reduce
+├── 41  Expr • [ subscript ]     (subscript vs completed unary/binary operand)
+├──  6  ( id ) • x               (parenthesized name vs cast — state 194)
 ├──  3  IDENTIFIER • [           (ArrayBoundList ε vs `[`; FuncDecl `(` vs array declarator)
 ├──  2  struct/union • IDENTIFIER (typedef name vs closing _VarType)
+├──  1  ( id • )                 (shift `)` rather than commit to _VarType — state 134)
 ├──  1  _VarType • ;             (TypeDecl vs VarDecl with empty VarList)
 ├──  1  sizeof ( id • )          (three sizeof productions — shift on `)`)
 └──  1  if (...) stmt • else     (dangling else — resolved by the shift default)
 
- 6 reduce/reduce
-├──  4  IDENTIFIER •             (typedef name as _VarType vs variable as Expr)
-└──  2  sizeof ( id • )          (_VarType vs Expr inside sizeof)
+ 7 reduce/reduce
+├──  3  IDENTIFIER •             (typedef name as _VarType vs variable as Expr — state 254)
+├──  2  ( id • )                 (same pair inside parentheses — state 134, outranked by the shift)
+└──  2  sizeof ( id • )          (_VarType vs Expr inside sizeof — state 200)
 ```
 
-The extra five shift/reduce conflicts (vs an earlier 43-conflict grammar) come from **array bounds** and **typedef struct/union** rules added for 2D arrays and `typedef` support.
+Eight of these arrive with the two `( IDENTIFIER )` productions that make `(a)` an expression: six in state 194, where the token after `)` decides between a parenthesized name and a cast, and one each in states 134 and 200. Section 4 works through them. The **array bounds** and **typedef struct/union** groups came earlier, with 2D arrays and `typedef` support.
 
 The sections below walk through each group.
 
 ---
 
-## 1. Subscript vs operators (40 shift/reduce)
+## 1. Subscript vs operators (41 shift/reduce)
 
 ### What the grammar says
 
@@ -137,7 +140,7 @@ Default shift/reduce resolution **shifts** `[`, which chooses the correct C read
 
 ### Where to look — subscript states
 
-Conflicts appear in many states after unary/binary rules — for example **states 131–132, 141–146, 202, 205–206, 209–235, 265, and 288** (search for `LBRACKET  [reduce using rule` or `conflicts: 1 shift/reduce` in the file header). Counterexample pattern:
+Conflicts appear in many states after unary/binary rules — for example **states 132–133, 142–147, 202, 205–206, 209–235, 265, and 288** (search for `LBRACKET  [reduce using rule` or `conflicts: 1 shift/reduce` in the file header). Counterexample pattern:
 
 ```
 Example: ASTERISK Expr • LBRACKET Expr RBRACKET
@@ -206,27 +209,27 @@ Its last terminal is `RPARENTHESES`, which appears in no `%left` / `%right` / `%
 
 ### How Parser.output proves it
 
-Two signals, both visible in state 305:
+Two signals, both visible in state 310:
 
 ```
-State 305 conflicts: 1 shift/reduce
+State 310 conflicts: 1 shift/reduce
 
-   93 IfStmt: IF LPARENTHESES Expr RPARENTHESES Stmt • ELSE Stmt
-   94       | IF LPARENTHESES Expr RPARENTHESES Stmt •
+   94 IfStmt: IF LPARENTHESES Expr RPARENTHESES Stmt • ELSE Stmt
+   95       | IF LPARENTHESES Expr RPARENTHESES Stmt •
 
-    ELSE  shift, and go to state 312
+    ELSE  shift, and go to state 317
 
-    ELSE      [reduce using rule 94 (IfStmt)]
+    ELSE      [reduce using rule 95 (IfStmt)]
 ```
 
-1. The conflict is **counted** — it is one of the 48 reported by bison. A conflict resolved by precedence is silently resolved and never reported.
+1. The conflict is **counted** — it is one of the 56 reported by bison. A conflict resolved by precedence is silently resolved and never reported.
 2. The discarded reduce is **bracketed** (`[reduce using rule 94 …]`), which is how Bison marks an action dropped by a default resolution.
 
-Delete `%nonassoc ELSE`, rerun bison, and the counts stay at 48/6 with a byte-identical automaton in `Parser.output`. That is the experiment to trust over the comment.
+Delete `%nonassoc ELSE`, rerun bison, and the counts stay at 56/7 with a byte-identical automaton in `Parser.output`. That is the experiment to trust over the comment.
 
 ### Where to look — dangling else
 
-- **State 305** in `Parser.output`
+- **State 310** in `Parser.output`
 - Counterexample:
 
 ```
@@ -291,7 +294,7 @@ Declaration syntax in C is notoriously entangled (types, declarators, and specif
 
 ---
 
-## 4. Identifier: type name or expression? (4 reduce/reduce)
+## 4. Identifier: type name or expression?
 
 ### The overlap
 
@@ -322,11 +325,49 @@ For `MyType;` at file scope, the first reading is a forward type declaration; th
 
 ### What Bison does — IDENTIFIER
 
-Reduce/reduce default: pick **rule 29** (`_VarType: IDENTIFIER`) over **rule 110** (`Expr: IDENTIFIER`) because it appears first in the grammar file.
+Reduce/reduce default: pick **rule 29** (`_VarType: IDENTIFIER`) over **rule 111** (`Expr: IDENTIFIER`) because it appears first in the grammar file.
 
 ### Where to look — IDENTIFIER
 
-- **State 133** — four reduce/reduce conflicts on `COMMA`, `SEMICOLON`, `ASTERISK`, `RPARENTHESES`
+- **State 254** — three reduce/reduce conflicts on `COMMA`, `SEMICOLON`, `ASTERISK`, in declaration position
+- **State 134** — the same pair inside parentheses, but here a *shift* outranks both
+- **State 194** — six shift/reduce conflicts, reached only by that shift
+
+### How the parenthesized case is settled
+
+Inside parentheses the rule-order default used to decide everything, and it decided wrongly. On lookahead `)` the parser reduced the identifier to `_VarType`, committed to reading a cast, and `r = (a);` was a syntax error — for an ordinary `int`, no typedef in sight.
+
+Two productions spelling out `( IDENTIFIER )` change that. State 134 now offers a shift:
+
+```
+State 134 conflicts: 1 shift/reduce, 2 reduce/reduce
+
+    RPARENTHESES  shift, and go to state 194
+
+    RPARENTHESES  [reduce using rule 29 (_VarType)]
+    RPARENTHESES  [reduce using rule 111 (Expr)]
+    ASTERISK      reduce using rule 29 (_VarType)
+```
+
+Bison prefers the shift, so both reductions are bracketed out and the decision is deferred one token. Note `ASTERISK` keeps its old reduction: `(a * 7)` is still read as a pointer cast.
+
+State 194 is where the deferred decision lands:
+
+```
+State 194
+
+  120 Expr: LPARENTHESES IDENTIFIER RPARENTHESES •
+  121     | LPARENTHESES IDENTIFIER RPARENTHESES • Expr
+
+    ADD        shift, and go to state 99
+    SUB        shift, and go to state 100
+    ...
+    ADD        [reduce using rule 120 (Expr)]
+    SUB        [reduce using rule 120 (Expr)]
+    $default   reduce using rule 120 (Expr)
+```
+
+Every token that can *begin* an expression gets a shift, which builds rule 121 — a cast. Everything else falls to `$default` and reduces rule 120 — a parenthesized name. The six counted conflicts are exactly the tokens that can do both: `*`, `&`, `+`, `-`, `++`, `--`. Bison shifts, so those still read as casts.
 
 ### Practical impact
 
@@ -335,14 +376,17 @@ This is the **most subtle** conflict group. Industrial compilers often:
 - parse typedef names in a separate scope and lexer hack (`TYPENAME` vs `IDENTIFIER`), or
 - run a semantic pass that disambiguates.
 
-lcc keeps one token and relies on rule order. The regression suite avoids the affected shapes, but this is **not** a theoretical risk: because rule 29 wins on lookahead `ASTERISK` and `RPARENTHESES`, a parenthesized expression that begins with a bare identifier followed by `)` or `*` commits to the type reading and fails outright:
+lcc has neither: the lexer is context-free and the symbol table is built during code generation, so nothing knows which names are types while parsing. What survives is the six-token set above:
 
 ```c
-r = (a);            /* syntax error, unexpected SEMICOLON  — parsed as a cast */
-r = (a * 7) + 1;    /* syntax error, unexpected INTEGER, expecting RPARENTHESES */
+r = (a);            /* fine */
+if ((a) > 0) { }    /* fine */
+f((a));             /* fine */
+r = (a) + 1;        /* read as a cast — "Type a is undefined!" */
+r = (a * 7) + 1;    /* read as a pointer cast — syntax error */
 ```
 
-Both are ordinary integer variables — no typedef required. Any other lookahead after the identifier keeps the `Expr` reading (`(a + 7)`, `(a == 3)`), as does a parenthesis that does not open with a bare identifier (`(7 * a)`, `(*p * 7)`). See [Language.md](Language.md#not-supported-yet) for the user-facing note and workarounds.
+That residue is C's own ambiguity rather than a shortcut: a real compiler tells `(a) + 1` from `(T) + 1` only by knowing whether `a` names a type. See [Language.md](Language.md#not-supported-yet) for the user-facing note and workarounds.
 
 ### Takeaway — reduce/reduce needs a grammar change
 
@@ -380,7 +424,7 @@ All three actions build an `AST::SizeOf` node in `Parser.y`. The conflict affect
 
 ### Where to look — sizeof
 
-- **State 197** in `Parser.output`
+- **State 200** in `Parser.output`
 
 ### Takeaway — overlapping productions
 
@@ -458,10 +502,22 @@ For a **learning compiler** with a fixed test suite: **yes**, with caveats.
 | Dangling else | Yes (shift — `%nonassoc ELSE` is inert) | Low |
 | TypeDecl vs empty VarDecl | Shift favors `TypeDecl` | Low — odd forms like `int;` |
 | Array bounds / typedef struct | Shift favors declarator continuation | Low for current tests |
-| IDENTIFIER type vs expr | First rule wins (`_VarType`) | **Medium** — rejects `(a)` and `(a * x)` for any variable, not just typedefs |
+| IDENTIFIER type vs expr | Shift defers it; then first rule wins | **Low–Medium** — `(a)` is an expression, but `(a) + 1` and `(a * x)` still read as casts |
 | sizeof overload | Similar AST nodes | Low for current tests |
 
 A conflict-free grammar is possible but usually costs more non-terminals, lexer complexity, or a separate typedef pass — trade-offs lcc deliberately avoids in `Parser.y`.
+
+### A higher count can mean a safer grammar
+
+Adding the two `( IDENTIFIER )` productions took the totals from 48/6 to 56/7, and the grammar got better in the process. The old count was lower because the parser was not asking the question: at `( IDENTIFIER •` on lookahead `)` it reduced by rule order, silently took the type reading, and rejected `r = (a);`. The new count is higher because that decision is now an explicit shift point with two productions competing for it — the ambiguity was always there, and bison is now reporting it rather than resolving it a state early.
+
+What makes the residue tolerable is that its losing side cannot be silent. For `(N) op E` to be read as a cast *and* survive code generation, `N` has to name a real type — and if it does, C reads it as a cast too, so `lcc` agrees with the standard. If `N` is a variable, the type lookup fails and says so:
+
+```
+Type a is undefined!
+```
+
+So the six conflicts in state 194 can cost a diagnostic, never a wrong answer. That is the distinction worth applying to any conflict here: not how many there are, but whether the losing side of each one fails loudly.
 
 ---
 

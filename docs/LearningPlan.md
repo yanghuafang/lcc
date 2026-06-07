@@ -276,7 +276,7 @@ These flags reach **codegen only**. They do not steer the IR vectorizers inside 
 
 | Step | Action |
 | ------ | -------- |
-| Study | Compile `tests/40.array_sum.c` at `-O3` (a study fixture, deliberately outside the regression suite) |
+| Study | Compile `tests/40.array_sum.c` at `-O3` (a study fixture, deliberately outside the suite) |
 | Study | Compare asm with and without SIMD features (`-mattr +avx2` on x86; NEON is default on ARM64) |
 | Study | Optional: `llvm-mca` on the hot loop |
 | Verify | Document whether LLVM vectorized and why — see [LlvmTools.md § M14](LlvmTools.md#auto-vectorization-study-m14) |

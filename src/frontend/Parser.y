@@ -569,6 +569,24 @@ Expr:       IDENTIFIER          { $$ = new AST::Variable(*$1); }
                                 { $$ = new AST::Subscript($1, $3); }
             | LPARENTHESES VarType RPARENTHESES Expr %prec NOT
                                 { $$ = new AST::TypeCast($2, $4); }
+ /* `( IDENTIFIER )` needs its own two productions, and they are what make `(a)`
+   an expression at all. Reducing the identifier at `( IDENTIFIER •` forces the
+   choice between _VarType and Expr with only `)` in sight — a reduce/reduce
+   that rule order settles, and _VarType's IDENTIFIER alternative appears first,
+   so the parser committed to reading a cast and `r = (a);` was a syntax error.
+   Shifting `)` into these rules defers the choice by one token. The lookahead
+   after `)` then settles it on its own: bison shifts into the longer form when
+   the next token can begin an expression (a cast), and reduces the shorter one
+   when it cannot (a parenthesized name).
+
+   `+`, `-`, `*` and `&` still read as casts, because each of them can also open
+   a unary expression. That is C's own ambiguity, which C resolves by knowing
+   which names are types; lcc has no symbol table while parsing. SIZEOF below
+   spells `( IDENTIFIER )` out for the same reason. See docs/ParserConflicts.md. */
+            | LPARENTHESES IDENTIFIER RPARENTHESES
+                                { $$ = new AST::Variable(*$2); }
+            | LPARENTHESES IDENTIFIER RPARENTHESES Expr %prec NOT
+                                { $$ = new AST::TypeCast(new AST::DefinedType(*$2), $4); }
             | SIZEOF LPARENTHESES VarType RPARENTHESES
                                 { $$ = new AST::SizeOf($3); }
             | SIZEOF LPARENTHESES Expr RPARENTHESES

@@ -23,7 +23,7 @@ Unlike industrial compilers (clang, gcc) that use recursive-descent parsing, `lc
 - Inferred 1D array size: `int arr[] = {10, 7, 8, 9, 1, 5};`
 - Char array string initialization: `char s[] = "hello";`, `char s[6] = "hello";` (length includes `'\0'`)
 - Two-dimensional arrays: `int matrix[8][5];`, subscript `matrix[i][j]`, including mixed lists such as `int a[2][3], b;`
-- Two-dimensional brace initialization: `int a[8][5] = {{0,1,2},{3,4,5}};`, flat `{0,1,2,3,4,5}`, and `int a[][5] = {{1},{2,3}};`
+- Two-dimensional brace initialization: `int a[8][5] = {{0,1,2},{3,4,5}};`, flat `{0,1,2,3,4,5}`, empty `{}` (zero-fill), and `int a[][5] = {{1},{2,3}};`
 - File-scope `static`: file-local variables and functions (`static int counter = 0;`, `static int helper(int x) { … }`)
 - Block-scope `static`: function-local persistent variables (`static int count;`, `static int count = 10;`)
 
@@ -61,23 +61,40 @@ Unlike industrial compilers (clang, gcc) that use recursive-descent parsing, `lc
 - Struct bit-fields: `struct S { int a : 3; };`
 - Designated initializers: `{ .x = 1, [2] = 3 }`
 - Scalar types beyond the builtin set: `signed`, `long long`, `long double`
-- Three dimensional and higher arrays, and their initialization: such as `int a[2][8][5];` (deferred — 2D already covers the multidimensional case, and the complexity climbs steeply from there)
+- Brace initialization of arrays with three or more dimensions: `int a[2][2][2] = {{{1,2},{3,4}},{{5,6},{7,8}}};` (deferred — 2D already covers the multidimensional case, and the complexity climbs steeply from there). Declaring, subscripting and `sizeof` work at any depth — `int a[2][8][5];` compiles, and so does `a[1][2][3] = 7`; only the initializer list stops at two dimensions
 - Block-scope typedef: only file-scope `typedef` is supported.
 - Struct tag typedefs before definition: `typedef struct Employee Employee;` requires the struct to be defined first, or use the combined form `typedef struct S { … } S;`.
-- **Parentheses starting with a bare identifier followed by `)` or `*`.** In that position the parser reduces `IDENTIFIER` to a type name and reads the parentheses as a cast, so these are syntax errors:
+- **A parenthesized name followed by `*`, `&`, `+`, `-`, `++` or `--`.** `(a)` on its own is an expression, but before one of those six tokens the parser reads it as a cast, because each of them can also begin a unary expression:
 
   ```c
-  r = (a);            /* error — redundant parentheses around a variable */
-  r = (a * 7) + 1;    /* error — identifier immediately followed by `*` */
+  r = (a);            /* fine */
+  if ((a) > 0) { }    /* fine */
+  f((a));             /* fine */
+  r = (a) + 1;        /* rejected — read as a cast to type `a` */
+  r = (a * 7) + 1;    /* rejected — read as a cast to `a*` */
   ```
 
-  Any other operator after the identifier parses fine (`(a + 7)`, `(a == 3)`, `(a > 3)`), as does a parenthesized expression that does not begin with a bare identifier (`(7 * a)`, `(*p * 7)`, `(arr[0] * 7)`). Work around it by reordering the operands, dropping the parentheses, or assigning to a temporary. Root cause: state 133 in `Parser.output` — see [ParserConflicts.md](ParserConflicts.md#4-identifier-type-name-or-expression-4-reducereduce).
+  Drop the parentheses, reorder the operands, or assign to a temporary. This is C's own ambiguity: telling `(a) + 1` from `(T) + 1` requires knowing whether `a` names a type, and `lcc` has no symbol table while parsing. See [ParserConflicts.md](ParserConflicts.md#4-identifier-type-name-or-expression).
+- Mixing nested and flat forms inside one array initializer: `int a[2][3] = {{1,2,3},4,5,6};` and `int a[2][3] = {1,{2,3}};` are valid C but rejected — use all-nested or all-flat. Excess elements are rejected too (`int a[2][3] = {1,2,3,4,5,6,7};`), where C drops them with a warning
 - Typedef names used as variables in the same scope: after `typedef unsigned long Foo;`, a file-scope `int Foo;` is rejected. This is a deliberate check rather than a parser limitation — `lcc` reports it during IR generation, naming the alias. Only the same scope is affected: because `typedef` is file-scope only, `int Foo;` inside a function compiles.
 - `extern`: `lcc` requires function declaration for linkage; extern variables are not allowed. Supporting them means a linkage and multi-translation-unit model, and manual declarations cover what the tests need.
 - **Unsuffixed decimal literals wider than `int`.** Unsuffixed *hex* promotes to
   the narrowest type that fits, but decimal does not: `3000000000` and
   `-2147483648` are both rejected as out of range. Add an `l` suffix
   (`3000000000L`), use hex, or write `INT_MIN` as `-2147483647 - 1`.
+
+- A parenthesized expression whose first token is a bare identifier, when the
+  next token is `)` or `*`:
+
+  ```c
+  r = (a);            /* error — redundant parentheses around a variable */
+  r = (a * 7) + 1;    /* error — identifier immediately followed by `*` */
+  ```
+
+  Any other operator after the identifier parses fine (`(a + 7)`, `(a == 3)`),
+  as does a parenthesis that does not begin with a bare identifier (`(7 * a)`,
+  `(*p * 7)`, `(arr[0] * 7)`). Reorder the operands, drop the parentheses, or
+  assign to a temporary. Root cause: [ParserConflicts.md](ParserConflicts.md#4-identifier-type-name-or-expression).
 
 For front-end feature history and test coverage per language item, see [FrontendNotes.md](FrontendNotes.md). For the active middle-end, optimization, and back-end track, see [LearningPlan.md](LearningPlan.md).
 

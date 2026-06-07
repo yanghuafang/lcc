@@ -64,7 +64,7 @@ tests=(
   "43.nested_switch.c"
   "44.token_adjacency.c"
   "45.short_circuit.c"
-)
+  "47.paren_expr.c")
 
 # AST graphs come from tests/graphs/, not from the suite above.
 #

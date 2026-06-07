@@ -89,14 +89,14 @@ llvm::Type* DefinedType::getType(TypeEnv& env) {
   if (alias != nullptr && alias != this) {
     llvmType_ = alias->getType(env);
     if (llvmType_ == nullptr) {
-      throw std::logic_error(typeName_ + " is undefined!");
+      throw std::logic_error("Type " + typeName_ + " is undefined!");
     }
     return llvmType_;
   }
 
   llvmType_ = env.findType(typeName_);
   if (llvmType_ == nullptr) {
-    throw std::logic_error(typeName_ + " is undefined!");
+    throw std::logic_error("Type " + typeName_ + " is undefined!");
   }
   return llvmType_;
 }
