@@ -2,6 +2,7 @@
 #include <llvm/IR/DerivedTypes.h>
 
 #include <stdexcept>
+#include <vector>
 
 #include "ast/Nodes.hpp"
 #include "types/BuiltinTypeMap.hpp"
@@ -63,6 +64,65 @@ llvm::Type* PointerType::getType(TypeEnv& env) {
   baseType_->getType(env);
   llvmType_ = llvm::PointerType::get(env.getContext(), 0);
   return llvmType_;
+}
+
+llvm::Type* FuncPointerType::getType(TypeEnv& env) {
+  if (llvmType_ != nullptr) {
+    return llvmType_;
+  }
+
+  // Build the signature and throw it away. The variable holds an address, and
+  // under opaque pointers that is the same `ptr` whatever it points at, so the
+  // result is of no use here -- but building it is what makes an unknown
+  // parameter or return type an error at the declaration instead of at the
+  // first call through the pointer. The cast is because getFuncType is
+  // [[nodiscard]] for its real callers, which do want what it returns.
+  (void)getFuncType(env);
+  llvmType_ = llvm::PointerType::get(env.getContext(), 0);
+  return llvmType_;
+}
+
+llvm::FunctionType* FuncPointerType::getFuncType(TypeEnv& env) const {
+  std::vector<llvm::Type*> paramTypes;
+  bool hasVoidParamType = false;
+  for (Param* param : *paramList_) {
+    llvm::Type* type = param->varType_->getType(env);
+    if (type == nullptr) {
+      throw std::logic_error(
+          "Function pointer has a parameter of unknown type!");
+    }
+
+    if (type->isVoidTy()) {
+      hasVoidParamType = true;
+    }
+
+    // An array parameter decays to a pointer, exactly as in FuncDecl::genCode:
+    // the two signatures have to agree or a call through the pointer would not
+    // match the function it holds.
+    if (type->isArrayTy()) {
+      type = llvm::PointerType::get(env.getContext(), 0);
+    }
+
+    paramTypes.push_back(type);
+  }
+
+  // `(void)` spells an empty parameter list, and only on its own.
+  if (paramTypes.size() >= 2 && hasVoidParamType) {
+    throw std::logic_error("Function pointer has an invalid void parameter!");
+  }
+  if (paramTypes.size() == 1 && hasVoidParamType) {
+    paramTypes.clear();
+  }
+
+  llvm::Type* retType = returnType_->getType(env);
+  if (retType == nullptr) {
+    throw std::logic_error("Function pointer has an unknown return type!");
+  }
+  if (retType->isArrayTy()) {
+    throw std::logic_error("Function pointer should not return array type!");
+  }
+
+  return llvm::FunctionType::get(retType, paramTypes, paramList_->isVariant_);
 }
 
 llvm::Type* ArrayType::getType(TypeEnv& env) {

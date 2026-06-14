@@ -301,6 +301,33 @@ std::pair<std::string, std::string> PointerType::genGraph() const {
   return std::make_pair(root, tree);
 }
 
+std::pair<std::string, std::string> FuncPointerType::genGraph() const {
+  const std::string id = getId();
+  const std::string root = "FuncPointerType_" + id;
+  std::string tree = root + " [label = FuncPointerType]\n";
+
+  if (isConst_) {
+    const std::string isConst = "const";
+    const std::string isConstNode = isConst + "_" + id;
+    tree += isConstNode + " [label = " + isConst + "]\n";
+    tree += root + " -> " + isConstNode + "\n";
+  }
+
+  if (returnType_ != nullptr) {
+    const std::pair<std::string, std::string> graph = returnType_->genGraph();
+    tree += root + " -> " + graph.first + "\n";
+    tree += graph.second;
+  }
+
+  if (paramList_ != nullptr) {
+    const std::pair<std::string, std::string> graph = paramList_->genGraph();
+    tree += root + " -> " + graph.first + "\n";
+    tree += graph.second;
+  }
+
+  return std::make_pair(root, tree);
+}
+
 std::pair<std::string, std::string> ArrayType::genGraph() const {
   const std::string id = getId();
   const std::string root = "ArrayType_" + id;

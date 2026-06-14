@@ -152,6 +152,11 @@ PointerType::~PointerType() { delete baseType_; }
 
 ArrayType::~ArrayType() { delete baseType_; }
 
+FuncPointerType::~FuncPointerType() {
+  delete returnType_;
+  delete paramList_;
+}
+
 StructType::~StructType() { deleteFieldDecls(structBody_); }
 
 UnionType::~UnionType() { deleteFieldDecls(unionBody_); }

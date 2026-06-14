@@ -104,6 +104,76 @@ llvm::Value* genStructMemberPtr(CodeGenerator& generator,
   throw std::logic_error(unknownTypeMessage);
 }
 
+// The half of a call that does not care whether the callee is a function name
+// or a variable holding one: convert each argument to its parameter type,
+// promote the variadic tail, and emit. paramVarTypes carries the C types the
+// conversions need, which llvm::FunctionType cannot supply on its own because
+// LLVM integer types do not record signedness.
+llvm::Value* emitCall(CodeGenerator& generator, llvm::FunctionType* funcType,
+                      llvm::Value* callee, const std::string& calleeName,
+                      const ExprList& argList,
+                      const std::vector<VarType*>& paramVarTypes) {
+  const size_t fixedCount = funcType->getNumParams();
+
+  // Parenthesized because && binds tighter than ||: a variadic function needs
+  // at least its named parameters, a fixed one needs exactly them.
+  if ((funcType->isVarArg() && argList.size() < fixedCount) ||
+      (!funcType->isVarArg() && argList.size() != fixedCount)) {
+    throw std::logic_error("Wrong argument number for function call!");
+  }
+
+  std::vector<llvm::Value*> args;
+  size_t index = 0;
+  for (; index < fixedCount; ++index) {
+    llvm::Value* arg = argList.at(index)->genCode(generator);
+    arg = convert::typeCast(
+        generator.getBuilder(), arg, funcType->getParamType(index),
+        argList.at(index)->getExprTypeId(generator),
+        vartype::resolvedVarTypeToTypeId(paramVarTypes.at(index), generator));
+    if (arg == nullptr) {
+      throw std::logic_error("Argument " + std::to_string(index) +
+                             " does not match type to call function " +
+                             calleeName);
+    }
+
+    args.push_back(arg);
+  }
+
+  // Continue to collect arguments if it is calling a variant function.
+  if (funcType->isVarArg()) {
+    for (; index < argList.size(); ++index) {
+      llvm::Value* arg = argList.at(index)->genCode(generator);
+
+      // C default argument promotions for the variadic tail (required by the
+      // calling convention): char/short/bool -> int, float -> double.
+      if (arg->getType()->isIntegerTy()) {
+        arg = convert::typeUpgrade(
+            generator.getBuilder(), arg, generator.getBuilder().getInt32Ty(),
+            argList.at(index)->getExprTypeId(generator), BuiltinTypeId::INT);
+      } else if (arg->getType()->isFloatingPointTy()) {
+        arg = convert::typeUpgrade(
+            generator.getBuilder(), arg, generator.getBuilder().getDoubleTy(),
+            argList.at(index)->getExprTypeId(generator), BuiltinTypeId::DOUBLE);
+      }
+
+      args.push_back(arg);
+    }
+  }
+
+  return generator.getBuilder().CreateCall(funcType, callee, args);
+}
+
+/// The function-pointer type behind a callee name, or nullptr when the name is
+/// not a variable of that type. Shared by the call and its type query.
+FuncPointerType* findFuncPointerVarType(CodeGenerator& generator,
+                                        const std::string& name) {
+  VarType* varType = generator.symbols().findVariableType(name);
+  if (varType == nullptr || !varType->isFuncPointerType()) {
+    return nullptr;
+  }
+  return static_cast<FuncPointerType*>(varType);
+}
+
 }  // namespace
 
 llvm::Value* Expr::loadFromLValuePtr(CodeGenerator& generator) {
@@ -141,6 +211,15 @@ llvm::Value* Variable::genCode(CodeGenerator& generator) {
     return var;
   }
 
+  // A function name in value position is its address: C converts it
+  // implicitly, so `p = f` and `p = &f` mean the same thing. Under opaque
+  // pointers the llvm::Function already is the `ptr` an assignment wants, so
+  // there is nothing to take the address of.
+  llvm::Function* func = generator.symbols().findFunction(varName_);
+  if (func != nullptr) {
+    return func;
+  }
+
   if (generator.findTypedefAlias(varName_) != nullptr) {
     throw std::logic_error(varName_ + " is a typedef name, not a variable!");
   }
@@ -153,6 +232,15 @@ llvm::Value* Variable::genCodePtr(CodeGenerator& generator) {
   llvm::Value* var = generator.symbols().findVariable(varName_);
   if (var != nullptr) {
     return var;
+  }
+
+  // `&f` on a function is the function's own address: there is no separate
+  // object holding it, so this is the same value plain `f` produces. Answering
+  // here rather than in AddressOf keeps the two spellings on one path. It sits
+  // above the constant check because that branch throws.
+  llvm::Function* func = generator.symbols().findFunction(varName_);
+  if (func != nullptr) {
+    return func;
   }
 
   var = generator.symbols().findConstant(varName_);
@@ -231,62 +319,38 @@ llvm::Value* CommaExpr::genCodePtr(CodeGenerator& generator) {
 
 llvm::Value* FuncCall::genCode(CodeGenerator& generator) {
   llvm::Function* func = generator.symbols().findFunction(funcName_);
-  if (func == nullptr) {
-    throw std::logic_error("Function " + funcName_ + " is not defined!");
-  }
-
-  // Check number of arguments.
-  // Parenthesized because && binds tighter than ||: a variadic function needs
-  // at least its named parameters, a fixed one needs exactly them.
-  if ((func->isVarArg() && argList_->size() < func->arg_size()) ||
-      (!func->isVarArg() && argList_->size() != func->arg_size())) {
-    throw std::logic_error("Wrong argument number for function call!");
-  }
-
-  // Check types of arguments and collect valid arguments.
-  std::vector<llvm::Value*> args;
-  size_t index = 0;
-  for (auto* argIter = func->arg_begin(); argIter < func->arg_end();
-       ++argIter, ++index) {
-    llvm::Value* arg = argList_->at(index)->genCode(generator);
-    VarType* paramVarType =
-        generator.symbols().findFuncParamType(funcName_, index);
-    arg = convert::typeCast(
-        generator.getBuilder(), arg, argIter->getType(),
-        argList_->at(index)->getExprTypeId(generator),
-        vartype::resolvedVarTypeToTypeId(paramVarType, generator));
-    if (arg == nullptr) {
-      throw std::logic_error("Argument " + std::to_string(index) +
-                             " does not match type to call function " +
-                             funcName_);
+  if (func != nullptr) {
+    std::vector<VarType*> paramVarTypes;
+    paramVarTypes.reserve(func->arg_size());
+    for (size_t index = 0; index < func->arg_size(); ++index) {
+      paramVarTypes.push_back(
+          generator.symbols().findFuncParamType(funcName_, index));
     }
 
-    args.push_back(arg);
+    return emitCall(generator, func->getFunctionType(), func, funcName_,
+                    *argList_, paramVarTypes);
   }
 
-  // Continue to collect arguments if it is calling a variant function.
-  if (func->isVarArg()) {
-    for (; index < argList_->size(); ++index) {
-      llvm::Value* arg = argList_->at(index)->genCode(generator);
+  // Not a function name but a variable holding one. `p(3)` reaches here, and so
+  // does a call to a parameter declared `int (*fn)(int)` -- neither is in the
+  // function table, because neither is a function.
+  FuncPointerType* funcPtrType = findFuncPointerVarType(generator, funcName_);
+  if (funcPtrType != nullptr) {
+    llvm::Value* var = generator.symbols().findVariable(funcName_);
+    llvm::Value* callee = iridiom::createLoad(generator.getBuilder(), var,
+                                              funcPtrType, generator);
 
-      // C default argument promotions for the variadic tail (required by the
-      // calling convention): char/short/bool -> int, float -> double.
-      if (arg->getType()->isIntegerTy()) {
-        arg = convert::typeUpgrade(
-            generator.getBuilder(), arg, generator.getBuilder().getInt32Ty(),
-            argList_->at(index)->getExprTypeId(generator), BuiltinTypeId::INT);
-      } else if (arg->getType()->isFloatingPointTy()) {
-        arg = convert::typeUpgrade(
-            generator.getBuilder(), arg, generator.getBuilder().getDoubleTy(),
-            argList_->at(index)->getExprTypeId(generator),
-            BuiltinTypeId::DOUBLE);
-      }
-
-      args.push_back(arg);
+    std::vector<VarType*> paramVarTypes;
+    paramVarTypes.reserve(funcPtrType->paramList_->size());
+    for (Param* param : *funcPtrType->paramList_) {
+      paramVarTypes.push_back(param->varType_);
     }
+
+    return emitCall(generator, funcPtrType->getFuncType(generator), callee,
+                    funcName_, *argList_, paramVarTypes);
   }
 
-  return generator.getBuilder().CreateCall(func, args);
+  throw std::logic_error("Function " + funcName_ + " is not defined!");
 }
 
 llvm::Value* FuncCall::genCodePtr(CodeGenerator& generator) {
@@ -386,6 +450,22 @@ llvm::Value* SizeOf::genCode(CodeGenerator& generator) {
         generator.getTypeSize(sizeofTypeForExpr(expr_, generator)));
   }
   if (!identifier_.empty()) {
+    // The alias table before the type table, because only the alias table
+    // records a shadowing typedef: an inner `typedef char Alias;` adds to the
+    // innermost typedef scope, while registerTypeName in DeclToIr skips the
+    // type table whenever any enclosing scope already holds the name. A
+    // declaration resolves alias-first and so does DefinedType::getType, so
+    // sizeof has to as well -- otherwise `Alias c;` and `sizeof(Alias)` mean
+    // different types in the same block.
+    VarType* alias = generator.findTypedefAlias(identifier_);
+    if (alias != nullptr) {
+      llvm::Type* aliasType = alias->getType(generator);
+      if (aliasType != nullptr) {
+        return generator.getBuilder().getInt64(
+            generator.getTypeSize(aliasType));
+      }
+    }
+
     llvm::Type* type = generator.findType(identifier_);
     if (type != nullptr) {
       return generator.getBuilder().getInt64(generator.getTypeSize(type));

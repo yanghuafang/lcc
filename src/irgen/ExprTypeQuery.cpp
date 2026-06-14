@@ -113,7 +113,19 @@ VarType* CommaExpr::getExprVarType(CodeGenerator& generator) const {
 }
 
 VarType* FuncCall::getExprVarType(CodeGenerator& generator) const {
-  return generator.symbols().findFuncRetType(funcName_);
+  VarType* retType = generator.symbols().findFuncRetType(funcName_);
+  if (retType != nullptr) {
+    return retType;
+  }
+
+  // A call through a function pointer: the return type is on the pointer's own
+  // type, since no function of this name was ever declared.
+  VarType* varType = generator.symbols().findVariableType(funcName_);
+  if (varType != nullptr && varType->isFuncPointerType()) {
+    return static_cast<FuncPointerType*>(varType)->returnType_;
+  }
+
+  return nullptr;
 }
 
 VarType* StructRef::getExprVarType(CodeGenerator& generator) const {

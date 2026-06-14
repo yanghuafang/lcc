@@ -14,6 +14,7 @@ namespace llvm {
 
 class Value;
 class Type;
+class FunctionType;
 
 }  // namespace llvm
 
@@ -498,6 +499,14 @@ class VarType : public Node {
   [[nodiscard]] virtual bool isUnionType() const noexcept = 0;
   [[nodiscard]] virtual bool isEnumType() const noexcept = 0;
 
+  /// Only FuncPointerType answers true. A default rather than an eighth pure
+  /// virtual: the seven above are exhaustive over the types that existed when
+  /// they were written, and making this one pure would add a line saying "no"
+  /// to every node that is not a function pointer.
+  [[nodiscard]] virtual bool isFuncPointerType() const noexcept {
+    return false;
+  }
+
   [[nodiscard]] virtual VarType* getElementVarType() const noexcept {
     return nullptr;
   }
@@ -588,6 +597,41 @@ class ArrayType final : public VarType {
   bool isEnumType() const noexcept override { return false; }
 
   VarType* getElementVarType() const noexcept override { return baseType_; }
+};
+
+/// `int (*p)(int)` — a pointer to a function rather than to an object.
+///
+/// Kept apart from PointerType because nothing that makes a pointer a pointer
+/// here applies: there is no element type to do arithmetic on, and no size for
+/// what it points at. What it carries instead is the signature, which is what a
+/// call needs — under opaque pointers the value no longer records the callee
+/// type, so getFuncType rebuilds it from the AST at the call site.
+class FuncPointerType final : public VarType {
+ public:
+  VarType* returnType_;
+  ParamList* paramList_;
+
+  FuncPointerType(VarType* returnType, ParamList* paramList)
+      : VarType(""), returnType_(returnType), paramList_(paramList) {}
+  ~FuncPointerType() override;
+
+  std::pair<std::string, std::string> genGraph() const override;
+
+  llvm::Type* getType(TypeEnv& env) override;
+
+  /// The signature to call through. Not getType(), which is the opaque `ptr`
+  /// the variable actually holds. Const where getType() cannot be: this builds
+  /// a fresh FunctionType each call and caches nothing.
+  [[nodiscard]] llvm::FunctionType* getFuncType(TypeEnv& env) const;
+
+  bool isBuiltinType() const noexcept override { return false; }
+  bool isPointerType() const noexcept override { return false; }
+  bool isArrayType() const noexcept override { return false; }
+  bool isDefinedType() const noexcept override { return false; }
+  bool isStructType() const noexcept override { return false; }
+  bool isUnionType() const noexcept override { return false; }
+  bool isEnumType() const noexcept override { return false; }
+  bool isFuncPointerType() const noexcept override { return true; }
 };
 
 /* Identifier is name of user defined type */

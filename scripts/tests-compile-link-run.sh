@@ -66,6 +66,8 @@ tests=(
   "45.short_circuit.c"
   "46.array_3d.c"
   "47.paren_expr.c"
+  "48.block_typedef.c"
+  "49.func_pointer.c"
 )
 
 # AST graphs come from tests/graphs/, not from the suite above.

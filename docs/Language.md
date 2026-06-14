@@ -12,11 +12,12 @@ Unlike industrial compilers (clang, gcc) that use recursive-descent parsing, `lc
 - User-defined types: `struct`, `union` and `enum`, with member reference (`structObj.member`) and dereference (`structPtr->member`) on struct and union objects
 - Pointers and address-of: `Type* objectPtr`, `objectPtr = &object`, dereference `*objectPtr`
 - `const` qualifier: `const int limit = 5;`, `const char* s`. Parsed and recorded on the type (file-scope `const` objects become LLVM constants), but **not enforced** — assigning to a `const` object is not diagnosed
-- `typedef`: builtin and pointer aliases (`typedef unsigned long size_t;`, `typedef int* IntPtr;`); struct and union aliases for an **already-defined** type (`typedef struct Employee Employee;`, `typedef struct Employee* EmployeePtr;`) and combined define-and-alias forms (`typedef struct Point { int x; int y; } Point;`, `typedef union U { int a; float b; } U;`)
+- `typedef`: builtin and pointer aliases (`typedef unsigned long size_t;`, `typedef int* IntPtr;`); struct and union aliases for an **already-defined** type (`typedef struct Employee Employee;`, `typedef struct Employee* EmployeePtr;`) and combined define-and-alias forms (`typedef struct Point { int x; int y; } Point;`, `typedef union U { int a; float b; } U;`). Valid at file scope and inside a block; a block-scope alias shadows an outer one of the same name and goes out of scope with the block
 
 ### Declarations and initialization
 
 - Functions: declaration, definition and call, including variadic parameters (`...`)
+- Function pointers: `int (*p)(int);` at file or block scope, assigned from a function name (`p = f` and `p = &f` are the same value), called through (`p(3)`), and passed as a parameter so a callback works (`int apply(int (*fn)(int), int n)`)
 - Variable lists: `a = 1, b, c = 3`
 - One-dimensional arrays: `Type arrayName[INTEGER];`, including mixed lists such as `int a[4], b;` (bounds on each name via `VarInit`)
 - One-dimensional brace initialization: `int a[4] = {1, 2, 3};` and empty `{}` (zero-fill), global and local
@@ -57,12 +58,10 @@ Unlike industrial compilers (clang, gcc) that use recursive-descent parsing, `lc
 
 - Preprocessing: such as `#include`, and macro definition `#define` and expansion. A separate pipeline stage, and a large one.
 - `goto` and labels
-- Function pointers: declaring one (`int (*p)(int);`) and calling through it
 - Struct bit-fields: `struct S { int a : 3; };`
 - Designated initializers: `{ .x = 1, [2] = 3 }`
 - Scalar types beyond the builtin set: `signed`, `long long`, `long double`
 - Brace initialization of arrays with three or more dimensions: `int a[2][2][2] = {{{1,2},{3,4}},{{5,6},{7,8}}};` (deferred — 2D already covers the multidimensional case, and the complexity climbs steeply from there). Declaring, subscripting and `sizeof` work at any depth — `int a[2][8][5];` compiles, and so does `a[1][2][3] = 7`; only the initializer list stops at two dimensions
-- Block-scope typedef: only file-scope `typedef` is supported.
 - Struct tag typedefs before definition: `typedef struct Employee Employee;` requires the struct to be defined first, or use the combined form `typedef struct S { … } S;`.
 - **A parenthesized name followed by `*`, `&`, `+`, `-`, `++` or `--`.** `(a)` on its own is an expression, but before one of those six tokens the parser reads it as a cast, because each of them can also begin a unary expression:
 
@@ -76,6 +75,7 @@ Unlike industrial compilers (clang, gcc) that use recursive-descent parsing, `lc
 
   Drop the parentheses, reorder the operands, or assign to a temporary. This is C's own ambiguity: telling `(a) + 1` from `(T) + 1` requires knowing whether `a` names a type, and `lcc` has no symbol table while parsing. See [ParserConflicts.md](ParserConflicts.md#4-identifier-type-name-or-expression).
 - Mixing nested and flat forms inside one array initializer: `int a[2][3] = {{1,2,3},4,5,6};` and `int a[2][3] = {1,{2,3}};` are valid C but rejected — use all-nested or all-flat. Excess elements are rejected too (`int a[2][3] = {1,2,3,4,5,6,7};`), where C drops them with a warning
+- **A function-pointer declarator whose return type is a typedef name.** `int (*p)(int);` parses, but `MyInt (*p)(int);` does not: at `MyInt •` with `(` ahead, the parser cannot tell the declarator from a call to `MyInt`, and resolves it as a call. Same root cause as the entry below — lcc has no symbol table while parsing. Spell the return type with a builtin keyword.
 - Typedef names used as variables in the same scope: after `typedef unsigned long Foo;`, a file-scope `int Foo;` is rejected. This is a deliberate check rather than a parser limitation — `lcc` reports it during IR generation, naming the alias. Only the same scope is affected: because `typedef` is file-scope only, `int Foo;` inside a function compiles.
 - `extern`: `lcc` requires function declaration for linkage; extern variables are not allowed. Supporting them means a linkage and multi-translation-unit model, and manual declarations cover what the tests need.
 - **Unsuffixed decimal literals wider than `int`.** Unsuffixed *hex* promotes to

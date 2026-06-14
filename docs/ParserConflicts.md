@@ -8,13 +8,13 @@ lcc's grammar is intentionally compact: declarations, statements, and expression
 
 | Kind | Count | Bison default |
 |------|------:|---------------|
-| Shift/reduce | 56 | Prefer **shift** |
+| Shift/reduce | 57 | Prefer **shift** |
 | Reduce/reduce | 7 | Prefer the **first** grammar rule |
 
 As of the current grammar, `./build-lcc.sh` (which runs `bison -d frontend/Parser.y -v` via CMake) prints:
 
 ```
-Parser.y: warning: 56 shift/reduce conflicts [-Wconflicts-sr]
+Parser.y: warning: 57 shift/reduce conflicts [-Wconflicts-sr]
 Parser.y: warning: 7 reduce/reduce conflicts [-Wconflicts-rr]
 ```
 
@@ -70,7 +70,7 @@ You can override defaults with precedence (`%left`, `%right`, `%nonassoc`) or ex
 ## Conflict map (high level)
 
 ```
-56 shift/reduce
+57 shift/reduce
 ├── 41  Expr • [ subscript ]     (subscript vs completed unary/binary operand)
 ├──  6  ( id ) • x               (parenthesized name vs cast — state 194)
 ├──  3  IDENTIFIER • [           (ArrayBoundList ε vs `[`; FuncDecl `(` vs array declarator)
@@ -78,6 +78,7 @@ You can override defaults with precedence (`%left`, `%right`, `%nonassoc`) or ex
 ├──  1  ( id • )                 (shift `)` rather than commit to _VarType — state 134)
 ├──  1  _VarType • ;             (TypeDecl vs VarDecl with empty VarList)
 ├──  1  sizeof ( id • )          (three sizeof productions — shift on `)`)
+├──  1  IDENTIFIER • (           (call vs a `T (*p)(...)` declarator — shift keeps the call)
 └──  1  if (...) stmt • else     (dangling else — resolved by the shift default)
 
  7 reduce/reduce
@@ -86,7 +87,7 @@ You can override defaults with precedence (`%left`, `%right`, `%nonassoc`) or ex
 └──  2  sizeof ( id • )          (_VarType vs Expr inside sizeof — state 200)
 ```
 
-Eight of these arrive with the two `( IDENTIFIER )` productions that make `(a)` an expression: six in state 194, where the token after `)` decides between a parenthesized name and a cast, and one each in states 134 and 200. Section 4 works through them. The **array bounds** and **typedef struct/union** groups came earlier, with 2D arrays and `typedef` support.
+The newest one arrives with the function-pointer declarator: after a name, `(` could open a call or the `(*p)` of `MyInt (*p)(int);`, and the shift default keeps it a call — which is why only a builtin keyword can spell that return type. Eight more arrive with the two `( IDENTIFIER )` productions that make `(a)` an expression: six in state 194, where the token after `)` decides between a parenthesized name and a cast, and one each in states 134 and 200. Section 4 works through them. The **array bounds** and **typedef struct/union** groups came earlier, with 2D arrays and `typedef` support.
 
 The sections below walk through each group.
 
@@ -225,7 +226,7 @@ State 310 conflicts: 1 shift/reduce
 1. The conflict is **counted** — it is one of the 56 reported by bison. A conflict resolved by precedence is silently resolved and never reported.
 2. The discarded reduce is **bracketed** (`[reduce using rule 94 …]`), which is how Bison marks an action dropped by a default resolution.
 
-Delete `%nonassoc ELSE`, rerun bison, and the counts stay at 56/7 with a byte-identical automaton in `Parser.output`. That is the experiment to trust over the comment.
+Delete `%nonassoc ELSE`, rerun bison, and the counts stay at 57/7 with a byte-identical automaton in `Parser.output`. That is the experiment to trust over the comment.
 
 ### Where to look — dangling else
 

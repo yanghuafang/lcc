@@ -33,6 +33,8 @@ Before extending, it helps to know what the current codebase already supports:
 | Short-circuit evaluation | The two logical operators and `?:` skip the operand C says they may skip (`tests/45.short_circuit.c`) |
 | 3D and deeper arrays | Declaration, subscript and `sizeof` at any depth (`tests/46.array_3d.c`); the brace initializer still stops at two |
 | Parenthesized names | `(a)` reads as an expression rather than a cast (`tests/47.paren_expr.c`) |
+| `typedef` inside a block | Aliases at statement scope, shadowing an outer name (`tests/48.block_typedef.c`) |
+| Function pointers | Variable, parameter and `typedef` forms, and calls through the pointer (`tests/49.func_pointer.c`) |
 
 See [ParserConflicts.md](ParserConflicts.md) for parser ambiguities that several of these steps had to work around (especially `typedef`).
 
@@ -343,6 +345,26 @@ On lookahead `)` the parser reduced `IDENTIFIER` to a type name and committed to
 Six tokens stay ambiguous — `*`, `&`, `+`, `-`, `++`, `--` — because each can also begin a unary expression. Telling `(a) + 1` from `(T) + 1` needs to know whether `a` names a type, and lcc has no symbol table while parsing. See [ParserConflicts.md](ParserConflicts.md) for why the conflict count rising from 48/6 to 56/7 was the right trade.
 
 `tests/47.paren_expr.c`.
+
+### `typedef` inside a block (done)
+
+**Goal:** an alias declared at statement scope, shadowing an outer one.
+
+`TypedefDecl` was reachable from `Decl` but not from `Stmt`, so an alias could only be declared at file scope. `Decl` already derives from `Stmt` and the alias table in `SymbolTable` was already scoped, so this was one production rather than a lowering change.
+
+Shadowing became reachable for the first time, and `sizeof` got it wrong — 4 where clang reports 1 — because `sizeof(IDENTIFIER)` resolved the name against the wrong scope.
+
+`tests/48.block_typedef.c`.
+
+### Function pointers (done)
+
+**Goal:** `int (*op)(int)` as a variable, parameter and `typedef`, and calls through it.
+
+`FuncPointerType` is its own `VarType` rather than a `PointerType`: there is no element type to do arithmetic on and no pointee size, and what a call needs is the signature. Opaque pointers dropped the callee type from the value, so `getFuncType` rebuilds it from the AST.
+
+`FuncCall` was written against `llvm::Function` and could only call a name. One `emitCall` now serves both callees, so the variadic promotions are stated once.
+
+`tests/49.func_pointer.c`.
 
 ---
 

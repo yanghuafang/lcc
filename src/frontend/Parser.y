@@ -299,6 +299,18 @@ VarDecl:    STATIC VarType VarList SEMICOLON
             | VarType VarList SEMICOLON
                                 { $$ = new AST::VarDecl($1, $2);
                                   $$->setLoc(@1.first_line, @1.first_column); }
+ /* `int (*p)(int);` -- a declarator that wraps its own name, which the flat
+    `VarType VarList` shape above cannot express. Written out as one production
+    rather than by growing a general declarator, because this is the only such
+    form supported. The parenthesis after VarType is what keeps it apart from
+    `int f(int);`, which has IDENTIFIER in that spot. */
+            | VarType LPARENTHESES ASTERISK IDENTIFIER RPARENTHESES
+              LPARENTHESES ParamList RPARENTHESES SEMICOLON
+                                { AST::VarList* funcPtrList = new AST::VarList();
+                                  funcPtrList->push_back(new AST::VarInit(*$4, {}));
+                                  $$ = new AST::VarDecl(
+                                      new AST::FuncPointerType($1, $7), funcPtrList);
+                                  $$->setLoc(@1.first_line, @1.first_column); }
             ;
 
 TypeDecl:   _VarType SEMICOLON  { $$ = new AST::TypeDecl($1); }
@@ -393,6 +405,12 @@ ParamList:    ParamList COMMA Param
 
 Param:      VarType IDENTIFIER  { $$ = new AST::Param($1, *$2); }
             | VarType           { $$ = new AST::Param($1); }
+ /* The same declarator as a parameter, which is what makes a callback
+    possible: `void apply(int (*fn)(int), int n)`. */
+            | VarType LPARENTHESES ASTERISK IDENTIFIER RPARENTHESES
+              LPARENTHESES ParamList RPARENTHESES
+                                { $$ = new AST::Param(
+                                      new AST::FuncPointerType($1, $7), *$4); }
             ;
 
 BuiltinType:
@@ -469,6 +487,7 @@ Stmt:       Expr SEMICOLON      { $$ = $1; $$->setLoc(@1.first_line, @1.first_co
             | ReturnStmt        { $$ = $1; }
             | Block             { $$ = $1; }
             | TypeDecl          { $$ = $1; }
+            | TypedefDecl       { $$ = $1; }
             | VarDecl           { $$ = $1; }
             | SEMICOLON         { $$ = nullptr; }
             ;
