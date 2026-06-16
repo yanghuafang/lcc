@@ -1,5 +1,43 @@
 int printf(char*, ...);
 
+int test_errors = 0;
+
+void check_int(const char* name, int actual, int expected) {
+  if (actual != expected) {
+    printf("ERROR [%s]: got %d expected %d\n", name, actual, expected);
+    test_errors++;
+  }
+}
+
+void check_uint(const char* name, unsigned actual, unsigned expected) {
+  if (actual != expected) {
+    printf("ERROR [%s]: got %u expected %u\n", name, actual, expected);
+    test_errors++;
+  }
+}
+
+void check_ulong(const char* name, unsigned long actual, unsigned long expected) {
+  if (actual != expected) {
+    printf("ERROR [%s]: got %lu expected %lu\n", name, actual, expected);
+    test_errors++;
+  }
+}
+
+void check_char(const char* name, char actual, char expected) {
+  if (actual != expected) {
+    printf("ERROR [%s]: got %c expected %c\n", name, actual, expected);
+    test_errors++;
+  }
+}
+
+void report_result(void) {
+  if (test_errors == 0) {
+    printf("PASS\n");
+  } else {
+    printf("FAIL: %d error(s)\n", test_errors);
+  }
+}
+
 char charVal = 'A';
 short shortVal = 1024;
 short shortVal2 = -1024;
@@ -29,6 +67,8 @@ bool boolVal = true;
 bool boolVal2 = false;
 
 int main() {
+  printf("**** 1.builtin_types.c ****\n");
+
   printf("charVal: %c\n", charVal);
   printf("shortVal: %hd\n", shortVal);
   printf("shortVal: %hd\n", shortVal2);
@@ -57,5 +97,29 @@ int main() {
   printf("boolVal: %d\n", boolVal);
   printf("boolVal2: %d\n", boolVal2);
 
-  return 0;
+  check_char("charVal", charVal, 'A');
+  check_int("shortVal", shortVal, 1024);
+  check_int("shortVal2", shortVal2, -1024);
+  check_int("intVal", intVal, 12345678);
+  check_int("intVal2", intVal2, -12345678);
+  check_int("intVal3", intVal3, 12345678);
+  check_int("intVal4", intVal4, -0x9abcdef);
+  check_int("longVal", (int)longVal, 1234567890);
+  check_int("longVal2", (int)longVal2, -1234567890);
+
+  check_uint("ucharVal boundary", ucharVal, 250);
+  check_uint("ushortVal", ushortVal, 2048);
+  check_uint("uintVal", uintVal, 87654321);
+  check_uint("uintVal4", uintVal4, 0xabcdef0);
+  check_ulong("ulongVal", ulongVal, 9876043210ul);
+  check_int("boolVal", boolVal, 1);
+  check_int("boolVal2", boolVal2, 0);
+
+  unsigned char zero = 0;
+  unsigned char maxUchar = 255;
+  check_uint("uchar zero", zero, 0);
+  check_uint("uchar max", maxUchar, 255);
+
+  report_result();
+  return test_errors;
 }

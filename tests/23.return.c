@@ -1,5 +1,21 @@
-
 int printf(char*, ...);
+
+int test_errors = 0;
+
+void check_int(const char* name, int actual, int expected) {
+  if (actual != expected) {
+    printf("ERROR [%s]: got %d expected %d\n", name, actual, expected);
+    test_errors++;
+  }
+}
+
+void report_result(void) {
+  if (test_errors == 0) {
+    printf("PASS\n");
+  } else {
+    printf("FAIL: %d error(s)\n", test_errors);
+  }
+}
 
 int checkAge1(int age) {
   if (age < 18) {
@@ -11,13 +27,15 @@ int checkAge1(int age) {
     printf("age == 18: %d\n", age);
     return age;
   } else {
-    printf("age != 18\n", age);
+    printf("age != 18\n");
   }
 
   if (age > 18) {
     printf("age > 18: %d\n", age);
     return age;
   }
+
+  return age;
 }
 
 int checkAge2(int age) {
@@ -52,6 +70,8 @@ int checkAge3(int age) {
 }
 
 int main() {
+  printf("**** 23.return.c ****\n");
+
   int age = checkAge1(16);
   printf("age:%d\n", age);
   age = checkAge1(18);
@@ -75,5 +95,10 @@ int main() {
   age = checkAge3(35);
   printf("age3:%d\n", age);
 
-  return 0;
+  check_int("return 16", age, 35);
+  check_int("early return young", checkAge3(35), 35);
+  check_int("early return baby", checkAge3(6), 6);
+
+  report_result();
+  return test_errors;
 }

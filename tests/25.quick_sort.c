@@ -1,48 +1,58 @@
 int printf(char*, ...);
 
-// Function to swap two elements
+int test_errors = 0;
+
+void check_int(const char* name, int actual, int expected) {
+  if (actual != expected) {
+    printf("ERROR [%s]: got %d expected %d\n", name, actual, expected);
+    test_errors++;
+  }
+}
+
+void report_result(void) {
+  if (test_errors == 0) {
+    printf("PASS\n");
+  } else {
+    printf("FAIL: %d error(s)\n", test_errors);
+  }
+}
+
 void swap(int* a, int* b) {
   int t = *a;
   *a = *b;
   *b = t;
 }
 
-// Function to partition the array
 int partition(int* arr, int low, int high) {
-  int pivot = arr[high];  // Choosing the last element as pivot
-  int i = (low - 1);      // Index of smaller element
+  int pivot = arr[high];
+  int i = (low - 1);
 
   for (int j = low; j <= high - 1; j++) {
-    // If current element is smaller than or equal to pivot
     if (arr[j] <= pivot) {
-      i++;                     // Increment index of smaller element
-      swap(&arr[i], &arr[j]);  // Swap
+      i++;
+      swap(&arr[i], &arr[j]);
     }
   }
-  swap(&arr[i + 1], &arr[high]);  // Place the pivot in the correct position
+  swap(&arr[i + 1], &arr[high]);
   return (i + 1);
 }
 
-// Main function that implements QuickSort
 void quickSort(int* arr, int low, int high) {
   if (low < high) {
-    // Partitioning index
     int pi = partition(arr, low, high);
-
-    // Recursively sort elements before and after partition
     quickSort(arr, low, pi - 1);
     quickSort(arr, pi + 1, high);
   }
 }
 
-// Function to print an array
 void printArray(int* arr, int size) {
   for (int i = 0; i < size; i++) printf("%d ", arr[i]);
   printf("\n");
 }
 
-// Driver program to test above functions
 int main() {
+  printf("**** 25.quick_sort.c ****\n");
+
   int arr[6];
   arr[0] = 10;
   arr[1] = 7;
@@ -60,5 +70,18 @@ int main() {
   printf("Sorted array: \n");
   printArray(arr, n);
 
-  return 0;
+  check_int("sorted[0]", arr[0], 1);
+  check_int("sorted[1]", arr[1], 5);
+  check_int("sorted[2]", arr[2], 7);
+  check_int("sorted[3]", arr[3], 8);
+  check_int("sorted[4]", arr[4], 9);
+  check_int("sorted[5]", arr[5], 10);
+
+  int single[1];
+  single[0] = 42;
+  quickSort(single, 0, 0);
+  check_int("single element", single[0], 42);
+
+  report_result();
+  return test_errors;
 }

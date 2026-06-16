@@ -109,7 +109,8 @@ llvm::Value* CodeGenerator::findVariable(const std::string& varName) {
   return nullptr;
 }
 
-bool CodeGenerator::addVariable(const std::string& varName, llvm::Value* var) {
+bool CodeGenerator::addVariable(const std::string& varName, llvm::Value* var,
+                                AST::VarType* varType) {
   if (symbolTableStack_.empty()) {
     return false;
   }
@@ -121,8 +122,50 @@ bool CodeGenerator::addVariable(const std::string& varName, llvm::Value* var) {
     return false;
   }
 
-  (*topSymbolTable)[varName] = Symbol(var, false);
+  (*topSymbolTable)[varName] = Symbol(var, false, varType);
   return true;
+}
+
+AST::VarType* CodeGenerator::findVariableType(const std::string& varName) {
+  if (symbolTableStack_.empty()) {
+    return nullptr;
+  }
+
+  for (auto iter = symbolTableStack_.end() - 1;
+       iter >= symbolTableStack_.begin(); --iter) {
+    auto pairIter = (*iter)->find(varName);
+    if (pairIter != (*iter)->end()) {
+      return pairIter->second.getVarType();
+    }
+  }
+
+  return nullptr;
+}
+
+void CodeGenerator::setFuncSignature(
+    const std::string& funcName, AST::VarType* retType,
+    const std::vector<AST::VarType*>& paramTypes) {
+  funcRetTypes_[funcName] = retType;
+  funcParamTypes_[funcName] = paramTypes;
+}
+
+AST::VarType* CodeGenerator::findFuncRetType(const std::string& funcName) {
+  auto iter = funcRetTypes_.find(funcName);
+  if (iter != funcRetTypes_.end()) {
+    return iter->second;
+  }
+
+  return nullptr;
+}
+
+AST::VarType* CodeGenerator::findFuncParamType(const std::string& funcName,
+                                               size_t index) {
+  auto iter = funcParamTypes_.find(funcName);
+  if (iter == funcParamTypes_.end() || index >= iter->second.size()) {
+    return nullptr;
+  }
+
+  return iter->second[index];
 }
 
 llvm::Value* CodeGenerator::findConstant(const std::string& varName) {

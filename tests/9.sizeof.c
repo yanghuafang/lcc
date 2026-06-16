@@ -1,5 +1,22 @@
 int printf(char*, ...);
 
+int test_errors = 0;
+
+void check_int(const char* name, int actual, int expected) {
+  if (actual != expected) {
+    printf("ERROR [%s]: got %d expected %d\n", name, actual, expected);
+    test_errors++;
+  }
+}
+
+void report_result(void) {
+  if (test_errors == 0) {
+    printf("PASS\n");
+  } else {
+    printf("FAIL: %d error(s)\n", test_errors);
+  }
+}
+
 struct Student {
   int id;
   char* name;
@@ -15,6 +32,8 @@ union ID {
 enum SEX { MALE, FEMALE };
 
 int main() {
+  printf("**** 9.sizeof.c ****\n");
+
   char charVal = 'A';
   unsigned char ucharVal;
   short shortVal;
@@ -70,5 +89,17 @@ int main() {
 
   printf("sizeof(SEX):%d\n", sizeof(SEX));
   printf("sizeof(sex):%d\n", sizeof(sex));
-  return 0;
+
+  check_int("sizeof(char)", sizeof(char), 1);
+  check_int("sizeof(short)", sizeof(short), 2);
+  check_int("sizeof(int)", sizeof(int), 4);
+  check_int("sizeof(long)", sizeof(long), 8);
+  check_int("sizeof(float)", sizeof(float), 4);
+  check_int("sizeof(double)", sizeof(double), 8);
+  check_int("sizeof(char*)", sizeof(char*), 8);
+  check_int("sizeof(int*)", sizeof(int*), 8);
+  check_int("sizeof(SEX)", sizeof(SEX), 4);
+
+  report_result();
+  return test_errors;
 }
