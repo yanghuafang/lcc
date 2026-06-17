@@ -9,7 +9,7 @@ Not like the most popular industrial C compilers, such as clang and gcc which ad
 - User defined types: struct, union and enum, according reference(`structObj.member`) and dereference(`structPtr->member`) on struct and union objects.
 - Pointer and address of: `Type* objectPtr`, `objectPtr = &object`; dereference: `*objectPtr`.
 - Pointer move on array of builtin types and user defined types by using operators `++`, `--`, `+=` and `-=`.
-- One dimensional array: `Type arrayName[INTEGER];`
+- One dimensional array: `Type arrayName[INTEGER];`, including mixed lists such as `int a[4], b;` (bounds on each name via `VarInit`)
 - Variable list: such as `a = 1, b, c = 3`
 - Variant parameters: `...`
 - Function declaration, definition and call.
@@ -79,7 +79,7 @@ To generate syntax parser manually:
 - Generate conflict counterexamples  
 `bison -d Parser.y -Wcounterexamples &> Parser.counterexamples`
 
-Building `lcc` (or running `bison` on `Parser.y`) reports **43 shift/reduce** and **6 reduce/reduce** conflicts. That is expected for this compact grammar: Bison resolves them with default rules, and the unit tests still pass. For a learner-oriented breakdown of each conflict group (subscript precedence, dangling `else`, `sizeof`, typedef names, and more), see [`docs/Conflicts.md`](docs/Conflicts.md).
+Building `lcc` (or running `bison` on `Parser.y`) reports **45 shift/reduce** and **6 reduce/reduce** conflicts. That is expected for this compact grammar: Bison resolves them with default rules, and the unit tests still pass. For a learner-oriented breakdown of each conflict group (subscript precedence, dangling `else`, `sizeof`, typedef names, and more), see [`docs/Conflicts.md`](docs/Conflicts.md).
 
 ## Compile .c file
 
@@ -152,8 +152,11 @@ Such as `settings set target.source-map /Users/yanghuafang/study-projects/lcc-bu
 
 ## TODO
 
-- Support array initializer, such as `int arr[] = {10, 7, 8, 9, 1, 5};`
-- Support multiple dimensional array.
+For step-by-step detail (dependencies, tests, and legal/illegal forms), see [`docs/Roadmap.md`](docs/Roadmap.md). Array declarators (`VarInit`, `ArrayBoundList`, mixed lists such as `int a[4], b;`) are already in place.
+
+- **1D array initialization:** brace init such as `int a[4] = {1, 2, 3};`; inferred size `int arr[] = {10, 7, 8, 9, 1, 5};`; string literals `char s[] = "hello";`
+- **2D arrays:** declaration `int a[8][5];` and initialization `int a[][5] = {{1}, {2, 3}};`
+- **3D arrays:** declaration and initialization, up to three dimensions (e.g. `int b[][8][5] = {…};`)
 - Support `typedef` and `size_t`.
 - Support `static`.
 - Implement `lcc` `-g` option to generate object file with debug info.
