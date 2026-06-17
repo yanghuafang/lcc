@@ -77,7 +77,9 @@ To generate syntax parser manually:
 - Generate Parser.output to check shift-reduce, reduce-reduce conflicts  
 `bison -d Parser.y -v`
 - Generate conflict counterexamples  
-`bison -d Parser.y -Wcounterexamples &> Paser.counterexamples`
+`bison -d Parser.y -Wcounterexamples &> Parser.counterexamples`
+
+Building `lcc` (or running `bison` on `Parser.y`) reports **43 shift/reduce** and **6 reduce/reduce** conflicts. That is expected for this compact grammar: Bison resolves them with default rules, and the unit tests still pass. For a learner-oriented breakdown of each conflict group (subscript precedence, dangling `else`, `sizeof`, typedef names, and more), see [`docs/Conflicts.md`](docs/Conflicts.md).
 
 ## Compile .c file
 
