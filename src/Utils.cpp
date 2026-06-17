@@ -8,66 +8,67 @@
 #include "AbstractSyntaxTree.hpp"
 
 using AST::BuiltinType;
+using AST::BuiltinTypeId;
 
 namespace {
 
-bool isIntegerTypeId(BuiltinType::TypeId typeId) {
+bool isIntegerTypeId(BuiltinTypeId typeId) {
   switch (typeId) {
-    case BuiltinType::TypeId::CHAR:
-    case BuiltinType::TypeId::SHORT:
-    case BuiltinType::TypeId::INT:
-    case BuiltinType::TypeId::LONG:
-    case BuiltinType::TypeId::UCHAR:
-    case BuiltinType::TypeId::USHORT:
-    case BuiltinType::TypeId::UINT:
-    case BuiltinType::TypeId::ULONG:
-    case BuiltinType::TypeId::BOOL:
+    case BuiltinTypeId::CHAR:
+    case BuiltinTypeId::SHORT:
+    case BuiltinTypeId::INT:
+    case BuiltinTypeId::LONG:
+    case BuiltinTypeId::UCHAR:
+    case BuiltinTypeId::USHORT:
+    case BuiltinTypeId::UINT:
+    case BuiltinTypeId::ULONG:
+    case BuiltinTypeId::BOOL:
       return true;
     default:
       return false;
   }
 }
 
-bool isFloatingTypeId(BuiltinType::TypeId typeId) {
-  return typeId == BuiltinType::TypeId::FLOAT ||
-         typeId == BuiltinType::TypeId::DOUBLE;
+bool isFloatingTypeId(BuiltinTypeId typeId) {
+  return typeId == BuiltinTypeId::FLOAT ||
+         typeId == BuiltinTypeId::DOUBLE;
 }
 
-bool isSrcSignedForCast(BuiltinType::TypeId srcTypeId) {
-  if (srcTypeId == BuiltinType::TypeId::UNKNOWN) {
+bool isSrcSignedForCast(BuiltinTypeId srcTypeId) {
+  if (srcTypeId == BuiltinTypeId::UNKNOWN) {
     return true;
   }
   return !Utils::isUnsignedTypeId(srcTypeId) &&
-         srcTypeId != BuiltinType::TypeId::BOOL;
+         srcTypeId != BuiltinTypeId::BOOL;
 }
 
-bool isDstSignedForCast(BuiltinType::TypeId dstTypeId) {
-  if (dstTypeId == BuiltinType::TypeId::UNKNOWN) {
+bool isDstSignedForCast(BuiltinTypeId dstTypeId) {
+  if (dstTypeId == BuiltinTypeId::UNKNOWN) {
     return true;
   }
   return !Utils::isUnsignedTypeId(dstTypeId);
 }
 
 llvm::Type* llvmTypeForTypeId(llvm::IRBuilder<>& builder,
-                              BuiltinType::TypeId typeId) {
+                              BuiltinTypeId typeId) {
   switch (typeId) {
-    case BuiltinType::TypeId::CHAR:
-    case BuiltinType::TypeId::UCHAR:
+    case BuiltinTypeId::CHAR:
+    case BuiltinTypeId::UCHAR:
       return builder.getInt8Ty();
-    case BuiltinType::TypeId::SHORT:
-    case BuiltinType::TypeId::USHORT:
+    case BuiltinTypeId::SHORT:
+    case BuiltinTypeId::USHORT:
       return builder.getInt16Ty();
-    case BuiltinType::TypeId::INT:
-    case BuiltinType::TypeId::UINT:
+    case BuiltinTypeId::INT:
+    case BuiltinTypeId::UINT:
       return builder.getInt32Ty();
-    case BuiltinType::TypeId::LONG:
-    case BuiltinType::TypeId::ULONG:
+    case BuiltinTypeId::LONG:
+    case BuiltinTypeId::ULONG:
       return builder.getInt64Ty();
-    case BuiltinType::TypeId::FLOAT:
+    case BuiltinTypeId::FLOAT:
       return builder.getFloatTy();
-    case BuiltinType::TypeId::DOUBLE:
+    case BuiltinTypeId::DOUBLE:
       return builder.getDoubleTy();
-    case BuiltinType::TypeId::BOOL:
+    case BuiltinTypeId::BOOL:
       return builder.getInt1Ty();
     default:
       return nullptr;
@@ -76,26 +77,26 @@ llvm::Type* llvmTypeForTypeId(llvm::IRBuilder<>& builder,
 
 }  // namespace
 
-bool Utils::isUnsignedTypeId(BuiltinType::TypeId typeId) {
+bool Utils::isUnsignedTypeId(BuiltinTypeId typeId) {
   switch (typeId) {
-    case BuiltinType::TypeId::UCHAR:
-    case BuiltinType::TypeId::USHORT:
-    case BuiltinType::TypeId::UINT:
-    case BuiltinType::TypeId::ULONG:
+    case BuiltinTypeId::UCHAR:
+    case BuiltinTypeId::USHORT:
+    case BuiltinTypeId::UINT:
+    case BuiltinTypeId::ULONG:
       return true;
     default:
       return false;
   }
 }
 
-BuiltinType::TypeId Utils::integerPromotion(BuiltinType::TypeId typeId) {
+BuiltinTypeId Utils::integerPromotion(BuiltinTypeId typeId) {
   switch (typeId) {
-    case BuiltinType::TypeId::CHAR:
-    case BuiltinType::TypeId::SHORT:
-    case BuiltinType::TypeId::UCHAR:
-    case BuiltinType::TypeId::USHORT:
-    case BuiltinType::TypeId::BOOL:
-      return BuiltinType::TypeId::INT;
+    case BuiltinTypeId::CHAR:
+    case BuiltinTypeId::SHORT:
+    case BuiltinTypeId::UCHAR:
+    case BuiltinTypeId::USHORT:
+    case BuiltinTypeId::BOOL:
+      return BuiltinTypeId::INT;
     default:
       return typeId;
   }
@@ -103,62 +104,62 @@ BuiltinType::TypeId Utils::integerPromotion(BuiltinType::TypeId typeId) {
 
 // C usual arithmetic conversions (simplified): integer promotion, then if either
 // operand is unsigned the result is unsigned, with long/double rules as in C.
-BuiltinType::TypeId Utils::usualArithmeticConversion(
-    BuiltinType::TypeId lhsTypeId, BuiltinType::TypeId rhsTypeId,
+BuiltinTypeId Utils::usualArithmeticConversion(
+    BuiltinTypeId lhsTypeId, BuiltinTypeId rhsTypeId,
     bool& isUnsigned) {
   lhsTypeId = integerPromotion(lhsTypeId);
   rhsTypeId = integerPromotion(rhsTypeId);
 
   if (isFloatingTypeId(lhsTypeId) || isFloatingTypeId(rhsTypeId)) {
     isUnsigned = false;
-    return BuiltinType::TypeId::DOUBLE;
+    return BuiltinTypeId::DOUBLE;
   }
 
-  if (lhsTypeId == BuiltinType::TypeId::ULONG ||
-      rhsTypeId == BuiltinType::TypeId::ULONG) {
+  if (lhsTypeId == BuiltinTypeId::ULONG ||
+      rhsTypeId == BuiltinTypeId::ULONG) {
     isUnsigned = true;
-    return BuiltinType::TypeId::ULONG;
+    return BuiltinTypeId::ULONG;
   }
-  if (lhsTypeId == BuiltinType::TypeId::LONG ||
-      rhsTypeId == BuiltinType::TypeId::LONG) {
+  if (lhsTypeId == BuiltinTypeId::LONG ||
+      rhsTypeId == BuiltinTypeId::LONG) {
     if (isUnsignedTypeId(lhsTypeId) || isUnsignedTypeId(rhsTypeId)) {
       isUnsigned = true;
-      return BuiltinType::TypeId::ULONG;
+      return BuiltinTypeId::ULONG;
     }
     isUnsigned = false;
-    return BuiltinType::TypeId::LONG;
+    return BuiltinTypeId::LONG;
   }
   if (isUnsignedTypeId(lhsTypeId) || isUnsignedTypeId(rhsTypeId)) {
     isUnsigned = true;
-    return BuiltinType::TypeId::UINT;
+    return BuiltinTypeId::UINT;
   }
 
   isUnsigned = false;
-  return BuiltinType::TypeId::INT;
+  return BuiltinTypeId::INT;
 }
 
-BuiltinType::TypeId Utils::varTypeToTypeId(AST::VarType* varType) {
+BuiltinTypeId Utils::varTypeToTypeId(AST::VarType* varType) {
   if (varType == nullptr) {
-    return BuiltinType::TypeId::UNKNOWN;
+    return BuiltinTypeId::UNKNOWN;
   }
 
   if (varType->isBuiltinType()) {
     return static_cast<AST::BuiltinType*>(varType)->typeId_;
   }
   if (varType->isEnumType()) {
-    return BuiltinType::TypeId::INT;
+    return BuiltinTypeId::INT;
   }
   if (varType->isArrayType()) {
     return varTypeToTypeId(
         static_cast<AST::ArrayType*>(varType)->baseType_);
   }
 
-  return BuiltinType::TypeId::UNKNOWN;
+  return BuiltinTypeId::UNKNOWN;
 }
 
 llvm::Value* Utils::typeCast(llvm::IRBuilder<>& builder, llvm::Value* value,
-                             llvm::Type* type, BuiltinType::TypeId srcTypeId,
-                             BuiltinType::TypeId dstTypeId) {
+                             llvm::Type* type, BuiltinTypeId srcTypeId,
+                             BuiltinTypeId dstTypeId) {
   if (value->getType() == type) {
     return value;
   } else if (type == builder.getInt1Ty()) {
@@ -169,7 +170,7 @@ llvm::Value* Utils::typeCast(llvm::IRBuilder<>& builder, llvm::Value* value,
         isSrcSignedForCast(srcTypeId) && isDstSignedForCast(dstTypeId);
     return builder.CreateIntCast(value, type, isSigned);
   } else if (value->getType()->isIntegerTy() && type->isFloatingPointTy()) {
-    if (srcTypeId == BuiltinType::TypeId::BOOL ||
+    if (srcTypeId == BuiltinTypeId::BOOL ||
         isUnsignedTypeId(srcTypeId)) {
       return builder.CreateUIToFP(value, type);
     }
@@ -214,8 +215,8 @@ llvm::Value* Utils::castToBool(llvm::IRBuilder<>& builder, llvm::Value* value) {
 
 llvm::Value* Utils::typeUpgrade(llvm::IRBuilder<>& builder, llvm::Value* value,
                                 llvm::Type* type,
-                                BuiltinType::TypeId srcTypeId,
-                                BuiltinType::TypeId dstTypeId) {
+                                BuiltinTypeId srcTypeId,
+                                BuiltinTypeId dstTypeId) {
   if (value->getType()->isIntegerTy() && type->isIntegerTy()) {
     size_t valueBitWidth =
         ((llvm::IntegerType*)value->getType())->getBitWidth();
@@ -242,9 +243,9 @@ llvm::Value* Utils::typeUpgrade(llvm::IRBuilder<>& builder, llvm::Value* value,
 }
 
 bool Utils::typeUpgrade(llvm::IRBuilder<>& builder, llvm::Value*& lhs,
-                        llvm::Value*& rhs, BuiltinType::TypeId lhsTypeId,
-                        BuiltinType::TypeId rhsTypeId,
-                        BuiltinType::TypeId& resultTypeId, bool& isUnsigned) {
+                        llvm::Value*& rhs, BuiltinTypeId lhsTypeId,
+                        BuiltinTypeId rhsTypeId,
+                        BuiltinTypeId& resultTypeId, bool& isUnsigned) {
   if (isIntegerTypeId(lhsTypeId) && isIntegerTypeId(rhsTypeId)) {
     resultTypeId = usualArithmeticConversion(lhsTypeId, rhsTypeId, isUnsigned);
     llvm::Type* destType = llvmTypeForTypeId(builder, resultTypeId);
@@ -317,10 +318,10 @@ llvm::Value* Utils::createIntegerCmp(llvm::IRBuilder<>& builder, IntCmpPred pred
 }
 
 llvm::Value* Utils::createCmpEq(llvm::IRBuilder<>& builder, llvm::Value* lhs,
-                                llvm::Value* rhs, BuiltinType::TypeId lhsTypeId,
-                                BuiltinType::TypeId rhsTypeId) {
+                                llvm::Value* rhs, BuiltinTypeId lhsTypeId,
+                                BuiltinTypeId rhsTypeId) {
   bool isUnsigned = false;
-  BuiltinType::TypeId resultTypeId = BuiltinType::TypeId::UNKNOWN;
+  BuiltinTypeId resultTypeId = BuiltinTypeId::UNKNOWN;
   if (Utils::typeUpgrade(builder, lhs, rhs, lhsTypeId, rhsTypeId, resultTypeId,
                          isUnsigned)) {
     if (lhs->getType()->isIntegerTy()) {
@@ -338,11 +339,11 @@ llvm::Value* Utils::createCmpEq(llvm::IRBuilder<>& builder, llvm::Value* lhs,
     return builder.CreateICmpEQ(
         builder.CreatePtrToInt(lhs, builder.getInt64Ty()),
         Utils::typeUpgrade(builder, rhs, builder.getInt64Ty(), rhsTypeId,
-                           BuiltinType::TypeId::ULONG));
+                           BuiltinTypeId::ULONG));
   } else if (lhs->getType()->isIntegerTy() && rhs->getType()->isPointerTy()) {
     return builder.CreateICmpEQ(
         Utils::typeUpgrade(builder, lhs, builder.getInt64Ty(), lhsTypeId,
-                           BuiltinType::TypeId::ULONG),
+                           BuiltinTypeId::ULONG),
         builder.CreatePtrToInt(rhs, builder.getInt64Ty()));
   }
 
@@ -364,8 +365,8 @@ llvm::Value* Utils::createLoad(llvm::IRBuilder<>& builder, llvm::Value* lhs) {
 }
 
 llvm::Value* Utils::createAssign(llvm::IRBuilder<>& builder, llvm::Value* lhs,
-                                 llvm::Value* rhs, BuiltinType::TypeId srcTypeId,
-                                 BuiltinType::TypeId dstTypeId) {
+                                 llvm::Value* rhs, BuiltinTypeId srcTypeId,
+                                 BuiltinTypeId dstTypeId) {
   rhs = Utils::typeCast(builder, rhs,
                         lhs->getType()->getNonOpaquePointerElementType(),
                         srcTypeId, dstTypeId);
@@ -379,8 +380,8 @@ llvm::Value* Utils::createAssign(llvm::IRBuilder<>& builder, llvm::Value* lhs,
 }
 
 llvm::Value* Utils::createAdd(llvm::IRBuilder<>& builder, llvm::Value* lhs,
-                              llvm::Value* rhs, BuiltinType::TypeId lhsTypeId,
-                              BuiltinType::TypeId rhsTypeId) {
+                              llvm::Value* rhs, BuiltinTypeId lhsTypeId,
+                              BuiltinTypeId rhsTypeId) {
   if (lhs->getType()->isPointerTy() && rhs->getType()->isIntegerTy()) {
     return builder.CreateGEP(lhs->getType()->getNonOpaquePointerElementType(),
                              lhs, rhs);
@@ -392,7 +393,7 @@ llvm::Value* Utils::createAdd(llvm::IRBuilder<>& builder, llvm::Value* lhs,
   }
 
   bool isUnsigned = false;
-  BuiltinType::TypeId resultTypeId = BuiltinType::TypeId::UNKNOWN;
+  BuiltinTypeId resultTypeId = BuiltinTypeId::UNKNOWN;
   if (typeUpgrade(builder, lhs, rhs, lhsTypeId, rhsTypeId, resultTypeId,
                   isUnsigned)) {
     if (lhs->getType()->isIntegerTy()) {
@@ -406,8 +407,8 @@ llvm::Value* Utils::createAdd(llvm::IRBuilder<>& builder, llvm::Value* lhs,
 }
 
 llvm::Value* Utils::createSub(llvm::IRBuilder<>& builder, llvm::Value* lhs,
-                              llvm::Value* rhs, BuiltinType::TypeId lhsTypeId,
-                              BuiltinType::TypeId rhsTypeId) {
+                              llvm::Value* rhs, BuiltinTypeId lhsTypeId,
+                              BuiltinTypeId rhsTypeId) {
   if (lhs->getType()->isPointerTy() && rhs->getType()->isIntegerTy()) {
     return builder.CreateGEP(lhs->getType()->getNonOpaquePointerElementType(),
                              lhs, builder.CreateNeg(rhs));
@@ -419,7 +420,7 @@ llvm::Value* Utils::createSub(llvm::IRBuilder<>& builder, llvm::Value* lhs,
   }
 
   bool isUnsigned = false;
-  BuiltinType::TypeId resultTypeId = BuiltinType::TypeId::UNKNOWN;
+  BuiltinTypeId resultTypeId = BuiltinTypeId::UNKNOWN;
   if (typeUpgrade(builder, lhs, rhs, lhsTypeId, rhsTypeId, resultTypeId,
                   isUnsigned)) {
     if (lhs->getType()->isIntegerTy()) {
@@ -433,10 +434,10 @@ llvm::Value* Utils::createSub(llvm::IRBuilder<>& builder, llvm::Value* lhs,
 }
 
 llvm::Value* Utils::createMul(llvm::IRBuilder<>& builder, llvm::Value* lhs,
-                              llvm::Value* rhs, BuiltinType::TypeId lhsTypeId,
-                              BuiltinType::TypeId rhsTypeId) {
+                              llvm::Value* rhs, BuiltinTypeId lhsTypeId,
+                              BuiltinTypeId rhsTypeId) {
   bool isUnsigned = false;
-  BuiltinType::TypeId resultTypeId = BuiltinType::TypeId::UNKNOWN;
+  BuiltinTypeId resultTypeId = BuiltinTypeId::UNKNOWN;
   if (typeUpgrade(builder, lhs, rhs, lhsTypeId, rhsTypeId, resultTypeId,
                   isUnsigned)) {
     if (lhs->getType()->isIntegerTy()) {
@@ -451,10 +452,10 @@ llvm::Value* Utils::createMul(llvm::IRBuilder<>& builder, llvm::Value* lhs,
 
 // isUnsigned selects udiv/urem/lshr vs sdiv/srem/ashr for integer operands.
 llvm::Value* Utils::createDiv(llvm::IRBuilder<>& builder, llvm::Value* lhs,
-                              llvm::Value* rhs, BuiltinType::TypeId lhsTypeId,
-                              BuiltinType::TypeId rhsTypeId, bool isUnsigned) {
+                              llvm::Value* rhs, BuiltinTypeId lhsTypeId,
+                              BuiltinTypeId rhsTypeId, bool isUnsigned) {
   bool unusedUnsigned = false;
-  BuiltinType::TypeId resultTypeId = BuiltinType::TypeId::UNKNOWN;
+  BuiltinTypeId resultTypeId = BuiltinTypeId::UNKNOWN;
   if (typeUpgrade(builder, lhs, rhs, lhsTypeId, rhsTypeId, resultTypeId,
                   unusedUnsigned)) {
     if (lhs->getType()->isIntegerTy()) {
@@ -469,11 +470,11 @@ llvm::Value* Utils::createDiv(llvm::IRBuilder<>& builder, llvm::Value* lhs,
 }
 
 llvm::Value* Utils::createMod(llvm::IRBuilder<>& builder, llvm::Value* lhs,
-                              llvm::Value* rhs, BuiltinType::TypeId lhsTypeId,
-                              BuiltinType::TypeId rhsTypeId, bool isUnsigned) {
+                              llvm::Value* rhs, BuiltinTypeId lhsTypeId,
+                              BuiltinTypeId rhsTypeId, bool isUnsigned) {
   if (lhs->getType()->isIntegerTy() && rhs->getType()->isIntegerTy()) {
     bool unusedUnsigned = false;
-    BuiltinType::TypeId resultTypeId = BuiltinType::TypeId::UNKNOWN;
+    BuiltinTypeId resultTypeId = BuiltinTypeId::UNKNOWN;
     if (Utils::typeUpgrade(builder, lhs, rhs, lhsTypeId, rhsTypeId, resultTypeId,
                            unusedUnsigned)) {
       return isUnsigned ? builder.CreateURem(lhs, rhs)
@@ -486,11 +487,11 @@ llvm::Value* Utils::createMod(llvm::IRBuilder<>& builder, llvm::Value* lhs,
 
 llvm::Value* Utils::createBitwiseAnd(llvm::IRBuilder<>& builder,
                                      llvm::Value* lhs, llvm::Value* rhs,
-                                     BuiltinType::TypeId lhsTypeId,
-                                     BuiltinType::TypeId rhsTypeId) {
+                                     BuiltinTypeId lhsTypeId,
+                                     BuiltinTypeId rhsTypeId) {
   if (lhs->getType()->isIntegerTy() && rhs->getType()->isIntegerTy()) {
     bool isUnsigned = false;
-    BuiltinType::TypeId resultTypeId = BuiltinType::TypeId::UNKNOWN;
+    BuiltinTypeId resultTypeId = BuiltinTypeId::UNKNOWN;
     if (Utils::typeUpgrade(builder, lhs, rhs, lhsTypeId, rhsTypeId, resultTypeId,
                            isUnsigned)) {
       return builder.CreateAnd(lhs, rhs);
@@ -502,11 +503,11 @@ llvm::Value* Utils::createBitwiseAnd(llvm::IRBuilder<>& builder,
 
 llvm::Value* Utils::createBitwiseOr(llvm::IRBuilder<>& builder, llvm::Value* lhs,
                                     llvm::Value* rhs,
-                                    BuiltinType::TypeId lhsTypeId,
-                                    BuiltinType::TypeId rhsTypeId) {
+                                    BuiltinTypeId lhsTypeId,
+                                    BuiltinTypeId rhsTypeId) {
   if (lhs->getType()->isIntegerTy() && rhs->getType()->isIntegerTy()) {
     bool isUnsigned = false;
-    BuiltinType::TypeId resultTypeId = BuiltinType::TypeId::UNKNOWN;
+    BuiltinTypeId resultTypeId = BuiltinTypeId::UNKNOWN;
     if (Utils::typeUpgrade(builder, lhs, rhs, lhsTypeId, rhsTypeId, resultTypeId,
                            isUnsigned)) {
       return builder.CreateOr(lhs, rhs);
@@ -518,11 +519,11 @@ llvm::Value* Utils::createBitwiseOr(llvm::IRBuilder<>& builder, llvm::Value* lhs
 
 llvm::Value* Utils::createBitwiseXor(llvm::IRBuilder<>& builder,
                                       llvm::Value* lhs, llvm::Value* rhs,
-                                      BuiltinType::TypeId lhsTypeId,
-                                      BuiltinType::TypeId rhsTypeId) {
+                                      BuiltinTypeId lhsTypeId,
+                                      BuiltinTypeId rhsTypeId) {
   if (lhs->getType()->isIntegerTy() && rhs->getType()->isIntegerTy()) {
     bool isUnsigned = false;
-    BuiltinType::TypeId resultTypeId = BuiltinType::TypeId::UNKNOWN;
+    BuiltinTypeId resultTypeId = BuiltinTypeId::UNKNOWN;
     if (Utils::typeUpgrade(builder, lhs, rhs, lhsTypeId, rhsTypeId, resultTypeId,
                            isUnsigned)) {
       return builder.CreateXor(lhs, rhs);
@@ -533,11 +534,11 @@ llvm::Value* Utils::createBitwiseXor(llvm::IRBuilder<>& builder,
 }
 
 llvm::Value* Utils::createShl(llvm::IRBuilder<>& builder, llvm::Value* lhs,
-                              llvm::Value* rhs, BuiltinType::TypeId lhsTypeId,
-                              BuiltinType::TypeId rhsTypeId) {
+                              llvm::Value* rhs, BuiltinTypeId lhsTypeId,
+                              BuiltinTypeId rhsTypeId) {
   if (lhs->getType()->isIntegerTy() && rhs->getType()->isIntegerTy()) {
     bool isUnsigned = false;
-    BuiltinType::TypeId resultTypeId = BuiltinType::TypeId::UNKNOWN;
+    BuiltinTypeId resultTypeId = BuiltinTypeId::UNKNOWN;
     if (Utils::typeUpgrade(builder, lhs, rhs, lhsTypeId, rhsTypeId, resultTypeId,
                            isUnsigned)) {
       return builder.CreateShl(lhs, rhs);
@@ -548,11 +549,11 @@ llvm::Value* Utils::createShl(llvm::IRBuilder<>& builder, llvm::Value* lhs,
 }
 
 llvm::Value* Utils::createShr(llvm::IRBuilder<>& builder, llvm::Value* lhs,
-                              llvm::Value* rhs, BuiltinType::TypeId lhsTypeId,
-                              BuiltinType::TypeId rhsTypeId, bool isUnsigned) {
+                              llvm::Value* rhs, BuiltinTypeId lhsTypeId,
+                              BuiltinTypeId rhsTypeId, bool isUnsigned) {
   if (lhs->getType()->isIntegerTy() && rhs->getType()->isIntegerTy()) {
     bool unusedUnsigned = false;
-    BuiltinType::TypeId resultTypeId = BuiltinType::TypeId::UNKNOWN;
+    BuiltinTypeId resultTypeId = BuiltinTypeId::UNKNOWN;
     if (Utils::typeUpgrade(builder, lhs, rhs, lhsTypeId, rhsTypeId, resultTypeId,
                            unusedUnsigned)) {
       return isUnsigned ? builder.CreateLShr(lhs, rhs)

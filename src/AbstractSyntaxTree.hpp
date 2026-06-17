@@ -6,6 +6,8 @@
 #include <string>
 #include <vector>
 
+#include "Types.hpp"
+
 class CodeGenerator;
 
 namespace llvm {
@@ -336,21 +338,7 @@ class VarType : public Node {
 
 class BuiltinType : public VarType {
  public:
-  enum TypeId {
-    UNKNOWN = 0,
-    CHAR,
-    SHORT,
-    INT,
-    LONG,
-    UCHAR,
-    USHORT,
-    UINT,
-    ULONG,
-    FLOAT,
-    DOUBLE,
-    BOOL,
-    VOID
-  };
+  using TypeId = BuiltinTypeId;
 
   TypeId typeId_;
 

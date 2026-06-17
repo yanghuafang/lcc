@@ -1309,7 +1309,8 @@ llvm::Value* Constant::genCode(CodeGenerator& generator) {
     case BuiltinType::TypeId::BOOL:
       return generator.getBuilder().getInt1(boolValue_);
     default:
-      throw std::logic_error("const type " + std::to_string(typeId_) +
+      throw std::logic_error("const type " +
+                             std::to_string(static_cast<int>(typeId_)) +
                              " is not supported!");
   }
 }
