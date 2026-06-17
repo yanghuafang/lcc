@@ -101,6 +101,8 @@ BuiltinType::TypeId Utils::integerPromotion(BuiltinType::TypeId typeId) {
   }
 }
 
+// C usual arithmetic conversions (simplified): integer promotion, then if either
+// operand is unsigned the result is unsigned, with long/double rules as in C.
 BuiltinType::TypeId Utils::usualArithmeticConversion(
     BuiltinType::TypeId lhsTypeId, BuiltinType::TypeId rhsTypeId,
     bool& isUnsigned) {
@@ -162,6 +164,7 @@ llvm::Value* Utils::typeCast(llvm::IRBuilder<>& builder, llvm::Value* value,
   } else if (type == builder.getInt1Ty()) {
     return Utils::castToBool(builder, value);
   } else if (value->getType()->isIntegerTy() && type->isIntegerTy()) {
+    // CreateIntCast's third argument is signedness of the value, not just C type.
     bool isSigned =
         isSrcSignedForCast(srcTypeId) && isDstSignedForCast(dstTypeId);
     return builder.CreateIntCast(value, type, isSigned);
@@ -346,6 +349,7 @@ llvm::Value* Utils::createCmpEq(llvm::IRBuilder<>& builder, llvm::Value* lhs,
   throw std::domain_error("Unsupported types for \"==\" comparision!");
 }
 
+// lhs is a pointer from genCodePtr(); load the pointee (arrays decay to element ptr).
 llvm::Value* Utils::createLoad(llvm::IRBuilder<>& builder, llvm::Value* lhs) {
   if (lhs->getType()->getNonOpaquePointerElementType()->isArrayTy()) {
     return builder.CreatePointerCast(
@@ -445,6 +449,7 @@ llvm::Value* Utils::createMul(llvm::IRBuilder<>& builder, llvm::Value* lhs,
   throw std::logic_error("Mul with unsupported types!");
 }
 
+// isUnsigned selects udiv/urem/lshr vs sdiv/srem/ashr for integer operands.
 llvm::Value* Utils::createDiv(llvm::IRBuilder<>& builder, llvm::Value* lhs,
                               llvm::Value* rhs, BuiltinType::TypeId lhsTypeId,
                               BuiltinType::TypeId rhsTypeId, bool isUnsigned) {

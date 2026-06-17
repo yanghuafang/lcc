@@ -30,6 +30,8 @@ class DataLayout;
 
 }  // namespace llvm
 
+// Owns one translation unit's LLVM state: Context, Module, IRBuilder, and
+// symbol tables. AST nodes call back here for name lookup and for builder access.
 class CodeGenerator {
  public:
   CodeGenerator();
@@ -39,7 +41,8 @@ class CodeGenerator {
   llvm::IRBuilder<>& getBuilder() { return builder_; }
   llvm::Module& getModule() { return *module_; }
 
-  // Create and push an empty symbol table to stack.
+  // Push a scoped symbol table (block, function body, if-branch, loop body).
+  // Lookup walks from innermost to outermost on the stack.
   void pushSymbolTable();
 
   // Pop symbol table from stack.
@@ -152,6 +155,7 @@ class CodeGenerator {
   // data should be arranged and sized in memory.
   llvm::DataLayout* dataLayout_;
 
+  // One map stores functions, types, variables, and constants (see SymbolType).
   class Symbol {
    public:
     Symbol() : content_(nullptr), type_(SymbolType::UNDEFINED) {}
@@ -192,6 +196,7 @@ class CodeGenerator {
 
   using SymbolTable = std::map<std::string, Symbol>;
 
+  // Map LLVM struct types back to AST nodes for member lookup (. and ->).
   using StructTypeTable = std::map<llvm::StructType*, AST::StructType*>;
   using UnionTypeTable = std::map<llvm::StructType*, AST::UnionType*>;
 

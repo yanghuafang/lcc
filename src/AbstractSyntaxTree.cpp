@@ -348,10 +348,13 @@ VarType* TernaryCondition::getExprVarType(CodeGenerator& generator) {
 
 namespace {
 
+// Rvalue form of an lvalue expression: evaluate address, then load.
 llvm::Value* loadFromLValuePtr(CodeGenerator& generator, Expr* expr) {
   return Utils::createLoad(generator.getBuilder(), expr->genCodePtr(generator));
 }
 
+// Ordered comparison (<, >, <=, >=) after usual arithmetic conversion, with
+// extra rules for pointer-vs-pointer and pointer-vs-integer operands.
 llvm::Value* compareOrdered(Expr* lhsExpr, Expr* rhsExpr, llvm::Value* lhs,
                             llvm::Value* rhs, Utils::IntCmpPred intPred,
                             llvm::CmpInst::Predicate floatPred,
@@ -390,6 +393,7 @@ llvm::Value* compareOrdered(Expr* lhsExpr, Expr* rhsExpr, llvm::Value* lhs,
   return nullptr;
 }
 
+// Shared struct/union member address logic for StructRef (.) and StructDeref (->).
 llvm::Value* genStructMemberPtr(CodeGenerator& generator, llvm::Value* structPtr,
                                 const std::string& memberName,
                                 const char* unknownTypeMessage) {
@@ -405,6 +409,7 @@ llvm::Value* genStructMemberPtr(CodeGenerator& generator, llvm::Value* structPtr
     }
 
     std::vector<llvm::Value*> indices;
+    // GEP into a struct pointer requires a leading zero index.
     indices.push_back(generator.getBuilder().getInt32(0));
     indices.push_back(generator.getBuilder().getInt32(memberIndex));
     return generator.getBuilder().CreateGEP(
@@ -495,7 +500,9 @@ llvm::Value* FuncDecl::genCode(CodeGenerator& generator) {
   generator.setFuncSignature(funcName_, retType_, paramVarTypes);
   generator.addFunction(funcName_, func);
 
-  // If there is already a declaration with the same function name.
+  // LLVM merges symbols with the same name in one module. A prior declaration
+  // and a later definition therefore share one llvm::Function; we detect that
+  // here to implement C-style prototype + body linking.
   if (func->getName() != funcName_) {
     // Remove the function just made, use the exiting function.
     func->eraseFromParent();
@@ -561,8 +568,8 @@ llvm::Value* FuncBody::genCode(CodeGenerator& generator) {
     }
   }
 
-  // If the function does not have a "return" at the end of its body, create a
-  // default one.
+  // C allows falling off the end of a non-void function; emit ret undef as a
+  // simple fallback (not strict undefined-behavior checking).
   if (generator.getBuilder().GetInsertBlock()->getTerminator() == nullptr) {
     llvm::Type* retType = generator.getCurrentFunction()->getReturnType();
     if (retType->isVoidTy()) {
@@ -888,6 +895,8 @@ llvm::Type* EnumType::getType(CodeGenerator& generator) {
 
 // Statements
 
+// Lower if/else to a three-block CFG: then, else, if.end. Each branch gets its
+// own symbol table scope so block-local declarations do not leak.
 llvm::Value* IfStmt::genCode(CodeGenerator& generator) {
   llvm::Value* condition = condition_->genCode(generator);
   condition = Utils::castToBool(generator.getBuilder(), condition);
@@ -931,6 +940,8 @@ llvm::Value* IfStmt::genCode(CodeGenerator& generator) {
   return nullptr;
 }
 
+// Lower switch as a chain of compare blocks (not the LLVM switch instruction).
+// Each case gets a basic block; fall-through is modeled by shared block layout.
 llvm::Value* SwitchStmt::genCode(CodeGenerator& generator) {
   llvm::Function* func = generator.getCurrentFunction();
   llvm::Value* matcher = matcher_->genCode(generator);
@@ -1020,6 +1031,8 @@ llvm::Value* CaseStmt::genCode(CodeGenerator& generator) {
   return nullptr;
 }
 
+// CFG: init -> for.cond -> for.loop / for.end; for.loop -> for.update -> for.cond.
+// enterLoop wires continue to for.update and break to for.end.
 llvm::Value* ForStmt::genCode(CodeGenerator& generator) {
   llvm::Function* func = generator.getCurrentFunction();
   llvm::BasicBlock* conditionBlock =
@@ -1131,6 +1144,7 @@ llvm::Value* DoStmt::genCode(CodeGenerator& generator) {
   return nullptr;
 }
 
+// enterLoop wires continue to the condition block and break to while.end.
 llvm::Value* WhileStmt::genCode(CodeGenerator& generator) {
   llvm::Function* func = generator.getCurrentFunction();
   llvm::BasicBlock* conditionBlock =
@@ -1430,6 +1444,7 @@ llvm::Value* Subscript::genCodePtr(CodeGenerator& generator) {
     throw std::logic_error("Subscription index should be integer!");
   }
 
+  // Pointer arithmetic in bytes/elements before integer type promotion.
   return Utils::createAdd(generator.getBuilder(), arrayPtr, idx, array_->getExprTypeId(generator),
                           index_->getExprTypeId(generator));
 }

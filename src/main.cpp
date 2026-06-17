@@ -88,7 +88,8 @@ int main(int argc, char* argv[]) {
     optimizationLevel = "";
   }
 
-  // Compiling...
+  // Compile: lex/parse -> AST, then single-pass codegen (types resolved during
+  // genCode(), not in a separate semantic-analysis pass).
 
   // Open input source file.
   FILE* p = freopen(parser.get<std::string>("-i").c_str(), "r", stdin);
@@ -98,7 +99,7 @@ int main(int argc, char* argv[]) {
     return 3;
   }
 
-  //  Lex & Syntax parsing.
+  // Lex & syntax parsing.
   int ret = yyparse();
   if (ret != 0) {
     std::cerr << "yyparse failed with ret " << ret << std::endl;
@@ -122,10 +123,9 @@ int main(int argc, char* argv[]) {
     return 5;
   }
 
-  // Semantic analysis.
+  // Code generation: walk AST via genCode(); symbol lookup and type info
+  // (getExprTypeId / getExprVarType) happen on demand while emitting IR.
   CodeGenerator generator;
-
-  // Generate LLVM IR code.
   try {
     generator.genIrCode(g_root, optimizationLevel);
     std::cout << "Generated IR code successfully!" << std::endl;

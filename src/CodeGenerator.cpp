@@ -330,7 +330,8 @@ void CodeGenerator::genIrCode(AST::Program* root,
   // Create top level symbol table, and push it to stack.
   pushSymbolTable();
 
-  // Create global block for global variables.
+  // IRBuilder requires an insert point even for global initializers. Use a
+  // temporary internal function/block, emit globals, then erase it.
   globalFunc_ = llvm::Function::Create(
       llvm::FunctionType::get(builder_.getVoidTy(), false),
       llvm::GlobalValue::InternalLinkage, "globalFunc", module_);

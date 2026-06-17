@@ -18,8 +18,15 @@ class BasicBlock;
 
 }  // namespace llvm
 
+// LLVM integer types (i8, i32, ...) carry no signed/unsigned flag. lcc keeps C
+// signedness in AST::BuiltinType::TypeId and passes TypeId into these helpers
+// to choose sdiv/udiv, sext/zext, icmp slt/ult, SIToFP/UIToFP, etc.
 class Utils {
  public:
+  // Relation for icmp only (EQ/LT/… plus signed vs unsigned). Float/double
+  // comparisons use fcmp and llvm::CmpInst::Predicate instead — see createCmpEq
+  // and compareOrdered in AbstractSyntaxTree.cpp, which pick icmp vs fcmp after
+  // usual arithmetic conversion.
   enum class IntCmpPred { EQ, NE, LT, LE, GT, GE };
 
   static llvm::Value* typeCast(
@@ -27,16 +34,16 @@ class Utils {
       AST::BuiltinType::TypeId srcTypeId = AST::BuiltinType::TypeId::UNKNOWN,
       AST::BuiltinType::TypeId dstTypeId = AST::BuiltinType::TypeId::UNKNOWN);
 
-  static llvm::Value* castToBool(llvm::IRBuilder<>& builder, llvm::Value* value);
+  static llvm::Value* castToBool(llvm::IRBuilder<>& builder,
+                                 llvm::Value* value);
 
-  static llvm::Value* typeUpgrade(
-      llvm::IRBuilder<>& builder, llvm::Value* value, llvm::Type* type,
-      AST::BuiltinType::TypeId srcTypeId,
-      AST::BuiltinType::TypeId dstTypeId);
+  static llvm::Value* typeUpgrade(llvm::IRBuilder<>& builder,
+                                  llvm::Value* value, llvm::Type* type,
+                                  AST::BuiltinType::TypeId srcTypeId,
+                                  AST::BuiltinType::TypeId dstTypeId);
 
   static bool typeUpgrade(llvm::IRBuilder<>& builder, llvm::Value*& lhs,
-                          llvm::Value*& rhs,
-                          AST::BuiltinType::TypeId lhsTypeId,
+                          llvm::Value*& rhs, AST::BuiltinType::TypeId lhsTypeId,
                           AST::BuiltinType::TypeId rhsTypeId,
                           AST::BuiltinType::TypeId& resultTypeId,
                           bool& isUnsigned);
@@ -46,11 +53,12 @@ class Utils {
                                                   llvm::Type* varType);
 
   static llvm::BranchInst* terminateBlockByBr(llvm::IRBuilder<>& builder,
-                                            llvm::BasicBlock* basicBlock);
+                                              llvm::BasicBlock* basicBlock);
 
-  static llvm::Value* createCmpEq(
-      llvm::IRBuilder<>& builder, llvm::Value* lhs, llvm::Value* rhs,
-      AST::BuiltinType::TypeId lhsTypeId, AST::BuiltinType::TypeId rhsTypeId);
+  static llvm::Value* createCmpEq(llvm::IRBuilder<>& builder, llvm::Value* lhs,
+                                  llvm::Value* rhs,
+                                  AST::BuiltinType::TypeId lhsTypeId,
+                                  AST::BuiltinType::TypeId rhsTypeId);
 
   static llvm::Value* createIntegerCmp(llvm::IRBuilder<>& builder,
                                        IntCmpPred pred, llvm::Value* lhs,
@@ -120,10 +128,13 @@ class Utils {
                                   size_t valueBitWidth);
 
   static bool isUnsignedTypeId(AST::BuiltinType::TypeId typeId);
+
   static AST::BuiltinType::TypeId integerPromotion(
       AST::BuiltinType::TypeId typeId);
+
   static AST::BuiltinType::TypeId usualArithmeticConversion(
       AST::BuiltinType::TypeId lhsTypeId, AST::BuiltinType::TypeId rhsTypeId,
       bool& isUnsigned);
+
   static AST::BuiltinType::TypeId varTypeToTypeId(AST::VarType* varType);
 };

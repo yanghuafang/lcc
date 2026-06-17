@@ -11,6 +11,7 @@
 namespace AST {
 
 namespace {
+// Sequential IDs keep DOT output stable across runs (see also README).
 std::string getId() {
   static size_t nextId = 0;
   return std::to_string(nextId++);

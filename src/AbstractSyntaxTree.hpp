@@ -15,8 +15,13 @@ class Type;
 
 }  // namespace llvm
 
-// Define types of nodes of the parsing tree(Abstract Syntax Tree with
-// attributes and syntax actions);
+// Abstract Syntax Tree for lcc (single-pass compilation):
+//   Lexer.l / Parser.y  ->  AST nodes in namespace AST
+//   node::genCode()     ->  LLVM IR via CodeGenerator and Utils
+//   node::genGraph()    ->  Graphviz DOT fragments (assembled by Visualizer)
+//
+// There is no separate semantic-analysis pass. getExprTypeId() and
+// getExprVarType() supply C type information while genCode() emits IR.
 
 // Class declaration
 namespace AST {
@@ -170,9 +175,8 @@ class Node {
   // Interface to generate IR code.
   virtual llvm::Value* genCode(CodeGenerator& generator) = 0;
 
-  // Generate GraphViz tree of current node for visualization.
-  // Return pair: first is the root of the generated tree, second is the
-  // generated tree.
+  // Generate Graphviz DOT for this subtree (used by Visualizer only, not codegen).
+  // Returns (rootNodeId, dotFragment).
   virtual std::pair<std::string, std::string> genGraph() = 0;
 };
 
@@ -188,8 +192,9 @@ class Program : public Node {
   std::pair<std::string, std::string> genGraph() override;
 };
 
-// Define Stmt ahead of time as Stmt can be formed by Decl, Block and Expr, so
-// make Stmt the base class of Decl, Block and Expr.
+// Stmt is the base of Decl, Block, and Expr so a Block can hold any of them.
+// In C, a bare expression is a valid statement (expression statement), so Expr
+// inherits Stmt even though expressions are also used inside larger expressions.
 class Stmt : public Node {
  public:
   Stmt() {}
@@ -673,7 +678,11 @@ class Expr : public Stmt {
   Expr() {}
   ~Expr() {}
 
-  // Interface to generate IR code for left value expr.
+  // Rvalue vs lvalue codegen (central to understanding lcc):
+  //   genCode()    -> the value at an expression (often load from an address)
+  //   genCodePtr() -> address of a modifiable location (alloca, GEP, param slot)
+  // Assignments take the lhs via genCodePtr(); most operators use genCode() on
+  // children. Address-of (&) reads genCodePtr(); dereference (*) loads genCode().
   virtual llvm::Value* genCodePtr(CodeGenerator& generator) = 0;
 
   virtual VarType* getExprVarType(CodeGenerator& generator);
@@ -686,6 +695,15 @@ class Expr : public Stmt {
   static bool binaryIsUnsigned(Expr* lhs, Expr* rhs,
                                CodeGenerator& generator);
 };
+
+// Shared expression bases (fields + non-trivial codegen helpers):
+//   LhsRhsExpr        - lhs_/rhs_ layout for binary and assign-shaped nodes
+//   BinaryExpr        - arithmetic/bitwise/shift via genBinaryCode()
+//   LogicExpr         - comparisons and &&/|| via genEqualityCode() etc.
+//   LhsRhsAssign      - plain and compound assignment helpers
+//   CompoundAssign    - grammar grouping for +=, -=, ... (no extra behavior)
+//   UnaryExpr         - operand_ and shared inc/dec IR (genIncDecCode)
+//   ThrowingUnaryExpr - unary ops that are never lvalues (genCodePtr throws)
 
 class LhsRhsExpr : public Expr {
  protected:
@@ -709,6 +727,8 @@ class UnaryExpr : public Expr {
   ~UnaryExpr() {}
 };
 
+// Unary operators that cannot appear as lvalues (!, ~, postfix ++/--, etc.).
+// Prefix ++/-- use UnaryExpr directly because they return an lvalue pointer.
 class ThrowingUnaryExpr : public UnaryExpr {
  protected:
   ThrowingUnaryExpr(Expr* operand) : UnaryExpr(operand) {}
@@ -1167,6 +1187,8 @@ class PrefixDec : public UnaryExpr {
   std::pair<std::string, std::string> genGraph() override;
 };
 
+// Groups compound assignment operators in the grammar; behavior lives in
+// LhsRhsAssign::genCompoundAssignPtr and each subclass's genCodePtr.
 class CompoundAssign : public LhsRhsAssign {
  protected:
   CompoundAssign(Expr* lhs, Expr* rhs) : LhsRhsAssign(lhs, rhs) {}
