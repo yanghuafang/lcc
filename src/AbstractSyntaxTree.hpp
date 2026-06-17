@@ -2,6 +2,7 @@
 
 #include <stddef.h>
 
+#include <functional>
 #include <string>
 #include <vector>
 
@@ -98,11 +99,15 @@ class Subscript;
 class TypeCast;
 class SizeOf;
 
+class UnaryExpr;
+class ThrowingUnaryExpr;
 class UnaryPlus;
 class UnaryMinus;
 class PointerDeref;
 class AddressOf;
 
+class LhsRhsExpr;
+class LhsRhsAssign;
 class Assign;
 class Add;
 class Sub;
@@ -115,6 +120,7 @@ class PostfixDec;
 class PrefixInc;
 class PrefixDec;
 
+class CompoundAssign;
 class AddAssign;
 class SubAssign;
 class MulAssign;
@@ -140,6 +146,7 @@ class LogicAnd;
 class LogicOr;
 class LogicNot;
 
+class LogicExpr;
 class LogicEq;
 class LogicNotEq;
 class LogicLessThan;
@@ -680,17 +687,55 @@ class Expr : public Stmt {
                                CodeGenerator& generator);
 };
 
-class BinaryExpr : public Expr {
+class LhsRhsExpr : public Expr {
  protected:
   Expr* lhs_;
   Expr* rhs_;
 
-  BinaryExpr(Expr* lhs, Expr* rhs) : lhs_(lhs), rhs_(rhs) {}
+  LhsRhsExpr(Expr* lhs, Expr* rhs) : lhs_(lhs), rhs_(rhs) {}
+};
+
+class UnaryExpr : public Expr {
+ protected:
+  Expr* operand_;
+
+  UnaryExpr(Expr* operand) : operand_(operand) {}
+
+  llvm::Value* genIncDecCode(CodeGenerator& generator, bool increment,
+                             bool returnOperandPtr,
+                             const char* invalidTypeMessage);
+
+ public:
+  ~UnaryExpr() {}
+};
+
+class ThrowingUnaryExpr : public UnaryExpr {
+ protected:
+  ThrowingUnaryExpr(Expr* operand) : UnaryExpr(operand) {}
+
+  virtual const char* nonLValueErrorMessage() const = 0;
+
+ public:
+  ~ThrowingUnaryExpr() {}
+
+  llvm::Value* genCodePtr(CodeGenerator& generator) override;
+};
+
+class BinaryExpr : public LhsRhsExpr {
+ protected:
+  BinaryExpr(Expr* lhs, Expr* rhs) : LhsRhsExpr(lhs, rhs) {}
+
+  virtual const char* nonLValueErrorMessage() const = 0;
+
+  llvm::Value* genBinaryCode(
+      CodeGenerator& generator,
+      const std::function<llvm::Value*(llvm::Value*, llvm::Value*)>& applyOp);
 
  public:
   ~BinaryExpr() {}
 
   BuiltinType::TypeId getExprTypeId(CodeGenerator& generator) override;
+  llvm::Value* genCodePtr(CodeGenerator& generator) override;
 };
 
 class Variable : public Expr {
@@ -788,12 +833,9 @@ class ConstStr : public Constant {
   std::pair<std::string, std::string> genGraph() override;
 };
 
-class CommaExpr : public Expr {
+class CommaExpr : public LhsRhsExpr {
  public:
-  Expr* lhs_;
-  Expr* rhs_;
-
-  CommaExpr(Expr* lhs, Expr* rhs) : lhs_(lhs), rhs_(rhs) {}
+  CommaExpr(Expr* lhs, Expr* rhs) : LhsRhsExpr(lhs, rhs) {}
   ~CommaExpr() {}
 
   VarType* getExprVarType(CodeGenerator& generator) override;
@@ -914,43 +956,41 @@ class SizeOf : public Expr {
   std::pair<std::string, std::string> genGraph() override;
 };
 
-class UnaryPlus : public Expr {
+class UnaryPlus : public ThrowingUnaryExpr {
  public:
-  Expr* operand_;
-
-  UnaryPlus(Expr* operand) : operand_(operand) {}
+  UnaryPlus(Expr* operand) : ThrowingUnaryExpr(operand) {}
   ~UnaryPlus() {}
 
   VarType* getExprVarType(CodeGenerator& generator) override;
 
   llvm::Value* genCode(CodeGenerator& generator) override;
-  llvm::Value* genCodePtr(CodeGenerator& generator) override;
 
   std::pair<std::string, std::string> genGraph() override;
+
+ protected:
+  const char* nonLValueErrorMessage() const override;
 };
 
-class UnaryMinus : public Expr {
+class UnaryMinus : public ThrowingUnaryExpr {
  public:
-  Expr* operand_;
-
-  UnaryMinus(Expr* operand) : operand_(operand) {}
+  UnaryMinus(Expr* operand) : ThrowingUnaryExpr(operand) {}
   ~UnaryMinus() {}
 
   VarType* getExprVarType(CodeGenerator& generator) override;
   BuiltinType::TypeId getExprTypeId(CodeGenerator& generator) override;
 
   llvm::Value* genCode(CodeGenerator& generator) override;
-  llvm::Value* genCodePtr(CodeGenerator& generator) override;
 
   std::pair<std::string, std::string> genGraph() override;
+
+ protected:
+  const char* nonLValueErrorMessage() const override;
 };
 
 /* for *pointer */
-class PointerDeref : public Expr {
+class PointerDeref : public UnaryExpr {
  public:
-  Expr* operand_;
-
-  PointerDeref(Expr* operand) : operand_(operand) {}
+  PointerDeref(Expr* operand) : UnaryExpr(operand) {}
   ~PointerDeref() {}
 
   VarType* getExprVarType(CodeGenerator& generator) override;
@@ -963,30 +1003,40 @@ class PointerDeref : public Expr {
 };
 
 /* for &variable */
-class AddressOf : public Expr {
+class AddressOf : public ThrowingUnaryExpr {
  public:
-  Expr* operand_;
-
-  AddressOf(Expr* operand) : operand_(operand) {}
+  AddressOf(Expr* operand) : ThrowingUnaryExpr(operand) {}
   ~AddressOf() {}
 
   llvm::Value* genCode(CodeGenerator& generator) override;
-  llvm::Value* genCodePtr(CodeGenerator& generator) override;
 
   std::pair<std::string, std::string> genGraph() override;
+
+ protected:
+  const char* nonLValueErrorMessage() const override;
 };
 
-class Assign : public Expr {
- public:
-  Expr* lhs_;
-  Expr* rhs_;
+class LhsRhsAssign : public LhsRhsExpr {
+ protected:
+  LhsRhsAssign(Expr* lhs, Expr* rhs) : LhsRhsExpr(lhs, rhs) {}
 
-  Assign(Expr* lhs, Expr* rhs) : lhs_(lhs), rhs_(rhs) {}
+  llvm::Value* genSimpleAssignPtr(CodeGenerator& generator);
+
+  llvm::Value* genCompoundAssignPtr(
+      CodeGenerator& generator,
+      const std::function<llvm::Value*(llvm::Value*, llvm::Value*)>& applyOp);
+
+ public:
+  llvm::Value* genCode(CodeGenerator& generator) override;
+};
+
+class Assign : public LhsRhsAssign {
+ public:
+  Assign(Expr* lhs, Expr* rhs) : LhsRhsAssign(lhs, rhs) {}
   ~Assign() {}
 
   VarType* getExprVarType(CodeGenerator& generator) override;
 
-  llvm::Value* genCode(CodeGenerator& generator) override;
   llvm::Value* genCodePtr(CodeGenerator& generator) override;
 
   std::pair<std::string, std::string> genGraph() override;
@@ -998,9 +1048,11 @@ class Add : public BinaryExpr {
   ~Add() {}
 
   llvm::Value* genCode(CodeGenerator& generator) override;
-  llvm::Value* genCodePtr(CodeGenerator& generator) override;
 
   std::pair<std::string, std::string> genGraph() override;
+
+ protected:
+  const char* nonLValueErrorMessage() const override;
 };
 
 class Sub : public BinaryExpr {
@@ -1009,9 +1061,11 @@ class Sub : public BinaryExpr {
   ~Sub() {}
 
   llvm::Value* genCode(CodeGenerator& generator) override;
-  llvm::Value* genCodePtr(CodeGenerator& generator) override;
 
   std::pair<std::string, std::string> genGraph() override;
+
+ protected:
+  const char* nonLValueErrorMessage() const override;
 };
 
 class Mul : public BinaryExpr {
@@ -1020,9 +1074,11 @@ class Mul : public BinaryExpr {
   ~Mul() {}
 
   llvm::Value* genCode(CodeGenerator& generator) override;
-  llvm::Value* genCodePtr(CodeGenerator& generator) override;
 
   std::pair<std::string, std::string> genGraph() override;
+
+ protected:
+  const char* nonLValueErrorMessage() const override;
 };
 
 class Div : public BinaryExpr {
@@ -1031,9 +1087,11 @@ class Div : public BinaryExpr {
   ~Div() {}
 
   llvm::Value* genCode(CodeGenerator& generator) override;
-  llvm::Value* genCodePtr(CodeGenerator& generator) override;
 
   std::pair<std::string, std::string> genGraph() override;
+
+ protected:
+  const char* nonLValueErrorMessage() const override;
 };
 
 class Mod : public BinaryExpr {
@@ -1042,48 +1100,48 @@ class Mod : public BinaryExpr {
   ~Mod() {}
 
   llvm::Value* genCode(CodeGenerator& generator) override;
-  llvm::Value* genCodePtr(CodeGenerator& generator) override;
 
   std::pair<std::string, std::string> genGraph() override;
+
+ protected:
+  const char* nonLValueErrorMessage() const override;
 };
 
-class PostfixInc : public Expr {
+class PostfixInc : public ThrowingUnaryExpr {
  public:
-  Expr* operand_;
-
-  PostfixInc(Expr* operand) : operand_(operand) {}
+  PostfixInc(Expr* operand) : ThrowingUnaryExpr(operand) {}
   ~PostfixInc() {}
 
   VarType* getExprVarType(CodeGenerator& generator) override;
   VarType* getLValueVarType(CodeGenerator& generator) override;
 
   llvm::Value* genCode(CodeGenerator& generator) override;
-  llvm::Value* genCodePtr(CodeGenerator& generator) override;
 
   std::pair<std::string, std::string> genGraph() override;
+
+ protected:
+  const char* nonLValueErrorMessage() const override;
 };
 
-class PostfixDec : public Expr {
+class PostfixDec : public ThrowingUnaryExpr {
  public:
-  Expr* operand_;
-
-  PostfixDec(Expr* operand) : operand_(operand) {}
+  PostfixDec(Expr* operand) : ThrowingUnaryExpr(operand) {}
   ~PostfixDec() {}
 
   VarType* getExprVarType(CodeGenerator& generator) override;
   VarType* getLValueVarType(CodeGenerator& generator) override;
 
   llvm::Value* genCode(CodeGenerator& generator) override;
-  llvm::Value* genCodePtr(CodeGenerator& generator) override;
 
   std::pair<std::string, std::string> genGraph() override;
+
+ protected:
+  const char* nonLValueErrorMessage() const override;
 };
 
-class PrefixInc : public Expr {
+class PrefixInc : public UnaryExpr {
  public:
-  Expr* operand_;
-
-  PrefixInc(Expr* operand) : operand_(operand) {}
+  PrefixInc(Expr* operand) : UnaryExpr(operand) {}
   ~PrefixInc() {}
 
   VarType* getExprVarType(CodeGenerator& generator) override;
@@ -1095,11 +1153,9 @@ class PrefixInc : public Expr {
   std::pair<std::string, std::string> genGraph() override;
 };
 
-class PrefixDec : public Expr {
+class PrefixDec : public UnaryExpr {
  public:
-  Expr* operand_;
-
-  PrefixDec(Expr* operand) : operand_(operand) {}
+  PrefixDec(Expr* operand) : UnaryExpr(operand) {}
   ~PrefixDec() {}
 
   VarType* getExprVarType(CodeGenerator& generator) override;
@@ -1111,71 +1167,59 @@ class PrefixDec : public Expr {
   std::pair<std::string, std::string> genGraph() override;
 };
 
-class AddAssign : public Expr {
- public:
-  Expr* lhs_;
-  Expr* rhs_;
+class CompoundAssign : public LhsRhsAssign {
+ protected:
+  CompoundAssign(Expr* lhs, Expr* rhs) : LhsRhsAssign(lhs, rhs) {}
 
-  AddAssign(Expr* lhs, Expr* rhs) : lhs_(lhs), rhs_(rhs) {}
+ public:
+  ~CompoundAssign() {}
+};
+
+class AddAssign : public CompoundAssign {
+ public:
+  AddAssign(Expr* lhs, Expr* rhs) : CompoundAssign(lhs, rhs) {}
   ~AddAssign() {}
 
-  llvm::Value* genCode(CodeGenerator& generator) override;
   llvm::Value* genCodePtr(CodeGenerator& generator) override;
 
   std::pair<std::string, std::string> genGraph() override;
 };
 
-class SubAssign : public Expr {
+class SubAssign : public CompoundAssign {
  public:
-  Expr* lhs_;
-  Expr* rhs_;
-
-  SubAssign(Expr* lhs, Expr* rhs) : lhs_(lhs), rhs_(rhs) {}
+  SubAssign(Expr* lhs, Expr* rhs) : CompoundAssign(lhs, rhs) {}
   ~SubAssign() {}
 
-  llvm::Value* genCode(CodeGenerator& generator) override;
   llvm::Value* genCodePtr(CodeGenerator& generator) override;
 
   std::pair<std::string, std::string> genGraph() override;
 };
 
-class MulAssign : public Expr {
+class MulAssign : public CompoundAssign {
  public:
-  Expr* lhs_;
-  Expr* rhs_;
-
-  MulAssign(Expr* lhs, Expr* rhs) : lhs_(lhs), rhs_(rhs) {}
+  MulAssign(Expr* lhs, Expr* rhs) : CompoundAssign(lhs, rhs) {}
   ~MulAssign() {}
 
-  llvm::Value* genCode(CodeGenerator& generator) override;
   llvm::Value* genCodePtr(CodeGenerator& generator) override;
 
   std::pair<std::string, std::string> genGraph() override;
 };
 
-class DivAssign : public Expr {
+class DivAssign : public CompoundAssign {
  public:
-  Expr* lhs_;
-  Expr* rhs_;
-
-  DivAssign(Expr* lhs, Expr* rhs) : lhs_(lhs), rhs_(rhs) {}
+  DivAssign(Expr* lhs, Expr* rhs) : CompoundAssign(lhs, rhs) {}
   ~DivAssign() {}
 
-  llvm::Value* genCode(CodeGenerator& generator) override;
   llvm::Value* genCodePtr(CodeGenerator& generator) override;
 
   std::pair<std::string, std::string> genGraph() override;
 };
 
-class ModAssign : public Expr {
+class ModAssign : public CompoundAssign {
  public:
-  Expr* lhs_;
-  Expr* rhs_;
-
-  ModAssign(Expr* lhs, Expr* rhs) : lhs_(lhs), rhs_(rhs) {}
+  ModAssign(Expr* lhs, Expr* rhs) : CompoundAssign(lhs, rhs) {}
   ~ModAssign() {}
 
-  llvm::Value* genCode(CodeGenerator& generator) override;
   llvm::Value* genCodePtr(CodeGenerator& generator) override;
 
   std::pair<std::string, std::string> genGraph() override;
@@ -1187,9 +1231,11 @@ class BitwiseAnd : public BinaryExpr {
   ~BitwiseAnd() {}
 
   llvm::Value* genCode(CodeGenerator& generator) override;
-  llvm::Value* genCodePtr(CodeGenerator& generator) override;
 
   std::pair<std::string, std::string> genGraph() override;
+
+ protected:
+  const char* nonLValueErrorMessage() const override;
 };
 
 class BitwiseOr : public BinaryExpr {
@@ -1198,9 +1244,11 @@ class BitwiseOr : public BinaryExpr {
   ~BitwiseOr() {}
 
   llvm::Value* genCode(CodeGenerator& generator) override;
-  llvm::Value* genCodePtr(CodeGenerator& generator) override;
 
   std::pair<std::string, std::string> genGraph() override;
+
+ protected:
+  const char* nonLValueErrorMessage() const override;
 };
 
 class BitwiseXor : public BinaryExpr {
@@ -1209,61 +1257,51 @@ class BitwiseXor : public BinaryExpr {
   ~BitwiseXor() {}
 
   llvm::Value* genCode(CodeGenerator& generator) override;
-  llvm::Value* genCodePtr(CodeGenerator& generator) override;
 
   std::pair<std::string, std::string> genGraph() override;
+
+ protected:
+  const char* nonLValueErrorMessage() const override;
 };
 
-class BitwiseNot : public Expr {
+class BitwiseNot : public ThrowingUnaryExpr {
  public:
-  Expr* operand_;
-
-  BitwiseNot(Expr* operand) : operand_(operand) {}
+  BitwiseNot(Expr* operand) : ThrowingUnaryExpr(operand) {}
   ~BitwiseNot() {}
 
   llvm::Value* genCode(CodeGenerator& generator) override;
-  llvm::Value* genCodePtr(CodeGenerator& generator) override;
 
   std::pair<std::string, std::string> genGraph() override;
+
+ protected:
+  const char* nonLValueErrorMessage() const override;
 };
 
-class BitwiseAndAssign : public Expr {
+class BitwiseAndAssign : public CompoundAssign {
  public:
-  Expr* lhs_;
-  Expr* rhs_;
-
-  BitwiseAndAssign(Expr* lhs, Expr* rhs) : lhs_(lhs), rhs_(rhs) {}
+  BitwiseAndAssign(Expr* lhs, Expr* rhs) : CompoundAssign(lhs, rhs) {}
   ~BitwiseAndAssign() {}
 
-  llvm::Value* genCode(CodeGenerator& generator) override;
   llvm::Value* genCodePtr(CodeGenerator& generator) override;
 
   std::pair<std::string, std::string> genGraph() override;
 };
 
-class BitwiseOrAssign : public Expr {
+class BitwiseOrAssign : public CompoundAssign {
  public:
-  Expr* lhs_;
-  Expr* rhs_;
-
-  BitwiseOrAssign(Expr* lhs, Expr* rhs) : lhs_(lhs), rhs_(rhs) {}
+  BitwiseOrAssign(Expr* lhs, Expr* rhs) : CompoundAssign(lhs, rhs) {}
   ~BitwiseOrAssign() {}
 
-  llvm::Value* genCode(CodeGenerator& generator) override;
   llvm::Value* genCodePtr(CodeGenerator& generator) override;
 
   std::pair<std::string, std::string> genGraph() override;
 };
 
-class BitwiseXorAssign : public Expr {
+class BitwiseXorAssign : public CompoundAssign {
  public:
-  Expr* lhs_;
-  Expr* rhs_;
-
-  BitwiseXorAssign(Expr* lhs, Expr* rhs) : lhs_(lhs), rhs_(rhs) {}
+  BitwiseXorAssign(Expr* lhs, Expr* rhs) : CompoundAssign(lhs, rhs) {}
   ~BitwiseXorAssign() {}
 
-  llvm::Value* genCode(CodeGenerator& generator) override;
   llvm::Value* genCodePtr(CodeGenerator& generator) override;
 
   std::pair<std::string, std::string> genGraph() override;
@@ -1275,9 +1313,11 @@ class LeftShift : public BinaryExpr {
   ~LeftShift() {}
 
   llvm::Value* genCode(CodeGenerator& generator) override;
-  llvm::Value* genCodePtr(CodeGenerator& generator) override;
 
   std::pair<std::string, std::string> genGraph() override;
+
+ protected:
+  const char* nonLValueErrorMessage() const override;
 };
 
 class RightShift : public BinaryExpr {
@@ -1286,162 +1326,167 @@ class RightShift : public BinaryExpr {
   ~RightShift() {}
 
   llvm::Value* genCode(CodeGenerator& generator) override;
-  llvm::Value* genCodePtr(CodeGenerator& generator) override;
 
   std::pair<std::string, std::string> genGraph() override;
+
+ protected:
+  const char* nonLValueErrorMessage() const override;
 };
 
-class LeftShiftAssign : public Expr {
+class LeftShiftAssign : public CompoundAssign {
  public:
-  Expr* lhs_;
-  Expr* rhs_;
-
-  LeftShiftAssign(Expr* lhs, Expr* rhs) : lhs_(lhs), rhs_(rhs) {}
+  LeftShiftAssign(Expr* lhs, Expr* rhs) : CompoundAssign(lhs, rhs) {}
   ~LeftShiftAssign() {}
 
-  llvm::Value* genCode(CodeGenerator& generator) override;
   llvm::Value* genCodePtr(CodeGenerator& generator) override;
 
   std::pair<std::string, std::string> genGraph() override;
 };
 
-class RightShiftAssign : public Expr {
+class RightShiftAssign : public CompoundAssign {
  public:
-  Expr* lhs_;
-  Expr* rhs_;
-
-  RightShiftAssign(Expr* lhs, Expr* rhs) : lhs_(lhs), rhs_(rhs) {}
+  RightShiftAssign(Expr* lhs, Expr* rhs) : CompoundAssign(lhs, rhs) {}
   ~RightShiftAssign() {}
 
-  llvm::Value* genCode(CodeGenerator& generator) override;
   llvm::Value* genCodePtr(CodeGenerator& generator) override;
 
   std::pair<std::string, std::string> genGraph() override;
 };
 
-class LogicAnd : public Expr {
- public:
-  Expr* lhs_;
-  Expr* rhs_;
+class LogicExpr : public LhsRhsExpr {
+ protected:
+  LogicExpr(Expr* lhs, Expr* rhs) : LhsRhsExpr(lhs, rhs) {}
 
-  LogicAnd(Expr* lhs, Expr* rhs) : lhs_(lhs), rhs_(rhs) {}
+  virtual const char* nonLValueErrorMessage() const = 0;
+
+  llvm::Value* genBoolBinaryCode(
+      CodeGenerator& generator,
+      const std::function<llvm::Value*(llvm::Value*, llvm::Value*)>& combine);
+
+  llvm::Value* genEqualityCode(CodeGenerator& generator);
+
+  llvm::Value* genOrderedCompare(CodeGenerator& generator, int intCmpPred,
+                                 int floatCmpPred, const char* unsupportedOp);
+
+ public:
+  llvm::Value* genCodePtr(CodeGenerator& generator) override;
+};
+
+class LogicAnd : public LogicExpr {
+ public:
+  LogicAnd(Expr* lhs, Expr* rhs) : LogicExpr(lhs, rhs) {}
   ~LogicAnd() {}
 
   llvm::Value* genCode(CodeGenerator& generator) override;
-  llvm::Value* genCodePtr(CodeGenerator& generator) override;
 
   std::pair<std::string, std::string> genGraph() override;
+
+ protected:
+  const char* nonLValueErrorMessage() const override;
 };
 
-class LogicOr : public Expr {
+class LogicOr : public LogicExpr {
  public:
-  Expr* lhs_;
-  Expr* rhs_;
-
-  LogicOr(Expr* lhs, Expr* rhs) : lhs_(lhs), rhs_(rhs) {}
+  LogicOr(Expr* lhs, Expr* rhs) : LogicExpr(lhs, rhs) {}
   ~LogicOr() {}
 
   llvm::Value* genCode(CodeGenerator& generator) override;
-  llvm::Value* genCodePtr(CodeGenerator& generator) override;
 
   std::pair<std::string, std::string> genGraph() override;
+
+ protected:
+  const char* nonLValueErrorMessage() const override;
 };
 
-class LogicNot : public Expr {
+class LogicNot : public ThrowingUnaryExpr {
  public:
-  Expr* operand_;
-
-  LogicNot(Expr* operand) : operand_(operand) {}
+  LogicNot(Expr* operand) : ThrowingUnaryExpr(operand) {}
   ~LogicNot() {}
 
   llvm::Value* genCode(CodeGenerator& generator) override;
-  llvm::Value* genCodePtr(CodeGenerator& generator) override;
 
   std::pair<std::string, std::string> genGraph() override;
+
+ protected:
+  const char* nonLValueErrorMessage() const override;
 };
 
-class LogicEq : public Expr {
+class LogicEq : public LogicExpr {
  public:
-  Expr* lhs_;
-  Expr* rhs_;
-
-  LogicEq(Expr* lhs, Expr* rhs) : lhs_(lhs), rhs_(rhs) {}
+  LogicEq(Expr* lhs, Expr* rhs) : LogicExpr(lhs, rhs) {}
   ~LogicEq() {}
 
   llvm::Value* genCode(CodeGenerator& generator) override;
-  llvm::Value* genCodePtr(CodeGenerator& generator) override;
 
   std::pair<std::string, std::string> genGraph() override;
+
+ protected:
+  const char* nonLValueErrorMessage() const override;
 };
 
-class LogicNotEq : public Expr {
+class LogicNotEq : public LogicExpr {
  public:
-  Expr* lhs_;
-  Expr* rhs_;
-
-  LogicNotEq(Expr* lhs, Expr* rhs) : lhs_(lhs), rhs_(rhs) {}
+  LogicNotEq(Expr* lhs, Expr* rhs) : LogicExpr(lhs, rhs) {}
   ~LogicNotEq() {}
 
   llvm::Value* genCode(CodeGenerator& generator) override;
-  llvm::Value* genCodePtr(CodeGenerator& generator) override;
 
   std::pair<std::string, std::string> genGraph() override;
+
+ protected:
+  const char* nonLValueErrorMessage() const override;
 };
 
-class LogicLessThan : public Expr {
+class LogicLessThan : public LogicExpr {
  public:
-  Expr* lhs_;
-  Expr* rhs_;
-
-  LogicLessThan(Expr* lhs, Expr* rhs) : lhs_(lhs), rhs_(rhs) {}
+  LogicLessThan(Expr* lhs, Expr* rhs) : LogicExpr(lhs, rhs) {}
   ~LogicLessThan() {}
 
   llvm::Value* genCode(CodeGenerator& generator) override;
-  llvm::Value* genCodePtr(CodeGenerator& generator) override;
 
   std::pair<std::string, std::string> genGraph() override;
+
+ protected:
+  const char* nonLValueErrorMessage() const override;
 };
 
-class LogicLessEq : public Expr {
+class LogicLessEq : public LogicExpr {
  public:
-  Expr* lhs_;
-  Expr* rhs_;
-
-  LogicLessEq(Expr* lhs, Expr* rhs) : lhs_(lhs), rhs_(rhs) {}
+  LogicLessEq(Expr* lhs, Expr* rhs) : LogicExpr(lhs, rhs) {}
   ~LogicLessEq() {}
 
   llvm::Value* genCode(CodeGenerator& generator) override;
-  llvm::Value* genCodePtr(CodeGenerator& generator) override;
 
   std::pair<std::string, std::string> genGraph() override;
+
+ protected:
+  const char* nonLValueErrorMessage() const override;
 };
 
-class LogicGreaterThan : public Expr {
+class LogicGreaterThan : public LogicExpr {
  public:
-  Expr* lhs_;
-  Expr* rhs_;
-
-  LogicGreaterThan(Expr* lhs, Expr* rhs) : lhs_(lhs), rhs_(rhs) {}
+  LogicGreaterThan(Expr* lhs, Expr* rhs) : LogicExpr(lhs, rhs) {}
   ~LogicGreaterThan() {}
 
   llvm::Value* genCode(CodeGenerator& generator) override;
-  llvm::Value* genCodePtr(CodeGenerator& generator) override;
 
   std::pair<std::string, std::string> genGraph() override;
+
+ protected:
+  const char* nonLValueErrorMessage() const override;
 };
 
-class LogicGreaterEq : public Expr {
+class LogicGreaterEq : public LogicExpr {
  public:
-  Expr* lhs_;
-  Expr* rhs_;
-
-  LogicGreaterEq(Expr* lhs, Expr* rhs) : lhs_(lhs), rhs_(rhs) {}
+  LogicGreaterEq(Expr* lhs, Expr* rhs) : LogicExpr(lhs, rhs) {}
   ~LogicGreaterEq() {}
 
   llvm::Value* genCode(CodeGenerator& generator) override;
-  llvm::Value* genCodePtr(CodeGenerator& generator) override;
 
   std::pair<std::string, std::string> genGraph() override;
+
+ protected:
+  const char* nonLValueErrorMessage() const override;
 };
 
 class TernaryCondition : public Expr {
@@ -1460,6 +1505,12 @@ class TernaryCondition : public Expr {
   llvm::Value* genCodePtr(CodeGenerator& generator) override;
 
   std::pair<std::string, std::string> genGraph() override;
+
+ protected:
+  llvm::Value* genTernarySelect(
+      CodeGenerator& generator,
+      const std::function<llvm::Value*(Expr*)>& evalBranch,
+      const char* typeMismatchMessage);
 };
 
 }  // namespace AST

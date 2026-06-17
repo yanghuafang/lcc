@@ -6,6 +6,7 @@
 #include "AbstractSyntaxTree.hpp"
 #include "CodeGenerator.hpp"
 #include "Utils.hpp"
+#include "Visualizer.hpp"
 
 extern int yyparse();
 
@@ -112,7 +113,7 @@ int main(int argc, char* argv[]) {
     if (!parser.get<std::string>("-v").empty()) {
       std::pair<std::string, std::string> tree = g_root->genGraph();
       std::string graph = "digraph {\n" + tree.second + "}\n";
-      Utils::dumpAbstractSyntaxTree(parser.get<std::string>("-v"), graph);
+      Visualizer::dumpAbstractSyntaxTree(parser.get<std::string>("-v"), graph);
       std::cout << "Generated AST graph file successfully!" << std::endl;
     }
   } catch (std::exception& e) {

@@ -18,12 +18,10 @@
 
 #include "AbstractSyntaxTree.hpp"
 
-llvm::LLVMContext g_context;
-
-llvm::IRBuilder<> g_builder(g_context);
-
 CodeGenerator::CodeGenerator()
-    : module_(new llvm::Module("lcc", g_context)),
+    : context_(),
+      builder_(context_),
+      module_(new llvm::Module("lcc", context_)),
       dataLayout_(new llvm::DataLayout(module_)),
       structTypeTable_(new StructTypeTable),
       unionTypeTable_(new UnionTypeTable),
@@ -314,12 +312,12 @@ llvm::BasicBlock* CodeGenerator::getBreakBlock() {
 }
 
 void CodeGenerator::switchInsertPointToGlobalBlock() {
-  currentBlock_ = g_builder.GetInsertBlock();
-  g_builder.SetInsertPoint(globalBlock_);
+  currentBlock_ = builder_.GetInsertBlock();
+  builder_.SetInsertPoint(globalBlock_);
 }
 
 void CodeGenerator::switchInsertPointToCurrentBlock() {
-  g_builder.SetInsertPoint(currentBlock_);
+  builder_.SetInsertPoint(currentBlock_);
 }
 
 void CodeGenerator::genIrCode(AST::Program* root,
@@ -334,10 +332,10 @@ void CodeGenerator::genIrCode(AST::Program* root,
 
   // Create global block for global variables.
   globalFunc_ = llvm::Function::Create(
-      llvm::FunctionType::get(g_builder.getVoidTy(), false),
+      llvm::FunctionType::get(builder_.getVoidTy(), false),
       llvm::GlobalValue::InternalLinkage, "globalFunc", module_);
   globalBlock_ =
-      llvm::BasicBlock::Create(g_context, "globalBlock", globalFunc_);
+      llvm::BasicBlock::Create(context_, "globalBlock", globalFunc_);
 
   root->genCode(*this);
 

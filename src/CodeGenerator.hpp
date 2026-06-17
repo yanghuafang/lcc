@@ -30,38 +30,14 @@ class DataLayout;
 
 }  // namespace llvm
 
-// llvm::LLVMContext serves as a container for core global data of LLVM's
-// infrastructure.
-// It manages essential LLVM data structures, including type unique and constant
-// uniquing tables.
-extern llvm::LLVMContext g_context;
-
-// llvm::IRBuilder is a helper to generate LLVM IR code.
-// It provides a high-level API for creating and inserting LLVM IR instructions.
-//  - Insertion Point Tracking: It keeps track of the current insertion point
-//  within a module, function or basic block.
-//  - Instruction Creation: It offers methods to create various LLVM
-//  instructions, such as arithmetic operations, control flow, memory
-//  operations, and function calls.
-//  - Type Management: It works with LLVM's type system, allowing easy creation
-//  of typed instructions and constant.
-extern llvm::IRBuilder<> g_builder;
-
 class CodeGenerator {
  public:
-  // llvm::Module serves as the top-level container for all LLVM IR objects.
-  // A llvm::Module instance contains:
-  //  - Global variables
-  //  - Functions
-  //  - Symbol table entries
-  //  - Libraries or other modules it depends on
-  //  - Target specific data
-  // llvm::Module are associated with an llvm::LLVMContext, from which types and
-  // constants are allocated.
-  llvm::Module* module_;
-
   CodeGenerator();
   ~CodeGenerator();
+
+  llvm::LLVMContext& getContext() { return context_; }
+  llvm::IRBuilder<>& getBuilder() { return builder_; }
+  llvm::Module& getModule() { return *module_; }
 
   // Create and push an empty symbol table to stack.
   void pushSymbolTable();
@@ -164,6 +140,18 @@ class CodeGenerator {
   // Optimize by option -O0, -O1, -O2, -O3, -Os, -Oz
   void optimizeCode(const std::string& optimizationLevel);
 
+  // Must be declared before module_. C++ initializes members in declaration
+  // order; llvm::Module and llvm::IRBuilder require a live LLVMContext.
+  llvm::LLVMContext context_;
+  llvm::IRBuilder<> builder_;
+  // Top-level container for all LLVM IR in this compilation unit.
+  llvm::Module* module_;
+
+  // llvm::DataLayout manages how data is organized for a specific target
+  // architecture. It's like a blueprint that describes how different types of
+  // data should be arranged and sized in memory.
+  llvm::DataLayout* dataLayout_;
+
   class Symbol {
    public:
     Symbol() : content_(nullptr), type_(SymbolType::UNDEFINED) {}
@@ -206,11 +194,6 @@ class CodeGenerator {
 
   using StructTypeTable = std::map<llvm::StructType*, AST::StructType*>;
   using UnionTypeTable = std::map<llvm::StructType*, AST::UnionType*>;
-
-  // llvm::DataLayout manages how data is organized for a specific target
-  // architecture. It's like a blueprint that describes how different types of
-  // data should be arranged and sized in memory.
-  llvm::DataLayout* dataLayout_;
 
   std::vector<SymbolTable*> symbolTableStack_;
   StructTypeTable* structTypeTable_;

@@ -1,9 +1,12 @@
 #include <stdio.h>
 
+#include <fstream>
+#include <iostream>
 #include <string>
 #include <utility>
 
 #include "AbstractSyntaxTree.hpp"
+#include "Visualizer.hpp"
 
 namespace AST {
 
@@ -1661,3 +1664,17 @@ std::pair<std::string, std::string> TernaryCondition::genGraph() {
 }
 
 }  // namespace AST
+
+void Visualizer::dumpAbstractSyntaxTree(const std::string& fileName,
+                                        const std::string& graph) {
+  if (fileName.empty()) {
+    return;
+  }
+
+  std::ofstream graphFile(fileName);
+  if (graphFile.is_open()) {
+    graphFile << graph;
+  } else {
+    std::cerr << "Failed to open file " << fileName << std::endl;
+  }
+}
