@@ -582,22 +582,43 @@ llvm::Value* FuncBody::genCode(CodeGenerator& generator) {
   return nullptr;
 }
 
+VarType* VarInit::buildVarType(VarType* baseType) const {
+  VarType* type = baseType;
+  for (size_t bound : arrayBounds_) {
+    type = new ArrayType(type, bound);
+  }
+  return type;
+}
+
 llvm::Value* VarDecl::genCode(CodeGenerator& generator) {
-  llvm::Type* varType = varType_->getType(generator);
-  if (varType == nullptr) {
+  llvm::Type* baseLlvmType = varType_->getType(generator);
+  if (baseLlvmType == nullptr) {
     throw std::logic_error("Define variable with unknown type!");
   }
-  if (varType->isVoidTy()) {
+  if (baseLlvmType->isVoidTy()) {
     throw std::logic_error("It is not allowed to define void variable!");
   }
 
   // Create variables one by one.
   for (VarInit* var : *varList_) {
+    if (!var->arrayBounds_.empty() && var->initialExpr_ != nullptr) {
+      throw std::logic_error(
+          "Array variable " + var->varName_ +
+          " cannot be initialized with a single expression; use brace "
+          "initialization.");
+    }
+
+    VarType* varType = var->buildVarType(varType_);
+    llvm::Type* llvmVarType = varType->getType(generator);
+    if (llvmVarType == nullptr) {
+      throw std::logic_error("Define variable with unknown type!");
+    }
+
     if (generator.getCurrentFunction() != nullptr) {
       // The declaration is inside a function, create an alloca.
       llvm::AllocaInst* allocaInst = Utils::createEntryBlockAlloca(
-          generator.getCurrentFunction(), var->varName_, varType);
-      if (!generator.addVariable(var->varName_, allocaInst, varType_)) {
+          generator.getCurrentFunction(), var->varName_, llvmVarType);
+      if (!generator.addVariable(var->varName_, allocaInst, varType)) {
         allocaInst->eraseFromParent();
         allocaInst = nullptr;
         throw std::logic_error(
@@ -608,9 +629,10 @@ llvm::Value* VarDecl::genCode(CodeGenerator& generator) {
       // Assign variable by "store" instruction if variable is with initial
       // value.
       if (var->initialExpr_ != nullptr) {
-        llvm::Value* initializer = Utils::typeCast(generator.getBuilder(), var->initialExpr_->genCode(generator), varType,
-            var->initialExpr_->getExprTypeId(generator),
-            Utils::varTypeToTypeId(varType_));
+        llvm::Value* initializer = Utils::typeCast(
+            generator.getBuilder(), var->initialExpr_->genCode(generator),
+            llvmVarType, var->initialExpr_->getExprTypeId(generator),
+            Utils::varTypeToTypeId(varType));
         if (initializer == nullptr) {
           allocaInst->eraseFromParent();
           allocaInst = nullptr;
@@ -624,9 +646,10 @@ llvm::Value* VarDecl::genCode(CodeGenerator& generator) {
       llvm::Constant* initializer = nullptr;
       if (var->initialExpr_ != nullptr) {
         generator.switchInsertPointToGlobalBlock();
-        llvm::Value* initialExpr = Utils::typeCast(generator.getBuilder(), var->initialExpr_->genCode(generator), varType,
-            var->initialExpr_->getExprTypeId(generator),
-            Utils::varTypeToTypeId(varType_));
+        llvm::Value* initialExpr = Utils::typeCast(
+            generator.getBuilder(), var->initialExpr_->genCode(generator),
+            llvmVarType, var->initialExpr_->getExprTypeId(generator),
+            Utils::varTypeToTypeId(varType));
         if (initialExpr == nullptr) {
           throw std::logic_error("It failed to init variable " + var->varName_ +
                                  " with value of different type!");
@@ -637,14 +660,14 @@ llvm::Value* VarDecl::genCode(CodeGenerator& generator) {
       } else {
         // Create an undef value for global variable if no initializer is given.
         // The global value will be recognized as "extern" by LLVM.
-        initializer = llvm::UndefValue::get(varType);
+        initializer = llvm::UndefValue::get(llvmVarType);
       }
 
       // Create a global variable.
       llvm::GlobalVariable* globalVar = new llvm::GlobalVariable(
-          generator.getModule(), varType, varType_->isConst_,
+          generator.getModule(), llvmVarType, varType_->isConst_,
           llvm::Function::ExternalLinkage, initializer, var->varName_);
-      if (!generator.addVariable(var->varName_, globalVar, varType_)) {
+      if (!generator.addVariable(var->varName_, globalVar, varType)) {
         throw std::logic_error(
             "It is not allowed to redefine global variable " + var->varName_);
       }

@@ -682,14 +682,16 @@ str_202 [label = "**** 25.quick_sort.c ****"]
 ConstStr_202 -> str_202
 FuncBody_200 -> VarDecl_203
 VarDecl_203 [label = VarDecl]
-VarDecl_203 -> ArrayType_204
-ArrayType_204 [label = ArrayType]
-"int[6]_204" [label = "int[6]"]
-ArrayType_204 -> "int[6]_204"
+VarDecl_203 -> BuiltinType_204
+BuiltinType_204 [label = BuiltinType]
+"int_204" [label = "int"]
+BuiltinType_204 -> "int_204"
 VarDecl_203 -> VarInit_205
 VarInit_205 [label = VarInit]
 arr_205 [label = arr]
 VarInit_205 -> arr_205
+bounds_205 [label = "[6]"]
+VarInit_205 -> bounds_205
 FuncBody_200 -> Assign_206
 Assign_206 [label = Assign]
 Assign_206 -> Subscript_207
@@ -1010,14 +1012,16 @@ int_296 [label = "10"]
 Constant_296 -> int_296
 FuncBody_200 -> VarDecl_297
 VarDecl_297 [label = VarDecl]
-VarDecl_297 -> ArrayType_298
-ArrayType_298 [label = ArrayType]
-"int[1]_298" [label = "int[1]"]
-ArrayType_298 -> "int[1]_298"
+VarDecl_297 -> BuiltinType_298
+BuiltinType_298 [label = BuiltinType]
+"int_298" [label = "int"]
+BuiltinType_298 -> "int_298"
 VarDecl_297 -> VarInit_299
 VarInit_299 [label = VarInit]
 single_299 [label = single]
 VarInit_299 -> single_299
+bounds_299 [label = "[1]"]
+VarInit_299 -> bounds_299
 FuncBody_200 -> Assign_300
 Assign_300 [label = Assign]
 Assign_300 -> Subscript_301

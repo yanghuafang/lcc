@@ -170,14 +170,16 @@ test_errors_47 [label = test_errors]
 Variable_47 -> test_errors_47
 Program -> VarDecl_48
 VarDecl_48 [label = VarDecl]
-VarDecl_48 -> ArrayType_49
-ArrayType_49 [label = ArrayType]
-"char[16]_49" [label = "char[16]"]
-ArrayType_49 -> "char[16]_49"
+VarDecl_48 -> BuiltinType_49
+BuiltinType_49 [label = BuiltinType]
+"char_49" [label = "char"]
+BuiltinType_49 -> "char_49"
 VarDecl_48 -> VarInit_50
 VarInit_50 [label = VarInit]
 gs_50 [label = gs]
 VarInit_50 -> gs_50
+bounds_50 [label = "[16]"]
+VarInit_50 -> bounds_50
 Program -> VarDecl_51
 VarDecl_51 [label = VarDecl]
 VarDecl_51 -> PointerType_52
@@ -194,14 +196,16 @@ str_54 [label = "hello world!"]
 ConstStr_54 -> str_54
 Program -> VarDecl_55
 VarDecl_55 [label = VarDecl]
-VarDecl_55 -> ArrayType_56
-ArrayType_56 [label = ArrayType]
-"int[4]_56" [label = "int[4]"]
-ArrayType_56 -> "int[4]_56"
+VarDecl_55 -> BuiltinType_56
+BuiltinType_56 [label = BuiltinType]
+"int_56" [label = "int"]
+BuiltinType_56 -> "int_56"
 VarDecl_55 -> VarInit_57
 VarInit_57 [label = VarInit]
 gi_57 [label = gi]
 VarInit_57 -> gi_57
+bounds_57 [label = "[4]"]
+VarInit_57 -> bounds_57
 Program -> FuncDecl_58
 FuncDecl_58 [label = FuncDecl]
 FuncDecl_58 -> BuiltinType_59
@@ -262,14 +266,16 @@ gps_73 [label = gps]
 Variable_73 -> gps_73
 FuncBody_61 -> VarDecl_74
 VarDecl_74 [label = VarDecl]
-VarDecl_74 -> ArrayType_75
-ArrayType_75 [label = ArrayType]
-"char[16]_75" [label = "char[16]"]
-ArrayType_75 -> "char[16]_75"
+VarDecl_74 -> BuiltinType_75
+BuiltinType_75 [label = BuiltinType]
+"char_75" [label = "char"]
+BuiltinType_75 -> "char_75"
 VarDecl_74 -> VarInit_76
 VarInit_76 [label = VarInit]
 s_76 [label = s]
 VarInit_76 -> s_76
+bounds_76 [label = "[16]"]
+VarInit_76 -> bounds_76
 FuncBody_61 -> Assign_77
 Assign_77 [label = Assign]
 Assign_77 -> Subscript_78
@@ -472,14 +478,16 @@ gs_137 [label = gs]
 Variable_137 -> gs_137
 FuncBody_61 -> VarDecl_138
 VarDecl_138 [label = VarDecl]
-VarDecl_138 -> ArrayType_139
-ArrayType_139 [label = ArrayType]
-"int[4]_139" [label = "int[4]"]
-ArrayType_139 -> "int[4]_139"
+VarDecl_138 -> BuiltinType_139
+BuiltinType_139 [label = BuiltinType]
+"int_139" [label = "int"]
+BuiltinType_139 -> "int_139"
 VarDecl_138 -> VarInit_140
 VarInit_140 [label = VarInit]
 i_140 [label = i]
 VarInit_140 -> i_140
+bounds_140 [label = "[4]"]
+VarInit_140 -> bounds_140
 FuncBody_61 -> Assign_141
 Assign_141 [label = Assign]
 Assign_141 -> Subscript_142

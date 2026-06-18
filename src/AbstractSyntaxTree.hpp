@@ -285,14 +285,20 @@ class VarDecl : public Decl {
 class VarInit : public Node {
  public:
   std::string varName_;
+  std::vector<size_t> arrayBounds_;
   Expr* initialExpr_;
 
-  VarInit(const std::string& varName, Expr* initialExpr = nullptr)
-      : varName_(varName), initialExpr_(initialExpr) {}
+  VarInit(const std::string& varName, const std::vector<size_t>& arrayBounds,
+          Expr* initialExpr = nullptr)
+      : varName_(varName),
+        arrayBounds_(arrayBounds),
+        initialExpr_(initialExpr) {}
   ~VarInit() {}
 
   llvm::Value* genCode(CodeGenerator& generator) override { return nullptr; }
   std::pair<std::string, std::string> genGraph() override;
+
+  VarType* buildVarType(VarType* baseType) const;
 };
 
 class TypeDecl : public Decl {

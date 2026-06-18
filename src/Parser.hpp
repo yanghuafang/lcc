@@ -49,7 +49,9 @@ extern int yydebug;
 
     #include "AbstractSyntaxTree.hpp"
 
-#line 53 "Parser.hpp"
+    #include <vector>
+
+#line 55 "Parser.hpp"
 
 /* Token kinds.  */
 #ifndef YYTOKENTYPE
@@ -150,7 +152,7 @@ extern int yydebug;
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 union YYSTYPE
 {
-#line 27 "Parser.y"
+#line 29 "Parser.y"
 
     char charVal;
     unsigned char ucharVal;
@@ -184,6 +186,8 @@ union YYSTYPE
     AST::VarInit* varInit;
     AST::VarList* varList;
 
+    std::vector<size_t>* arrayBoundList;
+
     AST::BuiltinType* builtinType;
 
     AST::FieldDecl* fieldDecl;
@@ -216,7 +220,7 @@ union YYSTYPE
     AST::Enum* enumeration;
     AST::EnumList* enumList;
 
-#line 220 "Parser.hpp"
+#line 224 "Parser.hpp"
 
 };
 typedef union YYSTYPE YYSTYPE;

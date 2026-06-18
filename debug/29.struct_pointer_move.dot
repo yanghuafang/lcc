@@ -212,14 +212,16 @@ str_59 [label = "**** 29.struct_pointer_move.c ****"]
 ConstStr_59 -> str_59
 FuncBody_57 -> VarDecl_60
 VarDecl_60 [label = VarDecl]
-VarDecl_60 -> ArrayType_61
-ArrayType_61 [label = ArrayType]
-"Data[4]_61" [label = "Data[4]"]
-ArrayType_61 -> "Data[4]_61"
+VarDecl_60 -> DefinedType_61
+DefinedType_61 [label = DefinedType]
+"Data_61" [label = "Data"]
+DefinedType_61 -> "Data_61"
 VarDecl_60 -> VarInit_62
 VarInit_62 [label = VarInit]
 data_62 [label = data]
 VarInit_62 -> data_62
+bounds_62 [label = "[4]"]
+VarInit_62 -> bounds_62
 FuncBody_57 -> Assign_63
 Assign_63 [label = Assign]
 Assign_63 -> StructRef_64

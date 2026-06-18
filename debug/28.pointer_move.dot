@@ -190,14 +190,16 @@ str_53 [label = "**** 28.pointer_move.c ****"]
 ConstStr_53 -> str_53
 FuncBody_51 -> VarDecl_54
 VarDecl_54 [label = VarDecl]
-VarDecl_54 -> ArrayType_55
-ArrayType_55 [label = ArrayType]
-"char[4]_55" [label = "char[4]"]
-ArrayType_55 -> "char[4]_55"
+VarDecl_54 -> BuiltinType_55
+BuiltinType_55 [label = BuiltinType]
+"char_55" [label = "char"]
+BuiltinType_55 -> "char_55"
 VarDecl_54 -> VarInit_56
 VarInit_56 [label = VarInit]
 c_56 [label = c]
 VarInit_56 -> c_56
+bounds_56 [label = "[4]"]
+VarInit_56 -> bounds_56
 FuncBody_51 -> Assign_57
 Assign_57 [label = Assign]
 Assign_57 -> Subscript_58

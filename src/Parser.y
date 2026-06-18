@@ -20,6 +20,8 @@ AST::Program* g_root;
 
 %code requires {
     #include "AbstractSyntaxTree.hpp"
+
+    #include <vector>
 }
 
  /* Define union yylval */
@@ -56,6 +58,8 @@ AST::Program* g_root;
 
     AST::VarInit* varInit;
     AST::VarList* varList;
+
+    std::vector<size_t>* arrayBoundList;
 
     AST::BuiltinType* builtinType;
 
@@ -140,6 +144,8 @@ AST::Program* g_root;
 
 %type<varInit>                  VarInit
 %type<varList>                  VarList
+%type<arrayBoundList>           ArrayBoundList
+%type<intVal>                   ArrayBound
 
 %type<builtinType>              BuiltinType
 
@@ -232,12 +238,6 @@ FuncBody:   LBRACE Stmts RBRACE { $$ = new AST::FuncBody($2); }
 
 VarDecl:    VarType VarList SEMICOLON
                                 { $$ = new AST::VarDecl($1, $2); }
-            | VarType IDENTIFIER LBRACKET INTEGER RBRACKET SEMICOLON
-                                { AST::ArrayType* arrayType = new AST::ArrayType($1, $4);
-                                  AST::VarList* varList = new AST::VarList();
-                                  AST::VarInit* varInit = new AST::VarInit(*$2);
-                                  varList->push_back(varInit);
-                                  $$ = new AST::VarDecl(arrayType, varList); }
             ;
 
 TypeDecl:   _VarType SEMICOLON  { $$ = new AST::TypeDecl($1); }
@@ -269,11 +269,27 @@ VarList:    VarList COMMA VarInit
             |                   { $$ = new AST::VarList(); }
             ;
 
- /* e.g. a; */
- /* e.g. b = 2; */
-VarInit:    IDENTIFIER          { $$ = new AST::VarInit(*$1); }
-            | IDENTIFIER ASSIGN Expr
-                                { $$ = new AST::VarInit(*$1, $3); }
+ /* VarInit — one declared variable: name, optional array bounds, optional initializer */
+ /* e.g. a;  e.g. a[4];  e.g. b = 2; */
+VarInit:    IDENTIFIER ArrayBoundList
+                                { $$ = new AST::VarInit(*$1, *$2); delete $2; }
+            | IDENTIFIER ArrayBoundList ASSIGN Expr
+                                { $$ = new AST::VarInit(*$1, *$2, $4); delete $2; }
+            ;
+
+ /* ArrayBoundList — declarator suffix [INTEGER]; empty for a scalar in int a[4], b; */
+ /* e.g. [4]  e.g. [8][5] */
+
+ArrayBoundList:
+            ArrayBoundList ArrayBound
+                                { $$ = $1; $$->push_back($2); }
+            | ArrayBound
+                                { $$ = new std::vector<size_t>(); $$->push_back($1); }
+            |                   { $$ = new std::vector<size_t>(); }
+            ;
+
+ArrayBound: LBRACKET INTEGER RBRACKET
+                                { $$ = $2; }
             ;
 
  /* ParamList */
