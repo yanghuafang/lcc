@@ -35,6 +35,7 @@ tests=(
   "31.array_1d_brace_init.c"
   "32.array_1d_inferred_string_init.c"
   "33.array_2d_decl.c"
+  "34.array_2d_brace_init.c"
 )
 
 compileC2Obj() {

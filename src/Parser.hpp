@@ -200,6 +200,8 @@ union YYSTYPE
 
     AST::Expr* expr;
     AST::ExprList* exprList;
+    AST::InitList* initList;
+    AST::InitElement* initElement;
 
     AST::Stmt* stmt;
     AST::Stmts* stmts;
@@ -221,7 +223,7 @@ union YYSTYPE
     AST::Enum* enumeration;
     AST::EnumList* enumList;
 
-#line 225 "Parser.hpp"
+#line 227 "Parser.hpp"
 
 };
 typedef union YYSTYPE YYSTYPE;

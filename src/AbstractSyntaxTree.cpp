@@ -20,6 +20,110 @@ struct Array1DInfo {
   size_t length;
 };
 
+struct ArrayTypeInfo {
+  AST::VarType* elemVarType;
+  std::vector<size_t> dims;
+};
+
+ArrayTypeInfo getArrayTypeInfo(AST::VarType* varType) {
+  ArrayTypeInfo info;
+  AST::VarType* type = varType;
+  while (type->isArrayType()) {
+    AST::ArrayType* arrayType = static_cast<AST::ArrayType*>(type);
+    info.dims.push_back(arrayType->length_);
+    type = arrayType->baseType_;
+  }
+  info.elemVarType = type;
+  return info;
+}
+
+bool initListHasNested(const AST::InitList& initList) {
+  for (AST::InitElement* element : initList) {
+    if (element->isNested()) {
+      return true;
+    }
+  }
+  return false;
+}
+
+size_t count1DInitElements(const AST::InitList& initList) {
+  for (AST::InitElement* element : initList) {
+    if (element->isNested()) {
+      throw std::logic_error(
+          "Nested brace initializers are not supported for 1D arrays.");
+    }
+  }
+  return initList.size();
+}
+
+size_t infer2DRowCount(const AST::InitList& initList, size_t cols) {
+  if (initList.empty()) {
+    throw std::logic_error("Cannot infer array size from empty initializer.");
+  }
+  if (initListHasNested(initList)) {
+    return initList.size();
+  }
+  return (initList.size() - 1) / cols + 1;
+}
+
+std::vector<AST::Expr*> flatten1DInit(const AST::InitList& initList,
+                                      size_t length) {
+  if (initList.size() > length) {
+    throw std::logic_error("Too many elements in array initializer.");
+  }
+
+  std::vector<AST::Expr*> flat(length, nullptr);
+  for (size_t i = 0; i < initList.size(); ++i) {
+    if (initList[i]->isNested()) {
+      throw std::logic_error(
+          "Nested brace initializers are not supported for 1D arrays.");
+    }
+    flat[i] = initList[i]->expr_;
+  }
+  return flat;
+}
+
+std::vector<AST::Expr*> flatten2DInit(const AST::InitList& initList,
+                                      size_t rows, size_t cols) {
+  const size_t total = rows * cols;
+  std::vector<AST::Expr*> flat(total, nullptr);
+
+  if (initListHasNested(initList)) {
+    if (initList.size() > rows) {
+      throw std::logic_error("Too many rows in array initializer.");
+    }
+    for (size_t row = 0; row < initList.size(); ++row) {
+      if (!initList[row]->isNested()) {
+        throw std::logic_error("Expected nested row initializer.");
+      }
+      const AST::InitList& rowInit = *initList[row]->nested_;
+      if (rowInit.size() > cols) {
+        throw std::logic_error("Too many elements in array initializer row.");
+      }
+      for (size_t col = 0; col < rowInit.size(); ++col) {
+        if (rowInit[col]->isNested()) {
+          throw std::logic_error(
+              "Array initializer nesting is deeper than the array type.");
+        }
+        flat[row * cols + col] = rowInit[col]->expr_;
+      }
+    }
+    return flat;
+  }
+
+  if (initList.size() > total) {
+    throw std::logic_error("Too many elements in array initializer.");
+  }
+  for (size_t i = 0; i < initList.size(); ++i) {
+    if (initList[i]->isNested()) {
+      throw std::logic_error(
+          "Mixed flat and nested array initializers are not supported.");
+    }
+    flat[i] = initList[i]->expr_;
+  }
+  return flat;
+}
+
 bool isInferredArrayBound(size_t bound) {
   return bound == AST::kInferredArrayBound;
 }
@@ -47,28 +151,39 @@ std::vector<size_t> resolveArrayBounds(const AST::VarInit* var,
     return bounds;
   }
 
-  for (size_t& bound : bounds) {
-    if (!isInferredArrayBound(bound)) {
+  for (size_t i = 1; i < bounds.size(); ++i) {
+    if (isInferredArrayBound(bounds[i])) {
+      throw std::logic_error(
+          "Only the first array dimension may be inferred.");
+    }
+  }
+
+  for (size_t i = 0; i < bounds.size(); ++i) {
+    if (!isInferredArrayBound(bounds[i])) {
       continue;
     }
 
-    if (bounds.size() != 1) {
+    if (i != 0) {
       throw std::logic_error(
-          "Inferred array size is only supported for 1D arrays.");
+          "Only the first array dimension may be inferred.");
     }
 
     if (var->hasBraceInit()) {
-      if (var->initList_->empty()) {
+      if (bounds.size() == 1) {
+        bounds[i] = count1DInitElements(*var->initList_);
+      } else if (bounds.size() == 2) {
+        bounds[i] = infer2DRowCount(*var->initList_, bounds[1]);
+      } else {
         throw std::logic_error(
-            "Cannot infer array size from empty initializer.");
+            "Inferred array size for more than two dimensions is not "
+            "supported yet.");
       }
-      bound = var->initList_->size();
       continue;
     }
 
     AST::ConstStr* strInit = asConstStr(var->initialExpr_);
-    if (strInit != nullptr && isCharElementType(baseType)) {
-      bound = stringInitializerLength(strInit->str_);
+    if (strInit != nullptr && isCharElementType(baseType) && bounds.size() == 1) {
+      bounds[i] = stringInitializerLength(strInit->str_);
       continue;
     }
 
@@ -80,17 +195,11 @@ std::vector<size_t> resolveArrayBounds(const AST::VarInit* var,
 }
 
 Array1DInfo get1DArrayInfo(AST::VarType* varType) {
-  if (!varType->isArrayType()) {
-    throw std::logic_error("Brace initialization requires an array type!");
+  ArrayTypeInfo info = getArrayTypeInfo(varType);
+  if (info.dims.size() != 1) {
+    throw std::logic_error("Expected a one-dimensional array type.");
   }
-
-  AST::ArrayType* outer = static_cast<AST::ArrayType*>(varType);
-  if (outer->baseType_->isArrayType()) {
-    throw std::logic_error(
-        "Multidimensional array brace initialization is not supported yet.");
-  }
-
-  return {outer->baseType_, outer->length_};
+  return {info.elemVarType, info.dims[0]};
 }
 
 llvm::Constant* asConstant(llvm::Value* value, const std::string& context) {
@@ -101,68 +210,174 @@ llvm::Constant* asConstant(llvm::Value* value, const std::string& context) {
   return constant;
 }
 
+llvm::Constant* exprToGlobalInitConstant(CodeGenerator& generator,
+                                       AST::Expr* expr,
+                                       AST::VarType* elemVarType,
+                                       llvm::Type* elemLlvmType) {
+  llvm::Value* value = Utils::typeCast(
+      generator.getBuilder(), expr->genCode(generator), elemLlvmType,
+      expr->getExprTypeId(generator), Utils::varTypeToTypeId(elemVarType));
+  if (value == nullptr) {
+    throw std::logic_error("Array initializer element type mismatch.");
+  }
+  return asConstant(value, "Global array initializer element");
+}
+
 llvm::Constant* buildGlobalArrayInitializer(
     CodeGenerator& generator, AST::VarType* elemVarType,
-    llvm::Type* elemLlvmType, size_t length, const AST::InitList& initList) {
-  if (initList.size() > length) {
-    throw std::logic_error("Too many elements in array initializer.");
-  }
-
+    llvm::Type* elemLlvmType, size_t length,
+    const std::vector<AST::Expr*>& flatInit) {
   std::vector<llvm::Constant*> elements;
   elements.reserve(length);
-  for (AST::Expr* expr : initList) {
-    llvm::Value* value = Utils::typeCast(
-        generator.getBuilder(), expr->genCode(generator), elemLlvmType,
-        expr->getExprTypeId(generator), Utils::varTypeToTypeId(elemVarType));
-    if (value == nullptr) {
-      throw std::logic_error("Array initializer element type mismatch.");
+  for (size_t i = 0; i < length; ++i) {
+    if (flatInit[i] == nullptr) {
+      elements.push_back(llvm::Constant::getNullValue(elemLlvmType));
+      continue;
     }
-    elements.push_back(
-        asConstant(value, "Global array initializer element"));
-  }
-  while (elements.size() < length) {
-    elements.push_back(llvm::Constant::getNullValue(elemLlvmType));
+    elements.push_back(exprToGlobalInitConstant(generator, flatInit[i],
+                                                elemVarType, elemLlvmType));
   }
 
   return llvm::ConstantArray::get(
       llvm::ArrayType::get(elemLlvmType, length), elements);
 }
 
-void storeLocalArrayInitializer(CodeGenerator& generator,
-                                llvm::AllocaInst* allocaInst,
-                                llvm::Type* llvmArrayType,
-                                AST::VarType* elemVarType,
-                                llvm::Type* elemLlvmType, size_t length,
-                                const AST::InitList& initList) {
-  if (initList.size() > length) {
-    throw std::logic_error("Too many elements in array initializer.");
+llvm::Constant* buildGlobal2DArrayInitializer(
+    CodeGenerator& generator, const ArrayTypeInfo& info,
+    llvm::Type* llvmArrayType, llvm::Type* elemLlvmType,
+    const std::vector<AST::Expr*>& flatInit) {
+  const size_t rows = info.dims[0];
+  const size_t cols = info.dims[1];
+  llvm::Type* rowLlvmType = llvm::ArrayType::get(elemLlvmType, cols);
+
+  std::vector<llvm::Constant*> rowConstants;
+  rowConstants.reserve(rows);
+  for (size_t row = 0; row < rows; ++row) {
+    std::vector<llvm::Constant*> rowElements;
+    rowElements.reserve(cols);
+    for (size_t col = 0; col < cols; ++col) {
+      AST::Expr* expr = flatInit[row * cols + col];
+      if (expr == nullptr) {
+        rowElements.push_back(llvm::Constant::getNullValue(elemLlvmType));
+        continue;
+      }
+      rowElements.push_back(exprToGlobalInitConstant(
+          generator, expr, info.elemVarType, elemLlvmType));
+    }
+    rowConstants.push_back(llvm::ConstantArray::get(
+        llvm::cast<llvm::ArrayType>(rowLlvmType), rowElements));
   }
 
+  return llvm::ConstantArray::get(
+      llvm::cast<llvm::ArrayType>(llvmArrayType), rowConstants);
+}
+
+void storeLocalFlatArrayInitializer(CodeGenerator& generator,
+                                    llvm::AllocaInst* allocaInst,
+                                    llvm::Type* llvmArrayType,
+                                    AST::VarType* elemVarType,
+                                    llvm::Type* elemLlvmType,
+                                    const std::vector<size_t>& dims,
+                                    const std::vector<AST::Expr*>& flatInit) {
   llvm::IRBuilder<>& builder = generator.getBuilder();
   llvm::IntegerType* indexType = builder.getInt32Ty();
   llvm::Value* zeroIndex = llvm::ConstantInt::get(indexType, 0);
   llvm::Value* zeroValue = llvm::Constant::getNullValue(elemLlvmType);
 
-  for (size_t i = 0; i < initList.size(); ++i) {
+  const size_t cols = dims.back();
+  const size_t rows = dims.size() == 2 ? dims[0] : 1;
+  const size_t length = dims.size() == 1 ? dims[0] : rows * cols;
+
+  for (size_t linear = 0; linear < length; ++linear) {
+    std::vector<llvm::Value*> gepIndices = {zeroIndex};
+    if (dims.size() == 1) {
+      gepIndices.push_back(llvm::ConstantInt::get(indexType, linear));
+    } else {
+      gepIndices.push_back(
+          llvm::ConstantInt::get(indexType, linear / cols));
+      gepIndices.push_back(
+          llvm::ConstantInt::get(indexType, linear % cols));
+    }
+
+    llvm::Value* elementPtr =
+        builder.CreateGEP(llvmArrayType, allocaInst, gepIndices);
+    AST::Expr* expr = flatInit[linear];
+    if (expr == nullptr) {
+      builder.CreateStore(zeroValue, elementPtr);
+      continue;
+    }
+
     llvm::Value* value = Utils::typeCast(
-        builder, initList[i]->genCode(generator), elemLlvmType,
-        initList[i]->getExprTypeId(generator),
-        Utils::varTypeToTypeId(elemVarType));
+        builder, expr->genCode(generator), elemLlvmType,
+        expr->getExprTypeId(generator), Utils::varTypeToTypeId(elemVarType));
     if (value == nullptr) {
       throw std::logic_error("Array initializer element type mismatch.");
     }
-    llvm::Value* index = llvm::ConstantInt::get(indexType, i);
-    llvm::Value* elementPtr =
-        builder.CreateGEP(llvmArrayType, allocaInst, {zeroIndex, index});
     builder.CreateStore(value, elementPtr);
   }
+}
 
-  for (size_t i = initList.size(); i < length; ++i) {
-    llvm::Value* index = llvm::ConstantInt::get(indexType, i);
-    llvm::Value* elementPtr =
-        builder.CreateGEP(llvmArrayType, allocaInst, {zeroIndex, index});
-    builder.CreateStore(zeroValue, elementPtr);
+void storeBraceArrayInitializer(CodeGenerator& generator,
+                                llvm::AllocaInst* allocaInst,
+                                llvm::Type* llvmArrayType,
+                                AST::VarType* varType,
+                                const AST::InitList& initList) {
+  ArrayTypeInfo info = getArrayTypeInfo(varType);
+  llvm::Type* elemLlvmType = info.elemVarType->getType(generator);
+  if (elemLlvmType == nullptr) {
+    throw std::logic_error("Define variable with unknown type!");
   }
+
+  if (info.dims.size() == 1) {
+    std::vector<AST::Expr*> flat =
+        flatten1DInit(initList, info.dims[0]);
+    storeLocalFlatArrayInitializer(generator, allocaInst, llvmArrayType,
+                                   info.elemVarType, elemLlvmType, info.dims,
+                                   flat);
+    return;
+  }
+
+  if (info.dims.size() == 2) {
+    std::vector<AST::Expr*> flat =
+        flatten2DInit(initList, info.dims[0], info.dims[1]);
+    storeLocalFlatArrayInitializer(generator, allocaInst, llvmArrayType,
+                                   info.elemVarType, elemLlvmType, info.dims,
+                                   flat);
+    return;
+  }
+
+  throw std::logic_error(
+      "Brace initialization for more than two dimensions is not supported "
+      "yet.");
+}
+
+llvm::Constant* buildBraceArrayInitializer(CodeGenerator& generator,
+                                           AST::VarType* varType,
+                                           llvm::Type* llvmVarType,
+                                           const AST::InitList& initList) {
+  ArrayTypeInfo info = getArrayTypeInfo(varType);
+  llvm::Type* elemLlvmType = info.elemVarType->getType(generator);
+  if (elemLlvmType == nullptr) {
+    throw std::logic_error("Define variable with unknown type!");
+  }
+
+  if (info.dims.size() == 1) {
+    std::vector<AST::Expr*> flat =
+        flatten1DInit(initList, info.dims[0]);
+    return buildGlobalArrayInitializer(generator, info.elemVarType,
+                                       elemLlvmType, info.dims[0], flat);
+  }
+
+  if (info.dims.size() == 2) {
+    std::vector<AST::Expr*> flat =
+        flatten2DInit(initList, info.dims[0], info.dims[1]);
+    return buildGlobal2DArrayInitializer(generator, info, llvmVarType,
+                                         elemLlvmType, flat);
+  }
+
+  throw std::logic_error(
+      "Brace initialization for more than two dimensions is not supported "
+      "yet.");
 }
 
 llvm::Constant* buildGlobalStringArrayInitializer(llvm::Type* charLlvmType,
@@ -223,6 +438,11 @@ void storeLocalStringArrayInitializer(CodeGenerator& generator,
 }  // namespace
 
 namespace AST {
+
+llvm::Value* InitElement::genCode(CodeGenerator& generator) {
+  (void)generator;
+  throw std::logic_error("InitElement is not an expression.");
+}
 
 VarType* VarType::getMemberVarType(const std::string& memberName) {
   (void)memberName;
@@ -854,11 +1074,8 @@ llvm::Value* VarDecl::genCode(CodeGenerator& generator) {
       }
 
       if (var->hasBraceInit()) {
-        Array1DInfo arrayInfo = get1DArrayInfo(varType);
-        llvm::Type* elemLlvmType = arrayInfo.elemVarType->getType(generator);
-        storeLocalArrayInitializer(generator, allocaInst, llvmVarType,
-                                   arrayInfo.elemVarType, elemLlvmType,
-                                   arrayInfo.length, *var->initList_);
+        storeBraceArrayInitializer(generator, allocaInst, llvmVarType, varType,
+                                   *var->initList_);
       } else if (strInit != nullptr && isArray) {
         Array1DInfo arrayInfo = get1DArrayInfo(varType);
         llvm::Type* elemLlvmType = arrayInfo.elemVarType->getType(generator);
@@ -880,14 +1097,8 @@ llvm::Value* VarDecl::genCode(CodeGenerator& generator) {
     } else {
       llvm::Constant* initializer = nullptr;
       if (var->hasBraceInit()) {
-        Array1DInfo arrayInfo = get1DArrayInfo(varType);
-        llvm::Type* elemLlvmType = arrayInfo.elemVarType->getType(generator);
-        if (elemLlvmType == nullptr) {
-          throw std::logic_error("Define variable with unknown type!");
-        }
-        initializer = buildGlobalArrayInitializer(
-            generator, arrayInfo.elemVarType, elemLlvmType, arrayInfo.length,
-            *var->initList_);
+        initializer = buildBraceArrayInitializer(generator, varType, llvmVarType,
+                                                 *var->initList_);
       } else if (strInit != nullptr && isArray) {
         Array1DInfo arrayInfo = get1DArrayInfo(varType);
         llvm::Type* elemLlvmType = arrayInfo.elemVarType->getType(generator);

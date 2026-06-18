@@ -73,6 +73,8 @@ AST::Program* g_root;
 
     AST::Expr* expr;
     AST::ExprList* exprList;
+    AST::InitList* initList;
+    AST::InitElement* initElement;
 
     AST::Stmt* stmt;
     AST::Stmts* stmts;
@@ -147,7 +149,8 @@ AST::Program* g_root;
 %type<varList>                  VarList
 %type<arrayBoundList>           ArrayBoundList
 %type<sizeVal>                  ArrayBound
-%type<exprList>                 InitList
+%type<initList>                 InitList
+%type<initElement>              InitItem
 
 %type<builtinType>              BuiltinType
 
@@ -286,12 +289,18 @@ VarInit:    IDENTIFIER ArrayBoundList
                                   delete $2; }
             ;
 
- /* InitList — comma-separated expressions inside brace initialization */
+ /* InitList — comma-separated initializer elements inside brace initialization */
 
-InitList:   InitList COMMA Expr
+InitList:   InitList COMMA InitItem
                                 { $$ = $1; $$->push_back($3); }
-            | Expr %prec COMMA
+            | InitItem %prec COMMA
                                 { $$ = new AST::InitList(); $$->push_back($1); }
+            ;
+
+InitItem:   Expr %prec COMMA
+                                { $$ = new AST::InitElement($1); }
+            | LBRACE InitList RBRACE
+                                { $$ = new AST::InitElement($2); }
             ;
 
  /* ArrayBoundList — declarator suffix [INTEGER]; empty for a scalar in int a[4], b; */

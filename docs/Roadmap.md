@@ -17,6 +17,7 @@ Before extending, it helps to know what the current codebase already supports:
 | 1D fixed-size brace initialization | `int a[4] = {1,2,3};`, `{}` zero-fill, global/local (`tests/31.array_1d_brace_init.c`) |
 | Inferred `[]` and string literal init | `int a[] = {…}`, `char s[] = "hello"`, `char s[N] = "…"` (`tests/32.array_1d_inferred_string_init.c`) |
 | 2D array declaration | `int m[8][5];`, `m[i][j]`, struct grids, mixed lists (`tests/33.array_2d_decl.c`) |
+| 2D array brace initialization | nested/flat init, `int a[][5] = {…}` (`tests/34.array_2d_brace_init.c`) |
 | User-defined types | `struct`, `union`, `enum` with tag names (`DefinedType` lookup) |
 | Type names in expressions | `_VarType: IDENTIFIER` for registered tags — **not** general `typedef` |
 | `-g` CLI flag | Parsed in `main.cpp` — **not** passed to `CodeGenerator` yet |
@@ -49,7 +50,7 @@ flowchart TD
   init1b[1b. inferred size and strings - done]
   typedef[2. typedef]
   md2a[2a. 2D declaration - done]
-  md2b[2b. 2D initialization]
+  md2b[2b. 2D initialization - done]
   md3a[3a. 3D declaration]
   md3b[3b. 3D initialization]
   stat[4. static]
@@ -78,7 +79,7 @@ C array initialization is intentionally split into small merges. **At most three
 | **1a** (done) | `int a[4] = {1,2,3};` — zero-fill, global/local | `tests/31.array_1d_brace_init.c` |
 | **1b** (done) | `int a[] = {…};`, `char s[] = "hello";`, `char s[6] = "hello";` | `tests/32.array_1d_inferred_string_init.c`; reject `char s[5] = "hello"` |
 | **2a** (done) | `int a[8][5];`, subscript `a[i][j]` | `tests/33.array_2d_decl.c` |
-| **2b** | nested/flat init, `int a[][5] = {…}`, partial rows | reject `int a[][]`, `int b[8][]` |
+| **2b** (done) | nested/flat init, `int a[][5] = {…}`, partial rows | `tests/34.array_2d_brace_init.c`; reject `int a[][]`, `int b[8][]` |
 | **3a** | `int a[2][8][5];` | declare only |
 | **3b** | `int b[][8][5] = {…}` | first dimension inferred from init |
 
@@ -187,7 +188,7 @@ int matrix[8][5];
 
 Nested `ArrayType` layout and double subscript codegen were verified; `buildVarType` now maps declarator bounds to LLVM dimensions in outside-in order.
 
-### 2b — 2D initialization
+### 2b — 2D initialization (done)
 
 ```c
 int a[8][5] = { {0,1,2}, {3,4,5} };
@@ -195,7 +196,8 @@ int a[8][5] = {0, 1, 2, 3, 4, 5 };
 int a[][5] = { {1}, {2,3} };
 ```
 
-**Errors:** `int a[][] = {…};`, `int b[8][] = {…};`
+- `InitElement` supports nested `InitList` in the parser; flatten row-major with zero-fill.
+- Only the first dimension may be inferred (`int a[][5]`); reject `int a[][]` and `int b[8][]`.
 
 ### 3a / 3b — 3D (maximum depth)
 

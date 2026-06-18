@@ -187,11 +187,35 @@ std::pair<std::string, std::string> VarInit::genGraph() {
 
   // initList_
   if (initList_ != nullptr) {
-    for (Expr* expr : *initList_) {
-      if (expr != nullptr) {
-        std::pair<std::string, std::string> exprGraph = expr->genGraph();
-        tree += root + " -> " + exprGraph.first + "\n";
-        tree += exprGraph.second;
+    for (InitElement* element : *initList_) {
+      if (element != nullptr) {
+        std::pair<std::string, std::string> elementGraph = element->genGraph();
+        tree += root + " -> " + elementGraph.first + "\n";
+        tree += elementGraph.second;
+      }
+    }
+  }
+
+  return std::make_pair(root, tree);
+}
+
+std::pair<std::string, std::string> InitElement::genGraph() {
+  std::string id = getId();
+  std::string root = "InitElement_" + id;
+  std::string tree = root + " [label = InitElement]\n";
+
+  if (expr_ != nullptr) {
+    std::pair<std::string, std::string> exprGraph = expr_->genGraph();
+    tree += root + " -> " + exprGraph.first + "\n";
+    tree += exprGraph.second;
+  }
+
+  if (nested_ != nullptr) {
+    for (InitElement* element : *nested_) {
+      if (element != nullptr) {
+        std::pair<std::string, std::string> elementGraph = element->genGraph();
+        tree += root + " -> " + elementGraph.first + "\n";
+        tree += elementGraph.second;
       }
     }
   }

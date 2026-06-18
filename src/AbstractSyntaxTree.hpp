@@ -98,7 +98,8 @@ class CommaExpr;
 
 class FuncCall;
 using ExprList = std::vector<Expr*>;
-using InitList = std::vector<Expr*>;
+class InitElement;
+using InitList = std::vector<InitElement*>;
 
 // Sentinel bound from declarator `[]`; resolved from the initializer in codegen.
 constexpr size_t kInferredArrayBound = static_cast<size_t>(-1);
@@ -281,6 +282,21 @@ class VarDecl : public Decl {
   VarDecl(VarType* varType, VarList* varList)
       : varType_(varType), varList_(varList) {}
   ~VarDecl() {}
+
+  llvm::Value* genCode(CodeGenerator& generator) override;
+  std::pair<std::string, std::string> genGraph() override;
+};
+
+class InitElement : public Node {
+ public:
+  Expr* expr_;
+  InitList* nested_;
+
+  explicit InitElement(Expr* expr) : expr_(expr), nested_(nullptr) {}
+  explicit InitElement(InitList* nested) : expr_(nullptr), nested_(nested) {}
+  ~InitElement() {}
+
+  bool isNested() const { return nested_ != nullptr; }
 
   llvm::Value* genCode(CodeGenerator& generator) override;
   std::pair<std::string, std::string> genGraph() override;
