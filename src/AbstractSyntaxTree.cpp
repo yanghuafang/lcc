@@ -1068,6 +1068,11 @@ llvm::Value* VarDecl::genCode(CodeGenerator& generator) {
           generator.getCurrentFunction(), var->varName_, llvmVarType);
       if (!generator.addVariable(var->varName_, allocaInst, varType)) {
         allocaInst->eraseFromParent();
+        if (generator.hasTypedefAliasInCurrentScope(var->varName_)) {
+          throw std::logic_error(
+              "It is not allowed to use typedef name " + var->varName_ +
+              " as a variable in the same scope!");
+        }
         throw std::logic_error(
             "It is not allowed to redefine the same local variable " +
             var->varName_ + " in the same scope!");
@@ -1127,6 +1132,11 @@ llvm::Value* VarDecl::genCode(CodeGenerator& generator) {
           generator.getModule(), llvmVarType, varType_->isConst_,
           llvm::Function::ExternalLinkage, initializer, var->varName_);
       if (!generator.addVariable(var->varName_, globalVar, varType)) {
+        if (generator.hasTypedefAliasInCurrentScope(var->varName_)) {
+          throw std::logic_error(
+              "It is not allowed to use typedef name " + var->varName_ +
+              " as a variable in the same scope!");
+        }
         throw std::logic_error(
             "It is not allowed to redefine global variable " + var->varName_);
       }
@@ -1165,7 +1175,17 @@ llvm::Value* TypeDecl::genCode(CodeGenerator& generator) {
 }
 
 llvm::Value* TypedefDecl::genCode(CodeGenerator& generator) {
-  llvm::Type* llvmType = underlyingType_->getType(generator);
+  llvm::Type* llvmType;
+  if (underlyingType_->isStructType()) {
+    llvmType = ((StructType*)underlyingType_)
+                   ->genTypeHead(generator, underlyingType_->typeName_);
+  } else if (underlyingType_->isUnionType()) {
+    llvmType = ((UnionType*)underlyingType_)
+                   ->genTypeHead(generator, underlyingType_->typeName_);
+  } else {
+    llvmType = underlyingType_->getType(generator);
+  }
+
   if (llvmType == nullptr) {
     throw std::logic_error("Failed to define typedef " + aliasName_);
   }
@@ -1175,11 +1195,28 @@ llvm::Value* TypedefDecl::genCode(CodeGenerator& generator) {
                            aliasName_);
   }
 
-  if (generator.findType(aliasName_) == nullptr) {
-    if (!generator.addType(aliasName_, llvmType)) {
-      throw std::logic_error("It is not allowed to redefine type " +
-                             aliasName_);
+  auto registerTypeName = [&](const std::string& typeName) {
+    if (generator.findType(typeName) == nullptr) {
+      if (!generator.addType(typeName, llvmType)) {
+        throw std::logic_error("It is not allowed to redefine type " +
+                               typeName);
+      }
     }
+  };
+
+  registerTypeName(aliasName_);
+
+  if (underlyingType_->isStructType() || underlyingType_->isUnionType()) {
+    const std::string& tagName = underlyingType_->typeName_;
+    if (tagName != aliasName_) {
+      registerTypeName(tagName);
+    }
+  }
+
+  if (underlyingType_->isStructType()) {
+    ((StructType*)underlyingType_)->genTypeBody(generator);
+  } else if (underlyingType_->isUnionType()) {
+    ((UnionType*)underlyingType_)->genTypeBody(generator);
   }
 
   return nullptr;
@@ -1776,6 +1813,10 @@ llvm::Value* Variable::genCode(CodeGenerator& generator) {
     return var;
   }
 
+  if (generator.findTypedefAlias(varName_) != nullptr) {
+    throw std::logic_error(varName_ + " is a typedef name, not a variable!");
+  }
+
   throw std::logic_error(varName_ + " is neither a variable nor a constant!");
   return nullptr;
 }
@@ -1789,6 +1830,10 @@ llvm::Value* Variable::genCodePtr(CodeGenerator& generator) {
   var = generator.findConstant(varName_);
   if (var != nullptr) {
     throw std::logic_error(varName_ + " is const, not left value!");
+  }
+
+  if (generator.findTypedefAlias(varName_) != nullptr) {
+    throw std::logic_error(varName_ + " is a typedef name, not a variable!");
   }
 
   throw std::logic_error(varName_ + " is neither a variable nor a constant!");

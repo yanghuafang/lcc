@@ -19,7 +19,7 @@ Before extending, it helps to know what the current codebase already supports:
 | 2D array declaration | `int m[8][5];`, `m[i][j]`, struct grids, mixed lists (`tests/33.array_2d_decl.c`) |
 | 2D array brace initialization | nested/flat init, `int a[][5] = {…}` (`tests/34.array_2d_brace_init.c`) |
 | `typedef` of `VarType` spellings | `typedef unsigned long size_t;`, pointer/builtin aliases (`tests/35.typedef_builtin.c`) |
-| `typedef` struct aliases / disambiguation | **Not yet** — planned as step 4b |
+| `typedef` struct aliases / disambiguation | struct tag refs, combined `typedef struct S {…} S;`, typedef/variable conflicts (`tests/36.typedef_struct.c`) |
 | User-defined types | `struct`, `union`, `enum` with tag names (`DefinedType` lookup) |
 | Type names in expressions | `_VarType: IDENTIFIER` for registered tags and typedef aliases |
 | `-g` CLI flag | Parsed in `main.cpp` — **not** passed to `CodeGenerator` yet |
@@ -34,7 +34,7 @@ See [Conflicts.md](Conflicts.md) for parser ambiguities that some roadmap items 
 |----------|---------|--------|----------------|
 | **—** | [Array declarators](#array-extension-plan) (done) | Small | Unified `VarInit` + `ArrayBoundList`; foundation for init and multidim |
 | **1** | [1D array initialization](#1d-array-initialization) (done) | Medium | Brace init, inferred `[]`, string literals |
-| **2** | [`typedef` and `size_t`](#4-typedef-and-size_t) | Medium–large | 4a done; 4b (struct typedefs) next |
+| **2** | [`typedef` and `size_t`](#4-typedef-and-size_t) (done) | Medium–large | 4a + 4b complete |
 | **—** | [3D arrays](#3d-arrays-deferred) | — | Deferred; 2D covers teaching goals for now |
 | **3** | [`static`](#5-static) | Medium | Storage class / linkage |
 | **4** | [`-g` debug info](#6--g-debug-info) | Medium–large | LLVM `DIBuilder` |
@@ -179,7 +179,7 @@ IntPtr p;
 
 **Out of scope for 4a:** typedef-as-declarator edge cases; fixing all State 96 identifier conflicts.
 
-### 4b — defined-type typedefs and disambiguation
+### 4b — defined-type typedefs and disambiguation — **done**
 
 **Goal:**
 

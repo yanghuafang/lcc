@@ -5,8 +5,8 @@ This project is a simple C compiler for learning purpose. It is based on flex, b
 Not like the most popular industrial C compilers, such as clang and gcc which adopt top-down recursive descendant parsing, `lcc` adopts bottom-up LALR parsing to make sure it is simple enough for self-study.
 
 `lcc` supports the most common C grammars used in engineering practice:
-- Builtin types: `char`, `short`, `int`, `long`, `float`, `double`, according `unsigned` types, `bool` and `void`.
-- User defined types: struct, union and enum, according reference(`structObj.member`) and dereference(`structPtr->member`) on struct and union objects.
+- Builtin types: `char`, `short`, `int`, `long`, `float`, `double`, corresponding `unsigned` types, `bool` and `void`.
+- User defined types: struct, union and enum, corresponding reference(`structObj.member`) and dereference(`structPtr->member`) on struct and union objects.
 - Pointer and address of: `Type* objectPtr`, `objectPtr = &object`; dereference: `*objectPtr`.
 - Pointer move on array of builtin types and user defined types by using operators `++`, `--`, `+=` and `-=`.
 - One dimensional array: `Type arrayName[INTEGER];`, including mixed lists such as `int a[4], b;` (bounds on each name via `VarInit`)
@@ -15,7 +15,7 @@ Not like the most popular industrial C compilers, such as clang and gcc which ad
 - Char array string initialization: `char s[] = "hello";`, `char s[6] = "hello";` (length includes `'\0'`)
 - Two dimensional array: `int matrix[8][5];`, subscript `matrix[i][j]`, including mixed lists such as `int a[2][3], b;`
 - Two dimensional array brace initialization: `int a[8][5] = {{0,1,2},{3,4,5}};`, flat `{0,1,2,3,4,5}`, and `int a[][5] = {{1},{2,3}};`
-- Typedef of builtin and pointer types: `typedef unsigned long size_t;`, `typedef int counter_t;`, `typedef int* IntPtr;`
+- Typedef: builtin and pointer aliases (`typedef unsigned long size_t;`, `typedef int* IntPtr;`); struct and union aliases (`typedef struct Employee Employee;`, `typedef struct Employee* EmployeePtr;`, `typedef struct Point { int x; int y; } Point;`, `typedef union U { int a; float b; } U;`)
 - Variable list: such as `a = 1, b, c = 3`
 - Variant parameters: `...`
 - Function declaration, definition and call.
@@ -46,15 +46,17 @@ Except the following features:
 - Macro definition `#define` and expansion
 - Multidimensional array initialization beyond 2D: such as `int a[2][8][5] = {…};`
 - Three dimensional arrays: such as `int a[2][8][5];` (deferred)
-- Struct typedef aliases and identifier disambiguation: such as `typedef struct Employee Employee;`
+- Block-scope typedef: only file-scope `typedef` is supported.
+- Struct tag typedefs before definition: `typedef struct Employee Employee;` requires the struct to be defined first, or use the combined form `typedef struct S { … } S;`.
+- Expression/type disambiguation (State 96): typedef names in expression positions may still parse as types; lcc rejects typedef names used as variables in the same scope.
 - `extern`: `lcc` requires function declaration for linkage, extern variable is not allowed.
 - `static`: not supported by `lcc`, use global variable.
 
-`lcc` compile a translation unit(.c file) to a object file(.o), then the object file can be linked to executable by `clang` or `gcc`.  
+`lcc` compiles a translation unit (.c file) to an object file (.o), then the object file can be linked to an executable by `clang` or `gcc`.  
 
-User must specify function declarations manually for linkage.
+User must specify function declarations manually for linkage. Define `size_t` first when using it in declarations: `typedef unsigned long size_t;`
 - `printf`, instead of `#include <stdio.h>`, add a declaration before using it: `int printf(char*, ...);`
-- `malloc`, add declaration: `void* malloc(unsigned long size);`
+- `malloc`, add declaration: `void* malloc(size_t size);`
 - `free`, add declaration: `void free(void* ptr);`
 - `strlen`, add declaration: `unsigned long strlen(const char* s);`
 
@@ -148,7 +150,7 @@ Config `lcc/.vscode/launch.json` to use one of above debugger plugins:
 - `"type": "lldb-dap"` for `LLDB DAP`
 - `"type": "lldb"` for `CodeLLDB`
 
-Maybe LLDB is unable to step into `yyparse` as it tries to locate `Parser.cpp`, `Parser.hpp` (generated from `Parser.y`) and `Lexer.cpp` (genrated from `Lexer.l`) from `lcc/../lcc-build` instead of `lcc/src`  
+Maybe LLDB is unable to step into `yyparse` as it tries to locate `Parser.cpp`, `Parser.hpp` (generated from `Parser.y`) and `Lexer.cpp` (generated from `Lexer.l`) from `lcc/../lcc-build` instead of `lcc/src`  
 
 Run command in LLDB to fix the source file not found issue:  
 `settings set target.source-map <build path> <src path>`  
@@ -157,8 +159,7 @@ Such as `settings set target.source-map /Users/yanghuafang/study-projects/lcc-bu
 
 ## TODO
 
-For step-by-step detail (dependencies, tests, and legal/illegal forms), see [`docs/Roadmap.md`](docs/Roadmap.md). Array work through 2D is done; 3D arrays are deferred.
+For step-by-step detail (dependencies, tests, and legal/illegal forms), see [`docs/Roadmap.md`](docs/Roadmap.md). Array work through 2D and typedef (builtin and struct/union) are done; 3D arrays are deferred.
 
-- **`typedef`:** struct typedef aliases and identifier disambiguation
 - Support `static`.
 - Implement `lcc` `-g` option to generate object file with debug info.

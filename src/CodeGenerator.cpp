@@ -129,6 +129,16 @@ bool CodeGenerator::addTypedefAlias(const std::string& aliasName,
   return true;
 }
 
+bool CodeGenerator::hasTypedefAliasInCurrentScope(
+    const std::string& aliasName) {
+  if (typedefTableStack_.empty()) {
+    return false;
+  }
+
+  TypedefTable* topTable = typedefTableStack_.back();
+  return topTable->find(aliasName) != topTable->end();
+}
+
 llvm::Value* CodeGenerator::findVariable(const std::string& varName) {
   if (symbolTableStack_.empty()) {
     return nullptr;
@@ -155,6 +165,10 @@ bool CodeGenerator::addVariable(const std::string& varName, llvm::Value* var,
   auto pairIter = topSymbolTable->find(varName);
   if (pairIter != topSymbolTable->end()) {
     // Variable already exists!
+    return false;
+  }
+
+  if (hasTypedefAliasInCurrentScope(varName)) {
     return false;
   }
 

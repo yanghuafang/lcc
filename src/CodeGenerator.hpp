@@ -64,6 +64,9 @@ class CodeGenerator {
   // Return false if the alias already exists in the current scope.
   bool addTypedefAlias(const std::string& aliasName, AST::VarType* varType);
 
+  // True when aliasName is a typedef in the innermost scope only.
+  bool hasTypedefAliasInCurrentScope(const std::string& aliasName);
+
   // Find variable from stack of symbol tables.
   llvm::Value* findVariable(const std::string& varName);
 

@@ -237,6 +237,12 @@ Decl:       FuncDecl            { $$ = $1; }
 
 TypedefDecl: TYPEDEF VarType IDENTIFIER SEMICOLON
                                 { $$ = new AST::TypedefDecl($2, *$3); }
+            | TYPEDEF STRUCT IDENTIFIER LBRACE FieldDecls RBRACE IDENTIFIER SEMICOLON
+                                { $$ = new AST::TypedefDecl(
+                                      new AST::StructType($5, *$3), *$7); }
+            | TYPEDEF UNION IDENTIFIER LBRACE FieldDecls RBRACE IDENTIFIER SEMICOLON
+                                { $$ = new AST::TypedefDecl(
+                                      new AST::UnionType($5, *$3), *$7); }
             ;
 
 FuncDecl:   VarType IDENTIFIER LPARENTHESES ParamList RPARENTHESES SEMICOLON
@@ -264,10 +270,13 @@ VarType:    _VarType            { $$ = $1; }
 _VarType:   BuiltinType         { $$ = $1; }
             | STRUCT IDENTIFIER LBRACE FieldDecls RBRACE
                                 { $$ = new AST::StructType($4, *$2); }
+            | STRUCT IDENTIFIER { $$ = new AST::DefinedType(*$2); }
             | UNION IDENTIFIER LBRACE FieldDecls RBRACE
                                 { $$ = new AST::UnionType($4, *$2); }
+            | UNION IDENTIFIER  { $$ = new AST::DefinedType(*$2); }
             | ENUM IDENTIFIER LBRACE EnumList RBRACE
                                 { $$ = new AST::EnumType($4, *$2); }
+            | ENUM IDENTIFIER   { $$ = new AST::DefinedType(*$2); }
             | _VarType ASTERISK { $$ = new AST::PointerType($1); }
             | IDENTIFIER        { $$ = new AST::DefinedType(*$1); }
             ;
