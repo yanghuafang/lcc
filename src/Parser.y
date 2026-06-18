@@ -146,6 +146,7 @@ AST::Program* g_root;
 %type<varList>                  VarList
 %type<arrayBoundList>           ArrayBoundList
 %type<intVal>                   ArrayBound
+%type<exprList>                 InitList
 
 %type<builtinType>              BuiltinType
 
@@ -270,11 +271,26 @@ VarList:    VarList COMMA VarInit
             ;
 
  /* VarInit — one declared variable: name, optional array bounds, optional initializer */
- /* e.g. a;  e.g. a[4];  e.g. b = 2; */
+ /* e.g. a;  e.g. a[4];  e.g. b = 2;  e.g. a[4] = {1, 2, 3}; */
 VarInit:    IDENTIFIER ArrayBoundList
                                 { $$ = new AST::VarInit(*$1, *$2); delete $2; }
             | IDENTIFIER ArrayBoundList ASSIGN Expr
                                 { $$ = new AST::VarInit(*$1, *$2, $4); delete $2; }
+            | IDENTIFIER ArrayBoundList ASSIGN LBRACE InitList RBRACE
+                                { $$ = new AST::VarInit(*$1, *$2, nullptr, $5);
+                                  delete $2; }
+            | IDENTIFIER ArrayBoundList ASSIGN LBRACE RBRACE
+                                { $$ = new AST::VarInit(*$1, *$2, nullptr,
+                                                        new AST::InitList());
+                                  delete $2; }
+            ;
+
+ /* InitList — comma-separated expressions inside brace initialization */
+
+InitList:   InitList COMMA Expr
+                                { $$ = $1; $$->push_back($3); }
+            | Expr %prec COMMA
+                                { $$ = new AST::InitList(); $$->push_back($1); }
             ;
 
  /* ArrayBoundList — declarator suffix [INTEGER]; empty for a scalar in int a[4], b; */

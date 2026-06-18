@@ -185,6 +185,17 @@ std::pair<std::string, std::string> VarInit::genGraph() {
     tree += initialExprGraph.second;
   }
 
+  // initList_
+  if (initList_ != nullptr) {
+    for (Expr* expr : *initList_) {
+      if (expr != nullptr) {
+        std::pair<std::string, std::string> exprGraph = expr->genGraph();
+        tree += root + " -> " + exprGraph.first + "\n";
+        tree += exprGraph.second;
+      }
+    }
+  }
+
   return std::make_pair(root, tree);
 }
 

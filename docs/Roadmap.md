@@ -14,7 +14,8 @@ Before extending, it helps to know what the current codebase already supports:
 | Mixed array/scalar lists | `int a[4], b;` in one declaration (`tests/30.array_mixed_decl.c`) |
 | Array indexing | `arr[i]` via `Subscript` and `ArrayType` |
 | Scalar initialization | `int x = 1;` in `VarDecl::genCode` (local `store`, global `Constant`) |
-| Array brace initialization | **Not yet** — `int a[4] = {1,2,3}` and `int a[] = {…}` are planned |
+| 1D fixed-size brace initialization | `int a[4] = {1,2,3};`, `{}` zero-fill, global/local (`tests/31.array_1d_brace_init.c`) |
+| Inferred `[]` and string literal init | **Not yet** — `int a[] = {…}`, `char s[] = "hello"` are planned |
 | User-defined types | `struct`, `union`, `enum` with tag names (`DefinedType` lookup) |
 | Type names in expressions | `_VarType: IDENTIFIER` for registered tags — **not** general `typedef` |
 | `-g` CLI flag | Parsed in `main.cpp` — **not** passed to `CodeGenerator` yet |
@@ -43,7 +44,7 @@ See [Conflicts.md](Conflicts.md) for parser ambiguities that some roadmap items 
 ```mermaid
 flowchart TD
   done[1D declarators via VarInit - done]
-  init1a[1a. 1D brace init fixed size]
+  init1a[1a. 1D brace init fixed size - done]
   init1b[1b. inferred size and strings]
   typedef[2. typedef]
   md2a[2a. 2D declaration]
@@ -73,7 +74,7 @@ C array initialization is intentionally split into small merges. **At most three
 | Step | Delivers | Tests (examples) |
 |------|----------|------------------|
 | **Declarators** (done) | `ArrayBound` / `ArrayBoundList` on `VarInit`; one `VarDecl` path; `int a[4], b;` | `tests/30.array_mixed_decl.c` |
-| **1a** | `int a[4] = {1,2,3};` — zero-fill, global/local | fixed-size brace init |
+| **1a** (done) | `int a[4] = {1,2,3};` — zero-fill, global/local | `tests/31.array_1d_brace_init.c` |
 | **1b** | `int a[] = {…};`, `char s[] = "hello";`, `char s[6] = "hello";` | reject `char s[5] = "hello"` |
 | **2a** | `int a[8][5];`, subscript `a[i][j]` | declare only |
 | **2b** | nested/flat init, `int a[][5] = {…}`, partial rows | reject `int a[][]`, `int b[8][]` |
@@ -86,15 +87,21 @@ Grammar symbols: `VarInit`, `ArrayBound`, `ArrayBoundList` (see `Parser.y`). `Va
 
 - Removed the special-case `VarDecl` production that parsed `VarType IDENTIFIER [ INTEGER ] ;` alone.
 - Array bounds live on each `VarInit`; `VarDecl::genCode` builds the effective type per variable.
-- Scalar `= Expr` on arrays is rejected until brace initialization exists.
+- Scalar `= Expr` on arrays is rejected; use brace initialization for arrays.
+
+### Status: fixed-size brace initialization (done)
+
+- `InitList` on `VarInit`; `= { … }` and `= {}` in `Parser.y` (`%prec COMMA` so commas are not parsed as the comma operator).
+- `buildGlobalArrayInitializer` / `storeLocalArrayInitializer` in `VarDecl::genCode`; zero-fill; reject too many elements and multidimensional brace init.
+- `tests/31.array_1d_brace_init.c`.
 
 ---
 
 ## 1D array initialization
 
-Covers steps **1a** and **1b** below.
+Covers step **1b** below (1a is done).
 
-### 1a — fixed-size brace initialization
+### 1a — fixed-size brace initialization (done)
 
 **Goal:**
 
@@ -103,13 +110,7 @@ int arr[4] = {10, 7, 8, 9};   /* unspecified elements are zero */
 int buf[3] = {1, 2, 3};
 ```
 
-| Layer | Changes |
-|-------|---------|
-| **Parser** | `InitList` / `Initializer`; `VarInit` accepts `= { … }` |
-| **AST** | Initializer list on `VarInit` |
-| **Codegen** | `ConstantArray` or per-element `store`; zero-fill; size checks |
-
-**Errors:** `int a[2] = {1, 2, 3};` (too many elements).
+Delivered as described in [Array extension plan](#array-extension-plan) step 1a.
 
 ### 1b — inferred size and string literals
 

@@ -1,6 +1,7 @@
 #include "AbstractSyntaxTree.hpp"
 
 #include <llvm/IR/BasicBlock.h>
+#include <llvm/IR/Constants.h>
 #include <llvm/IR/DerivedTypes.h>
 #include <llvm/IR/Function.h>
 #include <llvm/IR/Instructions.h>
@@ -11,6 +12,101 @@
 
 #include "CodeGenerator.hpp"
 #include "Utils.hpp"
+
+namespace {
+
+struct Array1DInfo {
+  AST::VarType* elemVarType;
+  size_t length;
+};
+
+Array1DInfo get1DArrayInfo(AST::VarType* varType) {
+  if (!varType->isArrayType()) {
+    throw std::logic_error("Brace initialization requires an array type!");
+  }
+
+  AST::ArrayType* outer = static_cast<AST::ArrayType*>(varType);
+  if (outer->baseType_->isArrayType()) {
+    throw std::logic_error(
+        "Multidimensional array brace initialization is not supported yet.");
+  }
+
+  return {outer->baseType_, outer->length_};
+}
+
+llvm::Constant* asConstant(llvm::Value* value, const std::string& context) {
+  llvm::Constant* constant = llvm::dyn_cast<llvm::Constant>(value);
+  if (constant == nullptr) {
+    throw std::logic_error(context + " requires a compile-time constant.");
+  }
+  return constant;
+}
+
+llvm::Constant* buildGlobalArrayInitializer(
+    CodeGenerator& generator, AST::VarType* elemVarType,
+    llvm::Type* elemLlvmType, size_t length, const AST::InitList& initList) {
+  if (initList.size() > length) {
+    throw std::logic_error("Too many elements in array initializer.");
+  }
+
+  std::vector<llvm::Constant*> elements;
+  elements.reserve(length);
+  for (AST::Expr* expr : initList) {
+    llvm::Value* value = Utils::typeCast(
+        generator.getBuilder(), expr->genCode(generator), elemLlvmType,
+        expr->getExprTypeId(generator), Utils::varTypeToTypeId(elemVarType));
+    if (value == nullptr) {
+      throw std::logic_error("Array initializer element type mismatch.");
+    }
+    elements.push_back(
+        asConstant(value, "Global array initializer element"));
+  }
+  while (elements.size() < length) {
+    elements.push_back(llvm::Constant::getNullValue(elemLlvmType));
+  }
+
+  return llvm::ConstantArray::get(
+      llvm::ArrayType::get(elemLlvmType, length), elements);
+}
+
+void storeLocalArrayInitializer(CodeGenerator& generator,
+                                llvm::AllocaInst* allocaInst,
+                                llvm::Type* llvmArrayType,
+                                AST::VarType* elemVarType,
+                                llvm::Type* elemLlvmType, size_t length,
+                                const AST::InitList& initList) {
+  if (initList.size() > length) {
+    throw std::logic_error("Too many elements in array initializer.");
+  }
+
+  llvm::IRBuilder<>& builder = generator.getBuilder();
+  llvm::IntegerType* indexType = builder.getInt32Ty();
+  llvm::Value* zeroIndex = llvm::ConstantInt::get(indexType, 0);
+  llvm::Value* zeroValue = llvm::Constant::getNullValue(elemLlvmType);
+
+  for (size_t i = 0; i < initList.size(); ++i) {
+    llvm::Value* value = Utils::typeCast(
+        builder, initList[i]->genCode(generator), elemLlvmType,
+        initList[i]->getExprTypeId(generator),
+        Utils::varTypeToTypeId(elemVarType));
+    if (value == nullptr) {
+      throw std::logic_error("Array initializer element type mismatch.");
+    }
+    llvm::Value* index = llvm::ConstantInt::get(indexType, i);
+    llvm::Value* elementPtr =
+        builder.CreateGEP(llvmArrayType, allocaInst, {zeroIndex, index});
+    builder.CreateStore(value, elementPtr);
+  }
+
+  for (size_t i = initList.size(); i < length; ++i) {
+    llvm::Value* index = llvm::ConstantInt::get(indexType, i);
+    llvm::Value* elementPtr =
+        builder.CreateGEP(llvmArrayType, allocaInst, {zeroIndex, index});
+    builder.CreateStore(zeroValue, elementPtr);
+  }
+}
+
+}  // namespace
 
 namespace AST {
 
@@ -601,7 +697,12 @@ llvm::Value* VarDecl::genCode(CodeGenerator& generator) {
 
   // Create variables one by one.
   for (VarInit* var : *varList_) {
-    if (!var->arrayBounds_.empty() && var->initialExpr_ != nullptr) {
+    if (var->hasBraceInit()) {
+      if (var->arrayBounds_.empty()) {
+        throw std::logic_error(
+            "Brace initialization is only supported for arrays.");
+      }
+    } else if (!var->arrayBounds_.empty() && var->initialExpr_ != nullptr) {
       throw std::logic_error(
           "Array variable " + var->varName_ +
           " cannot be initialized with a single expression; use brace "
@@ -615,36 +716,45 @@ llvm::Value* VarDecl::genCode(CodeGenerator& generator) {
     }
 
     if (generator.getCurrentFunction() != nullptr) {
-      // The declaration is inside a function, create an alloca.
       llvm::AllocaInst* allocaInst = Utils::createEntryBlockAlloca(
           generator.getCurrentFunction(), var->varName_, llvmVarType);
       if (!generator.addVariable(var->varName_, allocaInst, varType)) {
         allocaInst->eraseFromParent();
-        allocaInst = nullptr;
         throw std::logic_error(
             "It is not allowed to redefine the same local variable " +
             var->varName_ + " in the same scope!");
       }
 
-      // Assign variable by "store" instruction if variable is with initial
-      // value.
-      if (var->initialExpr_ != nullptr) {
+      if (var->hasBraceInit()) {
+        Array1DInfo arrayInfo = get1DArrayInfo(varType);
+        llvm::Type* elemLlvmType = arrayInfo.elemVarType->getType(generator);
+        storeLocalArrayInitializer(generator, allocaInst, llvmVarType,
+                                   arrayInfo.elemVarType, elemLlvmType,
+                                   arrayInfo.length, *var->initList_);
+      } else if (var->initialExpr_ != nullptr) {
         llvm::Value* initializer = Utils::typeCast(
             generator.getBuilder(), var->initialExpr_->genCode(generator),
             llvmVarType, var->initialExpr_->getExprTypeId(generator),
             Utils::varTypeToTypeId(varType));
         if (initializer == nullptr) {
           allocaInst->eraseFromParent();
-          allocaInst = nullptr;
           throw std::logic_error("It failed to init variable " + var->varName_ +
                                  " with value of different type!");
         }
         generator.getBuilder().CreateStore(initializer, allocaInst);
       }
     } else {
-      // The declaration is NOT inside a function, create a global variable.
       llvm::Constant* initializer = nullptr;
-      if (var->initialExpr_ != nullptr) {
+      if (var->hasBraceInit()) {
+        Array1DInfo arrayInfo = get1DArrayInfo(varType);
+        llvm::Type* elemLlvmType = arrayInfo.elemVarType->getType(generator);
+        if (elemLlvmType == nullptr) {
+          throw std::logic_error("Define variable with unknown type!");
+        }
+        initializer = buildGlobalArrayInitializer(
+            generator, arrayInfo.elemVarType, elemLlvmType, arrayInfo.length,
+            *var->initList_);
+      } else if (var->initialExpr_ != nullptr) {
         generator.switchInsertPointToGlobalBlock();
         llvm::Value* initialExpr = Utils::typeCast(
             generator.getBuilder(), var->initialExpr_->genCode(generator),
@@ -654,16 +764,12 @@ llvm::Value* VarDecl::genCode(CodeGenerator& generator) {
           throw std::logic_error("It failed to init variable " + var->varName_ +
                                  " with value of different type!");
         }
-
         generator.switchInsertPointToCurrentBlock();
-        initializer = (llvm::Constant*)initialExpr;
+        initializer = asConstant(initialExpr, "Global variable initializer");
       } else {
-        // Create an undef value for global variable if no initializer is given.
-        // The global value will be recognized as "extern" by LLVM.
         initializer = llvm::UndefValue::get(llvmVarType);
       }
 
-      // Create a global variable.
       llvm::GlobalVariable* globalVar = new llvm::GlobalVariable(
           generator.getModule(), llvmVarType, varType_->isConst_,
           llvm::Function::ExternalLinkage, initializer, var->varName_);

@@ -98,6 +98,7 @@ class CommaExpr;
 
 class FuncCall;
 using ExprList = std::vector<Expr*>;
+using InitList = std::vector<Expr*>;
 
 class StructRef;
 class StructDeref;
@@ -287,18 +288,21 @@ class VarInit : public Node {
   std::string varName_;
   std::vector<size_t> arrayBounds_;
   Expr* initialExpr_;
+  InitList* initList_;
 
   VarInit(const std::string& varName, const std::vector<size_t>& arrayBounds,
-          Expr* initialExpr = nullptr)
+          Expr* initialExpr = nullptr, InitList* initList = nullptr)
       : varName_(varName),
         arrayBounds_(arrayBounds),
-        initialExpr_(initialExpr) {}
+        initialExpr_(initialExpr),
+        initList_(initList) {}
   ~VarInit() {}
 
   llvm::Value* genCode(CodeGenerator& generator) override { return nullptr; }
   std::pair<std::string, std::string> genGraph() override;
 
   VarType* buildVarType(VarType* baseType) const;
+  bool hasBraceInit() const { return initList_ != nullptr; }
 };
 
 class TypeDecl : public Decl {
