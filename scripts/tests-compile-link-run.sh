@@ -33,6 +33,7 @@ tests=(
   "29.struct_pointer_move.c"
   "30.array_mixed_decl.c"
   "31.array_1d_brace_init.c"
+  "32.array_1d_inferred_string_init.c"
 )
 
 compileC2Obj() {

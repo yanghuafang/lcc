@@ -100,6 +100,9 @@ class FuncCall;
 using ExprList = std::vector<Expr*>;
 using InitList = std::vector<Expr*>;
 
+// Sentinel bound from declarator `[]`; resolved from the initializer in codegen.
+constexpr size_t kInferredArrayBound = static_cast<size_t>(-1);
+
 class StructRef;
 class StructDeref;
 
@@ -302,6 +305,8 @@ class VarInit : public Node {
   std::pair<std::string, std::string> genGraph() override;
 
   VarType* buildVarType(VarType* baseType) const;
+  VarType* buildVarType(VarType* baseType,
+                        const std::vector<size_t>& bounds) const;
   bool hasBraceInit() const { return initList_ != nullptr; }
 };
 

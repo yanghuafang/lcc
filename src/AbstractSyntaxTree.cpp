@@ -20,6 +20,65 @@ struct Array1DInfo {
   size_t length;
 };
 
+bool isInferredArrayBound(size_t bound) {
+  return bound == AST::kInferredArrayBound;
+}
+
+bool isCharElementType(AST::VarType* baseType) {
+  return Utils::varTypeToTypeId(baseType) == AST::BuiltinTypeId::CHAR;
+}
+
+AST::ConstStr* asConstStr(AST::Expr* expr) {
+  return dynamic_cast<AST::ConstStr*>(expr);
+}
+
+size_t stringInitializerLength(const std::string& str) { return str.size() + 1; }
+
+void validateStringFitsArray(const std::string& str, size_t length) {
+  if (stringInitializerLength(str) > length) {
+    throw std::logic_error("String initializer is too long for array.");
+  }
+}
+
+std::vector<size_t> resolveArrayBounds(const AST::VarInit* var,
+                                       AST::VarType* baseType) {
+  std::vector<size_t> bounds = var->arrayBounds_;
+  if (bounds.empty()) {
+    return bounds;
+  }
+
+  for (size_t& bound : bounds) {
+    if (!isInferredArrayBound(bound)) {
+      continue;
+    }
+
+    if (bounds.size() != 1) {
+      throw std::logic_error(
+          "Inferred array size is only supported for 1D arrays.");
+    }
+
+    if (var->hasBraceInit()) {
+      if (var->initList_->empty()) {
+        throw std::logic_error(
+            "Cannot infer array size from empty initializer.");
+      }
+      bound = var->initList_->size();
+      continue;
+    }
+
+    AST::ConstStr* strInit = asConstStr(var->initialExpr_);
+    if (strInit != nullptr && isCharElementType(baseType)) {
+      bound = stringInitializerLength(strInit->str_);
+      continue;
+    }
+
+    throw std::logic_error(
+        "Array with inferred size requires an initializer.");
+  }
+
+  return bounds;
+}
+
 Array1DInfo get1DArrayInfo(AST::VarType* varType) {
   if (!varType->isArrayType()) {
     throw std::logic_error("Brace initialization requires an array type!");
@@ -99,6 +158,61 @@ void storeLocalArrayInitializer(CodeGenerator& generator,
   }
 
   for (size_t i = initList.size(); i < length; ++i) {
+    llvm::Value* index = llvm::ConstantInt::get(indexType, i);
+    llvm::Value* elementPtr =
+        builder.CreateGEP(llvmArrayType, allocaInst, {zeroIndex, index});
+    builder.CreateStore(zeroValue, elementPtr);
+  }
+}
+
+llvm::Constant* buildGlobalStringArrayInitializer(llvm::Type* charLlvmType,
+                                                  size_t length,
+                                                  const std::string& str) {
+  validateStringFitsArray(str, length);
+
+  std::vector<llvm::Constant*> elements;
+  elements.reserve(length);
+  for (unsigned char ch : str) {
+    elements.push_back(llvm::ConstantInt::get(charLlvmType, ch));
+  }
+  elements.push_back(llvm::ConstantInt::get(charLlvmType, 0));
+  while (elements.size() < length) {
+    elements.push_back(llvm::ConstantInt::get(charLlvmType, 0));
+  }
+
+  return llvm::ConstantArray::get(
+      llvm::ArrayType::get(charLlvmType, length), elements);
+}
+
+void storeLocalStringArrayInitializer(CodeGenerator& generator,
+                                      llvm::AllocaInst* allocaInst,
+                                      llvm::Type* llvmArrayType,
+                                      llvm::Type* charLlvmType, size_t length,
+                                      const std::string& str) {
+  validateStringFitsArray(str, length);
+
+  llvm::IRBuilder<>& builder = generator.getBuilder();
+  llvm::IntegerType* indexType = builder.getInt32Ty();
+  llvm::Value* zeroIndex = llvm::ConstantInt::get(indexType, 0);
+  llvm::Value* zeroValue = llvm::ConstantInt::get(charLlvmType, 0);
+
+  size_t i = 0;
+  for (; i < str.size(); ++i) {
+    llvm::Value* index = llvm::ConstantInt::get(indexType, i);
+    llvm::Value* elementPtr =
+        builder.CreateGEP(llvmArrayType, allocaInst, {zeroIndex, index});
+    llvm::Value* value =
+        llvm::ConstantInt::get(charLlvmType, static_cast<unsigned char>(str[i]));
+    builder.CreateStore(value, elementPtr);
+  }
+
+  llvm::Value* nullIndex = llvm::ConstantInt::get(indexType, i);
+  llvm::Value* nullPtr =
+      builder.CreateGEP(llvmArrayType, allocaInst, {zeroIndex, nullIndex});
+  builder.CreateStore(zeroValue, nullPtr);
+  ++i;
+
+  for (; i < length; ++i) {
     llvm::Value* index = llvm::ConstantInt::get(indexType, i);
     llvm::Value* elementPtr =
         builder.CreateGEP(llvmArrayType, allocaInst, {zeroIndex, index});
@@ -679,8 +793,16 @@ llvm::Value* FuncBody::genCode(CodeGenerator& generator) {
 }
 
 VarType* VarInit::buildVarType(VarType* baseType) const {
+  return buildVarType(baseType, arrayBounds_);
+}
+
+VarType* VarInit::buildVarType(VarType* baseType,
+                               const std::vector<size_t>& bounds) const {
   VarType* type = baseType;
-  for (size_t bound : arrayBounds_) {
+  for (size_t bound : bounds) {
+    if (isInferredArrayBound(bound)) {
+      throw std::logic_error("Unresolved inferred array bound.");
+    }
     type = new ArrayType(type, bound);
   }
   return type;
@@ -697,19 +819,25 @@ llvm::Value* VarDecl::genCode(CodeGenerator& generator) {
 
   // Create variables one by one.
   for (VarInit* var : *varList_) {
+    std::vector<size_t> resolvedBounds = resolveArrayBounds(var, varType_);
+    bool isArray = !resolvedBounds.empty();
+    AST::ConstStr* strInit = asConstStr(var->initialExpr_);
+
     if (var->hasBraceInit()) {
-      if (var->arrayBounds_.empty()) {
+      if (!isArray) {
         throw std::logic_error(
             "Brace initialization is only supported for arrays.");
       }
-    } else if (!var->arrayBounds_.empty() && var->initialExpr_ != nullptr) {
-      throw std::logic_error(
-          "Array variable " + var->varName_ +
-          " cannot be initialized with a single expression; use brace "
-          "initialization.");
+    } else if (isArray && var->initialExpr_ != nullptr) {
+      if (strInit == nullptr || !isCharElementType(varType_)) {
+        throw std::logic_error(
+            "Array variable " + var->varName_ +
+            " cannot be initialized with a single expression; use brace "
+            "initialization or a string literal for char arrays.");
+      }
     }
 
-    VarType* varType = var->buildVarType(varType_);
+    VarType* varType = var->buildVarType(varType_, resolvedBounds);
     llvm::Type* llvmVarType = varType->getType(generator);
     if (llvmVarType == nullptr) {
       throw std::logic_error("Define variable with unknown type!");
@@ -731,6 +859,12 @@ llvm::Value* VarDecl::genCode(CodeGenerator& generator) {
         storeLocalArrayInitializer(generator, allocaInst, llvmVarType,
                                    arrayInfo.elemVarType, elemLlvmType,
                                    arrayInfo.length, *var->initList_);
+      } else if (strInit != nullptr && isArray) {
+        Array1DInfo arrayInfo = get1DArrayInfo(varType);
+        llvm::Type* elemLlvmType = arrayInfo.elemVarType->getType(generator);
+        storeLocalStringArrayInitializer(generator, allocaInst, llvmVarType,
+                                         elemLlvmType, arrayInfo.length,
+                                         strInit->str_);
       } else if (var->initialExpr_ != nullptr) {
         llvm::Value* initializer = Utils::typeCast(
             generator.getBuilder(), var->initialExpr_->genCode(generator),
@@ -754,6 +888,14 @@ llvm::Value* VarDecl::genCode(CodeGenerator& generator) {
         initializer = buildGlobalArrayInitializer(
             generator, arrayInfo.elemVarType, elemLlvmType, arrayInfo.length,
             *var->initList_);
+      } else if (strInit != nullptr && isArray) {
+        Array1DInfo arrayInfo = get1DArrayInfo(varType);
+        llvm::Type* elemLlvmType = arrayInfo.elemVarType->getType(generator);
+        if (elemLlvmType == nullptr) {
+          throw std::logic_error("Define variable with unknown type!");
+        }
+        initializer = buildGlobalStringArrayInitializer(
+            elemLlvmType, arrayInfo.length, strInit->str_);
       } else if (var->initialExpr_ != nullptr) {
         generator.switchInsertPointToGlobalBlock();
         llvm::Value* initialExpr = Utils::typeCast(

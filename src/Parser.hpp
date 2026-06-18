@@ -187,6 +187,7 @@ union YYSTYPE
     AST::VarList* varList;
 
     std::vector<size_t>* arrayBoundList;
+    size_t sizeVal;
 
     AST::BuiltinType* builtinType;
 
@@ -220,7 +221,7 @@ union YYSTYPE
     AST::Enum* enumeration;
     AST::EnumList* enumList;
 
-#line 224 "Parser.hpp"
+#line 225 "Parser.hpp"
 
 };
 typedef union YYSTYPE YYSTYPE;

@@ -15,7 +15,7 @@ Before extending, it helps to know what the current codebase already supports:
 | Array indexing | `arr[i]` via `Subscript` and `ArrayType` |
 | Scalar initialization | `int x = 1;` in `VarDecl::genCode` (local `store`, global `Constant`) |
 | 1D fixed-size brace initialization | `int a[4] = {1,2,3};`, `{}` zero-fill, global/local (`tests/31.array_1d_brace_init.c`) |
-| Inferred `[]` and string literal init | **Not yet** — `int a[] = {…}`, `char s[] = "hello"` are planned |
+| Inferred `[]` and string literal init | `int a[] = {…}`, `char s[] = "hello"`, `char s[N] = "…"` (`tests/32.array_1d_inferred_string_init.c`) |
 | User-defined types | `struct`, `union`, `enum` with tag names (`DefinedType` lookup) |
 | Type names in expressions | `_VarType: IDENTIFIER` for registered tags — **not** general `typedef` |
 | `-g` CLI flag | Parsed in `main.cpp` — **not** passed to `CodeGenerator` yet |
@@ -29,7 +29,7 @@ See [Conflicts.md](Conflicts.md) for parser ambiguities that some roadmap items 
 | Priority | Feature | Effort | Why this order |
 |----------|---------|--------|----------------|
 | **—** | [Array declarators](#array-extension-plan) (done) | Small | Unified `VarInit` + `ArrayBoundList`; foundation for init and multidim |
-| **1** | [1D array initialization](#1d-array-initialization) | Medium | Brace init, inferred `[]`, string literals |
+| **1** | [1D array initialization](#1d-array-initialization) (done) | Medium | Brace init, inferred `[]`, string literals |
 | **2** | [`typedef` and `size_t`](#2-typedef-and-size_t) | Medium–large | Idiomatic C types; identifier disambiguation |
 | **3** | [2D and 3D arrays](#2d-and-3d-arrays) | Medium–large | Decl then init per dimension; cap at three dimensions |
 | **4** | [`static`](#4-static) | Medium | Storage class / linkage |
@@ -45,7 +45,7 @@ See [Conflicts.md](Conflicts.md) for parser ambiguities that some roadmap items 
 flowchart TD
   done[1D declarators via VarInit - done]
   init1a[1a. 1D brace init fixed size - done]
-  init1b[1b. inferred size and strings]
+  init1b[1b. inferred size and strings - done]
   typedef[2. typedef]
   md2a[2a. 2D declaration]
   md2b[2b. 2D initialization]
@@ -75,7 +75,7 @@ C array initialization is intentionally split into small merges. **At most three
 |------|----------|------------------|
 | **Declarators** (done) | `ArrayBound` / `ArrayBoundList` on `VarInit`; one `VarDecl` path; `int a[4], b;` | `tests/30.array_mixed_decl.c` |
 | **1a** (done) | `int a[4] = {1,2,3};` — zero-fill, global/local | `tests/31.array_1d_brace_init.c` |
-| **1b** | `int a[] = {…};`, `char s[] = "hello";`, `char s[6] = "hello";` | reject `char s[5] = "hello"` |
+| **1b** (done) | `int a[] = {…};`, `char s[] = "hello";`, `char s[6] = "hello";` | `tests/32.array_1d_inferred_string_init.c`; reject `char s[5] = "hello"` |
 | **2a** | `int a[8][5];`, subscript `a[i][j]` | declare only |
 | **2b** | nested/flat init, `int a[][5] = {…}`, partial rows | reject `int a[][]`, `int b[8][]` |
 | **3a** | `int a[2][8][5];` | declare only |
@@ -99,7 +99,7 @@ Grammar symbols: `VarInit`, `ArrayBound`, `ArrayBoundList` (see `Parser.y`). `Va
 
 ## 1D array initialization
 
-Covers step **1b** below (1a is done).
+Steps **1a** and **1b** are done. See [Array extension plan](#array-extension-plan).
 
 ### 1a — fixed-size brace initialization (done)
 
@@ -112,7 +112,7 @@ int buf[3] = {1, 2, 3};
 
 Delivered as described in [Array extension plan](#array-extension-plan) step 1a.
 
-### 1b — inferred size and string literals
+### 1b — inferred size and string literals (done)
 
 **Goal:**
 
@@ -122,10 +122,8 @@ char s1[] = "hello";
 char s2[6] = "hello";
 ```
 
-| Layer | Changes |
-|-------|---------|
-| **Parser** | `LBRACKET RBRACKET` on declarator when an initializer is present |
-| **Codegen** | Infer length from brace list; string length includes `'\0'` |
+- `ArrayBound`: `LBRACKET RBRACKET` stores `kInferredArrayBound`; `resolveArrayBounds` infers length from brace list or string (`strlen + 1`).
+- String init copies bytes plus `'\0'` into the char array; rejects initializer longer than the declared bound.
 
 **Errors:** `char s3[5] = "hello";` (initializer too long).
 

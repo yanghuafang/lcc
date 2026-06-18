@@ -60,6 +60,7 @@ AST::Program* g_root;
     AST::VarList* varList;
 
     std::vector<size_t>* arrayBoundList;
+    size_t sizeVal;
 
     AST::BuiltinType* builtinType;
 
@@ -145,7 +146,7 @@ AST::Program* g_root;
 %type<varInit>                  VarInit
 %type<varList>                  VarList
 %type<arrayBoundList>           ArrayBoundList
-%type<intVal>                   ArrayBound
+%type<sizeVal>                  ArrayBound
 %type<exprList>                 InitList
 
 %type<builtinType>              BuiltinType
@@ -305,7 +306,9 @@ ArrayBoundList:
             ;
 
 ArrayBound: LBRACKET INTEGER RBRACKET
-                                { $$ = $2; }
+                                { $$ = static_cast<size_t>($2); }
+            | LBRACKET RBRACKET
+                                { $$ = AST::kInferredArrayBound; }
             ;
 
  /* ParamList */

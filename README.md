@@ -11,6 +11,8 @@ Not like the most popular industrial C compilers, such as clang and gcc which ad
 - Pointer move on array of builtin types and user defined types by using operators `++`, `--`, `+=` and `-=`.
 - One dimensional array: `Type arrayName[INTEGER];`, including mixed lists such as `int a[4], b;` (bounds on each name via `VarInit`)
 - One dimensional array brace initialization: `int a[4] = {1, 2, 3};` and empty `{}` (zero-fill), global and local
+- Inferred 1D array size: `int arr[] = {10, 7, 8, 9, 1, 5};`
+- Char array string initialization: `char s[] = "hello";`, `char s[6] = "hello";` (length includes `'\0'`)
 - Variable list: such as `a = 1, b, c = 3`
 - Variant parameters: `...`
 - Function declaration, definition and call.
@@ -39,7 +41,6 @@ Not like the most popular industrial C compilers, such as clang and gcc which ad
 Except the following features:
 - Preprocessing: such as `#include`
 - Macro definition `#define` and expansion
-- Inferred array size and string literal initialization: such as `int a[] = {1, 2, 3};`, `char s[] = "hello";`
 - Multiple dimensional array: such as `int a[8][8];`
 - `typedef`: not crucial, `struct`, `union` and `enum` is enough for user defined type.
 - `extern`: `lcc` requires function declaration for linkage, extern variable is not allowed.
@@ -153,9 +154,8 @@ Such as `settings set target.source-map /Users/yanghuafang/study-projects/lcc-bu
 
 ## TODO
 
-For step-by-step detail (dependencies, tests, and legal/illegal forms), see [`docs/Roadmap.md`](docs/Roadmap.md). Array declarators (`VarInit`, `ArrayBoundList`, mixed lists such as `int a[4], b;`) and fixed-size 1D brace initialization (`int a[4] = {1, 2, 3};`) are already in place.
+For step-by-step detail (dependencies, tests, and legal/illegal forms), see [`docs/Roadmap.md`](docs/Roadmap.md). Array declarators, fixed-size 1D brace initialization, inferred `[]` size, and char string initialization are already in place.
 
-- **1D array initialization (remaining):** inferred size `int arr[] = {10, 7, 8, 9, 1, 5};`; string literals `char s[] = "hello";`
 - **2D arrays:** declaration `int a[8][5];` and initialization `int a[][5] = {{1}, {2, 3}};`
 - **3D arrays:** declaration and initialization, up to three dimensions (e.g. `int b[][8][5] = {…};`)
 - Support `typedef` and `size_t`.
