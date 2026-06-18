@@ -799,11 +799,11 @@ VarType* VarInit::buildVarType(VarType* baseType) const {
 VarType* VarInit::buildVarType(VarType* baseType,
                                const std::vector<size_t>& bounds) const {
   VarType* type = baseType;
-  for (size_t bound : bounds) {
-    if (isInferredArrayBound(bound)) {
+  for (auto it = bounds.rbegin(); it != bounds.rend(); ++it) {
+    if (isInferredArrayBound(*it)) {
       throw std::logic_error("Unresolved inferred array bound.");
     }
-    type = new ArrayType(type, bound);
+    type = new ArrayType(type, *it);
   }
   return type;
 }

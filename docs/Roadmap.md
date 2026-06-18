@@ -16,6 +16,7 @@ Before extending, it helps to know what the current codebase already supports:
 | Scalar initialization | `int x = 1;` in `VarDecl::genCode` (local `store`, global `Constant`) |
 | 1D fixed-size brace initialization | `int a[4] = {1,2,3};`, `{}` zero-fill, global/local (`tests/31.array_1d_brace_init.c`) |
 | Inferred `[]` and string literal init | `int a[] = {…}`, `char s[] = "hello"`, `char s[N] = "…"` (`tests/32.array_1d_inferred_string_init.c`) |
+| 2D array declaration | `int m[8][5];`, `m[i][j]`, struct grids, mixed lists (`tests/33.array_2d_decl.c`) |
 | User-defined types | `struct`, `union`, `enum` with tag names (`DefinedType` lookup) |
 | Type names in expressions | `_VarType: IDENTIFIER` for registered tags — **not** general `typedef` |
 | `-g` CLI flag | Parsed in `main.cpp` — **not** passed to `CodeGenerator` yet |
@@ -47,7 +48,7 @@ flowchart TD
   init1a[1a. 1D brace init fixed size - done]
   init1b[1b. inferred size and strings - done]
   typedef[2. typedef]
-  md2a[2a. 2D declaration]
+  md2a[2a. 2D declaration - done]
   md2b[2b. 2D initialization]
   md3a[3a. 3D declaration]
   md3b[3b. 3D initialization]
@@ -76,12 +77,18 @@ C array initialization is intentionally split into small merges. **At most three
 | **Declarators** (done) | `ArrayBound` / `ArrayBoundList` on `VarInit`; one `VarDecl` path; `int a[4], b;` | `tests/30.array_mixed_decl.c` |
 | **1a** (done) | `int a[4] = {1,2,3};` — zero-fill, global/local | `tests/31.array_1d_brace_init.c` |
 | **1b** (done) | `int a[] = {…};`, `char s[] = "hello";`, `char s[6] = "hello";` | `tests/32.array_1d_inferred_string_init.c`; reject `char s[5] = "hello"` |
-| **2a** | `int a[8][5];`, subscript `a[i][j]` | declare only |
+| **2a** (done) | `int a[8][5];`, subscript `a[i][j]` | `tests/33.array_2d_decl.c` |
 | **2b** | nested/flat init, `int a[][5] = {…}`, partial rows | reject `int a[][]`, `int b[8][]` |
 | **3a** | `int a[2][8][5];` | declare only |
 | **3b** | `int b[][8][5] = {…}` | first dimension inferred from init |
 
-Grammar symbols: `VarInit`, `ArrayBound`, `ArrayBoundList` (see `Parser.y`). `VarInit::buildVarType()` nests `ArrayType` for each bound.
+Grammar symbols: `VarInit`, `ArrayBound`, `ArrayBoundList` (see `Parser.y`). `VarInit::buildVarType()` nests `ArrayType` for each bound (innermost bound last in the declarator list).
+
+### Status: 2D declaration (done)
+
+- `buildVarType` applies `ArrayBoundList` outside-in so `int m[2][3]` becomes LLVM `[2 x [3 x T]]`.
+- Nested `Subscript` and `CreateGEP` in `Utils::createAdd` / `createLoad` handle `a[i][j]` on locals, globals, and struct element grids.
+- `tests/33.array_2d_decl.c`.
 
 ### Status: declarator unification (done)
 
@@ -172,16 +179,13 @@ Many real C APIs use typedef’d names. Doing this before multidimensional array
 
 Covers steps **2a**, **2b**, **3a**, and **3b**. Nested bounds already parse via `ArrayBoundList`; remaining work is validation, codegen for multi-subscript, and initialization.
 
-### 2a — 2D declaration
+### 2a — 2D declaration (done)
 
 ```c
 int matrix[8][5];
 ```
 
-| Layer | Changes |
-|-------|---------|
-| **Codegen** | Verify nested `ArrayType` + double `Subscript` / GEP |
-| **Tests** | `a[i][j]` assign and read |
+Nested `ArrayType` layout and double subscript codegen were verified; `buildVarType` now maps declarator bounds to LLVM dimensions in outside-in order.
 
 ### 2b — 2D initialization
 

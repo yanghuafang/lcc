@@ -13,6 +13,7 @@ Not like the most popular industrial C compilers, such as clang and gcc which ad
 - One dimensional array brace initialization: `int a[4] = {1, 2, 3};` and empty `{}` (zero-fill), global and local
 - Inferred 1D array size: `int arr[] = {10, 7, 8, 9, 1, 5};`
 - Char array string initialization: `char s[] = "hello";`, `char s[6] = "hello";` (length includes `'\0'`)
+- Two dimensional array: `int matrix[8][5];`, subscript `matrix[i][j]`, including mixed lists such as `int a[2][3], b;`
 - Variable list: such as `a = 1, b, c = 3`
 - Variant parameters: `...`
 - Function declaration, definition and call.
@@ -41,7 +42,8 @@ Not like the most popular industrial C compilers, such as clang and gcc which ad
 Except the following features:
 - Preprocessing: such as `#include`
 - Macro definition `#define` and expansion
-- Multiple dimensional array: such as `int a[8][8];`
+- Multidimensional array initialization: such as `int a[8][5] = {…};`, `int a[][5] = {…};`
+- Three dimensional arrays: such as `int a[2][8][5];`
 - `typedef`: not crucial, `struct`, `union` and `enum` is enough for user defined type.
 - `extern`: `lcc` requires function declaration for linkage, extern variable is not allowed.
 - `static`: not supported by `lcc`, use global variable.
@@ -154,9 +156,9 @@ Such as `settings set target.source-map /Users/yanghuafang/study-projects/lcc-bu
 
 ## TODO
 
-For step-by-step detail (dependencies, tests, and legal/illegal forms), see [`docs/Roadmap.md`](docs/Roadmap.md). Array declarators, fixed-size 1D brace initialization, inferred `[]` size, and char string initialization are already in place.
+For step-by-step detail (dependencies, tests, and legal/illegal forms), see [`docs/Roadmap.md`](docs/Roadmap.md). Array declarators, 1D initialization, and 2D array declaration are already in place.
 
-- **2D arrays:** declaration `int a[8][5];` and initialization `int a[][5] = {{1}, {2, 3}};`
+- **2D arrays (remaining):** initialization `int a[][5] = {{1}, {2, 3}};`
 - **3D arrays:** declaration and initialization, up to three dimensions (e.g. `int b[][8][5] = {…};`)
 - Support `typedef` and `size_t`.
 - Support `static`.
