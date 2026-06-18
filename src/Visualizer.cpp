@@ -238,6 +238,22 @@ std::pair<std::string, std::string> TypeDecl::genGraph() {
   return std::make_pair(root, tree);
 }
 
+std::pair<std::string, std::string> TypedefDecl::genGraph() {
+  std::string id = getId();
+  std::string root = "TypedefDecl_" + id;
+  std::string tree = root + " [label = TypedefDecl, alias = \"" + aliasName_ +
+                     "\"]\n";
+
+  if (underlyingType_ != nullptr) {
+    std::pair<std::string, std::string> varTypeGraph =
+        underlyingType_->genGraph();
+    tree += root + " -> " + varTypeGraph.first + "\n";
+    tree += varTypeGraph.second;
+  }
+
+  return std::make_pair(root, tree);
+}
+
 // Variable Types
 
 std::pair<std::string, std::string> BuiltinType::genGraph() {

@@ -18,8 +18,10 @@ Before extending, it helps to know what the current codebase already supports:
 | Inferred `[]` and string literal init | `int a[] = {…}`, `char s[] = "hello"`, `char s[N] = "…"` (`tests/32.array_1d_inferred_string_init.c`) |
 | 2D array declaration | `int m[8][5];`, `m[i][j]`, struct grids, mixed lists (`tests/33.array_2d_decl.c`) |
 | 2D array brace initialization | nested/flat init, `int a[][5] = {…}` (`tests/34.array_2d_brace_init.c`) |
+| `typedef` of `VarType` spellings | `typedef unsigned long size_t;`, pointer/builtin aliases (`tests/35.typedef_builtin.c`) |
+| `typedef` struct aliases / disambiguation | **Not yet** — planned as step 4b |
 | User-defined types | `struct`, `union`, `enum` with tag names (`DefinedType` lookup) |
-| Type names in expressions | `_VarType: IDENTIFIER` for registered tags — **not** general `typedef` |
+| Type names in expressions | `_VarType: IDENTIFIER` for registered tags and typedef aliases |
 | `-g` CLI flag | Parsed in `main.cpp` — **not** passed to `CodeGenerator` yet |
 
 See [Conflicts.md](Conflicts.md) for parser ambiguities that some roadmap items will touch (especially `typedef`).
@@ -32,10 +34,10 @@ See [Conflicts.md](Conflicts.md) for parser ambiguities that some roadmap items 
 |----------|---------|--------|----------------|
 | **—** | [Array declarators](#array-extension-plan) (done) | Small | Unified `VarInit` + `ArrayBoundList`; foundation for init and multidim |
 | **1** | [1D array initialization](#1d-array-initialization) (done) | Medium | Brace init, inferred `[]`, string literals |
-| **2** | [`typedef` and `size_t`](#2-typedef-and-size_t) | Medium–large | Idiomatic C types; identifier disambiguation |
-| **3** | [2D and 3D arrays](#2d-and-3d-arrays) | Medium–large | Decl then init per dimension; cap at three dimensions |
-| **4** | [`static`](#4-static) | Medium | Storage class / linkage |
-| **5** | [`-g` debug info](#5--g-debug-info) | Medium–large | LLVM `DIBuilder` |
+| **2** | [`typedef` and `size_t`](#4-typedef-and-size_t) | Medium–large | 4a done; 4b (struct typedefs) next |
+| **—** | [3D arrays](#3d-arrays-deferred) | — | Deferred; 2D covers teaching goals for now |
+| **3** | [`static`](#5-static) | Medium | Storage class / linkage |
+| **4** | [`-g` debug info](#6--g-debug-info) | Medium–large | LLVM `DIBuilder` |
 
 **Optional timing:** Step 5 is independent of language features. If you are debugging many new test programs with LLDB, consider implementing `-g` right after step 1 — it does not require new grammar rules.
 
@@ -48,19 +50,19 @@ flowchart TD
   done[1D declarators via VarInit - done]
   init1a[1a. 1D brace init fixed size - done]
   init1b[1b. inferred size and strings - done]
-  typedef[2. typedef]
   md2a[2a. 2D declaration - done]
   md2b[2b. 2D initialization - done]
-  md3a[3a. 3D declaration]
-  md3b[3b. 3D initialization]
-  stat[4. static]
-  dbg[5. -g debug info]
+  td4a[4a. typedef VarType aliases]
+  td4b[4b. typedef struct and disambiguation]
+  md3[3D arrays - deferred]
+  stat[5. static]
+  dbg[6. -g debug info]
 
   done --> init1a --> init1b
   init1b --> md2b
   done --> md2a --> md2b
-  md2b --> md3a --> md3b
-  typedef
+  md2b -.-> md3
+  init1b --> td4a --> td4b
   stat
   dbg
 
@@ -71,7 +73,7 @@ flowchart TD
 
 ## Array extension plan
 
-C array initialization is intentionally split into small merges. **At most three dimensions.** Support legal forms in tiers; reject illegal forms (e.g. `char s[5] = "hello"`, `int a[][]`) once the matching feature is in scope.
+C array initialization is intentionally split into small merges. **2D is complete; 3D is deferred.** Support legal forms in tiers; reject illegal forms (e.g. `char s[5] = "hello"`, `int a[][]`) once the matching feature is in scope.
 
 | Step | Delivers | Tests (examples) |
 |------|----------|------------------|
@@ -80,8 +82,7 @@ C array initialization is intentionally split into small merges. **At most three
 | **1b** (done) | `int a[] = {…};`, `char s[] = "hello";`, `char s[6] = "hello";` | `tests/32.array_1d_inferred_string_init.c`; reject `char s[5] = "hello"` |
 | **2a** (done) | `int a[8][5];`, subscript `a[i][j]` | `tests/33.array_2d_decl.c` |
 | **2b** (done) | nested/flat init, `int a[][5] = {…}`, partial rows | `tests/34.array_2d_brace_init.c`; reject `int a[][]`, `int b[8][]` |
-| **3a** | `int a[2][8][5];` | declare only |
-| **3b** | `int b[][8][5] = {…}` | first dimension inferred from init |
+| **3a / 3b** | *deferred* | 3D declaration and initialization — not planned near-term |
 
 Grammar symbols: `VarInit`, `ArrayBound`, `ArrayBoundList` (see `Parser.y`). `VarInit::buildVarType()` nests `ArrayType` for each bound (innermost bound last in the declarator list).
 
@@ -141,14 +142,9 @@ char s2[6] = "hello";
 
 ---
 
-## 2. `typedef` and `size_t`
+## 4. `typedef` and `size_t`
 
-**Goal:** name types alias cleanly; support `size_t` as users expect.
-
-```c
-typedef unsigned long size_t;
-typedef struct Node* NodePtr;
-```
+Split into **4a** (grammar + alias table + `VarType` spellings) and **4b** (defined-type typedefs + expression disambiguation). `size_t` ships in **4a** via `typedef unsigned long size_t;`.
 
 ### Gap today
 
@@ -156,29 +152,68 @@ typedef struct Node* NodePtr;
 - `IDENTIFIER` as a type only resolves through `DefinedType` for struct/union/enum tags already registered in the type table.
 - README workaround: use `unsigned long` wherever `size_t` would appear.
 
-### Work involved
+### 4a — `typedef` of `VarType` spellings (including `size_t`) — **done**
+
+**Goal:**
+
+```c
+typedef unsigned long size_t;
+typedef int counter_t;
+typedef int* IntPtr;
+
+size_t nbytes = 0;
+counter_t count = 1;
+IntPtr p;
+```
 
 | Layer | Changes |
 |-------|---------|
-| **Parser** | `typedef` declaration production; may increase type-vs-expr ambiguity — see [Conflicts.md](Conflicts.md) state 96 |
-| **AST** | `TypedefDecl` (or extend `TypeDecl`) |
-| **Symbol table** | Register alias name → `VarType*` in `CodeGenerator::addType` / lookup |
-| **Disambiguation** | May need typedef scope tracking, `TYPENAME` token, or a small semantic pass — evaluate after first prototype |
+| **Lexer** | `TYPEDEF` token |
+| **Parser** | `TypedefDecl: TYPEDEF VarType IDENTIFIER SEMICOLON` |
+| **AST** | `TypedefDecl` (alias name + underlying `VarType*`) |
+| **Codegen** | Typedef alias table; `DefinedType` lookup checks aliases before struct tags |
 
-### `size_t`
+**Tests:** `tests/35.typedef_builtin.c` — builtin and pointer typedefs, `sizeof(size_t)`, use in params.
 
-- **Preferred:** implement as `typedef unsigned long size_t;` once `typedef` works.
-- **Shortcut:** add a builtin alias in the lexer/parser — fast, but teaches less.
+**In scope:** any type already parsed by `_VarType` (builtins, `const`, pointers, struct/union/enum tags that already exist).
 
-### Why second
+**Out of scope for 4a:** typedef-as-declarator edge cases; fixing all State 96 identifier conflicts.
 
-Many real C APIs use typedef’d names. Doing this before multidimensional arrays keeps declarators readable (`size_t buf[N]`). Expect more parser design work than array initializers.
+### 4b — defined-type typedefs and disambiguation
+
+**Goal:**
+
+```c
+typedef struct Employee Employee;
+typedef struct Employee* EmployeePtr;
+
+void* malloc(size_t size);
+unsigned long strlen(const char* s);
+```
+
+| Layer | Changes |
+|-------|---------|
+| **Parser / AST** | Combined typedef patterns where helpful (`typedef struct S { … } S;`) if needed |
+| **Symbol table** | Typedef names visible in type positions; document expression-position limits |
+| **Disambiguation** | Reduce wrong parses when a typedef name could be a variable (State 96 — see [Conflicts.md](Conflicts.md)) |
+| **Tests** | Struct tag alias, pointer typedef, real API-style `size_t` / `malloc` / `strlen` declarations |
+
+**Errors / limits:** typedef name used as a variable in the same scope; shadowing — document or reject explicitly.
+
+### Why split 4a / 4b
+
+- **4a** is one grammar rule plus alias lookup — enough for `size_t` and most numeric/pointer typedefs.
+- **4b** touches struct tags, API conventions, and the hardest parser conflicts — better as a focused follow-up.
+
+### Why before 3D and `static`
+
+Typedef improves readability of array and API tests (`size_t buf[N]`) without another dimension of initializer complexity. 3D arrays are deferred; 2D init reuse does not require 3D.
 
 ---
 
 ## 2D and 3D arrays
 
-Covers steps **2a**, **2b**, **3a**, and **3b**. Nested bounds already parse via `ArrayBoundList`; remaining work is validation, codegen for multi-subscript, and initialization.
+Covers steps **2a** and **2b** (done). **3a / 3b** are deferred — see [3D arrays (deferred)](#3d-arrays-deferred).
 
 ### 2a — 2D declaration (done)
 
@@ -199,21 +234,13 @@ int a[][5] = { {1}, {2,3} };
 - `InitElement` supports nested `InitList` in the parser; flatten row-major with zero-fill.
 - Only the first dimension may be inferred (`int a[][5]`); reject `int a[][]` and `int b[8][]`.
 
-### 3a / 3b — 3D (maximum depth)
+### 3D arrays (deferred)
 
-```c
-int a[2][8][5];
-int b[][8][5] = {
-    { {1,2,3}, {4,5,6} },
-    { {7,8,9}, {10,11,12} }
-};
-```
-
-Only the **first** dimension may be omitted, and only when an initializer is present.
+3D declaration (`int a[2][8][5];`) and initialization are **not** planned near-term. Nested `ArrayBoundList` already parses three bounds; codegen would extend the 2D flatten/GEP helpers.
 
 ---
 
-## 4. `static`
+## 5. `static`
 
 **Goal:** C storage class for file-local and function-local static variables (and optionally static functions).
 
@@ -238,13 +265,13 @@ void f(void) {
 | **AST** | Storage-class field on declarations |
 | **Codegen** | `llvm::GlobalValue::InternalLinkage` for file `static`; unique global symbols for local `static` with one-time init |
 
-### Why fourth
+### Why after typedef
 
-Orthogonal to types and initializers. Teaches linkage and lifetime without blocking other features. README workarounds remain acceptable until this lands.
+Orthogonal to types and initializers. Teaches linkage and lifetime without blocking typedef work. README workarounds remain acceptable until this lands.
 
 ---
 
-## 5. `-g` debug info
+## 6. `-g` debug info
 
 **Goal:** `lcc -g` embeds DWARF (or equivalent) in the object file so LLDB can single-step **generated** C programs.
 
@@ -277,6 +304,7 @@ These appear under “Except” in the README and are **not** on the near-term r
 | `extern` variables | Linkage + multi-TU model; manual decls work today |
 | Separate semantic-analysis pass | Add only when a feature requires it (e.g. heavy typedef disambiguation) — see architecture notes in `AbstractSyntaxTree.hpp` |
 | Split `Expr` from `Stmt` | Large churn; low ROI unless rewriting the frontend for pedagogy |
+| 3D arrays (3a / 3b) | 2D covers multidim teaching goals; high complexity for diminishing returns |
 
 ---
 

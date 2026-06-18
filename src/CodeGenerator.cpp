@@ -44,6 +44,7 @@ CodeGenerator::~CodeGenerator() {
 
 void CodeGenerator::pushSymbolTable() {
   symbolTableStack_.push_back(new SymbolTable);
+  typedefTableStack_.push_back(new TypedefTable);
 }
 
 void CodeGenerator::popSymbolTable() {
@@ -53,6 +54,11 @@ void CodeGenerator::popSymbolTable() {
 
   delete symbolTableStack_.back();
   symbolTableStack_.pop_back();
+
+  if (!typedefTableStack_.empty()) {
+    delete typedefTableStack_.back();
+    typedefTableStack_.pop_back();
+  }
 }
 
 llvm::TypeSize CodeGenerator::getTypeSize(llvm::Type* type) {
@@ -88,6 +94,38 @@ bool CodeGenerator::addType(const std::string& typeName, llvm::Type* type) {
   }
 
   (*topSymbolTable)[typeName] = Symbol(type);
+  return true;
+}
+
+AST::VarType* CodeGenerator::findTypedefAlias(const std::string& aliasName) {
+  if (typedefTableStack_.empty()) {
+    return nullptr;
+  }
+
+  for (auto iter = typedefTableStack_.end() - 1;
+       iter >= typedefTableStack_.begin(); --iter) {
+    auto pairIter = (*iter)->find(aliasName);
+    if (pairIter != (*iter)->end()) {
+      return pairIter->second;
+    }
+  }
+
+  return nullptr;
+}
+
+bool CodeGenerator::addTypedefAlias(const std::string& aliasName,
+                                    AST::VarType* varType) {
+  if (typedefTableStack_.empty()) {
+    return false;
+  }
+
+  TypedefTable* topTable = typedefTableStack_.back();
+  auto pairIter = topTable->find(aliasName);
+  if (pairIter != topTable->end()) {
+    return false;
+  }
+
+  (*topTable)[aliasName] = varType;
   return true;
 }
 

@@ -48,6 +48,7 @@ class VarInit;
 using VarList = std::vector<VarInit*>;
 
 class TypeDecl;
+class TypedefDecl;
 
 // Variable Types
 class VarType;
@@ -332,6 +333,19 @@ class TypeDecl : public Decl {
 
   TypeDecl(VarType* varType) : varType_(varType) {}
   ~TypeDecl() {}
+
+  llvm::Value* genCode(CodeGenerator& generator) override;
+  std::pair<std::string, std::string> genGraph() override;
+};
+
+class TypedefDecl : public Decl {
+ public:
+  VarType* underlyingType_;
+  std::string aliasName_;
+
+  TypedefDecl(VarType* underlyingType, const std::string& aliasName)
+      : underlyingType_(underlyingType), aliasName_(aliasName) {}
+  ~TypedefDecl() {}
 
   llvm::Value* genCode(CodeGenerator& generator) override;
   std::pair<std::string, std::string> genGraph() override;

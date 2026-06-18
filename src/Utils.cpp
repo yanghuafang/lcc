@@ -6,6 +6,7 @@
 #include <llvm/IR/IRBuilder.h>
 
 #include "AbstractSyntaxTree.hpp"
+#include "CodeGenerator.hpp"
 
 using AST::BuiltinType;
 using AST::BuiltinTypeId;
@@ -155,6 +156,27 @@ BuiltinTypeId Utils::varTypeToTypeId(AST::VarType* varType) {
   }
 
   return BuiltinTypeId::UNKNOWN;
+}
+
+AST::VarType* Utils::resolveTypedefVarType(AST::VarType* varType,
+                                           CodeGenerator& generator) {
+  if (varType == nullptr) {
+    return nullptr;
+  }
+
+  if (varType->isDefinedType()) {
+    AST::VarType* alias = generator.findTypedefAlias(varType->typeName_);
+    if (alias != nullptr) {
+      return resolveTypedefVarType(alias, generator);
+    }
+  }
+
+  return varType;
+}
+
+BuiltinTypeId Utils::resolvedVarTypeToTypeId(AST::VarType* varType,
+                                           CodeGenerator& generator) {
+  return varTypeToTypeId(resolveTypedefVarType(varType, generator));
 }
 
 llvm::Value* Utils::typeCast(llvm::IRBuilder<>& builder, llvm::Value* value,

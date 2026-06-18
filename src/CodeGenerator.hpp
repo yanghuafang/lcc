@@ -57,6 +57,13 @@ class CodeGenerator {
   // Return false if the same type already exists in the current symbol table.
   bool addType(const std::string& typeName, llvm::Type* type);
 
+  // Resolve a typedef alias to its underlying AST VarType (innermost scope wins).
+  AST::VarType* findTypedefAlias(const std::string& aliasName);
+
+  // Register a typedef alias in the current scope.
+  // Return false if the alias already exists in the current scope.
+  bool addTypedefAlias(const std::string& aliasName, AST::VarType* varType);
+
   // Find variable from stack of symbol tables.
   llvm::Value* findVariable(const std::string& varName);
 
@@ -195,12 +202,14 @@ class CodeGenerator {
   };
 
   using SymbolTable = std::map<std::string, Symbol>;
+  using TypedefTable = std::map<std::string, AST::VarType*>;
 
   // Map LLVM struct types back to AST nodes for member lookup (. and ->).
   using StructTypeTable = std::map<llvm::StructType*, AST::StructType*>;
   using UnionTypeTable = std::map<llvm::StructType*, AST::UnionType*>;
 
   std::vector<SymbolTable*> symbolTableStack_;
+  std::vector<TypedefTable*> typedefTableStack_;
   StructTypeTable* structTypeTable_;
   UnionTypeTable* unionTypeTable_;
 

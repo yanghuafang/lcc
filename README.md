@@ -15,6 +15,7 @@ Not like the most popular industrial C compilers, such as clang and gcc which ad
 - Char array string initialization: `char s[] = "hello";`, `char s[6] = "hello";` (length includes `'\0'`)
 - Two dimensional array: `int matrix[8][5];`, subscript `matrix[i][j]`, including mixed lists such as `int a[2][3], b;`
 - Two dimensional array brace initialization: `int a[8][5] = {{0,1,2},{3,4,5}};`, flat `{0,1,2,3,4,5}`, and `int a[][5] = {{1},{2,3}};`
+- Typedef of builtin and pointer types: `typedef unsigned long size_t;`, `typedef int counter_t;`, `typedef int* IntPtr;`
 - Variable list: such as `a = 1, b, c = 3`
 - Variant parameters: `...`
 - Function declaration, definition and call.
@@ -44,11 +45,10 @@ Except the following features:
 - Preprocessing: such as `#include`
 - Macro definition `#define` and expansion
 - Multidimensional array initialization beyond 2D: such as `int a[2][8][5] = {…};`
-- Three dimensional array declaration: such as `int a[2][8][5];`
-- `typedef`: not crucial, `struct`, `union` and `enum` is enough for user defined type.
+- Three dimensional arrays: such as `int a[2][8][5];` (deferred)
+- Struct typedef aliases and identifier disambiguation: such as `typedef struct Employee Employee;`
 - `extern`: `lcc` requires function declaration for linkage, extern variable is not allowed.
 - `static`: not supported by `lcc`, use global variable.
-- `size_t`: use `unsigned long`.
 
 `lcc` compile a translation unit(.c file) to a object file(.o), then the object file can be linked to executable by `clang` or `gcc`.  
 
@@ -157,9 +157,8 @@ Such as `settings set target.source-map /Users/yanghuafang/study-projects/lcc-bu
 
 ## TODO
 
-For step-by-step detail (dependencies, tests, and legal/illegal forms), see [`docs/Roadmap.md`](docs/Roadmap.md). Array declarators, 1D initialization, 2D declaration, and 2D brace initialization are already in place.
+For step-by-step detail (dependencies, tests, and legal/illegal forms), see [`docs/Roadmap.md`](docs/Roadmap.md). Array work through 2D is done; 3D arrays are deferred.
 
-- **3D arrays:** declaration and initialization, up to three dimensions (e.g. `int b[][8][5] = {…};`)
-- Support `typedef` and `size_t`.
+- **`typedef`:** struct typedef aliases and identifier disambiguation
 - Support `static`.
 - Implement `lcc` `-g` option to generate object file with debug info.

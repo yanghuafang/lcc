@@ -480,7 +480,7 @@ VarType* Expr::getLValueVarType(CodeGenerator& generator) { return nullptr; }
 BuiltinType::TypeId Expr::getExprTypeId(CodeGenerator& generator) {
   VarType* varType = getExprVarType(generator);
   if (varType != nullptr) {
-    return Utils::varTypeToTypeId(varType);
+    return Utils::resolvedVarTypeToTypeId(varType, generator);
   }
 
   return BuiltinType::TypeId::UNKNOWN;
@@ -489,7 +489,7 @@ BuiltinType::TypeId Expr::getExprTypeId(CodeGenerator& generator) {
 BuiltinType::TypeId Expr::getLValueTypeId(CodeGenerator& generator) {
   VarType* varType = getLValueVarType(generator);
   if (varType != nullptr) {
-    return Utils::varTypeToTypeId(varType);
+    return Utils::resolvedVarTypeToTypeId(varType, generator);
   }
 
   return BuiltinType::TypeId::UNKNOWN;
@@ -1086,7 +1086,7 @@ llvm::Value* VarDecl::genCode(CodeGenerator& generator) {
         llvm::Value* initializer = Utils::typeCast(
             generator.getBuilder(), var->initialExpr_->genCode(generator),
             llvmVarType, var->initialExpr_->getExprTypeId(generator),
-            Utils::varTypeToTypeId(varType));
+            Utils::resolvedVarTypeToTypeId(varType, generator));
         if (initializer == nullptr) {
           allocaInst->eraseFromParent();
           throw std::logic_error("It failed to init variable " + var->varName_ +
@@ -1112,7 +1112,7 @@ llvm::Value* VarDecl::genCode(CodeGenerator& generator) {
         llvm::Value* initialExpr = Utils::typeCast(
             generator.getBuilder(), var->initialExpr_->genCode(generator),
             llvmVarType, var->initialExpr_->getExprTypeId(generator),
-            Utils::varTypeToTypeId(varType));
+            Utils::resolvedVarTypeToTypeId(varType, generator));
         if (initialExpr == nullptr) {
           throw std::logic_error("It failed to init variable " + var->varName_ +
                                  " with value of different type!");
@@ -1159,6 +1159,27 @@ llvm::Value* TypeDecl::genCode(CodeGenerator& generator) {
     ((StructType*)varType_)->genTypeBody(generator);
   } else if (varType_->isUnionType()) {
     ((UnionType*)varType_)->genTypeBody(generator);
+  }
+
+  return nullptr;
+}
+
+llvm::Value* TypedefDecl::genCode(CodeGenerator& generator) {
+  llvm::Type* llvmType = underlyingType_->getType(generator);
+  if (llvmType == nullptr) {
+    throw std::logic_error("Failed to define typedef " + aliasName_);
+  }
+
+  if (!generator.addTypedefAlias(aliasName_, underlyingType_)) {
+    throw std::logic_error("It is not allowed to redefine typedef " +
+                           aliasName_);
+  }
+
+  if (generator.findType(aliasName_) == nullptr) {
+    if (!generator.addType(aliasName_, llvmType)) {
+      throw std::logic_error("It is not allowed to redefine type " +
+                             aliasName_);
+    }
   }
 
   return nullptr;
@@ -1233,6 +1254,15 @@ llvm::Type* ArrayType::getType(CodeGenerator& generator) {
 
 llvm::Type* DefinedType::getType(CodeGenerator& generator) {
   if (llvmType_ != nullptr) {
+    return llvmType_;
+  }
+
+  AST::VarType* alias = generator.findTypedefAlias(typeName_);
+  if (alias != nullptr) {
+    llvmType_ = alias->getType(generator);
+    if (llvmType_ == nullptr) {
+      throw std::logic_error(typeName_ + " is undefined!");
+    }
     return llvmType_;
   }
 
@@ -1699,7 +1729,8 @@ llvm::Value* ReturnStmt::genCode(CodeGenerator& generator) {
   if (retVal_ != nullptr) {
     llvm::Value* retVal = Utils::typeCast(generator.getBuilder(), retVal_->genCode(generator), func->getReturnType(),
         retVal_->getExprTypeId(generator),
-        Utils::varTypeToTypeId(generator.findFuncRetType(func->getName().str())));
+        Utils::resolvedVarTypeToTypeId(
+            generator.findFuncRetType(func->getName().str()), generator));
     if (retVal == nullptr) {
       throw std::logic_error(
           "The type of return value does not match, and can not be casted to "
@@ -1840,7 +1871,8 @@ llvm::Value* FuncCall::genCode(CodeGenerator& generator) {
     AST::VarType* paramVarType = generator.findFuncParamType(funcName_, index);
     arg = Utils::typeCast(generator.getBuilder(), arg, argIter->getType(),
                           argList_->at(index)->getExprTypeId(generator),
-                          Utils::varTypeToTypeId(paramVarType));
+                          Utils::resolvedVarTypeToTypeId(paramVarType,
+                                                         generator));
     if (arg == nullptr) {
       throw std::logic_error("Argument " + std::to_string(index) +
                              " does not match type to call function " +

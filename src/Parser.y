@@ -46,6 +46,7 @@ AST::Program* g_root;
     AST::Decls* decls;
 
     AST::TypeDecl* typeDecl;
+    AST::TypedefDecl* typedefDecl;
     AST::VarDecl* varDecl;
     AST::VarType* varType;
 
@@ -114,7 +115,7 @@ AST::Program* g_root;
        SWITCH CASE DEFAULT
        FOR DO WHILE
        CONTINUE BREAK RETURN
-       STRUCT UNION ENUM
+       STRUCT UNION ENUM TYPEDEF
        SIZEOF
 
 %token<idVal>                   IDENTIFIER
@@ -135,6 +136,7 @@ AST::Program* g_root;
 %type<decls>                    Decls
 
 %type<typeDecl>                 TypeDecl
+%type<typedefDecl>              TypedefDecl
 %type<varDecl>                  VarDecl
 %type<varType>                  VarType _VarType
 
@@ -230,6 +232,11 @@ Decls:      Decls Decl          { $$ = $1; $$->push_back($2); }
 Decl:       FuncDecl            { $$ = $1; }
             | VarDecl           { $$ = $1; }
             | TypeDecl          { $$ = $1; }
+            | TypedefDecl       { $$ = $1; }
+            ;
+
+TypedefDecl: TYPEDEF VarType IDENTIFIER SEMICOLON
+                                { $$ = new AST::TypedefDecl($2, *$3); }
             ;
 
 FuncDecl:   VarType IDENTIFIER LPARENTHESES ParamList RPARENTHESES SEMICOLON
