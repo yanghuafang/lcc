@@ -235,6 +235,8 @@ Decl:       FuncDecl            { $$ = $1; }
             | TypedefDecl       { $$ = $1; }
             ;
 
+ /* TypedefDecl — alias for VarType or combined struct/union definition */
+ /* e.g. typedef unsigned long size_t;  e.g. typedef struct S { … } S; */
 TypedefDecl: TYPEDEF VarType IDENTIFIER SEMICOLON
                                 { $$ = new AST::TypedefDecl($2, *$3); }
             | TYPEDEF STRUCT IDENTIFIER LBRACE FieldDecls RBRACE IDENTIFIER SEMICOLON
@@ -313,6 +315,7 @@ InitList:   InitList COMMA InitItem
                                 { $$ = new AST::InitList(); $$->push_back($1); }
             ;
 
+ /* %prec COMMA: disambiguate InitList from comma expressions (see Conflicts.md) */
 InitItem:   Expr %prec COMMA
                                 { $$ = new AST::InitElement($1); }
             | LBRACE InitList RBRACE

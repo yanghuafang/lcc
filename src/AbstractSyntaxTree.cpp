@@ -15,6 +15,12 @@
 
 namespace {
 
+// Array declarator and initializer helpers (VarDecl::genCode only).
+// Parser attaches bounds and inits to VarInit (per name in a VarList).
+// kInferredArrayBound is resolved in resolveArrayBounds(); brace inits are
+// flattened to a linear slot vector (nullptr = zero-fill) before GEP/store
+// (local) or ConstantArray assembly (global).
+
 struct Array1DInfo {
   AST::VarType* elemVarType;
   size_t length;
@@ -56,6 +62,7 @@ size_t count1DInitElements(const AST::InitList& initList) {
   return initList.size();
 }
 
+// Nested {{…},{…}} → outer list size; flat {a,b,c,…} → ceil(n/cols) rows.
 size_t infer2DRowCount(const AST::InitList& initList, size_t cols) {
   if (initList.empty()) {
     throw std::logic_error("Cannot infer array size from empty initializer.");
@@ -66,6 +73,7 @@ size_t infer2DRowCount(const AST::InitList& initList, size_t cols) {
   return (initList.size() - 1) / cols + 1;
 }
 
+// Brace initializers normalize to one slot per element; nullptr slots zero-fill.
 std::vector<AST::Expr*> flatten1DInit(const AST::InitList& initList,
                                       size_t length) {
   if (initList.size() > length) {
@@ -144,6 +152,8 @@ void validateStringFitsArray(const std::string& str, size_t length) {
   }
 }
 
+// Replace kInferredArrayBound on the first dimension only: element count from
+// brace init, 2D row count from nested/flat InitList, or strlen+1 for char[].
 std::vector<size_t> resolveArrayBounds(const AST::VarInit* var,
                                        AST::VarType* baseType) {
   std::vector<size_t> bounds = var->arrayBounds_;
@@ -1016,6 +1026,8 @@ VarType* VarInit::buildVarType(VarType* baseType) const {
   return buildVarType(baseType, arrayBounds_);
 }
 
+// C declarator int a[8][5] yields bounds [8,5]; nest ArrayType inside-out
+// (innermost bound first) so a[i] has type int[5] and a[i][j] is int.
 VarType* VarInit::buildVarType(VarType* baseType,
                                const std::vector<size_t>& bounds) const {
   VarType* type = baseType;
@@ -1028,6 +1040,8 @@ VarType* VarInit::buildVarType(VarType* baseType,
   return type;
 }
 
+// Per VarInit: resolve bounds → build nested ArrayType → alloca or global,
+// then brace init, char string literal, scalar expr, or undef (global only).
 llvm::Value* VarDecl::genCode(CodeGenerator& generator) {
   llvm::Type* baseLlvmType = varType_->getType(generator);
   if (baseLlvmType == nullptr) {
