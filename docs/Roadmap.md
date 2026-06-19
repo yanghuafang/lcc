@@ -21,7 +21,7 @@ Before extending, it helps to know what the current codebase already supports:
 | `typedef` of `VarType` spellings | `typedef unsigned long size_t;`, pointer/builtin aliases (`tests/35.typedef_builtin.c`) |
 | `typedef` struct aliases / disambiguation | struct tag refs, combined `typedef struct S {…} S;`, typedef/variable conflicts (`tests/36.typedef_struct.c`) |
 | File-scope `static` | TU-local variables and functions via `InternalLinkage` (`tests/37.static_file.c`) |
-| Block-scope `static` | **Not yet** — planned as step 5b |
+| Block-scope `static` | Mangled module globals, one-time init (`tests/38.static_local.c`) |
 | User-defined types | `struct`, `union`, `enum` with tag names (`DefinedType` lookup) |
 | Type names in expressions | `_VarType: IDENTIFIER` for registered tags and typedef aliases |
 | `-g` CLI flag | Parsed in `main.cpp` — **not** passed to `CodeGenerator` yet |
@@ -38,7 +38,7 @@ See [Conflicts.md](Conflicts.md) for parser ambiguities that some roadmap items 
 | **1** | [1D array initialization](#1d-array-initialization) (done) | Medium | Brace init, inferred `[]`, string literals |
 | **2** | [`typedef` and `size_t`](#4-typedef-and-size_t) (done) | Medium–large | 4a + 4b complete |
 | **—** | [3D arrays](#3d-arrays-deferred) | — | Deferred; 2D covers teaching goals for now |
-| **3** | [`static`](#5-static) | Medium | 5a done; 5b (block-scope) next |
+| **3** | [`static`](#5-static) (done) | Medium | 5a + 5b complete |
 | **4** | [`-g` debug info](#6--g-debug-info) | Medium–large | LLVM `DIBuilder` |
 
 **Optional timing:** Step 5 is independent of language features. If you are debugging many new test programs with LLDB, consider implementing `-g` right after step 1 — it does not require new grammar rules.
@@ -274,7 +274,7 @@ int bump(void) {
 
 **Out of scope for 5a:** block-scope `static` (rejected at codegen with a clear error).
 
-### 5b — block-scope `static` (next)
+### 5b — block-scope `static` — **done**
 
 **Goal:**
 
@@ -287,7 +287,9 @@ void f(void) {
 
 | Layer | Changes |
 |-------|---------|
-| **Codegen** | Mangled module globals for local `static`; one-time init (constant and runtime) |
+| **Codegen** | Mangled `func.var` module globals; constant init at compile time; runtime init via guard + split basic block |
+
+**Tests:** `tests/38.static_local.c` — zero-init persistence, constant initializer, runtime declaration initializer.
 
 ### Gap before 5a
 

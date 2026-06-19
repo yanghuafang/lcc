@@ -283,7 +283,7 @@ llvm::Constant* buildGlobal2DArrayInitializer(
 }
 
 void storeLocalFlatArrayInitializer(CodeGenerator& generator,
-                                    llvm::AllocaInst* allocaInst,
+                                    llvm::Value* storagePtr,
                                     llvm::Type* llvmArrayType,
                                     AST::VarType* elemVarType,
                                     llvm::Type* elemLlvmType,
@@ -310,7 +310,7 @@ void storeLocalFlatArrayInitializer(CodeGenerator& generator,
     }
 
     llvm::Value* elementPtr =
-        builder.CreateGEP(llvmArrayType, allocaInst, gepIndices);
+        builder.CreateGEP(llvmArrayType, storagePtr, gepIndices);
     AST::Expr* expr = flatInit[linear];
     if (expr == nullptr) {
       builder.CreateStore(zeroValue, elementPtr);
@@ -328,7 +328,7 @@ void storeLocalFlatArrayInitializer(CodeGenerator& generator,
 }
 
 void storeBraceArrayInitializer(CodeGenerator& generator,
-                                llvm::AllocaInst* allocaInst,
+                                llvm::Value* storagePtr,
                                 llvm::Type* llvmArrayType,
                                 AST::VarType* varType,
                                 const AST::InitList& initList) {
@@ -341,7 +341,7 @@ void storeBraceArrayInitializer(CodeGenerator& generator,
   if (info.dims.size() == 1) {
     std::vector<AST::Expr*> flat =
         flatten1DInit(initList, info.dims[0]);
-    storeLocalFlatArrayInitializer(generator, allocaInst, llvmArrayType,
+    storeLocalFlatArrayInitializer(generator, storagePtr, llvmArrayType,
                                    info.elemVarType, elemLlvmType, info.dims,
                                    flat);
     return;
@@ -350,7 +350,7 @@ void storeBraceArrayInitializer(CodeGenerator& generator,
   if (info.dims.size() == 2) {
     std::vector<AST::Expr*> flat =
         flatten2DInit(initList, info.dims[0], info.dims[1]);
-    storeLocalFlatArrayInitializer(generator, allocaInst, llvmArrayType,
+    storeLocalFlatArrayInitializer(generator, storagePtr, llvmArrayType,
                                    info.elemVarType, elemLlvmType, info.dims,
                                    flat);
     return;
@@ -410,7 +410,7 @@ llvm::Constant* buildGlobalStringArrayInitializer(llvm::Type* charLlvmType,
 }
 
 void storeLocalStringArrayInitializer(CodeGenerator& generator,
-                                      llvm::AllocaInst* allocaInst,
+                                      llvm::Value* storagePtr,
                                       llvm::Type* llvmArrayType,
                                       llvm::Type* charLlvmType, size_t length,
                                       const std::string& str) {
@@ -425,7 +425,7 @@ void storeLocalStringArrayInitializer(CodeGenerator& generator,
   for (; i < str.size(); ++i) {
     llvm::Value* index = llvm::ConstantInt::get(indexType, i);
     llvm::Value* elementPtr =
-        builder.CreateGEP(llvmArrayType, allocaInst, {zeroIndex, index});
+        builder.CreateGEP(llvmArrayType, storagePtr, {zeroIndex, index});
     llvm::Value* value =
         llvm::ConstantInt::get(charLlvmType, static_cast<unsigned char>(str[i]));
     builder.CreateStore(value, elementPtr);
@@ -433,15 +433,151 @@ void storeLocalStringArrayInitializer(CodeGenerator& generator,
 
   llvm::Value* nullIndex = llvm::ConstantInt::get(indexType, i);
   llvm::Value* nullPtr =
-      builder.CreateGEP(llvmArrayType, allocaInst, {zeroIndex, nullIndex});
+      builder.CreateGEP(llvmArrayType, storagePtr, {zeroIndex, nullIndex});
   builder.CreateStore(zeroValue, nullPtr);
   ++i;
 
   for (; i < length; ++i) {
     llvm::Value* index = llvm::ConstantInt::get(indexType, i);
     llvm::Value* elementPtr =
-        builder.CreateGEP(llvmArrayType, allocaInst, {zeroIndex, index});
+        builder.CreateGEP(llvmArrayType, storagePtr, {zeroIndex, index});
     builder.CreateStore(zeroValue, elementPtr);
+  }
+}
+
+std::string mangleStaticLocalName(llvm::Function* func,
+                                  const std::string& varName) {
+  return func->getName().str() + "." + varName;
+}
+
+// Block-scope static has function lifetime but module storage. Split the
+// current block so initializer code runs once on first execution.
+llvm::BasicBlock* emitLocalStaticLazyInitPrologue(CodeGenerator& generator,
+                                                llvm::GlobalVariable* guard) {
+  llvm::IRBuilder<>& builder = generator.getBuilder();
+  llvm::Function* func = generator.getCurrentFunction();
+  llvm::BasicBlock* initBlock =
+      llvm::BasicBlock::Create(generator.getContext(), "static.init", func);
+  llvm::BasicBlock* contBlock =
+      llvm::BasicBlock::Create(generator.getContext(), "static.cont", func);
+
+  llvm::Value* inited =
+      builder.CreateLoad(builder.getInt1Ty(), guard, "static.inited");
+  builder.CreateCondBr(inited, contBlock, initBlock);
+  builder.SetInsertPoint(initBlock);
+  return contBlock;
+}
+
+void emitLocalStaticLazyInitEpilogue(CodeGenerator& generator,
+                                     llvm::GlobalVariable* guard,
+                                     llvm::BasicBlock* contBlock) {
+  llvm::IRBuilder<>& builder = generator.getBuilder();
+  builder.CreateStore(llvm::ConstantInt::getTrue(builder.getInt1Ty()), guard);
+  builder.CreateBr(contBlock);
+  builder.SetInsertPoint(contBlock);
+}
+
+llvm::GlobalVariable* createLocalStaticGuard(CodeGenerator& generator,
+                                             const std::string& globalName) {
+  return new llvm::GlobalVariable(
+      generator.getModule(), generator.getBuilder().getInt1Ty(), false,
+      llvm::GlobalValue::PrivateLinkage,
+      llvm::ConstantInt::getFalse(generator.getBuilder().getInt1Ty()),
+      globalName + ".inited");
+}
+
+// C block-static: one module global per (function, name), InternalLinkage,
+// symbol table still uses the source variable name within the function.
+void defineBlockStaticVar(CodeGenerator& generator, AST::VarInit* var,
+                          AST::VarType* varType, llvm::Type* llvmVarType,
+                          AST::VarType* baseVarType, bool isArray,
+                          AST::ConstStr* strInit) {
+  llvm::Function* func = generator.getCurrentFunction();
+  if (func == nullptr) {
+    throw std::logic_error("Block-scope static requires a function context.");
+  }
+
+  const std::string globalName = mangleStaticLocalName(func, var->varName_);
+  llvm::Constant* constantInit = nullptr;
+  bool needsRuntimeInit = var->hasBraceInit();
+
+  if (!needsRuntimeInit) {
+    if (strInit != nullptr && isArray) {
+      Array1DInfo arrayInfo = get1DArrayInfo(varType);
+      llvm::Type* elemLlvmType = arrayInfo.elemVarType->getType(generator);
+      if (elemLlvmType == nullptr) {
+        throw std::logic_error("Define variable with unknown type!");
+      }
+      constantInit = buildGlobalStringArrayInitializer(
+          elemLlvmType, arrayInfo.length, strInit->str_);
+    } else if (var->initialExpr_ != nullptr) {
+      generator.switchInsertPointToGlobalBlock();
+      llvm::Value* initialExpr = Utils::typeCast(
+          generator.getBuilder(), var->initialExpr_->genCode(generator),
+          llvmVarType, var->initialExpr_->getExprTypeId(generator),
+          Utils::resolvedVarTypeToTypeId(varType, generator));
+      generator.switchInsertPointToCurrentBlock();
+      if (initialExpr == nullptr) {
+        throw std::logic_error("It failed to init variable " + var->varName_ +
+                               " with value of different type!");
+      }
+      constantInit = llvm::dyn_cast<llvm::Constant>(initialExpr);
+      if (constantInit == nullptr) {
+        needsRuntimeInit = true;
+      }
+    } else {
+      constantInit = llvm::Constant::getNullValue(llvmVarType);
+    }
+  }
+
+  llvm::GlobalVariable* globalVar = nullptr;
+  if (!needsRuntimeInit) {
+    globalVar = new llvm::GlobalVariable(
+        generator.getModule(), llvmVarType, baseVarType->isConst_,
+        llvm::GlobalValue::InternalLinkage, constantInit, globalName);
+  } else {
+    globalVar = new llvm::GlobalVariable(
+        generator.getModule(), llvmVarType, baseVarType->isConst_,
+        llvm::GlobalValue::InternalLinkage,
+        llvm::Constant::getNullValue(llvmVarType), globalName);
+    llvm::GlobalVariable* guard = createLocalStaticGuard(generator, globalName);
+    llvm::BasicBlock* contBlock =
+        emitLocalStaticLazyInitPrologue(generator, guard);
+
+    if (var->hasBraceInit()) {
+      storeBraceArrayInitializer(generator, globalVar, llvmVarType, varType,
+                                 *var->initList_);
+    } else if (strInit != nullptr && isArray) {
+      Array1DInfo arrayInfo = get1DArrayInfo(varType);
+      llvm::Type* elemLlvmType = arrayInfo.elemVarType->getType(generator);
+      storeLocalStringArrayInitializer(generator, globalVar, llvmVarType,
+                                         elemLlvmType, arrayInfo.length,
+                                         strInit->str_);
+    } else if (var->initialExpr_ != nullptr) {
+      llvm::Value* initializer = Utils::typeCast(
+          generator.getBuilder(), var->initialExpr_->genCode(generator),
+          llvmVarType, var->initialExpr_->getExprTypeId(generator),
+          Utils::resolvedVarTypeToTypeId(varType, generator));
+      if (initializer == nullptr) {
+        throw std::logic_error("It failed to init variable " + var->varName_ +
+                               " with value of different type!");
+      }
+      generator.getBuilder().CreateStore(initializer, globalVar);
+    }
+
+    emitLocalStaticLazyInitEpilogue(generator, guard, contBlock);
+  }
+
+  if (!generator.addVariable(var->varName_, globalVar, varType)) {
+    globalVar->eraseFromParent();
+    if (generator.hasTypedefAliasInCurrentScope(var->varName_)) {
+      throw std::logic_error(
+          "It is not allowed to use typedef name " + var->varName_ +
+          " as a variable in the same scope!");
+    }
+    throw std::logic_error(
+        "It is not allowed to redefine the same local variable " +
+        var->varName_ + " in the same scope!");
   }
 }
 
@@ -1047,14 +1183,9 @@ VarType* VarInit::buildVarType(VarType* baseType,
   return type;
 }
 
-// Per VarInit: resolve bounds → build nested ArrayType → alloca or global,
-// then brace init, char string literal, scalar expr, or undef (global only).
+// Per VarInit: resolve bounds → build nested ArrayType → alloca, block-static
+// global, or file-scope global; then brace init, string literal, scalar expr.
 llvm::Value* VarDecl::genCode(CodeGenerator& generator) {
-  if (isStatic_ && generator.getCurrentFunction() != nullptr) {
-    throw std::logic_error(
-        "Block-scope static variables are not supported yet!");
-  }
-
   llvm::Type* baseLlvmType = varType_->getType(generator);
   if (baseLlvmType == nullptr) {
     throw std::logic_error("Define variable with unknown type!");
@@ -1090,6 +1221,12 @@ llvm::Value* VarDecl::genCode(CodeGenerator& generator) {
     }
 
     if (generator.getCurrentFunction() != nullptr) {
+      if (isStatic_) {
+        defineBlockStaticVar(generator, var, varType, llvmVarType, varType_,
+                             isArray, strInit);
+        continue;
+      }
+
       llvm::AllocaInst* allocaInst = Utils::createEntryBlockAlloca(
           generator.getCurrentFunction(), var->varName_, llvmVarType);
       if (!generator.addVariable(var->varName_, allocaInst, varType)) {
