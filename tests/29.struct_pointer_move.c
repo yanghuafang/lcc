@@ -1,31 +1,16 @@
 int printf(char*, ...);
 
-int test_errors = 0;
-
-void check_int(const char* name, int actual, int expected) {
-  if (actual != expected) {
-    printf("ERROR [%s]: got %d expected %d\n", name, actual, expected);
-    test_errors++;
-  }
-}
-
-void report_result(void) {
-  if (test_errors == 0) {
-    printf("PASS\n");
-  } else {
-    printf("FAIL: %d error(s)\n", test_errors);
-  }
-}
-
 struct Data {
   int id;
   int data;
 };
 
 int main() {
-  printf("**** 29.struct_pointer_move.c ****\n");
-
+  int err = 0;
   Data data[4];
+  int id;
+  int val;
+
   data[0].id = 10;
   data[0].data = 12;
   data[1].id = 20;
@@ -36,33 +21,39 @@ int main() {
   data[3].data = 48;
 
   Data* p = data;
-  printf("data[0] id:%d, data:%d\n", p->id, (*p).data);
-  check_int("data[0] id", p->id, 10);
-  check_int("data[0] data", (*p).data, 12);
+  id = p->id;
+  val = (*p).data;
+  if (id != 10) err = 1;
+  if (val != 12) err = 1;
   p += 1;
-  printf("data[1] id:%d, data:%d\n", p->id, (*p).data);
-  check_int("data[1] id", p->id, 20);
-  check_int("data[1] data", (*p).data, 24);
+  id = p->id;
+  val = (*p).data;
+  if (id != 20) err = 1;
+  if (val != 24) err = 1;
   ++p;
-  printf("data[2] id:%d, data:%d\n", p->id, (*p).data);
-  check_int("data[2] id", p->id, 30);
+  id = p->id;
+  if (id != 30) err = 1;
   p++;
-  printf("data[3] id:%d, data:%d\n", p->id, (*p).data);
-  check_int("data[3] id", p->id, 40);
-  check_int("data[3] data", (*p).data, 48);
+  id = p->id;
+  val = (*p).data;
+  if (id != 40) err = 1;
+  if (val != 48) err = 1;
 
   p = &data[3];
-  printf("data[3] id:%d, data:%d\n", p->id, (*p).data);
   p -= 1;
-  printf("data[2] id:%d, data:%d\n", p->id, (*p).data);
-  check_int("back data[2] id", p->id, 30);
+  id = p->id;
+  if (id != 30) err = 1;
   --p;
-  printf("data[1] id:%d, data:%d\n", p->id, (*p).data);
-  check_int("back data[1] id", p->id, 20);
+  id = p->id;
+  if (id != 20) err = 1;
   p--;
-  printf("data[0] id:%d, data:%d\n", p->id, (*p).data);
-  check_int("back data[0] id", p->id, 10);
+  id = p->id;
+  if (id != 10) err = 1;
 
-  report_result();
-  return test_errors;
+  if (err == 0) {
+    printf("29.struct_pointer_move.c PASS\n");
+  } else {
+    printf("29.struct_pointer_move.c FAIL\n");
+  }
+  return err;
 }

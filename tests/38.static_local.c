@@ -22,36 +22,23 @@ int bump_runtime_static_decl(void) {
   return value;
 }
 
-int test_errors = 0;
-
-void check_int(const char* name, int actual, int expected) {
-  if (actual != expected) {
-    printf("ERROR [%s]: got %d expected %d\n", name, actual, expected);
-    test_errors++;
-  }
-}
-
-void report_result(void) {
-  if (test_errors == 0) {
-    printf("PASS\n");
-  } else {
-    printf("FAIL: %d error(s)\n", test_errors);
-  }
-}
-
 int main(void) {
-  printf("**** 38.static_local.c ****\n");
+  int err = 0;
 
-  check_int("counter_calls 1", counter_calls(), 1);
-  check_int("counter_calls 2", counter_calls(), 2);
-  check_int("counter_calls 3", counter_calls(), 3);
+  if (counter_calls() != 1) err = 1;
+  if (counter_calls() != 2) err = 1;
+  if (counter_calls() != 3) err = 1;
 
-  check_int("counter_with_init 1", counter_with_init(), 11);
-  check_int("counter_with_init 2", counter_with_init(), 12);
+  if (counter_with_init() != 11) err = 1;
+  if (counter_with_init() != 12) err = 1;
 
-  check_int("runtime_static_decl 1", bump_runtime_static_decl(), 8);
-  check_int("runtime_static_decl 2", bump_runtime_static_decl(), 9);
+  if (bump_runtime_static_decl() != 8) err = 1;
+  if (bump_runtime_static_decl() != 9) err = 1;
 
-  report_result();
-  return test_errors;
+  if (err == 0) {
+    printf("38.static_local.c PASS\n");
+  } else {
+    printf("38.static_local.c FAIL\n");
+  }
+  return err;
 }

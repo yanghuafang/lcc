@@ -1,59 +1,38 @@
 int printf(char*, ...);
 
-int test_errors = 0;
-
-void check_int(const char* name, int actual, int expected) {
-  if (actual != expected) {
-    printf("ERROR [%s]: got %d expected %d\n", name, actual, expected);
-    test_errors++;
-  }
-}
-
-void report_result(void) {
-  if (test_errors == 0) {
-    printf("PASS\n");
-  } else {
-    printf("FAIL: %d error(s)\n", test_errors);
-  }
-}
-
 int main() {
-  printf("**** 13.double_inc_sub.c ****\n");
-
+  int err = 0;
   int a = 13;
-  printf("a: %d\n", a);
+
   int b = a++;
-  printf("after a++, a: %d b: %d\n", a, b);
-  check_int("postfix inc a", a, 14);
-  check_int("postfix inc b", b, 13);
+  if (a != 14) err = 1;
+  if (b != 13) err = 1;
 
   a = 13;
-  printf("a: %d\n", a);
   int c = ++a;
-  printf("after ++a, a: %d c: %d\n", a, c);
-  check_int("prefix inc a", a, 14);
-  check_int("prefix inc c", c, 14);
+  if (a != 14) err = 1;
+  if (c != 14) err = 1;
 
   a = 13;
-  printf("a: %d\n", a);
   int d = a--;
-  printf("after a--, a: %d d: %d\n", a, d);
-  check_int("postfix dec a", a, 12);
-  check_int("postfix dec d", d, 13);
+  if (a != 12) err = 1;
+  if (d != 13) err = 1;
 
   a = 13;
-  printf("a: %d\n", a);
   int e = --a;
-  printf("after --a, a: %d e: %d\n", a, e);
-  check_int("prefix dec a", a, 12);
-  check_int("prefix dec e", e, 12);
+  if (a != 12) err = 1;
+  if (e != 12) err = 1;
 
   a = 0;
   a++;
-  check_int("inc from zero", a, 1);
+  if (a != 1) err = 1;
   a--;
-  check_int("dec to zero", a, 0);
+  if (a != 0) err = 1;
 
-  report_result();
-  return test_errors;
+  if (err == 0) {
+    printf("13.double_inc_sub.c PASS\n");
+  } else {
+    printf("13.double_inc_sub.c FAIL\n");
+  }
+  return err;
 }

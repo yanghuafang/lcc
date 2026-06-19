@@ -1,22 +1,6 @@
 int printf(char*, ...);
 
-int test_errors = 0;
 int gm[3][4];
-
-void check_int(const char* name, int actual, int expected) {
-  if (actual != expected) {
-    printf("ERROR [%s]: got %d expected %d\n", name, actual, expected);
-    test_errors++;
-  }
-}
-
-void report_result(void) {
-  if (test_errors == 0) {
-    printf("PASS\n");
-  } else {
-    printf("FAIL: %d error(s)\n", test_errors);
-  }
-}
 
 struct Cell {
   int id;
@@ -24,10 +8,10 @@ struct Cell {
 };
 
 int main() {
-  printf("**** 33.array_2d_decl.c ****\n");
-
+  int err = 0;
   int m[2][3], scalar;
   Cell grid[2][2];
+  int v;
 
   m[0][0] = 1;
   m[0][1] = 2;
@@ -45,21 +29,36 @@ int main() {
   grid[0][1].val = 70;
   grid[1][0].id = 8;
 
-  check_int("m[0][0]", m[0][0], 1);
-  check_int("m[0][2]", m[0][2], 3);
-  check_int("m[1][1]", m[1][1], 5);
-  check_int("m[1][2]", m[1][2], 6);
-  check_int("scalar", scalar, 99);
+  v = m[0][0];
+  if (v != 1) err = 1;
+  v = m[0][2];
+  if (v != 3) err = 1;
+  v = m[1][1];
+  if (v != 5) err = 1;
+  v = m[1][2];
+  if (v != 6) err = 1;
+  if (scalar != 99) err = 1;
 
-  check_int("gm[0][0]", gm[0][0], 10);
-  check_int("gm[1][2]", gm[1][2], 20);
-  check_int("gm[2][3]", gm[2][3], 30);
-  check_int("gm[0][1] default", gm[0][1], 0);
+  v = gm[0][0];
+  if (v != 10) err = 1;
+  v = gm[1][2];
+  if (v != 20) err = 1;
+  v = gm[2][3];
+  if (v != 30) err = 1;
+  v = gm[0][1];
+  if (v != 0) err = 1;
 
-  check_int("grid[0][1].id", grid[0][1].id, 7);
-  check_int("grid[0][1].val", grid[0][1].val, 70);
-  check_int("grid[1][0].id", grid[1][0].id, 8);
+  v = grid[0][1].id;
+  if (v != 7) err = 1;
+  v = grid[0][1].val;
+  if (v != 70) err = 1;
+  v = grid[1][0].id;
+  if (v != 8) err = 1;
 
-  report_result();
-  return test_errors;
+  if (err == 0) {
+    printf("33.array_2d_decl.c PASS\n");
+  } else {
+    printf("33.array_2d_decl.c FAIL\n");
+  }
+  return err;
 }

@@ -1,127 +1,50 @@
 int printf(char*, ...);
 
-int test_errors = 0;
+void subFunc(int i) { }
 
-void check_int(const char* name, int actual, int expected) {
-  if (actual != expected) {
-    printf("ERROR [%s]: got %d expected %d\n", name, actual, expected);
-    test_errors++;
-  }
-}
+int main() {
+  int err = 0;
 
-void check_ulong(const char* name, unsigned long actual, unsigned long expected) {
-  if (actual != expected) {
-    printf("ERROR [%s]: got %lu expected %lu\n", name, actual, expected);
-    test_errors++;
-  }
-}
-
-void report_result(void) {
-  if (test_errors == 0) {
-    printf("PASS\n");
-  } else {
-    printf("FAIL: %d error(s)\n", test_errors);
-  }
-}
-
-void checkAmpersandPrec() {
   unsigned long a = 0x1234567812345678;
   unsigned long b = 0x9abcdef09abcdef0;
   unsigned long c = (unsigned long)&a;
   unsigned long d = (unsigned long)&c & a & b;
-  printf("checkAmpersandPrec a:%lu, b:%lu, c(addr a):%lu, d:%lu\n", a, b, c, d);
-  check_ulong("a", a, 0x1234567812345678);
-  check_ulong("b", b, 0x9abcdef09abcdef0);
-}
+  if (a != 0x1234567812345678) err = 1;
+  if (b != 0x9abcdef09abcdef0) err = 1;
 
-void checkPlusPrec() {
-  printf("checkPlusPrec\n");
+  int plusA = 13;
+  if (3 + +plusA != 16) err = 1;
+  if (3 - +plusA != -10) err = 1;
+  if (3 + +13 != 16) err = 1;
+  if (3 - +13 != -10) err = 1;
 
-  int a = 13;
-  int b = 3 + +a;
-  printf("3 + +13: %d\n", b);
-  check_int("3 + +13", b, 16);
+  int minusA = 13;
+  if (3 - -minusA != 16) err = 1;
+  if (3 - -13 != 16) err = 1;
 
-  int c = 3 - +a;
-  printf("3 - +13: %d\n", c);
-  check_int("3 - +13", c, -10);
+  int mulA = 3;
+  int mulB = 4;
+  int* mulC = &mulB;
+  if (mulA * mulB * *mulC != 48) err = 1;
 
-  b = 3 + +13;
-  printf("3 + +13: %d\n", b);
-  check_int("3 + +13 literal", b, 16);
+  long callI = 1234;
+  subFunc((int)callI);
+  if ((int)callI != 1234) err = 1;
 
-  c = 3 - +13;
-  printf("3 - +13: %d\n", c);
-  check_int("3 - +13 literal", c, -10);
-}
+  int incA = 10;
+  int incB = (++incA)++;
+  if (incA != 12) err = 1;
+  if (incB != 11) err = 1;
 
-void checkMinusPrec() {
-  printf("checkMinusPrec\n");
+  int decA = 10;
+  int decB = (--decA)--;
+  if (decA != 8) err = 1;
+  if (decB != 9) err = 1;
 
-  int a = 13;
-  int b = 3 - -a;
-  printf("3 - -13: %d\n", b);
-  check_int("3 - -13", b, 16);
-
-  int c = 3 - -a;
-  printf("3 - -13: %d\n", c);
-  check_int("3 - -13 again", c, 16);
-
-  b = 3 - -13;
-  printf("3 - -13: %d\n", b);
-  check_int("3 - -13 literal", b, 16);
-
-  c = 3 - -13;
-  printf("3 - -13: %d\n", c);
-  check_int("3 - -13 literal again", c, 16);
-}
-
-void checkAsterisk() {
-  printf("checkAsterisk\n");
-  int a = 3;
-  int b = 4;
-  int* c = &b;
-  int d = a * b * *c;
-
-  printf("3 * 4 * 4: %d\n", d);
-  check_int("3*4*4", d, 48);
-}
-
-void subFunc(int i) { printf("subFunc i: %d\n", i); }
-
-void checkFuncCall() {
-  long i = 1234;
-  subFunc((int)i);
-  check_int("cast call arg", (int)i, 1234);
-}
-
-void checkInc() {
-  int a = 10;
-  int b = (++a)++;
-  printf("checkInc, a: %d, b: %d\n", a, b);
-  check_int("(++a)++ a", a, 12);
-  check_int("(++a)++ b", b, 11);
-}
-
-void checkDec() {
-  int a = 10;
-  int b = (--a)--;
-  printf("checkDec, a: %d, b: %d\n", a, b);
-  check_int("(--a)-- a", a, 8);
-  check_int("(--a)-- b", b, 9);
-}
-
-int main() {
-  printf("**** 26.operator_precedence.c ****\n");
-
-  checkAmpersandPrec();
-  checkPlusPrec();
-  checkMinusPrec();
-  checkAsterisk();
-  checkFuncCall();
-  checkInc();
-  checkDec();
-
-  report_result();
-  return test_errors;
+  if (err == 0) {
+    printf("26.operator_precedence.c PASS\n");
+  } else {
+    printf("26.operator_precedence.c FAIL\n");
+  }
+  return err;
 }

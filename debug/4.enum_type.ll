@@ -3,103 +3,122 @@ source_filename = "lcc"
 target datalayout = "e-m:o-i64:64-i128:128-n32:64-S128"
 target triple = "arm64-apple-darwin25.5.0"
 
-@test_errors = global i32 0
-@0 = private unnamed_addr constant [32 x i8] c"ERROR [%s]: got %d expected %d\0A\00", align 1
-@1 = private unnamed_addr constant [6 x i8] c"PASS\0A\00", align 1
-@2 = private unnamed_addr constant [19 x i8] c"FAIL: %d error(s)\0A\00", align 1
-@3 = private unnamed_addr constant [25 x i8] c"**** 4.enum_type.c ****\0A\00", align 1
-@4 = private unnamed_addr constant [34 x i8] c"WEEK: %d, %d, %d, %d, %d, %d, %d\0A\00", align 1
-@5 = private unnamed_addr constant [9 x i8] c"day: %d\0A\00", align 1
-@6 = private unnamed_addr constant [19 x i8] c"all sexes: %d, %d\0A\00", align 1
-@7 = private unnamed_addr constant [9 x i8] c"sex: %d\0A\00", align 1
-@8 = private unnamed_addr constant [7 x i8] c"SUNDAY\00", align 1
-@9 = private unnamed_addr constant [7 x i8] c"MONDAY\00", align 1
-@10 = private unnamed_addr constant [8 x i8] c"TUESDAY\00", align 1
-@11 = private unnamed_addr constant [10 x i8] c"WEDNESDAY\00", align 1
-@12 = private unnamed_addr constant [9 x i8] c"THURSDAY\00", align 1
-@13 = private unnamed_addr constant [7 x i8] c"FRIDAY\00", align 1
-@14 = private unnamed_addr constant [9 x i8] c"SATURDAY\00", align 1
-@15 = private unnamed_addr constant [4 x i8] c"day\00", align 1
-@16 = private unnamed_addr constant [5 x i8] c"MALE\00", align 1
-@17 = private unnamed_addr constant [7 x i8] c"FEMALE\00", align 1
-@18 = private unnamed_addr constant [4 x i8] c"sex\00", align 1
+@0 = private unnamed_addr constant [20 x i8] c"4.enum_type.c PASS\0A\00", align 1
+@1 = private unnamed_addr constant [20 x i8] c"4.enum_type.c FAIL\0A\00", align 1
 
 declare i32 @printf(i8*, ...)
 
-define void @check_int(i8* %0, i32 %1, i32 %2) {
+define i32 @main() {
 entry:
-  %expected = alloca i32, align 4
-  %actual = alloca i32, align 4
-  %name = alloca i8*, align 8
-  store i8* %0, i8** %name, align 8
-  store i32 %1, i32* %actual, align 4
-  store i32 %2, i32* %expected, align 4
-  %3 = load i32, i32* %actual, align 4
-  %4 = load i32, i32* %expected, align 4
-  %5 = icmp ne i32 %3, %4
-  br i1 %5, label %then, label %if.end
+  %v = alloca i32, align 4
+  %sex = alloca i32, align 4
+  %day = alloca i32, align 4
+  %err = alloca i32, align 4
+  store i32 0, i32* %err, align 4
+  store i32 5, i32* %day, align 4
+  store i32 1, i32* %sex, align 4
+  store i32 0, i32* %v, align 4
+  %0 = load i32, i32* %v, align 4
+  %1 = load i32, i32* %v, align 4
+  %2 = icmp ne i32 %1, 0
+  br i1 %2, label %then, label %if.end
 
 then:                                             ; preds = %entry
-  %6 = load i8*, i8** %name, align 8
-  %7 = load i32, i32* %actual, align 4
-  %8 = load i32, i32* %expected, align 4
-  %9 = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([32 x i8], [32 x i8]* @0, i32 0, i32 0), i8* %6, i32 %7, i32 %8)
-  %10 = load i32, i32* @test_errors, align 4
-  %11 = add i32 %10, 1
-  store i32 %11, i32* @test_errors, align 4
+  store i32 1, i32* %err, align 4
+  %3 = load i32, i32* %err, align 4
   br label %if.end
 
 if.end:                                           ; preds = %entry, %then
-  ret void
-}
+  store i32 1, i32* %v, align 4
+  %4 = load i32, i32* %v, align 4
+  %5 = load i32, i32* %v, align 4
+  %6 = icmp ne i32 %5, 1
+  br i1 %6, label %then1, label %if.end3
 
-define void @report_result() {
-entry:
-  %0 = load i32, i32* @test_errors, align 4
-  %1 = icmp eq i32 %0, 0
-  br i1 %1, label %then, label %else
+then1:                                            ; preds = %if.end
+  store i32 1, i32* %err, align 4
+  %7 = load i32, i32* %err, align 4
+  br label %if.end3
 
-then:                                             ; preds = %entry
-  %2 = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([6 x i8], [6 x i8]* @1, i32 0, i32 0))
-  br label %if.end
+if.end3:                                          ; preds = %if.end, %then1
+  store i32 5, i32* %v, align 4
+  %8 = load i32, i32* %v, align 4
+  %9 = load i32, i32* %v, align 4
+  %10 = icmp ne i32 %9, 5
+  br i1 %10, label %then4, label %if.end6
 
-else:                                             ; preds = %entry
-  %3 = load i32, i32* @test_errors, align 4
-  %4 = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([19 x i8], [19 x i8]* @2, i32 0, i32 0), i32 %3)
-  br label %if.end
+then4:                                            ; preds = %if.end3
+  store i32 1, i32* %err, align 4
+  %11 = load i32, i32* %err, align 4
+  br label %if.end6
 
-if.end:                                           ; preds = %else, %then
-  ret void
-}
+if.end6:                                          ; preds = %if.end3, %then4
+  store i32 6, i32* %v, align 4
+  %12 = load i32, i32* %v, align 4
+  %13 = load i32, i32* %v, align 4
+  %14 = icmp ne i32 %13, 6
+  br i1 %14, label %then7, label %if.end9
 
-define i32 @main() {
-entry:
-  %sex = alloca i32, align 4
-  %day = alloca i32, align 4
-  %0 = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([25 x i8], [25 x i8]* @3, i32 0, i32 0))
-  %1 = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([34 x i8], [34 x i8]* @4, i32 0, i32 0), i32 0, i32 1, i32 2, i32 3, i32 4, i32 5, i32 6)
-  store i32 5, i32* %day, align 4
-  %2 = load i32, i32* %day, align 4
-  %3 = load i32, i32* %day, align 4
-  %4 = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([9 x i8], [9 x i8]* @5, i32 0, i32 0), i32 %3)
-  %5 = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([19 x i8], [19 x i8]* @6, i32 0, i32 0), i32 0, i32 1)
-  store i32 1, i32* %sex, align 4
-  %6 = load i32, i32* %sex, align 4
-  %7 = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([9 x i8], [9 x i8]* @7, i32 0, i32 0), i32 %6)
-  call void @check_int(i8* getelementptr inbounds ([7 x i8], [7 x i8]* @8, i32 0, i32 0), i32 0, i32 0)
-  call void @check_int(i8* getelementptr inbounds ([7 x i8], [7 x i8]* @9, i32 0, i32 0), i32 1, i32 1)
-  call void @check_int(i8* getelementptr inbounds ([8 x i8], [8 x i8]* @10, i32 0, i32 0), i32 2, i32 2)
-  call void @check_int(i8* getelementptr inbounds ([10 x i8], [10 x i8]* @11, i32 0, i32 0), i32 3, i32 3)
-  call void @check_int(i8* getelementptr inbounds ([9 x i8], [9 x i8]* @12, i32 0, i32 0), i32 4, i32 4)
-  call void @check_int(i8* getelementptr inbounds ([7 x i8], [7 x i8]* @13, i32 0, i32 0), i32 5, i32 5)
-  call void @check_int(i8* getelementptr inbounds ([9 x i8], [9 x i8]* @14, i32 0, i32 0), i32 6, i32 6)
-  %8 = load i32, i32* %day, align 4
-  call void @check_int(i8* getelementptr inbounds ([4 x i8], [4 x i8]* @15, i32 0, i32 0), i32 %8, i32 5)
-  call void @check_int(i8* getelementptr inbounds ([5 x i8], [5 x i8]* @16, i32 0, i32 0), i32 0, i32 0)
-  call void @check_int(i8* getelementptr inbounds ([7 x i8], [7 x i8]* @17, i32 0, i32 0), i32 1, i32 1)
-  %9 = load i32, i32* %sex, align 4
-  call void @check_int(i8* getelementptr inbounds ([4 x i8], [4 x i8]* @18, i32 0, i32 0), i32 %9, i32 1)
-  call void @report_result()
-  %10 = load i32, i32* @test_errors, align 4
-  ret i32 %10
+then7:                                            ; preds = %if.end6
+  store i32 1, i32* %err, align 4
+  %15 = load i32, i32* %err, align 4
+  br label %if.end9
+
+if.end9:                                          ; preds = %if.end6, %then7
+  %16 = load i32, i32* %day, align 4
+  store i32 %16, i32* %v, align 4
+  %17 = load i32, i32* %v, align 4
+  %18 = load i32, i32* %v, align 4
+  %19 = icmp ne i32 %18, 5
+  br i1 %19, label %then10, label %if.end12
+
+then10:                                           ; preds = %if.end9
+  store i32 1, i32* %err, align 4
+  %20 = load i32, i32* %err, align 4
+  br label %if.end12
+
+if.end12:                                         ; preds = %if.end9, %then10
+  store i32 0, i32* %v, align 4
+  %21 = load i32, i32* %v, align 4
+  %22 = load i32, i32* %v, align 4
+  %23 = icmp ne i32 %22, 0
+  br i1 %23, label %then13, label %if.end15
+
+then13:                                           ; preds = %if.end12
+  store i32 1, i32* %err, align 4
+  %24 = load i32, i32* %err, align 4
+  br label %if.end15
+
+if.end15:                                         ; preds = %if.end12, %then13
+  store i32 1, i32* %v, align 4
+  %25 = load i32, i32* %v, align 4
+  %26 = load i32, i32* %v, align 4
+  %27 = icmp ne i32 %26, 1
+  br i1 %27, label %then16, label %if.end18
+
+then16:                                           ; preds = %if.end15
+  store i32 1, i32* %err, align 4
+  %28 = load i32, i32* %err, align 4
+  br label %if.end18
+
+if.end18:                                         ; preds = %if.end15, %then16
+  %29 = load i32, i32* %sex, align 4
+  store i32 %29, i32* %v, align 4
+  %30 = load i32, i32* %v, align 4
+  %31 = load i32, i32* %v, align 4
+  %32 = icmp ne i32 %31, 1
+  br i1 %32, label %then19, label %if.end21
+
+then19:                                           ; preds = %if.end18
+  store i32 1, i32* %err, align 4
+  %33 = load i32, i32* %err, align 4
+  br label %if.end21
+
+if.end21:                                         ; preds = %if.end18, %then19
+  %34 = load i32, i32* %err, align 4
+  %35 = icmp eq i32 %34, 0
+  %. = select i1 %35, i8* getelementptr inbounds ([20 x i8], [20 x i8]* @0, i32 0, i32 0), i8* getelementptr inbounds ([20 x i8], [20 x i8]* @1, i32 0, i32 0)
+  %36 = call i32 (i8*, ...) @printf(i8* %.)
+  %37 = load i32, i32* %err, align 4
+  ret i32 %37
 }

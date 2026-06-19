@@ -20,253 +20,245 @@ anonymous_3 [label = anonymous]
 Param_3 -> anonymous_3
 "..._2" [label = "..."]
 ParamList_2 -> "..._2"
-Program -> VarDecl_5
-VarDecl_5 [label = VarDecl]
-VarDecl_5 -> BuiltinType_6
+Program -> FuncDecl_5
+FuncDecl_5 [label = FuncDecl]
+FuncDecl_5 -> BuiltinType_6
 BuiltinType_6 [label = BuiltinType]
 "int_6" [label = "int"]
 BuiltinType_6 -> "int_6"
-VarDecl_5 -> VarInit_7
-VarInit_7 [label = VarInit]
-test_errors_7 [label = test_errors]
-VarInit_7 -> test_errors_7
-VarInit_7 -> Constant_8
-Constant_8 [label = Constant]
-int_8 [label = "0"]
-Constant_8 -> int_8
-Program -> FuncDecl_9
-FuncDecl_9 [label = FuncDecl]
-FuncDecl_9 -> BuiltinType_10
+main_5[ label = main]
+FuncDecl_5 -> main_5
+FuncDecl_5 -> ParamList_7
+ParamList_7 [label = ParamList]
+FuncDecl_5 -> FuncBody_8
+FuncBody_8 [label = FuncBody]
+FuncBody_8 -> VarDecl_9
+VarDecl_9 [label = VarDecl]
+VarDecl_9 -> BuiltinType_10
 BuiltinType_10 [label = BuiltinType]
-"void_10" [label = "void"]
-BuiltinType_10 -> "void_10"
-check_int_9[ label = check_int]
-FuncDecl_9 -> check_int_9
-FuncDecl_9 -> ParamList_11
-ParamList_11 [label = ParamList]
-ParamList_11 -> Param_12
-Param_12 [label = Param]
-Param_12 -> PointerType_13
-PointerType_13 [label = PointerType]
-const_13 [label = const]
-PointerType_13 -> const_13
-"char*_13" [label = "char*"]
-PointerType_13 -> "char*_13"
-name_12 [label = name]
-Param_12 -> name_12
-ParamList_11 -> Param_14
-Param_14 [label = Param]
-Param_14 -> BuiltinType_15
-BuiltinType_15 [label = BuiltinType]
-"int_15" [label = "int"]
-BuiltinType_15 -> "int_15"
-actual_14 [label = actual]
-Param_14 -> actual_14
-ParamList_11 -> Param_16
-Param_16 [label = Param]
-Param_16 -> BuiltinType_17
-BuiltinType_17 [label = BuiltinType]
-"int_17" [label = "int"]
-BuiltinType_17 -> "int_17"
-expected_16 [label = expected]
-Param_16 -> expected_16
-FuncDecl_9 -> FuncBody_18
-FuncBody_18 [label = FuncBody]
-FuncBody_18 -> IfStmt_19
-IfStmt_19 [label = IfStmt]
-IfStmt_19 -> LogicNotEq_20
-LogicNotEq_20 [label = LogicNotEq]
-LogicNotEq_20 -> Variable_21
-Variable_21 [label = Variable]
-actual_21 [label = actual]
-Variable_21 -> actual_21
-LogicNotEq_20 -> Variable_22
-Variable_22 [label = Variable]
-expected_22 [label = expected]
-Variable_22 -> expected_22
-IfStmt_19 -> Block_23
-Block_23 [label = Block]
-Block_23 -> FuncCall_24
-FuncCall_24 [label = FuncCall]
-printf_24[ label = printf]
-FuncCall_24 -> printf_24
-FuncCall_24 -> ConstStr_25
-ConstStr_25 [label = ConstStr]
-str_25 [label = "ERROR [%s]: got %d expected %d"]
-ConstStr_25 -> str_25
-FuncCall_24 -> Variable_26
+"int_10" [label = "int"]
+BuiltinType_10 -> "int_10"
+VarDecl_9 -> VarInit_11
+VarInit_11 [label = VarInit]
+err_11 [label = err]
+VarInit_11 -> err_11
+VarInit_11 -> Constant_12
+Constant_12 [label = Constant]
+int_12 [label = "0"]
+Constant_12 -> int_12
+FuncBody_8 -> VarDecl_13
+VarDecl_13 [label = VarDecl]
+VarDecl_13 -> BuiltinType_14
+BuiltinType_14 [label = BuiltinType]
+"uint_14" [label = "uint"]
+BuiltinType_14 -> "uint_14"
+VarDecl_13 -> VarInit_15
+VarInit_15 [label = VarInit]
+a_15 [label = a]
+VarInit_15 -> a_15
+VarInit_15 -> Constant_16
+Constant_16 [label = Constant]
+uint_16 [label = "305419896"]
+Constant_16 -> uint_16
+FuncBody_8 -> VarDecl_17
+VarDecl_17 [label = VarDecl]
+VarDecl_17 -> BuiltinType_18
+BuiltinType_18 [label = BuiltinType]
+"uint_18" [label = "uint"]
+BuiltinType_18 -> "uint_18"
+VarDecl_17 -> VarInit_19
+VarInit_19 [label = VarInit]
+b_19 [label = b]
+VarInit_19 -> b_19
+VarInit_19 -> Constant_20
+Constant_20 [label = Constant]
+uint_20 [label = "2271560481"]
+Constant_20 -> uint_20
+FuncBody_8 -> VarDecl_21
+VarDecl_21 [label = VarDecl]
+VarDecl_21 -> BuiltinType_22
+BuiltinType_22 [label = BuiltinType]
+"uint_22" [label = "uint"]
+BuiltinType_22 -> "uint_22"
+VarDecl_21 -> VarInit_23
+VarInit_23 [label = VarInit]
+andVal_23 [label = andVal]
+VarInit_23 -> andVal_23
+VarInit_23 -> BitwiseAnd_24
+BitwiseAnd_24 [label = BitwiseAnd]
+BitwiseAnd_24 -> Variable_25
+Variable_25 [label = Variable]
+a_25 [label = a]
+Variable_25 -> a_25
+BitwiseAnd_24 -> Variable_26
 Variable_26 [label = Variable]
-name_26 [label = name]
-Variable_26 -> name_26
-FuncCall_24 -> Variable_27
-Variable_27 [label = Variable]
-actual_27 [label = actual]
-Variable_27 -> actual_27
-FuncCall_24 -> Variable_28
-Variable_28 [label = Variable]
-expected_28 [label = expected]
-Variable_28 -> expected_28
-Block_23 -> PostfixInc_29
-PostfixInc_29 [label = PostfixInc]
-PostfixInc_29 -> Variable_30
-Variable_30 [label = Variable]
-test_errors_30 [label = test_errors]
-Variable_30 -> test_errors_30
-Program -> FuncDecl_31
-FuncDecl_31 [label = FuncDecl]
-FuncDecl_31 -> BuiltinType_32
-BuiltinType_32 [label = BuiltinType]
-"void_32" [label = "void"]
-BuiltinType_32 -> "void_32"
-check_uint_31[ label = check_uint]
-FuncDecl_31 -> check_uint_31
-FuncDecl_31 -> ParamList_33
-ParamList_33 [label = ParamList]
-ParamList_33 -> Param_34
-Param_34 [label = Param]
-Param_34 -> PointerType_35
-PointerType_35 [label = PointerType]
-const_35 [label = const]
-PointerType_35 -> const_35
-"char*_35" [label = "char*"]
-PointerType_35 -> "char*_35"
-name_34 [label = name]
-Param_34 -> name_34
-ParamList_33 -> Param_36
-Param_36 [label = Param]
-Param_36 -> BuiltinType_37
-BuiltinType_37 [label = BuiltinType]
-"uint_37" [label = "uint"]
-BuiltinType_37 -> "uint_37"
-actual_36 [label = actual]
-Param_36 -> actual_36
-ParamList_33 -> Param_38
-Param_38 [label = Param]
-Param_38 -> BuiltinType_39
-BuiltinType_39 [label = BuiltinType]
-"uint_39" [label = "uint"]
-BuiltinType_39 -> "uint_39"
-expected_38 [label = expected]
-Param_38 -> expected_38
-FuncDecl_31 -> FuncBody_40
-FuncBody_40 [label = FuncBody]
-FuncBody_40 -> IfStmt_41
-IfStmt_41 [label = IfStmt]
-IfStmt_41 -> LogicNotEq_42
-LogicNotEq_42 [label = LogicNotEq]
-LogicNotEq_42 -> Variable_43
+b_26 [label = b]
+Variable_26 -> b_26
+FuncBody_8 -> VarDecl_27
+VarDecl_27 [label = VarDecl]
+VarDecl_27 -> BuiltinType_28
+BuiltinType_28 [label = BuiltinType]
+"uint_28" [label = "uint"]
+BuiltinType_28 -> "uint_28"
+VarDecl_27 -> VarInit_29
+VarInit_29 [label = VarInit]
+orVal_29 [label = orVal]
+VarInit_29 -> orVal_29
+VarInit_29 -> BitwiseOr_30
+BitwiseOr_30 [label = BitwiseOr]
+BitwiseOr_30 -> Variable_31
+Variable_31 [label = Variable]
+a_31 [label = a]
+Variable_31 -> a_31
+BitwiseOr_30 -> Variable_32
+Variable_32 [label = Variable]
+b_32 [label = b]
+Variable_32 -> b_32
+FuncBody_8 -> VarDecl_33
+VarDecl_33 [label = VarDecl]
+VarDecl_33 -> BuiltinType_34
+BuiltinType_34 [label = BuiltinType]
+"uint_34" [label = "uint"]
+BuiltinType_34 -> "uint_34"
+VarDecl_33 -> VarInit_35
+VarInit_35 [label = VarInit]
+xorVal_35 [label = xorVal]
+VarInit_35 -> xorVal_35
+VarInit_35 -> BitwiseXor_36
+BitwiseXor_36 [label = BitwiseXor]
+BitwiseXor_36 -> Variable_37
+Variable_37 [label = Variable]
+a_37 [label = a]
+Variable_37 -> a_37
+BitwiseXor_36 -> Variable_38
+Variable_38 [label = Variable]
+b_38 [label = b]
+Variable_38 -> b_38
+FuncBody_8 -> VarDecl_39
+VarDecl_39 [label = VarDecl]
+VarDecl_39 -> BuiltinType_40
+BuiltinType_40 [label = BuiltinType]
+"uint_40" [label = "uint"]
+BuiltinType_40 -> "uint_40"
+VarDecl_39 -> VarInit_41
+VarInit_41 [label = VarInit]
+notVal1_41 [label = notVal1]
+VarInit_41 -> notVal1_41
+VarInit_41 -> BitwiseNot_42
+BitwiseNot_42 [label = BitwiseNot]
+BitwiseNot_42 -> Variable_43
 Variable_43 [label = Variable]
-actual_43 [label = actual]
-Variable_43 -> actual_43
-LogicNotEq_42 -> Variable_44
-Variable_44 [label = Variable]
-expected_44 [label = expected]
-Variable_44 -> expected_44
-IfStmt_41 -> Block_45
-Block_45 [label = Block]
-Block_45 -> FuncCall_46
-FuncCall_46 [label = FuncCall]
-printf_46[ label = printf]
-FuncCall_46 -> printf_46
-FuncCall_46 -> ConstStr_47
-ConstStr_47 [label = ConstStr]
-str_47 [label = "ERROR [%s]: got %u expected %u"]
-ConstStr_47 -> str_47
-FuncCall_46 -> Variable_48
+a_43 [label = a]
+Variable_43 -> a_43
+FuncBody_8 -> VarDecl_44
+VarDecl_44 [label = VarDecl]
+VarDecl_44 -> BuiltinType_45
+BuiltinType_45 [label = BuiltinType]
+"uint_45" [label = "uint"]
+BuiltinType_45 -> "uint_45"
+VarDecl_44 -> VarInit_46
+VarInit_46 [label = VarInit]
+notVal2_46 [label = notVal2]
+VarInit_46 -> notVal2_46
+VarInit_46 -> BitwiseNot_47
+BitwiseNot_47 [label = BitwiseNot]
+BitwiseNot_47 -> Variable_48
 Variable_48 [label = Variable]
-name_48 [label = name]
-Variable_48 -> name_48
-FuncCall_46 -> Variable_49
-Variable_49 [label = Variable]
-actual_49 [label = actual]
-Variable_49 -> actual_49
-FuncCall_46 -> Variable_50
-Variable_50 [label = Variable]
-expected_50 [label = expected]
-Variable_50 -> expected_50
-Block_45 -> PostfixInc_51
-PostfixInc_51 [label = PostfixInc]
-PostfixInc_51 -> Variable_52
+b_48 [label = b]
+Variable_48 -> b_48
+FuncBody_8 -> VarDecl_49
+VarDecl_49 [label = VarDecl]
+VarDecl_49 -> BuiltinType_50
+BuiltinType_50 [label = BuiltinType]
+"uint_50" [label = "uint"]
+BuiltinType_50 -> "uint_50"
+VarDecl_49 -> VarInit_51
+VarInit_51 [label = VarInit]
+andeqVal_51 [label = andeqVal]
+VarInit_51 -> andeqVal_51
+VarInit_51 -> Variable_52
 Variable_52 [label = Variable]
-test_errors_52 [label = test_errors]
-Variable_52 -> test_errors_52
-Program -> FuncDecl_53
-FuncDecl_53 [label = FuncDecl]
-FuncDecl_53 -> BuiltinType_54
-BuiltinType_54 [label = BuiltinType]
-"void_54" [label = "void"]
-BuiltinType_54 -> "void_54"
-report_result_53[ label = report_result]
-FuncDecl_53 -> report_result_53
-FuncDecl_53 -> ParamList_55
-ParamList_55 [label = ParamList]
-ParamList_55 -> Param_56
-Param_56 [label = Param]
-Param_56 -> BuiltinType_57
+andVal_52 [label = andVal]
+Variable_52 -> andVal_52
+FuncBody_8 -> BitwiseAndAssign_53
+BitwiseAndAssign_53 [label = BitwiseAndAssign]
+BitwiseAndAssign_53 -> Variable_54
+Variable_54 [label = Variable]
+andeqVal_54 [label = andeqVal]
+Variable_54 -> andeqVal_54
+BitwiseAndAssign_53 -> Variable_55
+Variable_55 [label = Variable]
+a_55 [label = a]
+Variable_55 -> a_55
+FuncBody_8 -> VarDecl_56
+VarDecl_56 [label = VarDecl]
+VarDecl_56 -> BuiltinType_57
 BuiltinType_57 [label = BuiltinType]
-"void_57" [label = "void"]
-BuiltinType_57 -> "void_57"
-anonymous_56 [label = anonymous]
-Param_56 -> anonymous_56
-FuncDecl_53 -> FuncBody_58
-FuncBody_58 [label = FuncBody]
-FuncBody_58 -> IfStmt_59
-IfStmt_59 [label = IfStmt]
-IfStmt_59 -> LogicEq_60
-LogicEq_60 [label = LogicEq]
-LogicEq_60 -> Variable_61
+"uint_57" [label = "uint"]
+BuiltinType_57 -> "uint_57"
+VarDecl_56 -> VarInit_58
+VarInit_58 [label = VarInit]
+oreqVal_58 [label = oreqVal]
+VarInit_58 -> oreqVal_58
+VarInit_58 -> Variable_59
+Variable_59 [label = Variable]
+orVal_59 [label = orVal]
+Variable_59 -> orVal_59
+FuncBody_8 -> BitwiseOrAssign_60
+BitwiseOrAssign_60 [label = BitwiseOrAssign]
+BitwiseOrAssign_60 -> Variable_61
 Variable_61 [label = Variable]
-test_errors_61 [label = test_errors]
-Variable_61 -> test_errors_61
-LogicEq_60 -> Constant_62
-Constant_62 [label = Constant]
-int_62 [label = "0"]
-Constant_62 -> int_62
-IfStmt_59 -> Block_63
-Block_63 [label = Block]
-Block_63 -> FuncCall_64
-FuncCall_64 [label = FuncCall]
-printf_64[ label = printf]
-FuncCall_64 -> printf_64
-FuncCall_64 -> ConstStr_65
-ConstStr_65 [label = ConstStr]
-str_65 [label = "PASS"]
-ConstStr_65 -> str_65
-IfStmt_59 -> Block_66
-Block_66 [label = Block]
-Block_66 -> FuncCall_67
-FuncCall_67 [label = FuncCall]
-printf_67[ label = printf]
-FuncCall_67 -> printf_67
-FuncCall_67 -> ConstStr_68
-ConstStr_68 [label = ConstStr]
-str_68 [label = "FAIL: %d error(s)"]
-ConstStr_68 -> str_68
-FuncCall_67 -> Variable_69
+oreqVal_61 [label = oreqVal]
+Variable_61 -> oreqVal_61
+BitwiseOrAssign_60 -> Variable_62
+Variable_62 [label = Variable]
+a_62 [label = a]
+Variable_62 -> a_62
+FuncBody_8 -> VarDecl_63
+VarDecl_63 [label = VarDecl]
+VarDecl_63 -> BuiltinType_64
+BuiltinType_64 [label = BuiltinType]
+"uint_64" [label = "uint"]
+BuiltinType_64 -> "uint_64"
+VarDecl_63 -> VarInit_65
+VarInit_65 [label = VarInit]
+xoreqVal_65 [label = xoreqVal]
+VarInit_65 -> xoreqVal_65
+VarInit_65 -> Variable_66
+Variable_66 [label = Variable]
+xorVal_66 [label = xorVal]
+Variable_66 -> xorVal_66
+FuncBody_8 -> BitwiseXorAssign_67
+BitwiseXorAssign_67 [label = BitwiseXorAssign]
+BitwiseXorAssign_67 -> Variable_68
+Variable_68 [label = Variable]
+xoreqVal_68 [label = xoreqVal]
+Variable_68 -> xoreqVal_68
+BitwiseXorAssign_67 -> Variable_69
 Variable_69 [label = Variable]
-test_errors_69 [label = test_errors]
-Variable_69 -> test_errors_69
-Program -> FuncDecl_70
-FuncDecl_70 [label = FuncDecl]
-FuncDecl_70 -> BuiltinType_71
+a_69 [label = a]
+Variable_69 -> a_69
+FuncBody_8 -> VarDecl_70
+VarDecl_70 [label = VarDecl]
+VarDecl_70 -> BuiltinType_71
 BuiltinType_71 [label = BuiltinType]
-"int_71" [label = "int"]
-BuiltinType_71 -> "int_71"
-main_70[ label = main]
-FuncDecl_70 -> main_70
-FuncDecl_70 -> ParamList_72
-ParamList_72 [label = ParamList]
-FuncDecl_70 -> FuncBody_73
-FuncBody_73 [label = FuncBody]
-FuncBody_73 -> FuncCall_74
-FuncCall_74 [label = FuncCall]
-printf_74[ label = printf]
-FuncCall_74 -> printf_74
-FuncCall_74 -> ConstStr_75
-ConstStr_75 [label = ConstStr]
-str_75 [label = "**** 14.bitwise.c ****"]
-ConstStr_75 -> str_75
-FuncBody_73 -> VarDecl_76
+"uint_71" [label = "uint"]
+BuiltinType_71 -> "uint_71"
+VarDecl_70 -> VarInit_72
+VarInit_72 [label = VarInit]
+leftShiftVal_72 [label = leftShiftVal]
+VarInit_72 -> leftShiftVal_72
+VarInit_72 -> LeftShift_73
+LeftShift_73 [label = LeftShift]
+LeftShift_73 -> Variable_74
+Variable_74 [label = Variable]
+a_74 [label = a]
+Variable_74 -> a_74
+LeftShift_73 -> Constant_75
+Constant_75 [label = Constant]
+int_75 [label = "8"]
+Constant_75 -> int_75
+FuncBody_8 -> VarDecl_76
 VarDecl_76 [label = VarDecl]
 VarDecl_76 -> BuiltinType_77
 BuiltinType_77 [label = BuiltinType]
@@ -274,702 +266,378 @@ BuiltinType_77 [label = BuiltinType]
 BuiltinType_77 -> "uint_77"
 VarDecl_76 -> VarInit_78
 VarInit_78 [label = VarInit]
-a_78 [label = a]
-VarInit_78 -> a_78
-VarInit_78 -> Constant_79
-Constant_79 [label = Constant]
-uint_79 [label = "305419896"]
-Constant_79 -> uint_79
-FuncBody_73 -> VarDecl_80
-VarDecl_80 [label = VarDecl]
-VarDecl_80 -> BuiltinType_81
-BuiltinType_81 [label = BuiltinType]
-"uint_81" [label = "uint"]
-BuiltinType_81 -> "uint_81"
-VarDecl_80 -> VarInit_82
-VarInit_82 [label = VarInit]
-b_82 [label = b]
-VarInit_82 -> b_82
-VarInit_82 -> Constant_83
-Constant_83 [label = Constant]
-uint_83 [label = "2271560481"]
-Constant_83 -> uint_83
-FuncBody_73 -> FuncCall_84
-FuncCall_84 [label = FuncCall]
-printf_84[ label = printf]
-FuncCall_84 -> printf_84
-FuncCall_84 -> ConstStr_85
-ConstStr_85 [label = ConstStr]
-str_85 [label = "a:0x%x b:0x%x"]
-ConstStr_85 -> str_85
-FuncCall_84 -> Variable_86
+rightShiftVal_78 [label = rightShiftVal]
+VarInit_78 -> rightShiftVal_78
+VarInit_78 -> RightShift_79
+RightShift_79 [label = RightShift]
+RightShift_79 -> Variable_80
+Variable_80 [label = Variable]
+b_80 [label = b]
+Variable_80 -> b_80
+RightShift_79 -> Constant_81
+Constant_81 [label = Constant]
+int_81 [label = "8"]
+Constant_81 -> int_81
+FuncBody_8 -> LeftShiftAssign_82
+LeftShiftAssign_82 [label = LeftShiftAssign]
+LeftShiftAssign_82 -> Variable_83
+Variable_83 [label = Variable]
+leftShiftVal_83 [label = leftShiftVal]
+Variable_83 -> leftShiftVal_83
+LeftShiftAssign_82 -> Constant_84
+Constant_84 [label = Constant]
+int_84 [label = "8"]
+Constant_84 -> int_84
+FuncBody_8 -> RightShiftAssign_85
+RightShiftAssign_85 [label = RightShiftAssign]
+RightShiftAssign_85 -> Variable_86
 Variable_86 [label = Variable]
-a_86 [label = a]
-Variable_86 -> a_86
-FuncCall_84 -> Variable_87
-Variable_87 [label = Variable]
-b_87 [label = b]
-Variable_87 -> b_87
-FuncBody_73 -> VarDecl_88
-VarDecl_88 [label = VarDecl]
-VarDecl_88 -> BuiltinType_89
-BuiltinType_89 [label = BuiltinType]
-"uint_89" [label = "uint"]
-BuiltinType_89 -> "uint_89"
-VarDecl_88 -> VarInit_90
-VarInit_90 [label = VarInit]
+rightShiftVal_86 [label = rightShiftVal]
+Variable_86 -> rightShiftVal_86
+RightShiftAssign_85 -> Constant_87
+Constant_87 [label = Constant]
+int_87 [label = "8"]
+Constant_87 -> int_87
+FuncBody_8 -> IfStmt_88
+IfStmt_88 [label = IfStmt]
+IfStmt_88 -> LogicNotEq_89
+LogicNotEq_89 [label = LogicNotEq]
+LogicNotEq_89 -> Variable_90
+Variable_90 [label = Variable]
 andVal_90 [label = andVal]
-VarInit_90 -> andVal_90
-VarInit_90 -> BitwiseAnd_91
-BitwiseAnd_91 [label = BitwiseAnd]
-BitwiseAnd_91 -> Variable_92
-Variable_92 [label = Variable]
-a_92 [label = a]
-Variable_92 -> a_92
-BitwiseAnd_91 -> Variable_93
+Variable_90 -> andVal_90
+LogicNotEq_89 -> Constant_91
+Constant_91 [label = Constant]
+uint_91 [label = "35930656"]
+Constant_91 -> uint_91
+IfStmt_88 -> Assign_92
+Assign_92 [label = Assign]
+Assign_92 -> Variable_93
 Variable_93 [label = Variable]
-b_93 [label = b]
-Variable_93 -> b_93
-FuncBody_73 -> VarDecl_94
-VarDecl_94 [label = VarDecl]
-VarDecl_94 -> BuiltinType_95
-BuiltinType_95 [label = BuiltinType]
-"uint_95" [label = "uint"]
-BuiltinType_95 -> "uint_95"
-VarDecl_94 -> VarInit_96
-VarInit_96 [label = VarInit]
-orVal_96 [label = orVal]
-VarInit_96 -> orVal_96
-VarInit_96 -> BitwiseOr_97
-BitwiseOr_97 [label = BitwiseOr]
-BitwiseOr_97 -> Variable_98
-Variable_98 [label = Variable]
-a_98 [label = a]
-Variable_98 -> a_98
-BitwiseOr_97 -> Variable_99
-Variable_99 [label = Variable]
-b_99 [label = b]
-Variable_99 -> b_99
-FuncBody_73 -> VarDecl_100
-VarDecl_100 [label = VarDecl]
-VarDecl_100 -> BuiltinType_101
-BuiltinType_101 [label = BuiltinType]
-"uint_101" [label = "uint"]
-BuiltinType_101 -> "uint_101"
-VarDecl_100 -> VarInit_102
-VarInit_102 [label = VarInit]
-xorVal_102 [label = xorVal]
-VarInit_102 -> xorVal_102
-VarInit_102 -> BitwiseXor_103
-BitwiseXor_103 [label = BitwiseXor]
-BitwiseXor_103 -> Variable_104
+err_93 [label = err]
+Variable_93 -> err_93
+Assign_92 -> Constant_94
+Constant_94 [label = Constant]
+int_94 [label = "1"]
+Constant_94 -> int_94
+FuncBody_8 -> IfStmt_95
+IfStmt_95 [label = IfStmt]
+IfStmt_95 -> LogicNotEq_96
+LogicNotEq_96 [label = LogicNotEq]
+LogicNotEq_96 -> Variable_97
+Variable_97 [label = Variable]
+orVal_97 [label = orVal]
+Variable_97 -> orVal_97
+LogicNotEq_96 -> Constant_98
+Constant_98 [label = Constant]
+uint_98 [label = "2541049721"]
+Constant_98 -> uint_98
+IfStmt_95 -> Assign_99
+Assign_99 [label = Assign]
+Assign_99 -> Variable_100
+Variable_100 [label = Variable]
+err_100 [label = err]
+Variable_100 -> err_100
+Assign_99 -> Constant_101
+Constant_101 [label = Constant]
+int_101 [label = "1"]
+Constant_101 -> int_101
+FuncBody_8 -> IfStmt_102
+IfStmt_102 [label = IfStmt]
+IfStmt_102 -> LogicNotEq_103
+LogicNotEq_103 [label = LogicNotEq]
+LogicNotEq_103 -> Variable_104
 Variable_104 [label = Variable]
-a_104 [label = a]
-Variable_104 -> a_104
-BitwiseXor_103 -> Variable_105
-Variable_105 [label = Variable]
-b_105 [label = b]
-Variable_105 -> b_105
-FuncBody_73 -> VarDecl_106
-VarDecl_106 [label = VarDecl]
-VarDecl_106 -> BuiltinType_107
-BuiltinType_107 [label = BuiltinType]
-"uint_107" [label = "uint"]
-BuiltinType_107 -> "uint_107"
-VarDecl_106 -> VarInit_108
-VarInit_108 [label = VarInit]
-notVal1_108 [label = notVal1]
-VarInit_108 -> notVal1_108
-VarInit_108 -> BitwiseNot_109
-BitwiseNot_109 [label = BitwiseNot]
-BitwiseNot_109 -> Variable_110
-Variable_110 [label = Variable]
-a_110 [label = a]
-Variable_110 -> a_110
-FuncBody_73 -> VarDecl_111
-VarDecl_111 [label = VarDecl]
-VarDecl_111 -> BuiltinType_112
-BuiltinType_112 [label = BuiltinType]
-"uint_112" [label = "uint"]
-BuiltinType_112 -> "uint_112"
-VarDecl_111 -> VarInit_113
-VarInit_113 [label = VarInit]
-notVal2_113 [label = notVal2]
-VarInit_113 -> notVal2_113
-VarInit_113 -> BitwiseNot_114
-BitwiseNot_114 [label = BitwiseNot]
-BitwiseNot_114 -> Variable_115
-Variable_115 [label = Variable]
-b_115 [label = b]
-Variable_115 -> b_115
-FuncBody_73 -> FuncCall_116
-FuncCall_116 [label = FuncCall]
-printf_116[ label = printf]
-FuncCall_116 -> printf_116
-FuncCall_116 -> ConstStr_117
-ConstStr_117 [label = ConstStr]
-str_117 [label = "andVal:0x%x"]
-ConstStr_117 -> str_117
-FuncCall_116 -> Variable_118
+xorVal_104 [label = xorVal]
+Variable_104 -> xorVal_104
+LogicNotEq_103 -> Constant_105
+Constant_105 [label = Constant]
+uint_105 [label = "2505119065"]
+Constant_105 -> uint_105
+IfStmt_102 -> Assign_106
+Assign_106 [label = Assign]
+Assign_106 -> Variable_107
+Variable_107 [label = Variable]
+err_107 [label = err]
+Variable_107 -> err_107
+Assign_106 -> Constant_108
+Constant_108 [label = Constant]
+int_108 [label = "1"]
+Constant_108 -> int_108
+FuncBody_8 -> IfStmt_109
+IfStmt_109 [label = IfStmt]
+IfStmt_109 -> LogicNotEq_110
+LogicNotEq_110 [label = LogicNotEq]
+LogicNotEq_110 -> Variable_111
+Variable_111 [label = Variable]
+notVal1_111 [label = notVal1]
+Variable_111 -> notVal1_111
+LogicNotEq_110 -> Constant_112
+Constant_112 [label = Constant]
+uint_112 [label = "3989547399"]
+Constant_112 -> uint_112
+IfStmt_109 -> Assign_113
+Assign_113 [label = Assign]
+Assign_113 -> Variable_114
+Variable_114 [label = Variable]
+err_114 [label = err]
+Variable_114 -> err_114
+Assign_113 -> Constant_115
+Constant_115 [label = Constant]
+int_115 [label = "1"]
+Constant_115 -> int_115
+FuncBody_8 -> IfStmt_116
+IfStmt_116 [label = IfStmt]
+IfStmt_116 -> LogicNotEq_117
+LogicNotEq_117 [label = LogicNotEq]
+LogicNotEq_117 -> Variable_118
 Variable_118 [label = Variable]
-andVal_118 [label = andVal]
-Variable_118 -> andVal_118
-FuncBody_73 -> FuncCall_119
-FuncCall_119 [label = FuncCall]
-printf_119[ label = printf]
-FuncCall_119 -> printf_119
-FuncCall_119 -> ConstStr_120
-ConstStr_120 [label = ConstStr]
-str_120 [label = "orVal:0x%x"]
-ConstStr_120 -> str_120
-FuncCall_119 -> Variable_121
+notVal2_118 [label = notVal2]
+Variable_118 -> notVal2_118
+LogicNotEq_117 -> Constant_119
+Constant_119 [label = Constant]
+uint_119 [label = "2023406814"]
+Constant_119 -> uint_119
+IfStmt_116 -> Assign_120
+Assign_120 [label = Assign]
+Assign_120 -> Variable_121
 Variable_121 [label = Variable]
-orVal_121 [label = orVal]
-Variable_121 -> orVal_121
-FuncBody_73 -> FuncCall_122
-FuncCall_122 [label = FuncCall]
-printf_122[ label = printf]
-FuncCall_122 -> printf_122
-FuncCall_122 -> ConstStr_123
-ConstStr_123 [label = ConstStr]
-str_123 [label = "xorVal:0x%x"]
-ConstStr_123 -> str_123
-FuncCall_122 -> Variable_124
-Variable_124 [label = Variable]
-xorVal_124 [label = xorVal]
-Variable_124 -> xorVal_124
-FuncBody_73 -> FuncCall_125
-FuncCall_125 [label = FuncCall]
-printf_125[ label = printf]
-FuncCall_125 -> printf_125
-FuncCall_125 -> ConstStr_126
-ConstStr_126 [label = ConstStr]
-str_126 [label = "not a:0x%x"]
-ConstStr_126 -> str_126
-FuncCall_125 -> Variable_127
-Variable_127 [label = Variable]
-notVal1_127 [label = notVal1]
-Variable_127 -> notVal1_127
-FuncBody_73 -> FuncCall_128
-FuncCall_128 [label = FuncCall]
-printf_128[ label = printf]
-FuncCall_128 -> printf_128
-FuncCall_128 -> ConstStr_129
-ConstStr_129 [label = ConstStr]
-str_129 [label = "not b:0x%x"]
-ConstStr_129 -> str_129
-FuncCall_128 -> Variable_130
-Variable_130 [label = Variable]
-notVal2_130 [label = notVal2]
-Variable_130 -> notVal2_130
-FuncBody_73 -> VarDecl_131
-VarDecl_131 [label = VarDecl]
-VarDecl_131 -> BuiltinType_132
-BuiltinType_132 [label = BuiltinType]
-"uint_132" [label = "uint"]
-BuiltinType_132 -> "uint_132"
-VarDecl_131 -> VarInit_133
-VarInit_133 [label = VarInit]
-andeqVal_133 [label = andeqVal]
-VarInit_133 -> andeqVal_133
-VarInit_133 -> Variable_134
-Variable_134 [label = Variable]
-andVal_134 [label = andVal]
-Variable_134 -> andVal_134
-FuncBody_73 -> BitwiseAndAssign_135
-BitwiseAndAssign_135 [label = BitwiseAndAssign]
-BitwiseAndAssign_135 -> Variable_136
-Variable_136 [label = Variable]
-andeqVal_136 [label = andeqVal]
-Variable_136 -> andeqVal_136
-BitwiseAndAssign_135 -> Variable_137
-Variable_137 [label = Variable]
-a_137 [label = a]
-Variable_137 -> a_137
-FuncBody_73 -> VarDecl_138
-VarDecl_138 [label = VarDecl]
-VarDecl_138 -> BuiltinType_139
-BuiltinType_139 [label = BuiltinType]
-"uint_139" [label = "uint"]
-BuiltinType_139 -> "uint_139"
-VarDecl_138 -> VarInit_140
-VarInit_140 [label = VarInit]
-oreqVal_140 [label = oreqVal]
-VarInit_140 -> oreqVal_140
-VarInit_140 -> Variable_141
-Variable_141 [label = Variable]
-orVal_141 [label = orVal]
-Variable_141 -> orVal_141
-FuncBody_73 -> BitwiseOrAssign_142
-BitwiseOrAssign_142 [label = BitwiseOrAssign]
-BitwiseOrAssign_142 -> Variable_143
-Variable_143 [label = Variable]
-oreqVal_143 [label = oreqVal]
-Variable_143 -> oreqVal_143
-BitwiseOrAssign_142 -> Variable_144
-Variable_144 [label = Variable]
-a_144 [label = a]
-Variable_144 -> a_144
-FuncBody_73 -> VarDecl_145
-VarDecl_145 [label = VarDecl]
-VarDecl_145 -> BuiltinType_146
-BuiltinType_146 [label = BuiltinType]
-"uint_146" [label = "uint"]
-BuiltinType_146 -> "uint_146"
-VarDecl_145 -> VarInit_147
-VarInit_147 [label = VarInit]
-xoreqVal_147 [label = xoreqVal]
-VarInit_147 -> xoreqVal_147
-VarInit_147 -> Variable_148
-Variable_148 [label = Variable]
-xorVal_148 [label = xorVal]
-Variable_148 -> xorVal_148
-FuncBody_73 -> BitwiseXorAssign_149
-BitwiseXorAssign_149 [label = BitwiseXorAssign]
-BitwiseXorAssign_149 -> Variable_150
-Variable_150 [label = Variable]
-xoreqVal_150 [label = xoreqVal]
-Variable_150 -> xoreqVal_150
-BitwiseXorAssign_149 -> Variable_151
-Variable_151 [label = Variable]
-a_151 [label = a]
-Variable_151 -> a_151
-FuncBody_73 -> FuncCall_152
-FuncCall_152 [label = FuncCall]
-printf_152[ label = printf]
-FuncCall_152 -> printf_152
-FuncCall_152 -> ConstStr_153
-ConstStr_153 [label = ConstStr]
-str_153 [label = "andeqVal:0x%x"]
-ConstStr_153 -> str_153
-FuncCall_152 -> Variable_154
-Variable_154 [label = Variable]
-andeqVal_154 [label = andeqVal]
-Variable_154 -> andeqVal_154
-FuncBody_73 -> FuncCall_155
-FuncCall_155 [label = FuncCall]
-printf_155[ label = printf]
-FuncCall_155 -> printf_155
-FuncCall_155 -> ConstStr_156
-ConstStr_156 [label = ConstStr]
-str_156 [label = "oreqVal:0x%x"]
-ConstStr_156 -> str_156
-FuncCall_155 -> Variable_157
-Variable_157 [label = Variable]
-oreqVal_157 [label = oreqVal]
-Variable_157 -> oreqVal_157
-FuncBody_73 -> FuncCall_158
-FuncCall_158 [label = FuncCall]
-printf_158[ label = printf]
-FuncCall_158 -> printf_158
-FuncCall_158 -> ConstStr_159
-ConstStr_159 [label = ConstStr]
-str_159 [label = "xoreqVal:0x%x"]
-ConstStr_159 -> str_159
-FuncCall_158 -> Variable_160
-Variable_160 [label = Variable]
-xoreqVal_160 [label = xoreqVal]
-Variable_160 -> xoreqVal_160
-FuncBody_73 -> VarDecl_161
-VarDecl_161 [label = VarDecl]
-VarDecl_161 -> BuiltinType_162
-BuiltinType_162 [label = BuiltinType]
-"uint_162" [label = "uint"]
-BuiltinType_162 -> "uint_162"
-VarDecl_161 -> VarInit_163
-VarInit_163 [label = VarInit]
-leftShiftVal_163 [label = leftShiftVal]
-VarInit_163 -> leftShiftVal_163
-VarInit_163 -> LeftShift_164
-LeftShift_164 [label = LeftShift]
-LeftShift_164 -> Variable_165
+err_121 [label = err]
+Variable_121 -> err_121
+Assign_120 -> Constant_122
+Constant_122 [label = Constant]
+int_122 [label = "1"]
+Constant_122 -> int_122
+FuncBody_8 -> IfStmt_123
+IfStmt_123 [label = IfStmt]
+IfStmt_123 -> LogicNotEq_124
+LogicNotEq_124 [label = LogicNotEq]
+LogicNotEq_124 -> Variable_125
+Variable_125 [label = Variable]
+andeqVal_125 [label = andeqVal]
+Variable_125 -> andeqVal_125
+LogicNotEq_124 -> Constant_126
+Constant_126 [label = Constant]
+uint_126 [label = "35930656"]
+Constant_126 -> uint_126
+IfStmt_123 -> Assign_127
+Assign_127 [label = Assign]
+Assign_127 -> Variable_128
+Variable_128 [label = Variable]
+err_128 [label = err]
+Variable_128 -> err_128
+Assign_127 -> Constant_129
+Constant_129 [label = Constant]
+int_129 [label = "1"]
+Constant_129 -> int_129
+FuncBody_8 -> IfStmt_130
+IfStmt_130 [label = IfStmt]
+IfStmt_130 -> LogicNotEq_131
+LogicNotEq_131 [label = LogicNotEq]
+LogicNotEq_131 -> Variable_132
+Variable_132 [label = Variable]
+oreqVal_132 [label = oreqVal]
+Variable_132 -> oreqVal_132
+LogicNotEq_131 -> Constant_133
+Constant_133 [label = Constant]
+uint_133 [label = "2541049721"]
+Constant_133 -> uint_133
+IfStmt_130 -> Assign_134
+Assign_134 [label = Assign]
+Assign_134 -> Variable_135
+Variable_135 [label = Variable]
+err_135 [label = err]
+Variable_135 -> err_135
+Assign_134 -> Constant_136
+Constant_136 [label = Constant]
+int_136 [label = "1"]
+Constant_136 -> int_136
+FuncBody_8 -> IfStmt_137
+IfStmt_137 [label = IfStmt]
+IfStmt_137 -> LogicNotEq_138
+LogicNotEq_138 [label = LogicNotEq]
+LogicNotEq_138 -> Variable_139
+Variable_139 [label = Variable]
+xoreqVal_139 [label = xoreqVal]
+Variable_139 -> xoreqVal_139
+LogicNotEq_138 -> Constant_140
+Constant_140 [label = Constant]
+uint_140 [label = "2271560481"]
+Constant_140 -> uint_140
+IfStmt_137 -> Assign_141
+Assign_141 [label = Assign]
+Assign_141 -> Variable_142
+Variable_142 [label = Variable]
+err_142 [label = err]
+Variable_142 -> err_142
+Assign_141 -> Constant_143
+Constant_143 [label = Constant]
+int_143 [label = "1"]
+Constant_143 -> int_143
+FuncBody_8 -> IfStmt_144
+IfStmt_144 [label = IfStmt]
+IfStmt_144 -> LogicNotEq_145
+LogicNotEq_145 [label = LogicNotEq]
+LogicNotEq_145 -> Variable_146
+Variable_146 [label = Variable]
+leftShiftVal_146 [label = leftShiftVal]
+Variable_146 -> leftShiftVal_146
+LogicNotEq_145 -> Constant_147
+Constant_147 [label = Constant]
+uint_147 [label = "1450704896"]
+Constant_147 -> uint_147
+IfStmt_144 -> Assign_148
+Assign_148 [label = Assign]
+Assign_148 -> Variable_149
+Variable_149 [label = Variable]
+err_149 [label = err]
+Variable_149 -> err_149
+Assign_148 -> Constant_150
+Constant_150 [label = Constant]
+int_150 [label = "1"]
+Constant_150 -> int_150
+FuncBody_8 -> IfStmt_151
+IfStmt_151 [label = IfStmt]
+IfStmt_151 -> LogicNotEq_152
+LogicNotEq_152 [label = LogicNotEq]
+LogicNotEq_152 -> Variable_153
+Variable_153 [label = Variable]
+rightShiftVal_153 [label = rightShiftVal]
+Variable_153 -> rightShiftVal_153
+LogicNotEq_152 -> Constant_154
+Constant_154 [label = Constant]
+uint_154 [label = "34661"]
+Constant_154 -> uint_154
+IfStmt_151 -> Assign_155
+Assign_155 [label = Assign]
+Assign_155 -> Variable_156
+Variable_156 [label = Variable]
+err_156 [label = err]
+Variable_156 -> err_156
+Assign_155 -> Constant_157
+Constant_157 [label = Constant]
+int_157 [label = "1"]
+Constant_157 -> int_157
+FuncBody_8 -> VarDecl_158
+VarDecl_158 [label = VarDecl]
+VarDecl_158 -> BuiltinType_159
+BuiltinType_159 [label = BuiltinType]
+"uint_159" [label = "uint"]
+BuiltinType_159 -> "uint_159"
+VarDecl_158 -> VarInit_160
+VarInit_160 [label = VarInit]
+msbSet_160 [label = msbSet]
+VarInit_160 -> msbSet_160
+VarInit_160 -> Constant_161
+Constant_161 [label = Constant]
+uint_161 [label = "2147483648"]
+Constant_161 -> uint_161
+FuncBody_8 -> IfStmt_162
+IfStmt_162 [label = IfStmt]
+IfStmt_162 -> LogicNotEq_163
+LogicNotEq_163 [label = LogicNotEq]
+LogicNotEq_163 -> RightShift_164
+RightShift_164 [label = RightShift]
+RightShift_164 -> Variable_165
 Variable_165 [label = Variable]
-a_165 [label = a]
-Variable_165 -> a_165
-LeftShift_164 -> Constant_166
+msbSet_165 [label = msbSet]
+Variable_165 -> msbSet_165
+RightShift_164 -> Constant_166
 Constant_166 [label = Constant]
-int_166 [label = "8"]
+int_166 [label = "1"]
 Constant_166 -> int_166
-FuncBody_73 -> VarDecl_167
-VarDecl_167 [label = VarDecl]
-VarDecl_167 -> BuiltinType_168
-BuiltinType_168 [label = BuiltinType]
-"uint_168" [label = "uint"]
-BuiltinType_168 -> "uint_168"
-VarDecl_167 -> VarInit_169
-VarInit_169 [label = VarInit]
-rightShiftVal_169 [label = rightShiftVal]
-VarInit_169 -> rightShiftVal_169
-VarInit_169 -> RightShift_170
-RightShift_170 [label = RightShift]
-RightShift_170 -> Variable_171
-Variable_171 [label = Variable]
-b_171 [label = b]
-Variable_171 -> b_171
-RightShift_170 -> Constant_172
-Constant_172 [label = Constant]
-int_172 [label = "8"]
-Constant_172 -> int_172
-FuncBody_73 -> FuncCall_173
-FuncCall_173 [label = FuncCall]
-printf_173[ label = printf]
-FuncCall_173 -> printf_173
-FuncCall_173 -> ConstStr_174
-ConstStr_174 [label = ConstStr]
-str_174 [label = "leftShiftVal:0x%x"]
-ConstStr_174 -> str_174
-FuncCall_173 -> Variable_175
-Variable_175 [label = Variable]
-leftShiftVal_175 [label = leftShiftVal]
-Variable_175 -> leftShiftVal_175
-FuncBody_73 -> FuncCall_176
-FuncCall_176 [label = FuncCall]
-printf_176[ label = printf]
-FuncCall_176 -> printf_176
-FuncCall_176 -> ConstStr_177
-ConstStr_177 [label = ConstStr]
-str_177 [label = "rightShiftVal:0x%x"]
-ConstStr_177 -> str_177
-FuncCall_176 -> Variable_178
+LogicNotEq_163 -> Constant_167
+Constant_167 [label = Constant]
+uint_167 [label = "1073741824"]
+Constant_167 -> uint_167
+IfStmt_162 -> Assign_168
+Assign_168 [label = Assign]
+Assign_168 -> Variable_169
+Variable_169 [label = Variable]
+err_169 [label = err]
+Variable_169 -> err_169
+Assign_168 -> Constant_170
+Constant_170 [label = Constant]
+int_170 [label = "1"]
+Constant_170 -> int_170
+FuncBody_8 -> VarDecl_171
+VarDecl_171 [label = VarDecl]
+VarDecl_171 -> BuiltinType_172
+BuiltinType_172 [label = BuiltinType]
+"int_172" [label = "int"]
+BuiltinType_172 -> "int_172"
+VarDecl_171 -> VarInit_173
+VarInit_173 [label = VarInit]
+signedVal_173 [label = signedVal]
+VarInit_173 -> signedVal_173
+VarInit_173 -> Constant_174
+Constant_174 [label = Constant]
+int_174 [label = "-8"]
+Constant_174 -> int_174
+FuncBody_8 -> IfStmt_175
+IfStmt_175 [label = IfStmt]
+IfStmt_175 -> LogicNotEq_176
+LogicNotEq_176 [label = LogicNotEq]
+LogicNotEq_176 -> RightShift_177
+RightShift_177 [label = RightShift]
+RightShift_177 -> Variable_178
 Variable_178 [label = Variable]
-rightShiftVal_178 [label = rightShiftVal]
-Variable_178 -> rightShiftVal_178
-FuncBody_73 -> LeftShiftAssign_179
-LeftShiftAssign_179 [label = LeftShiftAssign]
-LeftShiftAssign_179 -> Variable_180
-Variable_180 [label = Variable]
-leftShiftVal_180 [label = leftShiftVal]
-Variable_180 -> leftShiftVal_180
-LeftShiftAssign_179 -> Constant_181
-Constant_181 [label = Constant]
-int_181 [label = "8"]
-Constant_181 -> int_181
-FuncBody_73 -> RightShiftAssign_182
-RightShiftAssign_182 [label = RightShiftAssign]
-RightShiftAssign_182 -> Variable_183
-Variable_183 [label = Variable]
-rightShiftVal_183 [label = rightShiftVal]
-Variable_183 -> rightShiftVal_183
-RightShiftAssign_182 -> Constant_184
-Constant_184 [label = Constant]
-int_184 [label = "8"]
-Constant_184 -> int_184
-FuncBody_73 -> FuncCall_185
-FuncCall_185 [label = FuncCall]
-printf_185[ label = printf]
-FuncCall_185 -> printf_185
-FuncCall_185 -> ConstStr_186
-ConstStr_186 [label = ConstStr]
-str_186 [label = "leftShiftEqVal:0x%x"]
-ConstStr_186 -> str_186
-FuncCall_185 -> Variable_187
-Variable_187 [label = Variable]
-leftShiftVal_187 [label = leftShiftVal]
-Variable_187 -> leftShiftVal_187
-FuncBody_73 -> FuncCall_188
-FuncCall_188 [label = FuncCall]
-printf_188[ label = printf]
-FuncCall_188 -> printf_188
-FuncCall_188 -> ConstStr_189
-ConstStr_189 [label = ConstStr]
-str_189 [label = "rightShiftEqVal:0x%x"]
-ConstStr_189 -> str_189
-FuncCall_188 -> Variable_190
-Variable_190 [label = Variable]
-rightShiftVal_190 [label = rightShiftVal]
-Variable_190 -> rightShiftVal_190
-FuncBody_73 -> FuncCall_191
-FuncCall_191 [label = FuncCall]
-check_uint_191[ label = check_uint]
-FuncCall_191 -> check_uint_191
-FuncCall_191 -> ConstStr_192
-ConstStr_192 [label = ConstStr]
-str_192 [label = "andVal"]
-ConstStr_192 -> str_192
-FuncCall_191 -> Variable_193
-Variable_193 [label = Variable]
-andVal_193 [label = andVal]
-Variable_193 -> andVal_193
-FuncCall_191 -> Constant_194
-Constant_194 [label = Constant]
-uint_194 [label = "35930656"]
-Constant_194 -> uint_194
-FuncBody_73 -> FuncCall_195
-FuncCall_195 [label = FuncCall]
-check_uint_195[ label = check_uint]
-FuncCall_195 -> check_uint_195
-FuncCall_195 -> ConstStr_196
-ConstStr_196 [label = ConstStr]
-str_196 [label = "orVal"]
-ConstStr_196 -> str_196
-FuncCall_195 -> Variable_197
-Variable_197 [label = Variable]
-orVal_197 [label = orVal]
-Variable_197 -> orVal_197
-FuncCall_195 -> Constant_198
-Constant_198 [label = Constant]
-uint_198 [label = "2541049721"]
-Constant_198 -> uint_198
-FuncBody_73 -> FuncCall_199
-FuncCall_199 [label = FuncCall]
-check_uint_199[ label = check_uint]
-FuncCall_199 -> check_uint_199
-FuncCall_199 -> ConstStr_200
-ConstStr_200 [label = ConstStr]
-str_200 [label = "xorVal"]
-ConstStr_200 -> str_200
-FuncCall_199 -> Variable_201
-Variable_201 [label = Variable]
-xorVal_201 [label = xorVal]
-Variable_201 -> xorVal_201
-FuncCall_199 -> Constant_202
-Constant_202 [label = Constant]
-uint_202 [label = "2505119065"]
-Constant_202 -> uint_202
-FuncBody_73 -> FuncCall_203
-FuncCall_203 [label = FuncCall]
-check_uint_203[ label = check_uint]
-FuncCall_203 -> check_uint_203
-FuncCall_203 -> ConstStr_204
-ConstStr_204 [label = ConstStr]
-str_204 [label = "not a"]
-ConstStr_204 -> str_204
-FuncCall_203 -> Variable_205
-Variable_205 [label = Variable]
-notVal1_205 [label = notVal1]
-Variable_205 -> notVal1_205
-FuncCall_203 -> Constant_206
-Constant_206 [label = Constant]
-uint_206 [label = "3989547399"]
-Constant_206 -> uint_206
-FuncBody_73 -> FuncCall_207
-FuncCall_207 [label = FuncCall]
-check_uint_207[ label = check_uint]
-FuncCall_207 -> check_uint_207
-FuncCall_207 -> ConstStr_208
-ConstStr_208 [label = ConstStr]
-str_208 [label = "not b"]
-ConstStr_208 -> str_208
-FuncCall_207 -> Variable_209
-Variable_209 [label = Variable]
-notVal2_209 [label = notVal2]
-Variable_209 -> notVal2_209
-FuncCall_207 -> Constant_210
-Constant_210 [label = Constant]
-uint_210 [label = "2023406814"]
-Constant_210 -> uint_210
-FuncBody_73 -> FuncCall_211
-FuncCall_211 [label = FuncCall]
-check_uint_211[ label = check_uint]
-FuncCall_211 -> check_uint_211
-FuncCall_211 -> ConstStr_212
-ConstStr_212 [label = ConstStr]
-str_212 [label = "andeqVal"]
-ConstStr_212 -> str_212
-FuncCall_211 -> Variable_213
-Variable_213 [label = Variable]
-andeqVal_213 [label = andeqVal]
-Variable_213 -> andeqVal_213
-FuncCall_211 -> Constant_214
-Constant_214 [label = Constant]
-uint_214 [label = "35930656"]
-Constant_214 -> uint_214
-FuncBody_73 -> FuncCall_215
-FuncCall_215 [label = FuncCall]
-check_uint_215[ label = check_uint]
-FuncCall_215 -> check_uint_215
-FuncCall_215 -> ConstStr_216
-ConstStr_216 [label = ConstStr]
-str_216 [label = "oreqVal"]
-ConstStr_216 -> str_216
-FuncCall_215 -> Variable_217
-Variable_217 [label = Variable]
-oreqVal_217 [label = oreqVal]
-Variable_217 -> oreqVal_217
-FuncCall_215 -> Constant_218
-Constant_218 [label = Constant]
-uint_218 [label = "2541049721"]
-Constant_218 -> uint_218
-FuncBody_73 -> FuncCall_219
-FuncCall_219 [label = FuncCall]
-check_uint_219[ label = check_uint]
-FuncCall_219 -> check_uint_219
-FuncCall_219 -> ConstStr_220
-ConstStr_220 [label = ConstStr]
-str_220 [label = "xoreqVal"]
-ConstStr_220 -> str_220
-FuncCall_219 -> Variable_221
-Variable_221 [label = Variable]
-xoreqVal_221 [label = xoreqVal]
-Variable_221 -> xoreqVal_221
-FuncCall_219 -> Constant_222
-Constant_222 [label = Constant]
-uint_222 [label = "2271560481"]
-Constant_222 -> uint_222
-FuncBody_73 -> FuncCall_223
-FuncCall_223 [label = FuncCall]
-check_uint_223[ label = check_uint]
-FuncCall_223 -> check_uint_223
-FuncCall_223 -> ConstStr_224
-ConstStr_224 [label = ConstStr]
-str_224 [label = "leftShiftVal"]
-ConstStr_224 -> str_224
-FuncCall_223 -> Variable_225
-Variable_225 [label = Variable]
-leftShiftVal_225 [label = leftShiftVal]
-Variable_225 -> leftShiftVal_225
-FuncCall_223 -> Constant_226
-Constant_226 [label = Constant]
-uint_226 [label = "1450704896"]
-Constant_226 -> uint_226
-FuncBody_73 -> FuncCall_227
-FuncCall_227 [label = FuncCall]
-check_uint_227[ label = check_uint]
-FuncCall_227 -> check_uint_227
-FuncCall_227 -> ConstStr_228
-ConstStr_228 [label = ConstStr]
-str_228 [label = "rightShiftVal boundary"]
-ConstStr_228 -> str_228
-FuncCall_227 -> Variable_229
-Variable_229 [label = Variable]
-rightShiftVal_229 [label = rightShiftVal]
-Variable_229 -> rightShiftVal_229
-FuncCall_227 -> Constant_230
-Constant_230 [label = Constant]
-uint_230 [label = "34661"]
-Constant_230 -> uint_230
-FuncBody_73 -> VarDecl_231
-VarDecl_231 [label = VarDecl]
-VarDecl_231 -> BuiltinType_232
-BuiltinType_232 [label = BuiltinType]
-"uint_232" [label = "uint"]
-BuiltinType_232 -> "uint_232"
-VarDecl_231 -> VarInit_233
-VarInit_233 [label = VarInit]
-msbSet_233 [label = msbSet]
-VarInit_233 -> msbSet_233
-VarInit_233 -> Constant_234
-Constant_234 [label = Constant]
-uint_234 [label = "2147483648"]
-Constant_234 -> uint_234
-FuncBody_73 -> VarDecl_235
-VarDecl_235 [label = VarDecl]
-VarDecl_235 -> BuiltinType_236
-BuiltinType_236 [label = BuiltinType]
-"uint_236" [label = "uint"]
-BuiltinType_236 -> "uint_236"
-VarDecl_235 -> VarInit_237
-VarInit_237 [label = VarInit]
-lshr_237 [label = lshr]
-VarInit_237 -> lshr_237
-VarInit_237 -> RightShift_238
-RightShift_238 [label = RightShift]
-RightShift_238 -> Variable_239
-Variable_239 [label = Variable]
-msbSet_239 [label = msbSet]
-Variable_239 -> msbSet_239
-RightShift_238 -> Constant_240
-Constant_240 [label = Constant]
-int_240 [label = "1"]
-Constant_240 -> int_240
-FuncBody_73 -> FuncCall_241
-FuncCall_241 [label = FuncCall]
-printf_241[ label = printf]
-FuncCall_241 -> printf_241
-FuncCall_241 -> ConstStr_242
-ConstStr_242 [label = ConstStr]
-str_242 [label = "boundary lshr 0x80000000>>1=0x%x"]
-ConstStr_242 -> str_242
-FuncCall_241 -> Variable_243
-Variable_243 [label = Variable]
-lshr_243 [label = lshr]
-Variable_243 -> lshr_243
-FuncBody_73 -> FuncCall_244
-FuncCall_244 [label = FuncCall]
-check_uint_244[ label = check_uint]
-FuncCall_244 -> check_uint_244
-FuncCall_244 -> ConstStr_245
-ConstStr_245 [label = ConstStr]
-str_245 [label = "unsigned >> clears MSB"]
-ConstStr_245 -> str_245
-FuncCall_244 -> Variable_246
-Variable_246 [label = Variable]
-lshr_246 [label = lshr]
-Variable_246 -> lshr_246
-FuncCall_244 -> Constant_247
-Constant_247 [label = Constant]
-uint_247 [label = "1073741824"]
-Constant_247 -> uint_247
-FuncBody_73 -> VarDecl_248
-VarDecl_248 [label = VarDecl]
-VarDecl_248 -> BuiltinType_249
-BuiltinType_249 [label = BuiltinType]
-"int_249" [label = "int"]
-BuiltinType_249 -> "int_249"
-VarDecl_248 -> VarInit_250
-VarInit_250 [label = VarInit]
-signedVal_250 [label = signedVal]
-VarInit_250 -> signedVal_250
-VarInit_250 -> Constant_251
-Constant_251 [label = Constant]
-int_251 [label = "-8"]
-Constant_251 -> int_251
-FuncBody_73 -> VarDecl_252
-VarDecl_252 [label = VarDecl]
-VarDecl_252 -> BuiltinType_253
-BuiltinType_253 [label = BuiltinType]
-"int_253" [label = "int"]
-BuiltinType_253 -> "int_253"
-VarDecl_252 -> VarInit_254
-VarInit_254 [label = VarInit]
-ashr_254 [label = ashr]
-VarInit_254 -> ashr_254
-VarInit_254 -> RightShift_255
-RightShift_255 [label = RightShift]
-RightShift_255 -> Variable_256
-Variable_256 [label = Variable]
-signedVal_256 [label = signedVal]
-Variable_256 -> signedVal_256
-RightShift_255 -> Constant_257
-Constant_257 [label = Constant]
-int_257 [label = "1"]
-Constant_257 -> int_257
-FuncBody_73 -> FuncCall_258
-FuncCall_258 [label = FuncCall]
-printf_258[ label = printf]
-FuncCall_258 -> printf_258
-FuncCall_258 -> ConstStr_259
-ConstStr_259 [label = ConstStr]
-str_259 [label = "signed -8 >> 1: %d"]
-ConstStr_259 -> str_259
-FuncCall_258 -> Variable_260
-Variable_260 [label = Variable]
-ashr_260 [label = ashr]
-Variable_260 -> ashr_260
-FuncBody_73 -> FuncCall_261
-FuncCall_261 [label = FuncCall]
-check_int_261[ label = check_int]
-FuncCall_261 -> check_int_261
-FuncCall_261 -> ConstStr_262
-ConstStr_262 [label = ConstStr]
-str_262 [label = "signed >> preserves sign"]
-ConstStr_262 -> str_262
-FuncCall_261 -> Variable_263
-Variable_263 [label = Variable]
-ashr_263 [label = ashr]
-Variable_263 -> ashr_263
-FuncCall_261 -> Constant_264
-Constant_264 [label = Constant]
-int_264 [label = "-4"]
-Constant_264 -> int_264
-FuncBody_73 -> FuncCall_265
-FuncCall_265 [label = FuncCall]
-report_result_265[ label = report_result]
-FuncCall_265 -> report_result_265
-FuncBody_73 -> ReturnStmt_266
-ReturnStmt_266 [label = ReturnStmt]
-ReturnStmt_266 -> Variable_267
-Variable_267 [label = Variable]
-test_errors_267 [label = test_errors]
-Variable_267 -> test_errors_267
+signedVal_178 [label = signedVal]
+Variable_178 -> signedVal_178
+RightShift_177 -> Constant_179
+Constant_179 [label = Constant]
+int_179 [label = "1"]
+Constant_179 -> int_179
+LogicNotEq_176 -> Constant_180
+Constant_180 [label = Constant]
+int_180 [label = "-4"]
+Constant_180 -> int_180
+IfStmt_175 -> Assign_181
+Assign_181 [label = Assign]
+Assign_181 -> Variable_182
+Variable_182 [label = Variable]
+err_182 [label = err]
+Variable_182 -> err_182
+Assign_181 -> Constant_183
+Constant_183 [label = Constant]
+int_183 [label = "1"]
+Constant_183 -> int_183
+FuncBody_8 -> IfStmt_184
+IfStmt_184 [label = IfStmt]
+IfStmt_184 -> LogicEq_185
+LogicEq_185 [label = LogicEq]
+LogicEq_185 -> Variable_186
+Variable_186 [label = Variable]
+err_186 [label = err]
+Variable_186 -> err_186
+LogicEq_185 -> Constant_187
+Constant_187 [label = Constant]
+int_187 [label = "0"]
+Constant_187 -> int_187
+IfStmt_184 -> Block_188
+Block_188 [label = Block]
+Block_188 -> FuncCall_189
+FuncCall_189 [label = FuncCall]
+printf_189[ label = printf]
+FuncCall_189 -> printf_189
+FuncCall_189 -> ConstStr_190
+ConstStr_190 [label = ConstStr]
+str_190 [label = "14.bitwise.c PASS"]
+ConstStr_190 -> str_190
+IfStmt_184 -> Block_191
+Block_191 [label = Block]
+Block_191 -> FuncCall_192
+FuncCall_192 [label = FuncCall]
+printf_192[ label = printf]
+FuncCall_192 -> printf_192
+FuncCall_192 -> ConstStr_193
+ConstStr_193 [label = ConstStr]
+str_193 [label = "14.bitwise.c FAIL"]
+ConstStr_193 -> str_193
+FuncBody_8 -> ReturnStmt_194
+ReturnStmt_194 [label = ReturnStmt]
+ReturnStmt_194 -> Variable_195
+Variable_195 [label = Variable]
+err_195 [label = err]
+Variable_195 -> err_195
 }

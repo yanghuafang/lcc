@@ -1,22 +1,5 @@
 int printf(char*, ...);
 
-int test_errors = 0;
-
-void check_int(const char* name, int actual, int expected) {
-  if (actual != expected) {
-    printf("ERROR [%s]: got %d expected %d\n", name, actual, expected);
-    test_errors++;
-  }
-}
-
-void report_result(void) {
-  if (test_errors == 0) {
-    printf("PASS\n");
-  } else {
-    printf("FAIL: %d error(s)\n", test_errors);
-  }
-}
-
 int countSum(int n) {
   int sum = 0;
   for (int i = 1; i <= n; i += 1) {
@@ -44,21 +27,18 @@ int countSum3(int n) {
 }
 
 int main() {
-  printf("**** 19.for_loop.c ****\n");
+  int err = 0;
 
-  int sum100 = countSum(100);
-  printf("1+2+...+100 = %d\n", sum100);
-  sum100 = countSum2(100);
-  printf("1+2+...+100 = %d\n", sum100);
-  sum100 = countSum3(100);
-  printf("1+2+...+100 = %d\n", sum100);
+  if (countSum(100) != 5050) err = 1;
+  if (countSum2(100) != 5050) err = 1;
+  if (countSum3(100) != 5050) err = 1;
+  if (countSum(0) != 0) err = 1;
+  if (countSum(1) != 1) err = 1;
 
-  check_int("countSum(100)", countSum(100), 5050);
-  check_int("countSum2(100)", countSum2(100), 5050);
-  check_int("countSum3(100)", countSum3(100), 5050);
-  check_int("countSum(0) boundary", countSum(0), 0);
-  check_int("countSum(1) boundary", countSum(1), 1);
-
-  report_result();
-  return test_errors;
+  if (err == 0) {
+    printf("19.for_loop.c PASS\n");
+  } else {
+    printf("19.for_loop.c FAIL\n");
+  }
+  return err;
 }

@@ -1,30 +1,6 @@
 int printf(char*, ...);
 
-int test_errors = 0;
-
-void check_int(const char* name, int actual, int expected) {
-  if (actual != expected) {
-    printf("ERROR [%s]: got %d expected %d\n", name, actual, expected);
-    test_errors++;
-  }
-}
-
-void check_char(const char* name, char actual, char expected) {
-  if (actual != expected) {
-    printf("ERROR [%s]: got %c expected %c\n", name, actual, expected);
-    test_errors++;
-  }
-}
-
-void report_result(void) {
-  if (test_errors == 0) {
-    printf("PASS\n");
-  } else {
-    printf("FAIL: %d error(s)\n", test_errors);
-  }
-}
-
-void gradeOfScore(int score) {
+char gradeOfScore(int score) {
   char grade;
   switch (score) {
     case 1:
@@ -49,27 +25,17 @@ void gradeOfScore(int score) {
       grade = 'E';
       break;
   }
-
-  printf("score:%d grade:%c\n", score, grade);
-  if (score >= 1 && score <= 5) {
-    check_char("grade D", grade, 'D');
-  } else if (score == 6) {
-    check_char("grade C", grade, 'C');
-  } else if (score == 7 || score == 8) {
-    check_char("grade B", grade, 'B');
-  } else if (score == 9 || score == 10) {
-    check_char("grade A", grade, 'A');
-  }
+  return grade;
 }
 
 int main() {
-  printf("**** 18.switch_case.c ****\n");
+  int err = 0;
 
-  gradeOfScore(3);
-  gradeOfScore(5);
-  gradeOfScore(6);
-  gradeOfScore(8);
-  gradeOfScore(9);
+  if (gradeOfScore(3) != 'D') err = 1;
+  if (gradeOfScore(5) != 'D') err = 1;
+  if (gradeOfScore(6) != 'C') err = 1;
+  if (gradeOfScore(8) != 'B') err = 1;
+  if (gradeOfScore(9) != 'A') err = 1;
 
   char grade;
   int boundary = 0;
@@ -78,9 +44,12 @@ int main() {
       grade = 'E';
       break;
   }
-  printf("score:%d grade:%c\n", boundary, grade);
-  check_char("default case", grade, 'E');
+  if (grade != 'E') err = 1;
 
-  report_result();
-  return test_errors;
+  if (err == 0) {
+    printf("18.switch_case.c PASS\n");
+  } else {
+    printf("18.switch_case.c FAIL\n");
+  }
+  return err;
 }

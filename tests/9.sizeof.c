@@ -1,22 +1,5 @@
 int printf(char*, ...);
 
-int test_errors = 0;
-
-void check_int(const char* name, int actual, int expected) {
-  if (actual != expected) {
-    printf("ERROR [%s]: got %d expected %d\n", name, actual, expected);
-    test_errors++;
-  }
-}
-
-void report_result(void) {
-  if (test_errors == 0) {
-    printf("PASS\n");
-  } else {
-    printf("FAIL: %d error(s)\n", test_errors);
-  }
-}
-
 struct Student {
   int id;
   char* name;
@@ -32,74 +15,34 @@ union ID {
 enum SEX { MALE, FEMALE };
 
 int main() {
-  printf("**** 9.sizeof.c ****\n");
-
-  char charVal = 'A';
-  unsigned char ucharVal;
-  short shortVal;
-  unsigned short ushortVal;
-  int intVal;
-  unsigned int uintVal;
-  long longVal;
-  unsigned long ulongVal;
-  float floatVal;
-  double doubleVal;
-  char* pchar;
-  int* pint;
-
+  int err = 0;
+  char c;
+  int i;
+  long l;
+  float f;
+  double d;
+  char* pc;
   Student student;
   ID id;
   SEX sex;
 
-  printf("sizeof(char):%d\n", sizeof(char));
-  printf("sizeof(charVal):%d\n", sizeof(charVal));
-  printf("sizeof(unsigned char):%d\n", sizeof(unsigned char));
-  printf("sizeof(ucharVal):%d\n", sizeof(ucharVal));
+  if (sizeof(char) != 1) err = 1;
+  if (sizeof(short) != 2) err = 1;
+  if (sizeof(int) != 4) err = 1;
+  if (sizeof(long) != 8) err = 1;
+  if (sizeof(float) != 4) err = 1;
+  if (sizeof(double) != 8) err = 1;
+  if (sizeof(char*) != 8) err = 1;
+  if (sizeof(int*) != 8) err = 1;
+  if (sizeof(c) != 1) err = 1;
+  if (sizeof(i) != 4) err = 1;
+  if (sizeof(SEX) != 4) err = 1;
+  if (sizeof(sex) != 4) err = 1;
 
-  printf("sizeof(short):%d\n", sizeof(short));
-  printf("sizeof(shortVal):%d\n", sizeof(shortVal));
-  printf("sizeof(unsigned short):%d\n", sizeof(unsigned short));
-  printf("sizeof(ushortVal):%d\n", sizeof(ushortVal));
-
-  printf("sizeof(int):%d\n", sizeof(int));
-  printf("sizeof(intVal):%d\n", sizeof(intVal));
-  printf("sizeof(unsigned int):%d\n", sizeof(unsigned int));
-  printf("sizeof(uintVal):%d\n", sizeof(uintVal));
-
-  printf("sizeof(long):%d\n", sizeof(long));
-  printf("sizeof(longVal):%d\n", sizeof(longVal));
-  printf("sizeof(unsigned long):%d\n", sizeof(unsigned long));
-  printf("sizeof(ulongVal):%d\n", sizeof(ulongVal));
-
-  printf("sizeof(float):%d\n", sizeof(float));
-  printf("sizeof(floatVal):%d\n", sizeof(floatVal));
-  printf("sizeof(double):%d\n", sizeof(double));
-  printf("sizeof(doubleVal):%d\n", sizeof(doubleVal));
-
-  printf("sizeof(char*):%d\n", sizeof(char*));
-  printf("sizeof(pchar):%d\n", sizeof(pchar));
-  printf("sizeof(int*):%d\n", sizeof(int*));
-  printf("sizeof(pint):%d\n", sizeof(pint));
-
-  printf("sizeof(Student):%d\n", sizeof(Student));
-  printf("sizeof(student):%d\n", sizeof(student));
-
-  printf("sizeof(ID):%d\n", sizeof(ID));
-  printf("sizeof(id):%d\n", sizeof(id));
-
-  printf("sizeof(SEX):%d\n", sizeof(SEX));
-  printf("sizeof(sex):%d\n", sizeof(sex));
-
-  check_int("sizeof(char)", sizeof(char), 1);
-  check_int("sizeof(short)", sizeof(short), 2);
-  check_int("sizeof(int)", sizeof(int), 4);
-  check_int("sizeof(long)", sizeof(long), 8);
-  check_int("sizeof(float)", sizeof(float), 4);
-  check_int("sizeof(double)", sizeof(double), 8);
-  check_int("sizeof(char*)", sizeof(char*), 8);
-  check_int("sizeof(int*)", sizeof(int*), 8);
-  check_int("sizeof(SEX)", sizeof(SEX), 4);
-
-  report_result();
-  return test_errors;
+  if (err == 0) {
+    printf("9.sizeof.c PASS\n");
+  } else {
+    printf("9.sizeof.c FAIL\n");
+  }
+  return err;
 }

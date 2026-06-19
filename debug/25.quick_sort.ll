@@ -3,70 +3,10 @@ source_filename = "lcc"
 target datalayout = "e-m:o-i64:64-i128:128-n32:64-S128"
 target triple = "arm64-apple-darwin25.5.0"
 
-@test_errors = global i32 0
-@0 = private unnamed_addr constant [32 x i8] c"ERROR [%s]: got %d expected %d\0A\00", align 1
-@1 = private unnamed_addr constant [6 x i8] c"PASS\0A\00", align 1
-@2 = private unnamed_addr constant [19 x i8] c"FAIL: %d error(s)\0A\00", align 1
-@3 = private unnamed_addr constant [4 x i8] c"%d \00", align 1
-@4 = private unnamed_addr constant [2 x i8] c"\0A\00", align 1
-@5 = private unnamed_addr constant [27 x i8] c"**** 25.quick_sort.c ****\0A\00", align 1
-@6 = private unnamed_addr constant [18 x i8] c"Original array: \0A\00", align 1
-@7 = private unnamed_addr constant [16 x i8] c"Sorted array: \0A\00", align 1
-@8 = private unnamed_addr constant [10 x i8] c"sorted[0]\00", align 1
-@9 = private unnamed_addr constant [10 x i8] c"sorted[1]\00", align 1
-@10 = private unnamed_addr constant [10 x i8] c"sorted[2]\00", align 1
-@11 = private unnamed_addr constant [10 x i8] c"sorted[3]\00", align 1
-@12 = private unnamed_addr constant [10 x i8] c"sorted[4]\00", align 1
-@13 = private unnamed_addr constant [10 x i8] c"sorted[5]\00", align 1
-@14 = private unnamed_addr constant [15 x i8] c"single element\00", align 1
+@0 = private unnamed_addr constant [22 x i8] c"25.quick_sort.c PASS\0A\00", align 1
+@1 = private unnamed_addr constant [22 x i8] c"25.quick_sort.c FAIL\0A\00", align 1
 
 declare i32 @printf(i8*, ...)
-
-define void @check_int(i8* %0, i32 %1, i32 %2) {
-entry:
-  %expected = alloca i32, align 4
-  %actual = alloca i32, align 4
-  %name = alloca i8*, align 8
-  store i8* %0, i8** %name, align 8
-  store i32 %1, i32* %actual, align 4
-  store i32 %2, i32* %expected, align 4
-  %3 = load i32, i32* %actual, align 4
-  %4 = load i32, i32* %expected, align 4
-  %5 = icmp ne i32 %3, %4
-  br i1 %5, label %then, label %if.end
-
-then:                                             ; preds = %entry
-  %6 = load i8*, i8** %name, align 8
-  %7 = load i32, i32* %actual, align 4
-  %8 = load i32, i32* %expected, align 4
-  %9 = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([32 x i8], [32 x i8]* @0, i32 0, i32 0), i8* %6, i32 %7, i32 %8)
-  %10 = load i32, i32* @test_errors, align 4
-  %11 = add i32 %10, 1
-  store i32 %11, i32* @test_errors, align 4
-  br label %if.end
-
-if.end:                                           ; preds = %entry, %then
-  ret void
-}
-
-define void @report_result() {
-entry:
-  %0 = load i32, i32* @test_errors, align 4
-  %1 = icmp eq i32 %0, 0
-  br i1 %1, label %then, label %else
-
-then:                                             ; preds = %entry
-  %2 = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([6 x i8], [6 x i8]* @1, i32 0, i32 0))
-  br label %if.end
-
-else:                                             ; preds = %entry
-  %3 = load i32, i32* @test_errors, align 4
-  %4 = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([19 x i8], [19 x i8]* @2, i32 0, i32 0), i32 %3)
-  br label %if.end
-
-if.end:                                           ; preds = %else, %then
-  ret void
-}
 
 define void @swap(i32* %0, i32* %1) {
 entry:
@@ -197,119 +137,139 @@ if.end:                                           ; preds = %entry, %then
   ret void
 }
 
-define void @printArray(i32* %0, i32 %1) {
-entry:
-  %i = alloca i32, align 4
-  %size = alloca i32, align 4
-  %arr = alloca i32*, align 8
-  store i32* %0, i32** %arr, align 8
-  store i32 %1, i32* %size, align 4
-  store i32 0, i32* %i, align 4
-  br label %for.cond
-
-for.cond:                                         ; preds = %for.loop, %entry
-  %2 = load i32, i32* %i, align 4
-  %3 = load i32, i32* %size, align 4
-  %4 = icmp slt i32 %2, %3
-  br i1 %4, label %for.loop, label %for.end
-
-for.loop:                                         ; preds = %for.cond
-  %5 = load i32*, i32** %arr, align 8
-  %6 = load i32, i32* %i, align 4
-  %7 = getelementptr i32, i32* %5, i32 %6
-  %8 = load i32, i32* %7, align 4
-  %9 = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([4 x i8], [4 x i8]* @3, i32 0, i32 0), i32 %8)
-  %10 = load i32, i32* %i, align 4
-  %11 = add i32 %10, 1
-  store i32 %11, i32* %i, align 4
-  br label %for.cond
-
-for.end:                                          ; preds = %for.cond
-  %12 = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([2 x i8], [2 x i8]* @4, i32 0, i32 0))
-  ret void
-}
-
 define i32 @main() {
 entry:
   %single = alloca [1 x i32], align 4
   %n = alloca i32, align 4
   %arr = alloca [6 x i32], align 4
-  %0 = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([27 x i8], [27 x i8]* @5, i32 0, i32 0))
-  %1 = bitcast [6 x i32]* %arr to i32*
-  %2 = bitcast i32* %1 to i32*
-  store i32 10, i32* %2, align 4
-  %3 = load i32, i32* %2, align 4
-  %4 = bitcast [6 x i32]* %arr to i32*
-  %5 = getelementptr i32, i32* %4, i32 1
-  store i32 7, i32* %5, align 4
-  %6 = load i32, i32* %5, align 4
-  %7 = bitcast [6 x i32]* %arr to i32*
-  %8 = getelementptr i32, i32* %7, i32 2
-  store i32 8, i32* %8, align 4
-  %9 = load i32, i32* %8, align 4
-  %10 = bitcast [6 x i32]* %arr to i32*
-  %11 = getelementptr i32, i32* %10, i32 3
-  store i32 9, i32* %11, align 4
-  %12 = load i32, i32* %11, align 4
-  %13 = bitcast [6 x i32]* %arr to i32*
-  %14 = getelementptr i32, i32* %13, i32 4
-  store i32 1, i32* %14, align 4
-  %15 = load i32, i32* %14, align 4
-  %16 = bitcast [6 x i32]* %arr to i32*
-  %17 = getelementptr i32, i32* %16, i32 5
-  store i32 5, i32* %17, align 4
-  %18 = load i32, i32* %17, align 4
-  %19 = bitcast [6 x i32]* %arr to i32*
-  %20 = bitcast i32* %19 to i32*
-  %21 = load i32, i32* %20, align 4
+  %err = alloca i32, align 4
+  store i32 0, i32* %err, align 4
+  %0 = bitcast [6 x i32]* %arr to i32*
+  %1 = bitcast i32* %0 to i32*
+  store i32 10, i32* %1, align 4
+  %2 = load i32, i32* %1, align 4
+  %3 = bitcast [6 x i32]* %arr to i32*
+  %4 = getelementptr i32, i32* %3, i32 1
+  store i32 7, i32* %4, align 4
+  %5 = load i32, i32* %4, align 4
+  %6 = bitcast [6 x i32]* %arr to i32*
+  %7 = getelementptr i32, i32* %6, i32 2
+  store i32 8, i32* %7, align 4
+  %8 = load i32, i32* %7, align 4
+  %9 = bitcast [6 x i32]* %arr to i32*
+  %10 = getelementptr i32, i32* %9, i32 3
+  store i32 9, i32* %10, align 4
+  %11 = load i32, i32* %10, align 4
+  %12 = bitcast [6 x i32]* %arr to i32*
+  %13 = getelementptr i32, i32* %12, i32 4
+  store i32 1, i32* %13, align 4
+  %14 = load i32, i32* %13, align 4
+  %15 = bitcast [6 x i32]* %arr to i32*
+  %16 = getelementptr i32, i32* %15, i32 5
+  store i32 5, i32* %16, align 4
+  %17 = load i32, i32* %16, align 4
+  %18 = bitcast [6 x i32]* %arr to i32*
+  %19 = bitcast i32* %18 to i32*
+  %20 = load i32, i32* %19, align 4
   store i32 6, i32* %n, align 4
-  %22 = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([18 x i8], [18 x i8]* @6, i32 0, i32 0))
-  %23 = bitcast [6 x i32]* %arr to i32*
-  %24 = load i32, i32* %n, align 4
-  call void @printArray(i32* %23, i32 %24)
-  %25 = bitcast [6 x i32]* %arr to i32*
-  %26 = load i32, i32* %n, align 4
-  %27 = sub i32 %26, 1
-  call void @quickSort(i32* %25, i32 0, i32 %27)
-  %28 = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([16 x i8], [16 x i8]* @7, i32 0, i32 0))
+  %21 = bitcast [6 x i32]* %arr to i32*
+  %22 = load i32, i32* %n, align 4
+  %23 = sub i32 %22, 1
+  call void @quickSort(i32* %21, i32 0, i32 %23)
+  %24 = bitcast [6 x i32]* %arr to i32*
+  %25 = bitcast i32* %24 to i32*
+  %26 = load i32, i32* %25, align 4
+  %27 = icmp ne i32 %26, 1
+  br i1 %27, label %then, label %if.end
+
+then:                                             ; preds = %entry
+  store i32 1, i32* %err, align 4
+  %28 = load i32, i32* %err, align 4
+  br label %if.end
+
+if.end:                                           ; preds = %entry, %then
   %29 = bitcast [6 x i32]* %arr to i32*
-  %30 = load i32, i32* %n, align 4
-  call void @printArray(i32* %29, i32 %30)
-  %31 = bitcast [6 x i32]* %arr to i32*
-  %32 = bitcast i32* %31 to i32*
-  %33 = load i32, i32* %32, align 4
-  call void @check_int(i8* getelementptr inbounds ([10 x i8], [10 x i8]* @8, i32 0, i32 0), i32 %33, i32 1)
+  %30 = getelementptr i32, i32* %29, i32 1
+  %31 = load i32, i32* %30, align 4
+  %32 = icmp ne i32 %31, 5
+  br i1 %32, label %then1, label %if.end3
+
+then1:                                            ; preds = %if.end
+  store i32 1, i32* %err, align 4
+  %33 = load i32, i32* %err, align 4
+  br label %if.end3
+
+if.end3:                                          ; preds = %if.end, %then1
   %34 = bitcast [6 x i32]* %arr to i32*
-  %35 = getelementptr i32, i32* %34, i32 1
+  %35 = getelementptr i32, i32* %34, i32 2
   %36 = load i32, i32* %35, align 4
-  call void @check_int(i8* getelementptr inbounds ([10 x i8], [10 x i8]* @9, i32 0, i32 0), i32 %36, i32 5)
-  %37 = bitcast [6 x i32]* %arr to i32*
-  %38 = getelementptr i32, i32* %37, i32 2
-  %39 = load i32, i32* %38, align 4
-  call void @check_int(i8* getelementptr inbounds ([10 x i8], [10 x i8]* @10, i32 0, i32 0), i32 %39, i32 7)
-  %40 = bitcast [6 x i32]* %arr to i32*
-  %41 = getelementptr i32, i32* %40, i32 3
-  %42 = load i32, i32* %41, align 4
-  call void @check_int(i8* getelementptr inbounds ([10 x i8], [10 x i8]* @11, i32 0, i32 0), i32 %42, i32 8)
-  %43 = bitcast [6 x i32]* %arr to i32*
-  %44 = getelementptr i32, i32* %43, i32 4
-  %45 = load i32, i32* %44, align 4
-  call void @check_int(i8* getelementptr inbounds ([10 x i8], [10 x i8]* @12, i32 0, i32 0), i32 %45, i32 9)
-  %46 = bitcast [6 x i32]* %arr to i32*
-  %47 = getelementptr i32, i32* %46, i32 5
-  %48 = load i32, i32* %47, align 4
-  call void @check_int(i8* getelementptr inbounds ([10 x i8], [10 x i8]* @13, i32 0, i32 0), i32 %48, i32 10)
-  %49 = bitcast [1 x i32]* %single to i32*
-  %50 = bitcast i32* %49 to i32*
-  store i32 42, i32* %50, align 4
+  %37 = icmp ne i32 %36, 7
+  br i1 %37, label %then4, label %if.end6
+
+then4:                                            ; preds = %if.end3
+  store i32 1, i32* %err, align 4
+  %38 = load i32, i32* %err, align 4
+  br label %if.end6
+
+if.end6:                                          ; preds = %if.end3, %then4
+  %39 = bitcast [6 x i32]* %arr to i32*
+  %40 = getelementptr i32, i32* %39, i32 3
+  %41 = load i32, i32* %40, align 4
+  %42 = icmp ne i32 %41, 8
+  br i1 %42, label %then7, label %if.end9
+
+then7:                                            ; preds = %if.end6
+  store i32 1, i32* %err, align 4
+  %43 = load i32, i32* %err, align 4
+  br label %if.end9
+
+if.end9:                                          ; preds = %if.end6, %then7
+  %44 = bitcast [6 x i32]* %arr to i32*
+  %45 = getelementptr i32, i32* %44, i32 4
+  %46 = load i32, i32* %45, align 4
+  %47 = icmp ne i32 %46, 9
+  br i1 %47, label %then10, label %if.end12
+
+then10:                                           ; preds = %if.end9
+  store i32 1, i32* %err, align 4
+  %48 = load i32, i32* %err, align 4
+  br label %if.end12
+
+if.end12:                                         ; preds = %if.end9, %then10
+  %49 = bitcast [6 x i32]* %arr to i32*
+  %50 = getelementptr i32, i32* %49, i32 5
   %51 = load i32, i32* %50, align 4
-  %52 = bitcast [1 x i32]* %single to i32*
-  call void @quickSort(i32* %52, i32 0, i32 0)
-  %53 = bitcast [1 x i32]* %single to i32*
-  %54 = bitcast i32* %53 to i32*
-  %55 = load i32, i32* %54, align 4
-  call void @check_int(i8* getelementptr inbounds ([15 x i8], [15 x i8]* @14, i32 0, i32 0), i32 %55, i32 42)
-  call void @report_result()
-  %56 = load i32, i32* @test_errors, align 4
-  ret i32 %56
+  %52 = icmp ne i32 %51, 10
+  br i1 %52, label %then13, label %if.end15
+
+then13:                                           ; preds = %if.end12
+  store i32 1, i32* %err, align 4
+  %53 = load i32, i32* %err, align 4
+  br label %if.end15
+
+if.end15:                                         ; preds = %if.end12, %then13
+  %54 = bitcast [1 x i32]* %single to i32*
+  %55 = bitcast i32* %54 to i32*
+  store i32 42, i32* %55, align 4
+  %56 = load i32, i32* %55, align 4
+  %57 = bitcast [1 x i32]* %single to i32*
+  call void @quickSort(i32* %57, i32 0, i32 0)
+  %58 = bitcast [1 x i32]* %single to i32*
+  %59 = bitcast i32* %58 to i32*
+  %60 = load i32, i32* %59, align 4
+  %61 = icmp ne i32 %60, 42
+  br i1 %61, label %then16, label %if.end18
+
+then16:                                           ; preds = %if.end15
+  store i32 1, i32* %err, align 4
+  %62 = load i32, i32* %err, align 4
+  br label %if.end18
+
+if.end18:                                         ; preds = %if.end15, %then16
+  %63 = load i32, i32* %err, align 4
+  %64 = icmp eq i32 %63, 0
+  %. = select i1 %64, i8* getelementptr inbounds ([22 x i8], [22 x i8]* @0, i32 0, i32 0), i8* getelementptr inbounds ([22 x i8], [22 x i8]* @1, i32 0, i32 0)
+  %65 = call i32 (i8*, ...) @printf(i8* %.)
+  %66 = load i32, i32* %err, align 4
+  ret i32 %66
 }

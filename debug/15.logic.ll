@@ -3,385 +3,506 @@ source_filename = "lcc"
 target datalayout = "e-m:o-i64:64-i128:128-n32:64-S128"
 target triple = "arm64-apple-darwin25.5.0"
 
-@test_errors = global i32 0
-@0 = private unnamed_addr constant [32 x i8] c"ERROR [%s]: got %d expected %d\0A\00", align 1
-@1 = private unnamed_addr constant [34 x i8] c"ERROR [%s]: got %d expected true\0A\00", align 1
-@2 = private unnamed_addr constant [35 x i8] c"ERROR [%s]: got %d expected false\0A\00", align 1
-@3 = private unnamed_addr constant [6 x i8] c"PASS\0A\00", align 1
-@4 = private unnamed_addr constant [19 x i8] c"FAIL: %d error(s)\0A\00", align 1
-@5 = private unnamed_addr constant [22 x i8] c"**** 15.logic.c ****\0A\00", align 1
-@6 = private unnamed_addr constant [11 x i8] c"t:%d f:%d\0A\00", align 1
-@7 = private unnamed_addr constant [11 x i8] c"t && f:%d\0A\00", align 1
-@8 = private unnamed_addr constant [11 x i8] c"t && t:%d\0A\00", align 1
-@9 = private unnamed_addr constant [11 x i8] c"f && f:%d\0A\00", align 1
-@10 = private unnamed_addr constant [11 x i8] c"t || f:%d\0A\00", align 1
-@11 = private unnamed_addr constant [11 x i8] c"t || t:%d\0A\00", align 1
-@12 = private unnamed_addr constant [11 x i8] c"f || f:%d\0A\00", align 1
-@13 = private unnamed_addr constant [7 x i8] c"!t:%d\0A\00", align 1
-@14 = private unnamed_addr constant [7 x i8] c"!f:%d\0A\00", align 1
-@15 = private unnamed_addr constant [2 x i8] c"t\00", align 1
-@16 = private unnamed_addr constant [2 x i8] c"f\00", align 1
-@17 = private unnamed_addr constant [7 x i8] c"t && f\00", align 1
-@18 = private unnamed_addr constant [7 x i8] c"t && t\00", align 1
-@19 = private unnamed_addr constant [7 x i8] c"f && f\00", align 1
-@20 = private unnamed_addr constant [7 x i8] c"t || f\00", align 1
-@21 = private unnamed_addr constant [7 x i8] c"t || t\00", align 1
-@22 = private unnamed_addr constant [7 x i8] c"f || f\00", align 1
-@23 = private unnamed_addr constant [3 x i8] c"!t\00", align 1
-@24 = private unnamed_addr constant [3 x i8] c"!f\00", align 1
-@25 = private unnamed_addr constant [11 x i8] c"100 == 100\00", align 1
-@26 = private unnamed_addr constant [11 x i8] c"100 == 128\00", align 1
-@27 = private unnamed_addr constant [11 x i8] c"100 != 100\00", align 1
-@28 = private unnamed_addr constant [11 x i8] c"100 != 128\00", align 1
-@29 = private unnamed_addr constant [10 x i8] c"100 < 100\00", align 1
-@30 = private unnamed_addr constant [10 x i8] c"100 < 128\00", align 1
-@31 = private unnamed_addr constant [10 x i8] c"128 < 100\00", align 1
-@32 = private unnamed_addr constant [11 x i8] c"100 <= 100\00", align 1
-@33 = private unnamed_addr constant [11 x i8] c"100 <= 128\00", align 1
-@34 = private unnamed_addr constant [11 x i8] c"128 <= 100\00", align 1
-@35 = private unnamed_addr constant [10 x i8] c"100 > 100\00", align 1
-@36 = private unnamed_addr constant [10 x i8] c"100 > 128\00", align 1
-@37 = private unnamed_addr constant [10 x i8] c"128 > 100\00", align 1
-@38 = private unnamed_addr constant [11 x i8] c"100 >= 100\00", align 1
-@39 = private unnamed_addr constant [11 x i8] c"100 >= 128\00", align 1
-@40 = private unnamed_addr constant [11 x i8] c"128 >= 100\00", align 1
-@41 = private unnamed_addr constant [29 x i8] c"unsigned 1 < 0xFFFFFFFF: %d\0A\00", align 1
-@42 = private unnamed_addr constant [29 x i8] c"unsigned 0xFFFFFFFF > 1: %d\0A\00", align 1
-@43 = private unnamed_addr constant [23 x i8] c"unsigned less boundary\00", align 1
-@44 = private unnamed_addr constant [26 x i8] c"unsigned greater boundary\00", align 1
-@45 = private unnamed_addr constant [19 x i8] c"mixed -1 < 1u: %d\0A\00", align 1
-@46 = private unnamed_addr constant [19 x i8] c"mixed -1 > 1u: %d\0A\00", align 1
-@47 = private unnamed_addr constant [32 x i8] c"mixed -1 < 1u promotes unsigned\00", align 1
-@48 = private unnamed_addr constant [32 x i8] c"mixed -1 > 1u promotes unsigned\00", align 1
+@0 = private unnamed_addr constant [17 x i8] c"15.logic.c PASS\0A\00", align 1
+@1 = private unnamed_addr constant [17 x i8] c"15.logic.c FAIL\0A\00", align 1
 
 declare i32 @printf(i8*, ...)
 
-define void @check_int(i8* %0, i32 %1, i32 %2) {
-entry:
-  %expected = alloca i32, align 4
-  %actual = alloca i32, align 4
-  %name = alloca i8*, align 8
-  store i8* %0, i8** %name, align 8
-  store i32 %1, i32* %actual, align 4
-  store i32 %2, i32* %expected, align 4
-  %3 = load i32, i32* %actual, align 4
-  %4 = load i32, i32* %expected, align 4
-  %5 = icmp ne i32 %3, %4
-  br i1 %5, label %then, label %if.end
-
-then:                                             ; preds = %entry
-  %6 = load i8*, i8** %name, align 8
-  %7 = load i32, i32* %actual, align 4
-  %8 = load i32, i32* %expected, align 4
-  %9 = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([32 x i8], [32 x i8]* @0, i32 0, i32 0), i8* %6, i32 %7, i32 %8)
-  %10 = load i32, i32* @test_errors, align 4
-  %11 = add i32 %10, 1
-  store i32 %11, i32* @test_errors, align 4
-  br label %if.end
-
-if.end:                                           ; preds = %entry, %then
-  ret void
-}
-
-define void @check_bool(i8* %0, i32 %1, i32 %2) {
-entry:
-  %isTruthy = alloca i32, align 4
-  %expectedTruthy = alloca i32, align 4
-  %actual = alloca i32, align 4
-  %name = alloca i8*, align 8
-  store i8* %0, i8** %name, align 8
-  store i32 %1, i32* %actual, align 4
-  store i32 %2, i32* %expectedTruthy, align 4
-  store i32 0, i32* %isTruthy, align 4
-  %3 = load i32, i32* %actual, align 4
-  %4 = icmp ne i32 %3, 0
-  br i1 %4, label %then, label %if.end
-
-then:                                             ; preds = %entry
-  store i32 1, i32* %isTruthy, align 4
-  %5 = load i32, i32* %isTruthy, align 4
-  br label %if.end
-
-if.end:                                           ; preds = %entry, %then
-  %6 = load i32, i32* %isTruthy, align 4
-  %7 = load i32, i32* %expectedTruthy, align 4
-  %8 = icmp ne i32 %6, %7
-  br i1 %8, label %then1, label %if.end6
-
-then1:                                            ; preds = %if.end
-  %9 = load i32, i32* %expectedTruthy, align 4
-  %10 = icmp ne i32 %9, 0
-  %11 = load i8*, i8** %name, align 8
-  %12 = load i32, i32* %actual, align 4
-  %. = select i1 %10, i8* getelementptr inbounds ([34 x i8], [34 x i8]* @1, i32 0, i32 0), i8* getelementptr inbounds ([35 x i8], [35 x i8]* @2, i32 0, i32 0)
-  %13 = call i32 (i8*, ...) @printf(i8* %., i8* %11, i32 %12)
-  %14 = load i32, i32* @test_errors, align 4
-  %15 = add i32 %14, 1
-  store i32 %15, i32* @test_errors, align 4
-  br label %if.end6
-
-if.end6:                                          ; preds = %if.end, %then1
-  ret void
-}
-
-define void @report_result() {
-entry:
-  %0 = load i32, i32* @test_errors, align 4
-  %1 = icmp eq i32 %0, 0
-  br i1 %1, label %then, label %else
-
-then:                                             ; preds = %entry
-  %2 = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([6 x i8], [6 x i8]* @3, i32 0, i32 0))
-  br label %if.end
-
-else:                                             ; preds = %entry
-  %3 = load i32, i32* @test_errors, align 4
-  %4 = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([19 x i8], [19 x i8]* @4, i32 0, i32 0), i32 %3)
-  br label %if.end
-
-if.end:                                           ; preds = %else, %then
-  ret void
-}
-
 define i32 @main() {
 entry:
-  %mixedGreater = alloca i32, align 4
-  %mixedLess = alloca i32, align 4
   %ui = alloca i32, align 4
   %si = alloca i32, align 4
-  %unsignedGreater = alloca i32, align 4
-  %unsignedLess = alloca i32, align 4
   %ub = alloca i32, align 4
   %ua = alloca i32, align 4
   %c = alloca i32, align 4
   %b = alloca i32, align 4
   %a = alloca i32, align 4
-  %boolNot2 = alloca i1, align 1
-  %boolNot1 = alloca i1, align 1
-  %boolOr3 = alloca i1, align 1
-  %boolOr2 = alloca i1, align 1
-  %boolOr1 = alloca i1, align 1
-  %boolAnd3 = alloca i1, align 1
-  %boolAnd2 = alloca i1, align 1
-  %boolAnd1 = alloca i1, align 1
+  %v = alloca i32, align 4
   %f = alloca i1, align 1
   %t = alloca i1, align 1
-  %0 = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([22 x i8], [22 x i8]* @5, i32 0, i32 0))
+  %err = alloca i32, align 4
+  store i32 0, i32* %err, align 4
   store i1 true, i1* %t, align 1
   store i1 false, i1* %f, align 1
-  %1 = load i1, i1* %t, align 1
-  %2 = zext i1 %1 to i32
-  %3 = load i1, i1* %f, align 1
-  %4 = zext i1 %3 to i32
-  %5 = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([11 x i8], [11 x i8]* @6, i32 0, i32 0), i32 %2, i32 %4)
-  %6 = load i1, i1* %t, align 1
-  %7 = load i1, i1* %f, align 1
-  %8 = select i1 %6, i1 %7, i1 false
-  store i1 %8, i1* %boolAnd1, align 1
-  %9 = load i1, i1* %t, align 1
-  %10 = load i1, i1* %t, align 1
-  %11 = select i1 %9, i1 %10, i1 false
-  store i1 %11, i1* %boolAnd2, align 1
-  %12 = load i1, i1* %f, align 1
-  %13 = load i1, i1* %f, align 1
-  %14 = select i1 %12, i1 %13, i1 false
-  store i1 %14, i1* %boolAnd3, align 1
-  %15 = load i1, i1* %boolAnd1, align 1
-  %16 = zext i1 %15 to i32
-  %17 = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([11 x i8], [11 x i8]* @7, i32 0, i32 0), i32 %16)
-  %18 = load i1, i1* %boolAnd2, align 1
-  %19 = zext i1 %18 to i32
-  %20 = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([11 x i8], [11 x i8]* @8, i32 0, i32 0), i32 %19)
-  %21 = load i1, i1* %boolAnd3, align 1
-  %22 = zext i1 %21 to i32
-  %23 = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([11 x i8], [11 x i8]* @9, i32 0, i32 0), i32 %22)
-  %24 = load i1, i1* %t, align 1
+  %0 = load i1, i1* %t, align 1
+  %1 = zext i1 %0 to i32
+  %2 = icmp eq i32 %1, 0
+  br i1 %2, label %then, label %if.end
+
+then:                                             ; preds = %entry
+  store i32 1, i32* %err, align 4
+  %3 = load i32, i32* %err, align 4
+  br label %if.end
+
+if.end:                                           ; preds = %entry, %then
+  %4 = load i1, i1* %f, align 1
+  %5 = zext i1 %4 to i32
+  %6 = icmp ne i32 %5, 0
+  br i1 %6, label %then1, label %if.end3
+
+then1:                                            ; preds = %if.end
+  store i32 1, i32* %err, align 4
+  %7 = load i32, i32* %err, align 4
+  br label %if.end3
+
+if.end3:                                          ; preds = %if.end, %then1
+  %8 = load i1, i1* %t, align 1
+  %9 = load i1, i1* %f, align 1
+  %10 = select i1 %8, i1 %9, i1 false
+  %11 = sext i1 %10 to i32
+  store i32 %11, i32* %v, align 4
+  %12 = load i32, i32* %v, align 4
+  %13 = load i32, i32* %v, align 4
+  %14 = icmp ne i32 %13, 0
+  br i1 %14, label %then4, label %if.end6
+
+then4:                                            ; preds = %if.end3
+  store i32 1, i32* %err, align 4
+  %15 = load i32, i32* %err, align 4
+  br label %if.end6
+
+if.end6:                                          ; preds = %if.end3, %then4
+  %16 = load i1, i1* %t, align 1
+  %17 = load i1, i1* %t, align 1
+  %18 = select i1 %16, i1 %17, i1 false
+  %19 = sext i1 %18 to i32
+  store i32 %19, i32* %v, align 4
+  %20 = load i32, i32* %v, align 4
+  %21 = load i32, i32* %v, align 4
+  %22 = icmp eq i32 %21, 0
+  br i1 %22, label %then7, label %if.end9
+
+then7:                                            ; preds = %if.end6
+  store i32 1, i32* %err, align 4
+  %23 = load i32, i32* %err, align 4
+  br label %if.end9
+
+if.end9:                                          ; preds = %if.end6, %then7
+  %24 = load i1, i1* %f, align 1
   %25 = load i1, i1* %f, align 1
-  %26 = select i1 %24, i1 true, i1 %25
-  store i1 %26, i1* %boolOr1, align 1
-  %27 = load i1, i1* %t, align 1
-  %28 = load i1, i1* %t, align 1
-  %29 = select i1 %27, i1 true, i1 %28
-  store i1 %29, i1* %boolOr2, align 1
-  %30 = load i1, i1* %f, align 1
-  %31 = load i1, i1* %f, align 1
-  %32 = select i1 %30, i1 true, i1 %31
-  store i1 %32, i1* %boolOr3, align 1
-  %33 = load i1, i1* %boolOr1, align 1
-  %34 = zext i1 %33 to i32
-  %35 = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([11 x i8], [11 x i8]* @10, i32 0, i32 0), i32 %34)
-  %36 = load i1, i1* %boolOr2, align 1
-  %37 = zext i1 %36 to i32
-  %38 = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([11 x i8], [11 x i8]* @11, i32 0, i32 0), i32 %37)
-  %39 = load i1, i1* %boolOr3, align 1
-  %40 = zext i1 %39 to i32
-  %41 = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([11 x i8], [11 x i8]* @12, i32 0, i32 0), i32 %40)
-  %42 = load i1, i1* %t, align 1
-  %43 = icmp eq i1 %42, false
-  store i1 %43, i1* %boolNot1, align 1
-  %44 = load i1, i1* %f, align 1
-  %45 = icmp eq i1 %44, false
-  store i1 %45, i1* %boolNot2, align 1
-  %46 = load i1, i1* %boolNot1, align 1
-  %47 = zext i1 %46 to i32
-  %48 = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([7 x i8], [7 x i8]* @13, i32 0, i32 0), i32 %47)
-  %49 = load i1, i1* %boolNot2, align 1
-  %50 = zext i1 %49 to i32
-  %51 = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([7 x i8], [7 x i8]* @14, i32 0, i32 0), i32 %50)
+  %26 = select i1 %24, i1 %25, i1 false
+  %27 = sext i1 %26 to i32
+  store i32 %27, i32* %v, align 4
+  %28 = load i32, i32* %v, align 4
+  %29 = load i32, i32* %v, align 4
+  %30 = icmp ne i32 %29, 0
+  br i1 %30, label %then10, label %if.end12
+
+then10:                                           ; preds = %if.end9
+  store i32 1, i32* %err, align 4
+  %31 = load i32, i32* %err, align 4
+  br label %if.end12
+
+if.end12:                                         ; preds = %if.end9, %then10
+  %32 = load i1, i1* %t, align 1
+  %33 = load i1, i1* %f, align 1
+  %34 = select i1 %32, i1 true, i1 %33
+  %35 = sext i1 %34 to i32
+  store i32 %35, i32* %v, align 4
+  %36 = load i32, i32* %v, align 4
+  %37 = load i32, i32* %v, align 4
+  %38 = icmp eq i32 %37, 0
+  br i1 %38, label %then13, label %if.end15
+
+then13:                                           ; preds = %if.end12
+  store i32 1, i32* %err, align 4
+  %39 = load i32, i32* %err, align 4
+  br label %if.end15
+
+if.end15:                                         ; preds = %if.end12, %then13
+  %40 = load i1, i1* %t, align 1
+  %41 = load i1, i1* %t, align 1
+  %42 = select i1 %40, i1 true, i1 %41
+  %43 = sext i1 %42 to i32
+  store i32 %43, i32* %v, align 4
+  %44 = load i32, i32* %v, align 4
+  %45 = load i32, i32* %v, align 4
+  %46 = icmp eq i32 %45, 0
+  br i1 %46, label %then16, label %if.end18
+
+then16:                                           ; preds = %if.end15
+  store i32 1, i32* %err, align 4
+  %47 = load i32, i32* %err, align 4
+  br label %if.end18
+
+if.end18:                                         ; preds = %if.end15, %then16
+  %48 = load i1, i1* %f, align 1
+  %49 = load i1, i1* %f, align 1
+  %50 = select i1 %48, i1 true, i1 %49
+  %51 = sext i1 %50 to i32
+  store i32 %51, i32* %v, align 4
+  %52 = load i32, i32* %v, align 4
+  %53 = load i32, i32* %v, align 4
+  %54 = icmp ne i32 %53, 0
+  br i1 %54, label %then19, label %if.end21
+
+then19:                                           ; preds = %if.end18
+  store i32 1, i32* %err, align 4
+  %55 = load i32, i32* %err, align 4
+  br label %if.end21
+
+if.end21:                                         ; preds = %if.end18, %then19
+  %56 = load i1, i1* %t, align 1
+  %57 = icmp eq i1 %56, false
+  %58 = sext i1 %57 to i32
+  store i32 %58, i32* %v, align 4
+  %59 = load i32, i32* %v, align 4
+  %60 = load i32, i32* %v, align 4
+  %61 = icmp ne i32 %60, 0
+  br i1 %61, label %then22, label %if.end24
+
+then22:                                           ; preds = %if.end21
+  store i32 1, i32* %err, align 4
+  %62 = load i32, i32* %err, align 4
+  br label %if.end24
+
+if.end24:                                         ; preds = %if.end21, %then22
+  %63 = load i1, i1* %f, align 1
+  %64 = icmp eq i1 %63, false
+  %65 = sext i1 %64 to i32
+  store i32 %65, i32* %v, align 4
+  %66 = load i32, i32* %v, align 4
+  %67 = load i32, i32* %v, align 4
+  %68 = icmp eq i32 %67, 0
+  br i1 %68, label %then25, label %if.end27
+
+then25:                                           ; preds = %if.end24
+  store i32 1, i32* %err, align 4
+  %69 = load i32, i32* %err, align 4
+  br label %if.end27
+
+if.end27:                                         ; preds = %if.end24, %then25
   store i32 100, i32* %a, align 4
   store i32 100, i32* %b, align 4
   store i32 128, i32* %c, align 4
-  %52 = load i1, i1* %t, align 1
-  %53 = zext i1 %52 to i32
-  call void @check_int(i8* getelementptr inbounds ([2 x i8], [2 x i8]* @15, i32 0, i32 0), i32 %53, i32 1)
-  %54 = load i1, i1* %f, align 1
-  %55 = zext i1 %54 to i32
-  call void @check_int(i8* getelementptr inbounds ([2 x i8], [2 x i8]* @16, i32 0, i32 0), i32 %55, i32 0)
-  %56 = load i1, i1* %boolAnd1, align 1
-  %57 = zext i1 %56 to i32
-  call void @check_int(i8* getelementptr inbounds ([7 x i8], [7 x i8]* @17, i32 0, i32 0), i32 %57, i32 0)
-  %58 = load i1, i1* %boolAnd2, align 1
-  %59 = zext i1 %58 to i32
-  call void @check_int(i8* getelementptr inbounds ([7 x i8], [7 x i8]* @18, i32 0, i32 0), i32 %59, i32 1)
-  %60 = load i1, i1* %boolAnd3, align 1
-  %61 = zext i1 %60 to i32
-  call void @check_int(i8* getelementptr inbounds ([7 x i8], [7 x i8]* @19, i32 0, i32 0), i32 %61, i32 0)
-  %62 = load i1, i1* %boolOr1, align 1
-  %63 = zext i1 %62 to i32
-  call void @check_int(i8* getelementptr inbounds ([7 x i8], [7 x i8]* @20, i32 0, i32 0), i32 %63, i32 1)
-  %64 = load i1, i1* %boolOr2, align 1
-  %65 = zext i1 %64 to i32
-  call void @check_int(i8* getelementptr inbounds ([7 x i8], [7 x i8]* @21, i32 0, i32 0), i32 %65, i32 1)
-  %66 = load i1, i1* %boolOr3, align 1
-  %67 = zext i1 %66 to i32
-  call void @check_int(i8* getelementptr inbounds ([7 x i8], [7 x i8]* @22, i32 0, i32 0), i32 %67, i32 0)
-  %68 = load i1, i1* %boolNot1, align 1
-  %69 = zext i1 %68 to i32
-  call void @check_int(i8* getelementptr inbounds ([3 x i8], [3 x i8]* @23, i32 0, i32 0), i32 %69, i32 0)
-  %70 = load i1, i1* %boolNot2, align 1
-  %71 = zext i1 %70 to i32
-  call void @check_int(i8* getelementptr inbounds ([3 x i8], [3 x i8]* @24, i32 0, i32 0), i32 %71, i32 1)
-  %72 = load i32, i32* %a, align 4
-  %73 = load i32, i32* %b, align 4
-  %74 = icmp eq i32 %72, %73
-  %75 = sext i1 %74 to i32
-  call void @check_bool(i8* getelementptr inbounds ([11 x i8], [11 x i8]* @25, i32 0, i32 0), i32 %75, i32 1)
-  %76 = load i32, i32* %a, align 4
-  %77 = load i32, i32* %c, align 4
-  %78 = icmp eq i32 %76, %77
-  %79 = sext i1 %78 to i32
-  call void @check_bool(i8* getelementptr inbounds ([11 x i8], [11 x i8]* @26, i32 0, i32 0), i32 %79, i32 0)
-  %80 = load i32, i32* %a, align 4
-  %81 = load i32, i32* %b, align 4
-  %82 = icmp ne i32 %80, %81
-  %83 = sext i1 %82 to i32
-  call void @check_bool(i8* getelementptr inbounds ([11 x i8], [11 x i8]* @27, i32 0, i32 0), i32 %83, i32 0)
-  %84 = load i32, i32* %a, align 4
-  %85 = load i32, i32* %c, align 4
-  %86 = icmp ne i32 %84, %85
-  %87 = sext i1 %86 to i32
-  call void @check_bool(i8* getelementptr inbounds ([11 x i8], [11 x i8]* @28, i32 0, i32 0), i32 %87, i32 1)
-  %88 = load i32, i32* %a, align 4
-  %89 = load i32, i32* %b, align 4
-  %90 = icmp slt i32 %88, %89
-  %91 = sext i1 %90 to i32
-  call void @check_bool(i8* getelementptr inbounds ([10 x i8], [10 x i8]* @29, i32 0, i32 0), i32 %91, i32 0)
-  %92 = load i32, i32* %a, align 4
-  %93 = load i32, i32* %c, align 4
-  %94 = icmp slt i32 %92, %93
-  %95 = sext i1 %94 to i32
-  call void @check_bool(i8* getelementptr inbounds ([10 x i8], [10 x i8]* @30, i32 0, i32 0), i32 %95, i32 1)
-  %96 = load i32, i32* %c, align 4
-  %97 = load i32, i32* %a, align 4
-  %98 = icmp slt i32 %96, %97
-  %99 = sext i1 %98 to i32
-  call void @check_bool(i8* getelementptr inbounds ([10 x i8], [10 x i8]* @31, i32 0, i32 0), i32 %99, i32 0)
-  %100 = load i32, i32* %a, align 4
-  %101 = load i32, i32* %b, align 4
-  %102 = icmp sle i32 %100, %101
-  %103 = sext i1 %102 to i32
-  call void @check_bool(i8* getelementptr inbounds ([11 x i8], [11 x i8]* @32, i32 0, i32 0), i32 %103, i32 1)
-  %104 = load i32, i32* %a, align 4
-  %105 = load i32, i32* %c, align 4
-  %106 = icmp sle i32 %104, %105
-  %107 = sext i1 %106 to i32
-  call void @check_bool(i8* getelementptr inbounds ([11 x i8], [11 x i8]* @33, i32 0, i32 0), i32 %107, i32 1)
-  %108 = load i32, i32* %c, align 4
-  %109 = load i32, i32* %a, align 4
-  %110 = icmp sle i32 %108, %109
-  %111 = sext i1 %110 to i32
-  call void @check_bool(i8* getelementptr inbounds ([11 x i8], [11 x i8]* @34, i32 0, i32 0), i32 %111, i32 0)
-  %112 = load i32, i32* %a, align 4
-  %113 = load i32, i32* %b, align 4
-  %114 = icmp sgt i32 %112, %113
-  %115 = sext i1 %114 to i32
-  call void @check_bool(i8* getelementptr inbounds ([10 x i8], [10 x i8]* @35, i32 0, i32 0), i32 %115, i32 0)
-  %116 = load i32, i32* %a, align 4
-  %117 = load i32, i32* %c, align 4
-  %118 = icmp sgt i32 %116, %117
-  %119 = sext i1 %118 to i32
-  call void @check_bool(i8* getelementptr inbounds ([10 x i8], [10 x i8]* @36, i32 0, i32 0), i32 %119, i32 0)
-  %120 = load i32, i32* %c, align 4
-  %121 = load i32, i32* %a, align 4
-  %122 = icmp sgt i32 %120, %121
-  %123 = sext i1 %122 to i32
-  call void @check_bool(i8* getelementptr inbounds ([10 x i8], [10 x i8]* @37, i32 0, i32 0), i32 %123, i32 1)
-  %124 = load i32, i32* %a, align 4
-  %125 = load i32, i32* %b, align 4
-  %126 = icmp sge i32 %124, %125
-  %127 = sext i1 %126 to i32
-  call void @check_bool(i8* getelementptr inbounds ([11 x i8], [11 x i8]* @38, i32 0, i32 0), i32 %127, i32 1)
-  %128 = load i32, i32* %a, align 4
-  %129 = load i32, i32* %c, align 4
-  %130 = icmp sge i32 %128, %129
-  %131 = sext i1 %130 to i32
-  call void @check_bool(i8* getelementptr inbounds ([11 x i8], [11 x i8]* @39, i32 0, i32 0), i32 %131, i32 0)
-  %132 = load i32, i32* %c, align 4
-  %133 = load i32, i32* %a, align 4
-  %134 = icmp sge i32 %132, %133
-  %135 = sext i1 %134 to i32
-  call void @check_bool(i8* getelementptr inbounds ([11 x i8], [11 x i8]* @40, i32 0, i32 0), i32 %135, i32 1)
+  %70 = load i32, i32* %a, align 4
+  %71 = load i32, i32* %b, align 4
+  %72 = icmp eq i32 %70, %71
+  %73 = sext i1 %72 to i32
+  store i32 %73, i32* %v, align 4
+  %74 = load i32, i32* %v, align 4
+  %75 = load i32, i32* %v, align 4
+  %76 = icmp eq i32 %75, 0
+  br i1 %76, label %then28, label %if.end30
+
+then28:                                           ; preds = %if.end27
+  store i32 1, i32* %err, align 4
+  %77 = load i32, i32* %err, align 4
+  br label %if.end30
+
+if.end30:                                         ; preds = %if.end27, %then28
+  %78 = load i32, i32* %a, align 4
+  %79 = load i32, i32* %c, align 4
+  %80 = icmp eq i32 %78, %79
+  %81 = sext i1 %80 to i32
+  store i32 %81, i32* %v, align 4
+  %82 = load i32, i32* %v, align 4
+  %83 = load i32, i32* %v, align 4
+  %84 = icmp ne i32 %83, 0
+  br i1 %84, label %then31, label %if.end33
+
+then31:                                           ; preds = %if.end30
+  store i32 1, i32* %err, align 4
+  %85 = load i32, i32* %err, align 4
+  br label %if.end33
+
+if.end33:                                         ; preds = %if.end30, %then31
+  %86 = load i32, i32* %a, align 4
+  %87 = load i32, i32* %b, align 4
+  %88 = icmp ne i32 %86, %87
+  %89 = sext i1 %88 to i32
+  store i32 %89, i32* %v, align 4
+  %90 = load i32, i32* %v, align 4
+  %91 = load i32, i32* %v, align 4
+  %92 = icmp ne i32 %91, 0
+  br i1 %92, label %then34, label %if.end36
+
+then34:                                           ; preds = %if.end33
+  store i32 1, i32* %err, align 4
+  %93 = load i32, i32* %err, align 4
+  br label %if.end36
+
+if.end36:                                         ; preds = %if.end33, %then34
+  %94 = load i32, i32* %a, align 4
+  %95 = load i32, i32* %c, align 4
+  %96 = icmp ne i32 %94, %95
+  %97 = sext i1 %96 to i32
+  store i32 %97, i32* %v, align 4
+  %98 = load i32, i32* %v, align 4
+  %99 = load i32, i32* %v, align 4
+  %100 = icmp eq i32 %99, 0
+  br i1 %100, label %then37, label %if.end39
+
+then37:                                           ; preds = %if.end36
+  store i32 1, i32* %err, align 4
+  %101 = load i32, i32* %err, align 4
+  br label %if.end39
+
+if.end39:                                         ; preds = %if.end36, %then37
+  %102 = load i32, i32* %a, align 4
+  %103 = load i32, i32* %b, align 4
+  %104 = icmp slt i32 %102, %103
+  %105 = sext i1 %104 to i32
+  store i32 %105, i32* %v, align 4
+  %106 = load i32, i32* %v, align 4
+  %107 = load i32, i32* %v, align 4
+  %108 = icmp ne i32 %107, 0
+  br i1 %108, label %then40, label %if.end42
+
+then40:                                           ; preds = %if.end39
+  store i32 1, i32* %err, align 4
+  %109 = load i32, i32* %err, align 4
+  br label %if.end42
+
+if.end42:                                         ; preds = %if.end39, %then40
+  %110 = load i32, i32* %a, align 4
+  %111 = load i32, i32* %c, align 4
+  %112 = icmp slt i32 %110, %111
+  %113 = sext i1 %112 to i32
+  store i32 %113, i32* %v, align 4
+  %114 = load i32, i32* %v, align 4
+  %115 = load i32, i32* %v, align 4
+  %116 = icmp eq i32 %115, 0
+  br i1 %116, label %then43, label %if.end45
+
+then43:                                           ; preds = %if.end42
+  store i32 1, i32* %err, align 4
+  %117 = load i32, i32* %err, align 4
+  br label %if.end45
+
+if.end45:                                         ; preds = %if.end42, %then43
+  %118 = load i32, i32* %c, align 4
+  %119 = load i32, i32* %a, align 4
+  %120 = icmp slt i32 %118, %119
+  %121 = sext i1 %120 to i32
+  store i32 %121, i32* %v, align 4
+  %122 = load i32, i32* %v, align 4
+  %123 = load i32, i32* %v, align 4
+  %124 = icmp ne i32 %123, 0
+  br i1 %124, label %then46, label %if.end48
+
+then46:                                           ; preds = %if.end45
+  store i32 1, i32* %err, align 4
+  %125 = load i32, i32* %err, align 4
+  br label %if.end48
+
+if.end48:                                         ; preds = %if.end45, %then46
+  %126 = load i32, i32* %a, align 4
+  %127 = load i32, i32* %b, align 4
+  %128 = icmp sle i32 %126, %127
+  %129 = sext i1 %128 to i32
+  store i32 %129, i32* %v, align 4
+  %130 = load i32, i32* %v, align 4
+  %131 = load i32, i32* %v, align 4
+  %132 = icmp eq i32 %131, 0
+  br i1 %132, label %then49, label %if.end51
+
+then49:                                           ; preds = %if.end48
+  store i32 1, i32* %err, align 4
+  %133 = load i32, i32* %err, align 4
+  br label %if.end51
+
+if.end51:                                         ; preds = %if.end48, %then49
+  %134 = load i32, i32* %a, align 4
+  %135 = load i32, i32* %c, align 4
+  %136 = icmp sle i32 %134, %135
+  %137 = sext i1 %136 to i32
+  store i32 %137, i32* %v, align 4
+  %138 = load i32, i32* %v, align 4
+  %139 = load i32, i32* %v, align 4
+  %140 = icmp eq i32 %139, 0
+  br i1 %140, label %then52, label %if.end54
+
+then52:                                           ; preds = %if.end51
+  store i32 1, i32* %err, align 4
+  %141 = load i32, i32* %err, align 4
+  br label %if.end54
+
+if.end54:                                         ; preds = %if.end51, %then52
+  %142 = load i32, i32* %c, align 4
+  %143 = load i32, i32* %a, align 4
+  %144 = icmp sle i32 %142, %143
+  %145 = sext i1 %144 to i32
+  store i32 %145, i32* %v, align 4
+  %146 = load i32, i32* %v, align 4
+  %147 = load i32, i32* %v, align 4
+  %148 = icmp ne i32 %147, 0
+  br i1 %148, label %then55, label %if.end57
+
+then55:                                           ; preds = %if.end54
+  store i32 1, i32* %err, align 4
+  %149 = load i32, i32* %err, align 4
+  br label %if.end57
+
+if.end57:                                         ; preds = %if.end54, %then55
+  %150 = load i32, i32* %a, align 4
+  %151 = load i32, i32* %b, align 4
+  %152 = icmp sgt i32 %150, %151
+  %153 = sext i1 %152 to i32
+  store i32 %153, i32* %v, align 4
+  %154 = load i32, i32* %v, align 4
+  %155 = load i32, i32* %v, align 4
+  %156 = icmp ne i32 %155, 0
+  br i1 %156, label %then58, label %if.end60
+
+then58:                                           ; preds = %if.end57
+  store i32 1, i32* %err, align 4
+  %157 = load i32, i32* %err, align 4
+  br label %if.end60
+
+if.end60:                                         ; preds = %if.end57, %then58
+  %158 = load i32, i32* %a, align 4
+  %159 = load i32, i32* %c, align 4
+  %160 = icmp sgt i32 %158, %159
+  %161 = sext i1 %160 to i32
+  store i32 %161, i32* %v, align 4
+  %162 = load i32, i32* %v, align 4
+  %163 = load i32, i32* %v, align 4
+  %164 = icmp ne i32 %163, 0
+  br i1 %164, label %then61, label %if.end63
+
+then61:                                           ; preds = %if.end60
+  store i32 1, i32* %err, align 4
+  %165 = load i32, i32* %err, align 4
+  br label %if.end63
+
+if.end63:                                         ; preds = %if.end60, %then61
+  %166 = load i32, i32* %c, align 4
+  %167 = load i32, i32* %a, align 4
+  %168 = icmp sgt i32 %166, %167
+  %169 = sext i1 %168 to i32
+  store i32 %169, i32* %v, align 4
+  %170 = load i32, i32* %v, align 4
+  %171 = load i32, i32* %v, align 4
+  %172 = icmp eq i32 %171, 0
+  br i1 %172, label %then64, label %if.end66
+
+then64:                                           ; preds = %if.end63
+  store i32 1, i32* %err, align 4
+  %173 = load i32, i32* %err, align 4
+  br label %if.end66
+
+if.end66:                                         ; preds = %if.end63, %then64
+  %174 = load i32, i32* %a, align 4
+  %175 = load i32, i32* %b, align 4
+  %176 = icmp sge i32 %174, %175
+  %177 = sext i1 %176 to i32
+  store i32 %177, i32* %v, align 4
+  %178 = load i32, i32* %v, align 4
+  %179 = load i32, i32* %v, align 4
+  %180 = icmp eq i32 %179, 0
+  br i1 %180, label %then67, label %if.end69
+
+then67:                                           ; preds = %if.end66
+  store i32 1, i32* %err, align 4
+  %181 = load i32, i32* %err, align 4
+  br label %if.end69
+
+if.end69:                                         ; preds = %if.end66, %then67
+  %182 = load i32, i32* %a, align 4
+  %183 = load i32, i32* %c, align 4
+  %184 = icmp sge i32 %182, %183
+  %185 = sext i1 %184 to i32
+  store i32 %185, i32* %v, align 4
+  %186 = load i32, i32* %v, align 4
+  %187 = load i32, i32* %v, align 4
+  %188 = icmp ne i32 %187, 0
+  br i1 %188, label %then70, label %if.end72
+
+then70:                                           ; preds = %if.end69
+  store i32 1, i32* %err, align 4
+  %189 = load i32, i32* %err, align 4
+  br label %if.end72
+
+if.end72:                                         ; preds = %if.end69, %then70
+  %190 = load i32, i32* %c, align 4
+  %191 = load i32, i32* %a, align 4
+  %192 = icmp sge i32 %190, %191
+  %193 = sext i1 %192 to i32
+  store i32 %193, i32* %v, align 4
+  %194 = load i32, i32* %v, align 4
+  %195 = load i32, i32* %v, align 4
+  %196 = icmp eq i32 %195, 0
+  br i1 %196, label %then73, label %if.end75
+
+then73:                                           ; preds = %if.end72
+  store i32 1, i32* %err, align 4
+  %197 = load i32, i32* %err, align 4
+  br label %if.end75
+
+if.end75:                                         ; preds = %if.end72, %then73
   store i32 1, i32* %ua, align 4
   store i32 -1, i32* %ub, align 4
-  %136 = load i32, i32* %ua, align 4
-  %137 = load i32, i32* %ub, align 4
-  %138 = icmp ult i32 %136, %137
-  %139 = sext i1 %138 to i32
-  store i32 %139, i32* %unsignedLess, align 4
-  %140 = load i32, i32* %ub, align 4
-  %141 = load i32, i32* %ua, align 4
-  %142 = icmp ugt i32 %140, %141
-  %143 = sext i1 %142 to i32
-  store i32 %143, i32* %unsignedGreater, align 4
-  %144 = load i32, i32* %unsignedLess, align 4
-  %145 = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([29 x i8], [29 x i8]* @41, i32 0, i32 0), i32 %144)
-  %146 = load i32, i32* %unsignedGreater, align 4
-  %147 = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([29 x i8], [29 x i8]* @42, i32 0, i32 0), i32 %146)
-  %148 = load i32, i32* %unsignedLess, align 4
-  call void @check_bool(i8* getelementptr inbounds ([23 x i8], [23 x i8]* @43, i32 0, i32 0), i32 %148, i32 1)
-  %149 = load i32, i32* %unsignedGreater, align 4
-  call void @check_bool(i8* getelementptr inbounds ([26 x i8], [26 x i8]* @44, i32 0, i32 0), i32 %149, i32 1)
+  %198 = load i32, i32* %ua, align 4
+  %199 = load i32, i32* %ub, align 4
+  %200 = icmp ult i32 %198, %199
+  %201 = sext i1 %200 to i32
+  store i32 %201, i32* %v, align 4
+  %202 = load i32, i32* %v, align 4
+  %203 = load i32, i32* %v, align 4
+  %204 = icmp eq i32 %203, 0
+  br i1 %204, label %then76, label %if.end78
+
+then76:                                           ; preds = %if.end75
+  store i32 1, i32* %err, align 4
+  %205 = load i32, i32* %err, align 4
+  br label %if.end78
+
+if.end78:                                         ; preds = %if.end75, %then76
+  %206 = load i32, i32* %ub, align 4
+  %207 = load i32, i32* %ua, align 4
+  %208 = icmp ugt i32 %206, %207
+  %209 = sext i1 %208 to i32
+  store i32 %209, i32* %v, align 4
+  %210 = load i32, i32* %v, align 4
+  %211 = load i32, i32* %v, align 4
+  %212 = icmp eq i32 %211, 0
+  br i1 %212, label %then79, label %if.end81
+
+then79:                                           ; preds = %if.end78
+  store i32 1, i32* %err, align 4
+  %213 = load i32, i32* %err, align 4
+  br label %if.end81
+
+if.end81:                                         ; preds = %if.end78, %then79
   store i32 -1, i32* %si, align 4
   store i32 1, i32* %ui, align 4
-  %150 = load i32, i32* %si, align 4
-  %151 = load i32, i32* %ui, align 4
-  %152 = icmp ult i32 %150, %151
-  %153 = sext i1 %152 to i32
-  store i32 %153, i32* %mixedLess, align 4
-  %154 = load i32, i32* %si, align 4
-  %155 = load i32, i32* %ui, align 4
-  %156 = icmp ugt i32 %154, %155
-  %157 = sext i1 %156 to i32
-  store i32 %157, i32* %mixedGreater, align 4
-  %158 = load i32, i32* %mixedLess, align 4
-  %159 = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([19 x i8], [19 x i8]* @45, i32 0, i32 0), i32 %158)
-  %160 = load i32, i32* %mixedGreater, align 4
-  %161 = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([19 x i8], [19 x i8]* @46, i32 0, i32 0), i32 %160)
-  %162 = load i32, i32* %mixedLess, align 4
-  call void @check_bool(i8* getelementptr inbounds ([32 x i8], [32 x i8]* @47, i32 0, i32 0), i32 %162, i32 0)
-  %163 = load i32, i32* %mixedGreater, align 4
-  call void @check_bool(i8* getelementptr inbounds ([32 x i8], [32 x i8]* @48, i32 0, i32 0), i32 %163, i32 1)
-  call void @report_result()
-  %164 = load i32, i32* @test_errors, align 4
-  ret i32 %164
+  %214 = load i32, i32* %si, align 4
+  %215 = load i32, i32* %ui, align 4
+  %216 = icmp ult i32 %214, %215
+  %217 = sext i1 %216 to i32
+  store i32 %217, i32* %v, align 4
+  %218 = load i32, i32* %v, align 4
+  %219 = load i32, i32* %v, align 4
+  %220 = icmp ne i32 %219, 0
+  br i1 %220, label %then82, label %if.end84
+
+then82:                                           ; preds = %if.end81
+  store i32 1, i32* %err, align 4
+  %221 = load i32, i32* %err, align 4
+  br label %if.end84
+
+if.end84:                                         ; preds = %if.end81, %then82
+  %222 = load i32, i32* %si, align 4
+  %223 = load i32, i32* %ui, align 4
+  %224 = icmp ugt i32 %222, %223
+  %225 = sext i1 %224 to i32
+  store i32 %225, i32* %v, align 4
+  %226 = load i32, i32* %v, align 4
+  %227 = load i32, i32* %v, align 4
+  %228 = icmp eq i32 %227, 0
+  br i1 %228, label %then85, label %if.end87
+
+then85:                                           ; preds = %if.end84
+  store i32 1, i32* %err, align 4
+  %229 = load i32, i32* %err, align 4
+  br label %if.end87
+
+if.end87:                                         ; preds = %if.end84, %then85
+  %230 = load i32, i32* %err, align 4
+  %231 = icmp eq i32 %230, 0
+  %. = select i1 %231, i8* getelementptr inbounds ([17 x i8], [17 x i8]* @0, i32 0, i32 0), i8* getelementptr inbounds ([17 x i8], [17 x i8]* @1, i32 0, i32 0)
+  %232 = call i32 (i8*, ...) @printf(i8* %.)
+  %233 = load i32, i32* %err, align 4
+  ret i32 %233
 }

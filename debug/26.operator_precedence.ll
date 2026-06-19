@@ -3,130 +3,40 @@ source_filename = "lcc"
 target datalayout = "e-m:o-i64:64-i128:128-n32:64-S128"
 target triple = "arm64-apple-darwin25.5.0"
 
-@test_errors = global i32 0
-@0 = private unnamed_addr constant [32 x i8] c"ERROR [%s]: got %d expected %d\0A\00", align 1
-@1 = private unnamed_addr constant [34 x i8] c"ERROR [%s]: got %lu expected %lu\0A\00", align 1
-@2 = private unnamed_addr constant [6 x i8] c"PASS\0A\00", align 1
-@3 = private unnamed_addr constant [19 x i8] c"FAIL: %d error(s)\0A\00", align 1
-@4 = private unnamed_addr constant [55 x i8] c"checkAmpersandPrec a:%lu, b:%lu, c(addr a):%lu, d:%lu\0A\00", align 1
-@5 = private unnamed_addr constant [2 x i8] c"a\00", align 1
-@6 = private unnamed_addr constant [2 x i8] c"b\00", align 1
-@7 = private unnamed_addr constant [15 x i8] c"checkPlusPrec\0A\00", align 1
-@8 = private unnamed_addr constant [13 x i8] c"3 + +13: %d\0A\00", align 1
-@9 = private unnamed_addr constant [8 x i8] c"3 + +13\00", align 1
-@10 = private unnamed_addr constant [13 x i8] c"3 - +13: %d\0A\00", align 1
-@11 = private unnamed_addr constant [8 x i8] c"3 - +13\00", align 1
-@12 = private unnamed_addr constant [13 x i8] c"3 + +13: %d\0A\00", align 1
-@13 = private unnamed_addr constant [16 x i8] c"3 + +13 literal\00", align 1
-@14 = private unnamed_addr constant [13 x i8] c"3 - +13: %d\0A\00", align 1
-@15 = private unnamed_addr constant [16 x i8] c"3 - +13 literal\00", align 1
-@16 = private unnamed_addr constant [16 x i8] c"checkMinusPrec\0A\00", align 1
-@17 = private unnamed_addr constant [13 x i8] c"3 - -13: %d\0A\00", align 1
-@18 = private unnamed_addr constant [8 x i8] c"3 - -13\00", align 1
-@19 = private unnamed_addr constant [13 x i8] c"3 - -13: %d\0A\00", align 1
-@20 = private unnamed_addr constant [14 x i8] c"3 - -13 again\00", align 1
-@21 = private unnamed_addr constant [13 x i8] c"3 - -13: %d\0A\00", align 1
-@22 = private unnamed_addr constant [16 x i8] c"3 - -13 literal\00", align 1
-@23 = private unnamed_addr constant [13 x i8] c"3 - -13: %d\0A\00", align 1
-@24 = private unnamed_addr constant [22 x i8] c"3 - -13 literal again\00", align 1
-@25 = private unnamed_addr constant [15 x i8] c"checkAsterisk\0A\00", align 1
-@26 = private unnamed_addr constant [15 x i8] c"3 * 4 * 4: %d\0A\00", align 1
-@27 = private unnamed_addr constant [6 x i8] c"3*4*4\00", align 1
-@28 = private unnamed_addr constant [15 x i8] c"subFunc i: %d\0A\00", align 1
-@29 = private unnamed_addr constant [14 x i8] c"cast call arg\00", align 1
-@30 = private unnamed_addr constant [24 x i8] c"checkInc, a: %d, b: %d\0A\00", align 1
-@31 = private unnamed_addr constant [10 x i8] c"(++a)++ a\00", align 1
-@32 = private unnamed_addr constant [10 x i8] c"(++a)++ b\00", align 1
-@33 = private unnamed_addr constant [24 x i8] c"checkDec, a: %d, b: %d\0A\00", align 1
-@34 = private unnamed_addr constant [10 x i8] c"(--a)-- a\00", align 1
-@35 = private unnamed_addr constant [10 x i8] c"(--a)-- b\00", align 1
-@36 = private unnamed_addr constant [36 x i8] c"**** 26.operator_precedence.c ****\0A\00", align 1
+@0 = private unnamed_addr constant [31 x i8] c"26.operator_precedence.c PASS\0A\00", align 1
+@1 = private unnamed_addr constant [31 x i8] c"26.operator_precedence.c FAIL\0A\00", align 1
 
 declare i32 @printf(i8*, ...)
 
-define void @check_int(i8* %0, i32 %1, i32 %2) {
+define void @subFunc(i32 %0) {
 entry:
-  %expected = alloca i32, align 4
-  %actual = alloca i32, align 4
-  %name = alloca i8*, align 8
-  store i8* %0, i8** %name, align 8
-  store i32 %1, i32* %actual, align 4
-  store i32 %2, i32* %expected, align 4
-  %3 = load i32, i32* %actual, align 4
-  %4 = load i32, i32* %expected, align 4
-  %5 = icmp ne i32 %3, %4
-  br i1 %5, label %then, label %if.end
-
-then:                                             ; preds = %entry
-  %6 = load i8*, i8** %name, align 8
-  %7 = load i32, i32* %actual, align 4
-  %8 = load i32, i32* %expected, align 4
-  %9 = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([32 x i8], [32 x i8]* @0, i32 0, i32 0), i8* %6, i32 %7, i32 %8)
-  %10 = load i32, i32* @test_errors, align 4
-  %11 = add i32 %10, 1
-  store i32 %11, i32* @test_errors, align 4
-  br label %if.end
-
-if.end:                                           ; preds = %entry, %then
+  %i = alloca i32, align 4
+  store i32 %0, i32* %i, align 4
   ret void
 }
 
-define void @check_ulong(i8* %0, i64 %1, i64 %2) {
+define i32 @main() {
 entry:
-  %expected = alloca i64, align 8
-  %actual = alloca i64, align 8
-  %name = alloca i8*, align 8
-  store i8* %0, i8** %name, align 8
-  store i64 %1, i64* %actual, align 4
-  store i64 %2, i64* %expected, align 4
-  %3 = load i64, i64* %actual, align 4
-  %4 = load i64, i64* %expected, align 4
-  %5 = icmp ne i64 %3, %4
-  br i1 %5, label %then, label %if.end
-
-then:                                             ; preds = %entry
-  %6 = load i8*, i8** %name, align 8
-  %7 = load i64, i64* %actual, align 4
-  %8 = load i64, i64* %expected, align 4
-  %9 = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([34 x i8], [34 x i8]* @1, i32 0, i32 0), i8* %6, i64 %7, i64 %8)
-  %10 = load i32, i32* @test_errors, align 4
-  %11 = add i32 %10, 1
-  store i32 %11, i32* @test_errors, align 4
-  br label %if.end
-
-if.end:                                           ; preds = %entry, %then
-  ret void
-}
-
-define void @report_result() {
-entry:
-  %0 = load i32, i32* @test_errors, align 4
-  %1 = icmp eq i32 %0, 0
-  br i1 %1, label %then, label %else
-
-then:                                             ; preds = %entry
-  %2 = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([6 x i8], [6 x i8]* @2, i32 0, i32 0))
-  br label %if.end
-
-else:                                             ; preds = %entry
-  %3 = load i32, i32* @test_errors, align 4
-  %4 = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([19 x i8], [19 x i8]* @3, i32 0, i32 0), i32 %3)
-  br label %if.end
-
-if.end:                                           ; preds = %else, %then
-  ret void
-}
-
-define void @checkAmpersandPrec() {
-entry:
-  %const1 = bitcast i64 2596069104 to i64
+  %const43 = bitcast i64 2596069104 to i64
   %const = bitcast i64 305419896 to i64
+  %decB = alloca i32, align 4
+  %decA = alloca i32, align 4
+  %incB = alloca i32, align 4
+  %incA = alloca i32, align 4
+  %callI = alloca i64, align 8
+  %mulC = alloca i32*, align 8
+  %mulB = alloca i32, align 4
+  %mulA = alloca i32, align 4
+  %minusA = alloca i32, align 4
+  %plusA = alloca i32, align 4
   %d = alloca i64, align 8
   %c = alloca i64, align 8
   %b = alloca i64, align 8
   %a = alloca i64, align 8
+  %err = alloca i32, align 4
+  store i32 0, i32* %err, align 4
   store i64 %const, i64* %a, align 4
-  store i64 %const1, i64* %b, align 4
+  store i64 %const43, i64* %b, align 4
   %0 = ptrtoint i64* %a to i64
   store i64 %0, i64* %c, align 4
   %1 = ptrtoint i64* %c to i64
@@ -136,192 +46,154 @@ entry:
   %5 = and i64 %3, %4
   store i64 %5, i64* %d, align 4
   %6 = load i64, i64* %a, align 4
-  %7 = load i64, i64* %b, align 4
-  %8 = load i64, i64* %c, align 4
-  %9 = load i64, i64* %d, align 4
-  %10 = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([55 x i8], [55 x i8]* @4, i32 0, i32 0), i64 %6, i64 %7, i64 %8, i64 %9)
-  %11 = load i64, i64* %a, align 4
-  call void @check_ulong(i8* getelementptr inbounds ([2 x i8], [2 x i8]* @5, i32 0, i32 0), i64 %11, i64 %const)
-  %12 = load i64, i64* %b, align 4
-  call void @check_ulong(i8* getelementptr inbounds ([2 x i8], [2 x i8]* @6, i32 0, i32 0), i64 %12, i64 %const1)
-  ret void
-}
+  %7 = icmp ne i64 %6, %const
+  br i1 %7, label %then, label %if.end
 
-define void @checkPlusPrec() {
-entry:
-  %c = alloca i32, align 4
-  %b = alloca i32, align 4
-  %a = alloca i32, align 4
-  %0 = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([15 x i8], [15 x i8]* @7, i32 0, i32 0))
-  store i32 13, i32* %a, align 4
-  %1 = load i32, i32* %a, align 4
-  %2 = add i32 3, %1
-  store i32 %2, i32* %b, align 4
-  %3 = load i32, i32* %b, align 4
-  %4 = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([13 x i8], [13 x i8]* @8, i32 0, i32 0), i32 %3)
-  %5 = load i32, i32* %b, align 4
-  call void @check_int(i8* getelementptr inbounds ([8 x i8], [8 x i8]* @9, i32 0, i32 0), i32 %5, i32 16)
-  %6 = load i32, i32* %a, align 4
-  %7 = sub i32 3, %6
-  store i32 %7, i32* %c, align 4
-  %8 = load i32, i32* %c, align 4
-  %9 = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([13 x i8], [13 x i8]* @10, i32 0, i32 0), i32 %8)
-  %10 = load i32, i32* %c, align 4
-  call void @check_int(i8* getelementptr inbounds ([8 x i8], [8 x i8]* @11, i32 0, i32 0), i32 %10, i32 -10)
-  store i32 16, i32* %b, align 4
-  %11 = load i32, i32* %b, align 4
-  %12 = load i32, i32* %b, align 4
-  %13 = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([13 x i8], [13 x i8]* @12, i32 0, i32 0), i32 %12)
-  %14 = load i32, i32* %b, align 4
-  call void @check_int(i8* getelementptr inbounds ([16 x i8], [16 x i8]* @13, i32 0, i32 0), i32 %14, i32 16)
-  store i32 -10, i32* %c, align 4
-  %15 = load i32, i32* %c, align 4
-  %16 = load i32, i32* %c, align 4
-  %17 = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([13 x i8], [13 x i8]* @14, i32 0, i32 0), i32 %16)
-  %18 = load i32, i32* %c, align 4
-  call void @check_int(i8* getelementptr inbounds ([16 x i8], [16 x i8]* @15, i32 0, i32 0), i32 %18, i32 -10)
-  ret void
-}
+then:                                             ; preds = %entry
+  store i32 1, i32* %err, align 4
+  %8 = load i32, i32* %err, align 4
+  br label %if.end
 
-define void @checkMinusPrec() {
-entry:
-  %c = alloca i32, align 4
-  %b = alloca i32, align 4
-  %a = alloca i32, align 4
-  %0 = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([16 x i8], [16 x i8]* @16, i32 0, i32 0))
-  store i32 13, i32* %a, align 4
-  %1 = load i32, i32* %a, align 4
-  %2 = sub i32 0, %1
-  %3 = sub i32 3, %2
-  store i32 %3, i32* %b, align 4
-  %4 = load i32, i32* %b, align 4
-  %5 = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([13 x i8], [13 x i8]* @17, i32 0, i32 0), i32 %4)
-  %6 = load i32, i32* %b, align 4
-  call void @check_int(i8* getelementptr inbounds ([8 x i8], [8 x i8]* @18, i32 0, i32 0), i32 %6, i32 16)
-  %7 = load i32, i32* %a, align 4
-  %8 = sub i32 0, %7
-  %9 = sub i32 3, %8
-  store i32 %9, i32* %c, align 4
-  %10 = load i32, i32* %c, align 4
-  %11 = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([13 x i8], [13 x i8]* @19, i32 0, i32 0), i32 %10)
-  %12 = load i32, i32* %c, align 4
-  call void @check_int(i8* getelementptr inbounds ([14 x i8], [14 x i8]* @20, i32 0, i32 0), i32 %12, i32 16)
-  store i32 16, i32* %b, align 4
-  %13 = load i32, i32* %b, align 4
-  %14 = load i32, i32* %b, align 4
-  %15 = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([13 x i8], [13 x i8]* @21, i32 0, i32 0), i32 %14)
-  %16 = load i32, i32* %b, align 4
-  call void @check_int(i8* getelementptr inbounds ([16 x i8], [16 x i8]* @22, i32 0, i32 0), i32 %16, i32 16)
-  store i32 16, i32* %c, align 4
-  %17 = load i32, i32* %c, align 4
-  %18 = load i32, i32* %c, align 4
-  %19 = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([13 x i8], [13 x i8]* @23, i32 0, i32 0), i32 %18)
-  %20 = load i32, i32* %c, align 4
-  call void @check_int(i8* getelementptr inbounds ([22 x i8], [22 x i8]* @24, i32 0, i32 0), i32 %20, i32 16)
-  ret void
-}
+if.end:                                           ; preds = %entry, %then
+  %9 = load i64, i64* %b, align 4
+  %10 = icmp ne i64 %9, %const43
+  br i1 %10, label %then1, label %if.end3
 
-define void @checkAsterisk() {
-entry:
-  %d = alloca i32, align 4
-  %c = alloca i32*, align 8
-  %b = alloca i32, align 4
-  %a = alloca i32, align 4
-  %0 = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([15 x i8], [15 x i8]* @25, i32 0, i32 0))
-  store i32 3, i32* %a, align 4
-  store i32 4, i32* %b, align 4
-  store i32* %b, i32** %c, align 8
-  %1 = load i32, i32* %a, align 4
-  %2 = load i32, i32* %b, align 4
-  %3 = mul i32 %1, %2
-  %4 = load i32*, i32** %c, align 8
-  %5 = load i32, i32* %4, align 4
-  %6 = mul i32 %3, %5
-  store i32 %6, i32* %d, align 4
-  %7 = load i32, i32* %d, align 4
-  %8 = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([15 x i8], [15 x i8]* @26, i32 0, i32 0), i32 %7)
-  %9 = load i32, i32* %d, align 4
-  call void @check_int(i8* getelementptr inbounds ([6 x i8], [6 x i8]* @27, i32 0, i32 0), i32 %9, i32 48)
-  ret void
-}
+then1:                                            ; preds = %if.end
+  store i32 1, i32* %err, align 4
+  %11 = load i32, i32* %err, align 4
+  br label %if.end3
 
-define void @subFunc(i32 %0) {
-entry:
-  %i = alloca i32, align 4
-  store i32 %0, i32* %i, align 4
-  %1 = load i32, i32* %i, align 4
-  %2 = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([15 x i8], [15 x i8]* @28, i32 0, i32 0), i32 %1)
-  ret void
-}
+if.end3:                                          ; preds = %if.end, %then1
+  store i32 13, i32* %plusA, align 4
+  %12 = load i32, i32* %plusA, align 4
+  %13 = add i32 3, %12
+  %14 = icmp ne i32 %13, 16
+  br i1 %14, label %then4, label %if.end6
 
-define void @checkFuncCall() {
-entry:
-  %i = alloca i64, align 8
-  store i64 1234, i64* %i, align 4
-  %0 = load i64, i64* %i, align 4
-  %1 = trunc i64 %0 to i32
-  call void @subFunc(i32 %1)
-  %2 = load i64, i64* %i, align 4
-  %3 = trunc i64 %2 to i32
-  call void @check_int(i8* getelementptr inbounds ([14 x i8], [14 x i8]* @29, i32 0, i32 0), i32 %3, i32 1234)
-  ret void
-}
+then4:                                            ; preds = %if.end3
+  store i32 1, i32* %err, align 4
+  %15 = load i32, i32* %err, align 4
+  br label %if.end6
 
-define void @checkInc() {
-entry:
-  %b = alloca i32, align 4
-  %a = alloca i32, align 4
-  store i32 10, i32* %a, align 4
-  %0 = load i32, i32* %a, align 4
-  %1 = add i32 %0, 1
-  store i32 %1, i32* %a, align 4
-  %2 = load i32, i32* %a, align 4
-  %3 = add i32 %2, 1
-  store i32 %3, i32* %a, align 4
-  store i32 %2, i32* %b, align 4
-  %4 = load i32, i32* %a, align 4
-  %5 = load i32, i32* %b, align 4
-  %6 = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([24 x i8], [24 x i8]* @30, i32 0, i32 0), i32 %4, i32 %5)
-  %7 = load i32, i32* %a, align 4
-  call void @check_int(i8* getelementptr inbounds ([10 x i8], [10 x i8]* @31, i32 0, i32 0), i32 %7, i32 12)
-  %8 = load i32, i32* %b, align 4
-  call void @check_int(i8* getelementptr inbounds ([10 x i8], [10 x i8]* @32, i32 0, i32 0), i32 %8, i32 11)
-  ret void
-}
+if.end6:                                          ; preds = %if.end3, %then4
+  %16 = load i32, i32* %plusA, align 4
+  %17 = sub i32 3, %16
+  %18 = icmp ne i32 %17, -10
+  br i1 %18, label %then7, label %if.end15
 
-define void @checkDec() {
-entry:
-  %b = alloca i32, align 4
-  %a = alloca i32, align 4
-  store i32 10, i32* %a, align 4
-  %0 = load i32, i32* %a, align 4
-  %1 = sub i32 %0, 1
-  store i32 %1, i32* %a, align 4
-  %2 = load i32, i32* %a, align 4
-  %3 = sub i32 %2, 1
-  store i32 %3, i32* %a, align 4
-  store i32 %2, i32* %b, align 4
-  %4 = load i32, i32* %a, align 4
-  %5 = load i32, i32* %b, align 4
-  %6 = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([24 x i8], [24 x i8]* @33, i32 0, i32 0), i32 %4, i32 %5)
-  %7 = load i32, i32* %a, align 4
-  call void @check_int(i8* getelementptr inbounds ([10 x i8], [10 x i8]* @34, i32 0, i32 0), i32 %7, i32 8)
-  %8 = load i32, i32* %b, align 4
-  call void @check_int(i8* getelementptr inbounds ([10 x i8], [10 x i8]* @35, i32 0, i32 0), i32 %8, i32 9)
-  ret void
-}
+then7:                                            ; preds = %if.end6
+  store i32 1, i32* %err, align 4
+  %19 = load i32, i32* %err, align 4
+  br label %if.end15
 
-define i32 @main() {
-entry:
-  %0 = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([36 x i8], [36 x i8]* @36, i32 0, i32 0))
-  call void @checkAmpersandPrec()
-  call void @checkPlusPrec()
-  call void @checkMinusPrec()
-  call void @checkAsterisk()
-  call void @checkFuncCall()
-  call void @checkInc()
-  call void @checkDec()
-  call void @report_result()
-  %1 = load i32, i32* @test_errors, align 4
-  ret i32 %1
+if.end15:                                         ; preds = %if.end6, %then7
+  store i32 13, i32* %minusA, align 4
+  %20 = load i32, i32* %minusA, align 4
+  %21 = sub i32 0, %20
+  %22 = sub i32 3, %21
+  %23 = icmp ne i32 %22, 16
+  br i1 %23, label %then16, label %if.end21
+
+then16:                                           ; preds = %if.end15
+  store i32 1, i32* %err, align 4
+  %24 = load i32, i32* %err, align 4
+  br label %if.end21
+
+if.end21:                                         ; preds = %if.end15, %then16
+  store i32 3, i32* %mulA, align 4
+  store i32 4, i32* %mulB, align 4
+  store i32* %mulB, i32** %mulC, align 8
+  %25 = load i32, i32* %mulA, align 4
+  %26 = load i32, i32* %mulB, align 4
+  %27 = mul i32 %25, %26
+  %28 = load i32*, i32** %mulC, align 8
+  %29 = load i32, i32* %28, align 4
+  %30 = mul i32 %27, %29
+  %31 = icmp ne i32 %30, 48
+  br i1 %31, label %then22, label %if.end24
+
+then22:                                           ; preds = %if.end21
+  store i32 1, i32* %err, align 4
+  %32 = load i32, i32* %err, align 4
+  br label %if.end24
+
+if.end24:                                         ; preds = %if.end21, %then22
+  store i64 1234, i64* %callI, align 4
+  %33 = load i64, i64* %callI, align 4
+  %34 = trunc i64 %33 to i32
+  call void @subFunc(i32 %34)
+  %35 = load i64, i64* %callI, align 4
+  %36 = trunc i64 %35 to i32
+  %37 = icmp ne i32 %36, 1234
+  br i1 %37, label %then25, label %if.end27
+
+then25:                                           ; preds = %if.end24
+  store i32 1, i32* %err, align 4
+  %38 = load i32, i32* %err, align 4
+  br label %if.end27
+
+if.end27:                                         ; preds = %if.end24, %then25
+  store i32 10, i32* %incA, align 4
+  %39 = load i32, i32* %incA, align 4
+  %40 = add i32 %39, 1
+  store i32 %40, i32* %incA, align 4
+  %41 = load i32, i32* %incA, align 4
+  %42 = add i32 %41, 1
+  store i32 %42, i32* %incA, align 4
+  store i32 %41, i32* %incB, align 4
+  %43 = load i32, i32* %incA, align 4
+  %44 = icmp ne i32 %43, 12
+  br i1 %44, label %then28, label %if.end30
+
+then28:                                           ; preds = %if.end27
+  store i32 1, i32* %err, align 4
+  %45 = load i32, i32* %err, align 4
+  br label %if.end30
+
+if.end30:                                         ; preds = %if.end27, %then28
+  %46 = load i32, i32* %incB, align 4
+  %47 = icmp ne i32 %46, 11
+  br i1 %47, label %then31, label %if.end33
+
+then31:                                           ; preds = %if.end30
+  store i32 1, i32* %err, align 4
+  %48 = load i32, i32* %err, align 4
+  br label %if.end33
+
+if.end33:                                         ; preds = %if.end30, %then31
+  store i32 10, i32* %decA, align 4
+  %49 = load i32, i32* %decA, align 4
+  %50 = sub i32 %49, 1
+  store i32 %50, i32* %decA, align 4
+  %51 = load i32, i32* %decA, align 4
+  %52 = sub i32 %51, 1
+  store i32 %52, i32* %decA, align 4
+  store i32 %51, i32* %decB, align 4
+  %53 = load i32, i32* %decA, align 4
+  %54 = icmp ne i32 %53, 8
+  br i1 %54, label %then34, label %if.end36
+
+then34:                                           ; preds = %if.end33
+  store i32 1, i32* %err, align 4
+  %55 = load i32, i32* %err, align 4
+  br label %if.end36
+
+if.end36:                                         ; preds = %if.end33, %then34
+  %56 = load i32, i32* %decB, align 4
+  %57 = icmp ne i32 %56, 9
+  br i1 %57, label %then37, label %if.end39
+
+then37:                                           ; preds = %if.end36
+  store i32 1, i32* %err, align 4
+  %58 = load i32, i32* %err, align 4
+  br label %if.end39
+
+if.end39:                                         ; preds = %if.end36, %then37
+  %59 = load i32, i32* %err, align 4
+  %60 = icmp eq i32 %59, 0
+  %. = select i1 %60, i8* getelementptr inbounds ([31 x i8], [31 x i8]* @0, i32 0, i32 0), i8* getelementptr inbounds ([31 x i8], [31 x i8]* @1, i32 0, i32 0)
+  %61 = call i32 (i8*, ...) @printf(i8* %.)
+  %62 = load i32, i32* %err, align 4
+  ret i32 %62
 }

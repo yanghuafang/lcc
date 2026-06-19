@@ -1,47 +1,40 @@
 int printf(char*, ...);
 
-int test_errors = 0;
-
-void check_uint(const char* name, unsigned actual, unsigned expected) {
-  if (actual != expected) {
-    printf("ERROR [%s]: got %u expected %u\n", name, actual, expected);
-    test_errors++;
-  }
-}
-
-void report_result(void) {
-  if (test_errors == 0) {
-    printf("PASS\n");
-  } else {
-    printf("FAIL: %d error(s)\n", test_errors);
-  }
-}
-
 union IPv4 {
   unsigned int ip;
   unsigned char c;
 };
 
 int main() {
-  printf("**** 3.union_type.c ****\n");
-
+  int err = 0;
   IPv4 ipv4;
+  unsigned int ip;
+  unsigned char byte;
+
   ipv4.ip = 0x12abcd34;
-  printf("ip 0x%x c 0x%x\n", ipv4.ip, ipv4.c);
-  check_uint("initial ip", ipv4.ip, 0x12abcd34);
-  check_uint("initial low byte", ipv4.c, 0x34);
+  ip = ipv4.ip;
+  byte = ipv4.c;
+  if (ip != 0x12abcd34) err = 1;
+  if (byte != 0x34) err = 1;
 
   ipv4.c = 0x56;
-  printf("ip 0x%x c 0x%x\n", ipv4.ip, ipv4.c);
-  check_uint("ip after c write", ipv4.ip, 0x12abcd56);
-  check_uint("c after write", ipv4.c, 0x56);
+  ip = ipv4.ip;
+  byte = ipv4.c;
+  if (ip != 0x12abcd56) err = 1;
+  if (byte != 0x56) err = 1;
 
   ipv4.ip = 0xffffffff;
-  check_uint("union all ones", ipv4.ip, 0xffffffff);
+  ip = ipv4.ip;
+  if (ip != 0xffffffff) err = 1;
 
   ipv4.c = 0;
-  check_uint("byte zero clears low byte", ipv4.ip, 0xffffff00);
+  ip = ipv4.ip;
+  if (ip != 0xffffff00) err = 1;
 
-  report_result();
-  return test_errors;
+  if (err == 0) {
+    printf("3.union_type.c PASS\n");
+  } else {
+    printf("3.union_type.c FAIL\n");
+  }
+  return err;
 }

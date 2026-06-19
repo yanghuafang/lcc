@@ -16,32 +16,19 @@ int bump_with_helper(void) {
   return helper(counter);
 }
 
-int test_errors = 0;
-
-void check_int(const char* name, int actual, int expected) {
-  if (actual != expected) {
-    printf("ERROR [%s]: got %d expected %d\n", name, actual, expected);
-    test_errors++;
-  }
-}
-
-void report_result(void) {
-  if (test_errors == 0) {
-    printf("PASS\n");
-  } else {
-    printf("FAIL: %d error(s)\n", test_errors);
-  }
-}
-
 int main(void) {
-  printf("**** 37.static_file.c ****\n");
+  int err = 0;
 
-  check_int("helper before bumps", helper(5), 5);
-  check_int("first bump", bump(), 1);
-  check_int("second bump", bump(), 2);
-  check_int("helper after two bumps", helper(3), 5);
-  check_int("bump with helper", bump_with_helper(), 6);
+  if (helper(5) != 5) err = 1;
+  if (bump() != 1) err = 1;
+  if (bump() != 2) err = 1;
+  if (helper(3) != 5) err = 1;
+  if (bump_with_helper() != 6) err = 1;
 
-  report_result();
-  return test_errors;
+  if (err == 0) {
+    printf("37.static_file.c PASS\n");
+  } else {
+    printf("37.static_file.c FAIL\n");
+  }
+  return err;
 }

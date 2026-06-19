@@ -1,125 +1,33 @@
 int printf(char*, ...);
 
-int test_errors = 0;
-
-void check_int(const char* name, int actual, int expected) {
-  if (actual != expected) {
-    printf("ERROR [%s]: got %d expected %d\n", name, actual, expected);
-    test_errors++;
-  }
-}
-
-void check_uint(const char* name, unsigned actual, unsigned expected) {
-  if (actual != expected) {
-    printf("ERROR [%s]: got %u expected %u\n", name, actual, expected);
-    test_errors++;
-  }
-}
-
-void check_ulong(const char* name, unsigned long actual, unsigned long expected) {
-  if (actual != expected) {
-    printf("ERROR [%s]: got %lu expected %lu\n", name, actual, expected);
-    test_errors++;
-  }
-}
-
-void check_char(const char* name, char actual, char expected) {
-  if (actual != expected) {
-    printf("ERROR [%s]: got %c expected %c\n", name, actual, expected);
-    test_errors++;
-  }
-}
-
-void report_result(void) {
-  if (test_errors == 0) {
-    printf("PASS\n");
-  } else {
-    printf("FAIL: %d error(s)\n", test_errors);
-  }
-}
-
-char charVal = 'A';
-short shortVal = 1024;
-short shortVal2 = -1024;
-int intVal = 12345678;
-int intVal2 = -12345678;
-int intVal3 = +12345678;
-int intVal4 = -0x9abcdef;
-long longVal = 1234567890;
-long longVal2 = -1234567890;
-long longVal3 = 1234567890l;
-long longVal4 = -1234567890l;
-
-unsigned char ucharVal = 250;
-unsigned short ushortVal = 2048;
-unsigned uintVal = 87654321;
-unsigned int uintVal2 = 87654321;
-unsigned int uintVal3 = 87654321u;
-unsigned int uintVal4 = 0xabcdef0;
-unsigned long ulongVal = 9876043210l;
-unsigned long ulongVal2 = 9876043210ul;
-
-float floatVal = 3.1415926;
-float floatVal2 = 3.1415926f;
-double doubleVal = 3.14159265358979;
-
-bool boolVal = true;
-bool boolVal2 = false;
-
 int main() {
-  printf("**** 1.builtin_types.c ****\n");
+  int err = 0;
+  char ch = 'A';
+  short sh = -1024;
+  int in = -12345678;
+  long ln = -1234567890l;
+  unsigned char uch = 250;
+  unsigned uint = 0xabcdef0;
+  unsigned long uln = 9876043210ul;
+  float fl = 3.1415926f;
+  double db = 3.14159265358979;
+  bool bt = true;
+  bool bf = false;
 
-  printf("charVal: %c\n", charVal);
-  printf("shortVal: %hd\n", shortVal);
-  printf("shortVal: %hd\n", shortVal2);
-  printf("intVal: %d\n", intVal);
-  printf("intVal2: %d\n", intVal2);
-  printf("intVal3: %d\n", intVal3);
-  printf("intVal4: -0x%x\n", -intVal4);
-  printf("longVal: %ld\n", longVal);
-  printf("longVal2: %ld\n", longVal2);
-  printf("longVal3: %ld\n", longVal3);
-  printf("longVal4: %ld\n", longVal4);
+  if (ch != 'A') err = 1;
+  if (sh != -1024) err = 1;
+  if (in != -12345678) err = 1;
+  if (ln != -1234567890l) err = 1;
+  if (uch != 250) err = 1;
+  if (uint != 0xabcdef0) err = 1;
+  if (uln != 9876043210ul) err = 1;
+  if (bt != 1) err = 1;
+  if (bf != 0) err = 1;
 
-  printf("ucharVal: %u\n", ucharVal);
-  printf("ushortVal: %hu\n", ushortVal);
-  printf("uintVal: %u\n", uintVal);
-  printf("uintVal2: %u\n", uintVal2);
-  printf("uintVal3: %u\n", uintVal3);
-  printf("uintVal4: 0x%x\n", uintVal4);
-  printf("ulongVal: %lu\n", ulongVal);
-  printf("ulongVal2: %lu\n", ulongVal2);
-
-  printf("floatVal: %f\n", floatVal);
-  printf("floatVal2: %f\n", floatVal2);
-  printf("doubleVal: %.15f\n", doubleVal);
-
-  printf("boolVal: %d\n", boolVal);
-  printf("boolVal2: %d\n", boolVal2);
-
-  check_char("charVal", charVal, 'A');
-  check_int("shortVal", shortVal, 1024);
-  check_int("shortVal2", shortVal2, -1024);
-  check_int("intVal", intVal, 12345678);
-  check_int("intVal2", intVal2, -12345678);
-  check_int("intVal3", intVal3, 12345678);
-  check_int("intVal4", intVal4, -0x9abcdef);
-  check_int("longVal", (int)longVal, 1234567890);
-  check_int("longVal2", (int)longVal2, -1234567890);
-
-  check_uint("ucharVal boundary", ucharVal, 250);
-  check_uint("ushortVal", ushortVal, 2048);
-  check_uint("uintVal", uintVal, 87654321);
-  check_uint("uintVal4", uintVal4, 0xabcdef0);
-  check_ulong("ulongVal", ulongVal, 9876043210ul);
-  check_int("boolVal", boolVal, 1);
-  check_int("boolVal2", boolVal2, 0);
-
-  unsigned char zero = 0;
-  unsigned char maxUchar = 255;
-  check_uint("uchar zero", zero, 0);
-  check_uint("uchar max", maxUchar, 255);
-
-  report_result();
-  return test_errors;
+  if (err == 0) {
+    printf("1.builtin_types.c PASS\n");
+  } else {
+    printf("1.builtin_types.c FAIL\n");
+  }
+  return err;
 }

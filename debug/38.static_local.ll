@@ -7,18 +7,8 @@ target triple = "arm64-apple-darwin25.5.0"
 @counter_with_init.count = internal global i32 10
 @bump_runtime_static_decl.value = internal global i32 0
 @bump_runtime_static_decl.value.inited = private global i1 false
-@test_errors = global i32 0
-@0 = private unnamed_addr constant [32 x i8] c"ERROR [%s]: got %d expected %d\0A\00", align 1
-@1 = private unnamed_addr constant [6 x i8] c"PASS\0A\00", align 1
-@2 = private unnamed_addr constant [19 x i8] c"FAIL: %d error(s)\0A\00", align 1
-@3 = private unnamed_addr constant [29 x i8] c"**** 38.static_local.c ****\0A\00", align 1
-@4 = private unnamed_addr constant [16 x i8] c"counter_calls 1\00", align 1
-@5 = private unnamed_addr constant [16 x i8] c"counter_calls 2\00", align 1
-@6 = private unnamed_addr constant [16 x i8] c"counter_calls 3\00", align 1
-@7 = private unnamed_addr constant [20 x i8] c"counter_with_init 1\00", align 1
-@8 = private unnamed_addr constant [20 x i8] c"counter_with_init 2\00", align 1
-@9 = private unnamed_addr constant [22 x i8] c"runtime_static_decl 1\00", align 1
-@10 = private unnamed_addr constant [22 x i8] c"runtime_static_decl 2\00", align 1
+@0 = private unnamed_addr constant [24 x i8] c"38.static_local.c PASS\0A\00", align 1
+@1 = private unnamed_addr constant [24 x i8] c"38.static_local.c FAIL\0A\00", align 1
 
 declare i32 @printf(i8*, ...)
 
@@ -64,70 +54,84 @@ static.cont:                                      ; preds = %static.init, %entry
   ret i32 %3
 }
 
-define void @check_int(i8* %0, i32 %1, i32 %2) {
+define i32 @main() {
 entry:
-  %expected = alloca i32, align 4
-  %actual = alloca i32, align 4
-  %name = alloca i8*, align 8
-  store i8* %0, i8** %name, align 8
-  store i32 %1, i32* %actual, align 4
-  store i32 %2, i32* %expected, align 4
-  %3 = load i32, i32* %actual, align 4
-  %4 = load i32, i32* %expected, align 4
-  %5 = icmp ne i32 %3, %4
-  br i1 %5, label %then, label %if.end
+  %err = alloca i32, align 4
+  store i32 0, i32* %err, align 4
+  %0 = call i32 @counter_calls()
+  %1 = icmp ne i32 %0, 1
+  br i1 %1, label %then, label %if.end
 
 then:                                             ; preds = %entry
-  %6 = load i8*, i8** %name, align 8
-  %7 = load i32, i32* %actual, align 4
-  %8 = load i32, i32* %expected, align 4
-  %9 = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([32 x i8], [32 x i8]* @0, i32 0, i32 0), i8* %6, i32 %7, i32 %8)
-  %10 = load i32, i32* @test_errors, align 4
-  %11 = add i32 %10, 1
-  store i32 %11, i32* @test_errors, align 4
+  store i32 1, i32* %err, align 4
+  %2 = load i32, i32* %err, align 4
   br label %if.end
 
 if.end:                                           ; preds = %entry, %then
-  ret void
-}
-
-define void @report_result() {
-entry:
-  %0 = load i32, i32* @test_errors, align 4
-  %1 = icmp eq i32 %0, 0
-  br i1 %1, label %then, label %else
-
-then:                                             ; preds = %entry
-  %2 = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([6 x i8], [6 x i8]* @1, i32 0, i32 0))
-  br label %if.end
-
-else:                                             ; preds = %entry
-  %3 = load i32, i32* @test_errors, align 4
-  %4 = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([19 x i8], [19 x i8]* @2, i32 0, i32 0), i32 %3)
-  br label %if.end
-
-if.end:                                           ; preds = %else, %then
-  ret void
-}
-
-define i32 @main() {
-entry:
-  %0 = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([29 x i8], [29 x i8]* @3, i32 0, i32 0))
-  %1 = call i32 @counter_calls()
-  call void @check_int(i8* getelementptr inbounds ([16 x i8], [16 x i8]* @4, i32 0, i32 0), i32 %1, i32 1)
-  %2 = call i32 @counter_calls()
-  call void @check_int(i8* getelementptr inbounds ([16 x i8], [16 x i8]* @5, i32 0, i32 0), i32 %2, i32 2)
   %3 = call i32 @counter_calls()
-  call void @check_int(i8* getelementptr inbounds ([16 x i8], [16 x i8]* @6, i32 0, i32 0), i32 %3, i32 3)
-  %4 = call i32 @counter_with_init()
-  call void @check_int(i8* getelementptr inbounds ([20 x i8], [20 x i8]* @7, i32 0, i32 0), i32 %4, i32 11)
-  %5 = call i32 @counter_with_init()
-  call void @check_int(i8* getelementptr inbounds ([20 x i8], [20 x i8]* @8, i32 0, i32 0), i32 %5, i32 12)
-  %6 = call i32 @bump_runtime_static_decl()
-  call void @check_int(i8* getelementptr inbounds ([22 x i8], [22 x i8]* @9, i32 0, i32 0), i32 %6, i32 8)
-  %7 = call i32 @bump_runtime_static_decl()
-  call void @check_int(i8* getelementptr inbounds ([22 x i8], [22 x i8]* @10, i32 0, i32 0), i32 %7, i32 9)
-  call void @report_result()
-  %8 = load i32, i32* @test_errors, align 4
-  ret i32 %8
+  %4 = icmp ne i32 %3, 2
+  br i1 %4, label %then1, label %if.end3
+
+then1:                                            ; preds = %if.end
+  store i32 1, i32* %err, align 4
+  %5 = load i32, i32* %err, align 4
+  br label %if.end3
+
+if.end3:                                          ; preds = %if.end, %then1
+  %6 = call i32 @counter_calls()
+  %7 = icmp ne i32 %6, 3
+  br i1 %7, label %then4, label %if.end6
+
+then4:                                            ; preds = %if.end3
+  store i32 1, i32* %err, align 4
+  %8 = load i32, i32* %err, align 4
+  br label %if.end6
+
+if.end6:                                          ; preds = %if.end3, %then4
+  %9 = call i32 @counter_with_init()
+  %10 = icmp ne i32 %9, 11
+  br i1 %10, label %then7, label %if.end9
+
+then7:                                            ; preds = %if.end6
+  store i32 1, i32* %err, align 4
+  %11 = load i32, i32* %err, align 4
+  br label %if.end9
+
+if.end9:                                          ; preds = %if.end6, %then7
+  %12 = call i32 @counter_with_init()
+  %13 = icmp ne i32 %12, 12
+  br i1 %13, label %then10, label %if.end12
+
+then10:                                           ; preds = %if.end9
+  store i32 1, i32* %err, align 4
+  %14 = load i32, i32* %err, align 4
+  br label %if.end12
+
+if.end12:                                         ; preds = %if.end9, %then10
+  %15 = call i32 @bump_runtime_static_decl()
+  %16 = icmp ne i32 %15, 8
+  br i1 %16, label %then13, label %if.end15
+
+then13:                                           ; preds = %if.end12
+  store i32 1, i32* %err, align 4
+  %17 = load i32, i32* %err, align 4
+  br label %if.end15
+
+if.end15:                                         ; preds = %if.end12, %then13
+  %18 = call i32 @bump_runtime_static_decl()
+  %19 = icmp ne i32 %18, 9
+  br i1 %19, label %then16, label %if.end18
+
+then16:                                           ; preds = %if.end15
+  store i32 1, i32* %err, align 4
+  %20 = load i32, i32* %err, align 4
+  br label %if.end18
+
+if.end18:                                         ; preds = %if.end15, %then16
+  %21 = load i32, i32* %err, align 4
+  %22 = icmp eq i32 %21, 0
+  %. = select i1 %22, i8* getelementptr inbounds ([24 x i8], [24 x i8]* @0, i32 0, i32 0), i8* getelementptr inbounds ([24 x i8], [24 x i8]* @1, i32 0, i32 0)
+  %23 = call i32 (i8*, ...) @printf(i8* %.)
+  %24 = load i32, i32* %err, align 4
+  ret i32 %24
 }

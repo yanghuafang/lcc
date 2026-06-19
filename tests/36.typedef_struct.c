@@ -18,41 +18,20 @@ typedef struct Point {
 void* malloc(size_t size);
 unsigned long strlen(const char* s);
 
-int test_errors = 0;
-
-void check_int(const char* name, int actual, int expected) {
-  if (actual != expected) {
-    printf("ERROR [%s]: got %d expected %d\n", name, actual, expected);
-    test_errors++;
-  }
-}
-
-void check_ulong(const char* name, unsigned long actual, unsigned long expected) {
-  if (actual != expected) {
-    printf("ERROR [%s]: got %lu expected %lu\n", name, actual, expected);
-    test_errors++;
-  }
-}
-
-void report_result(void) {
-  if (test_errors == 0) {
-    printf("PASS\n");
-  } else {
-    printf("FAIL: %d error(s)\n", test_errors);
-  }
-}
-
 void fill_employee(EmployeePtr employee, int id, char sex) {
   employee->id = id;
   employee->sex = sex;
 }
 
 int main() {
+  int err = 0;
   Employee worker;
   EmployeePtr workerPtr;
   Point origin;
-
-  printf("**** 36.typedef_struct.c ****\n");
+  int sz;
+  int id;
+  int sex;
+  unsigned long len;
 
   worker.sex = 'M';
   workerPtr = &worker;
@@ -61,20 +40,33 @@ int main() {
   origin.x = 3;
   origin.y = 4;
 
-  unsigned long len_hi = strlen("hi");
+  sz = sizeof(Employee);
+  if (sz != 8) err = 1;
+  sz = sizeof(EmployeePtr);
+  if (sz != 8) err = 1;
+  sz = sizeof(Point);
+  if (sz != 8) err = 1;
+  sz = sizeof(size_t);
+  if (sz != 8) err = 1;
 
-  check_int("sizeof(Employee)", sizeof(Employee), 8);
-  check_int("sizeof(EmployeePtr)", sizeof(EmployeePtr), 8);
-  check_int("sizeof(Point)", sizeof(Point), 8);
-  check_ulong("sizeof(size_t)", sizeof(size_t), 8);
-  check_ulong("strlen_hi", len_hi, 2);
+  len = strlen("hi");
+  if (len != 2) err = 1;
 
-  check_int("worker.id", worker.id, 11);
-  check_int("workerPtr->id", workerPtr->id, 11);
-  check_int("workerPtr->sex", workerPtr->sex, 'F');
-  check_int("origin.x", origin.x, 3);
-  check_int("origin.y", origin.y, 4);
+  id = worker.id;
+  if (id != 11) err = 1;
+  id = workerPtr->id;
+  if (id != 11) err = 1;
+  sex = workerPtr->sex;
+  if (sex != 'F') err = 1;
+  id = origin.x;
+  if (id != 3) err = 1;
+  sex = origin.y;
+  if (sex != 4) err = 1;
 
-  report_result();
-  return test_errors;
+  if (err == 0) {
+    printf("36.typedef_struct.c PASS\n");
+  } else {
+    printf("36.typedef_struct.c FAIL\n");
+  }
+  return err;
 }

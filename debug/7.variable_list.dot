@@ -20,476 +20,362 @@ anonymous_3 [label = anonymous]
 Param_3 -> anonymous_3
 "..._2" [label = "..."]
 ParamList_2 -> "..._2"
-Program -> VarDecl_5
-VarDecl_5 [label = VarDecl]
-VarDecl_5 -> BuiltinType_6
+Program -> FuncDecl_5
+FuncDecl_5 [label = FuncDecl]
+FuncDecl_5 -> BuiltinType_6
 BuiltinType_6 [label = BuiltinType]
 "int_6" [label = "int"]
 BuiltinType_6 -> "int_6"
-VarDecl_5 -> VarInit_7
-VarInit_7 [label = VarInit]
-test_errors_7 [label = test_errors]
-VarInit_7 -> test_errors_7
-VarInit_7 -> Constant_8
-Constant_8 [label = Constant]
-int_8 [label = "0"]
-Constant_8 -> int_8
-Program -> FuncDecl_9
-FuncDecl_9 [label = FuncDecl]
-FuncDecl_9 -> BuiltinType_10
+main_5[ label = main]
+FuncDecl_5 -> main_5
+FuncDecl_5 -> ParamList_7
+ParamList_7 [label = ParamList]
+FuncDecl_5 -> FuncBody_8
+FuncBody_8 [label = FuncBody]
+FuncBody_8 -> VarDecl_9
+VarDecl_9 [label = VarDecl]
+VarDecl_9 -> BuiltinType_10
 BuiltinType_10 [label = BuiltinType]
-"void_10" [label = "void"]
-BuiltinType_10 -> "void_10"
-check_int_9[ label = check_int]
-FuncDecl_9 -> check_int_9
-FuncDecl_9 -> ParamList_11
-ParamList_11 [label = ParamList]
-ParamList_11 -> Param_12
-Param_12 [label = Param]
-Param_12 -> PointerType_13
-PointerType_13 [label = PointerType]
-const_13 [label = const]
-PointerType_13 -> const_13
-"char*_13" [label = "char*"]
-PointerType_13 -> "char*_13"
-name_12 [label = name]
-Param_12 -> name_12
-ParamList_11 -> Param_14
-Param_14 [label = Param]
-Param_14 -> BuiltinType_15
-BuiltinType_15 [label = BuiltinType]
-"int_15" [label = "int"]
-BuiltinType_15 -> "int_15"
-actual_14 [label = actual]
-Param_14 -> actual_14
-ParamList_11 -> Param_16
-Param_16 [label = Param]
-Param_16 -> BuiltinType_17
-BuiltinType_17 [label = BuiltinType]
-"int_17" [label = "int"]
-BuiltinType_17 -> "int_17"
-expected_16 [label = expected]
-Param_16 -> expected_16
-FuncDecl_9 -> FuncBody_18
-FuncBody_18 [label = FuncBody]
-FuncBody_18 -> IfStmt_19
-IfStmt_19 [label = IfStmt]
-IfStmt_19 -> LogicNotEq_20
-LogicNotEq_20 [label = LogicNotEq]
-LogicNotEq_20 -> Variable_21
-Variable_21 [label = Variable]
-actual_21 [label = actual]
-Variable_21 -> actual_21
-LogicNotEq_20 -> Variable_22
-Variable_22 [label = Variable]
-expected_22 [label = expected]
-Variable_22 -> expected_22
-IfStmt_19 -> Block_23
-Block_23 [label = Block]
-Block_23 -> FuncCall_24
-FuncCall_24 [label = FuncCall]
-printf_24[ label = printf]
-FuncCall_24 -> printf_24
-FuncCall_24 -> ConstStr_25
-ConstStr_25 [label = ConstStr]
-str_25 [label = "ERROR [%s]: got %d expected %d"]
-ConstStr_25 -> str_25
-FuncCall_24 -> Variable_26
-Variable_26 [label = Variable]
-name_26 [label = name]
-Variable_26 -> name_26
-FuncCall_24 -> Variable_27
-Variable_27 [label = Variable]
-actual_27 [label = actual]
-Variable_27 -> actual_27
-FuncCall_24 -> Variable_28
-Variable_28 [label = Variable]
-expected_28 [label = expected]
-Variable_28 -> expected_28
-Block_23 -> PostfixInc_29
-PostfixInc_29 [label = PostfixInc]
-PostfixInc_29 -> Variable_30
-Variable_30 [label = Variable]
-test_errors_30 [label = test_errors]
-Variable_30 -> test_errors_30
-Program -> FuncDecl_31
-FuncDecl_31 [label = FuncDecl]
-FuncDecl_31 -> BuiltinType_32
-BuiltinType_32 [label = BuiltinType]
-"void_32" [label = "void"]
-BuiltinType_32 -> "void_32"
-report_result_31[ label = report_result]
-FuncDecl_31 -> report_result_31
-FuncDecl_31 -> ParamList_33
-ParamList_33 [label = ParamList]
-ParamList_33 -> Param_34
-Param_34 [label = Param]
-Param_34 -> BuiltinType_35
-BuiltinType_35 [label = BuiltinType]
-"void_35" [label = "void"]
-BuiltinType_35 -> "void_35"
-anonymous_34 [label = anonymous]
-Param_34 -> anonymous_34
-FuncDecl_31 -> FuncBody_36
-FuncBody_36 [label = FuncBody]
-FuncBody_36 -> IfStmt_37
-IfStmt_37 [label = IfStmt]
-IfStmt_37 -> LogicEq_38
-LogicEq_38 [label = LogicEq]
-LogicEq_38 -> Variable_39
-Variable_39 [label = Variable]
-test_errors_39 [label = test_errors]
-Variable_39 -> test_errors_39
-LogicEq_38 -> Constant_40
-Constant_40 [label = Constant]
-int_40 [label = "0"]
-Constant_40 -> int_40
-IfStmt_37 -> Block_41
-Block_41 [label = Block]
-Block_41 -> FuncCall_42
-FuncCall_42 [label = FuncCall]
-printf_42[ label = printf]
-FuncCall_42 -> printf_42
-FuncCall_42 -> ConstStr_43
-ConstStr_43 [label = ConstStr]
-str_43 [label = "PASS"]
-ConstStr_43 -> str_43
-IfStmt_37 -> Block_44
-Block_44 [label = Block]
-Block_44 -> FuncCall_45
-FuncCall_45 [label = FuncCall]
-printf_45[ label = printf]
-FuncCall_45 -> printf_45
-FuncCall_45 -> ConstStr_46
-ConstStr_46 [label = ConstStr]
-str_46 [label = "FAIL: %d error(s)"]
-ConstStr_46 -> str_46
-FuncCall_45 -> Variable_47
-Variable_47 [label = Variable]
-test_errors_47 [label = test_errors]
-Variable_47 -> test_errors_47
-Program -> FuncDecl_48
-FuncDecl_48 [label = FuncDecl]
-FuncDecl_48 -> BuiltinType_49
-BuiltinType_49 [label = BuiltinType]
-"int_49" [label = "int"]
-BuiltinType_49 -> "int_49"
-main_48[ label = main]
-FuncDecl_48 -> main_48
-FuncDecl_48 -> ParamList_50
-ParamList_50 [label = ParamList]
-FuncDecl_48 -> FuncBody_51
-FuncBody_51 [label = FuncBody]
-FuncBody_51 -> FuncCall_52
-FuncCall_52 [label = FuncCall]
-printf_52[ label = printf]
-FuncCall_52 -> printf_52
-FuncCall_52 -> ConstStr_53
-ConstStr_53 [label = ConstStr]
-str_53 [label = "**** 7.variable_list.c ****"]
-ConstStr_53 -> str_53
-FuncBody_51 -> VarDecl_54
-VarDecl_54 [label = VarDecl]
-VarDecl_54 -> BuiltinType_55
-BuiltinType_55 [label = BuiltinType]
-"int_55" [label = "int"]
-BuiltinType_55 -> "int_55"
-VarDecl_54 -> VarInit_56
-VarInit_56 [label = VarInit]
-a_56 [label = a]
-VarInit_56 -> a_56
-VarDecl_54 -> VarInit_57
-VarInit_57 [label = VarInit]
-b_57 [label = b]
-VarInit_57 -> b_57
-VarInit_57 -> Constant_58
-Constant_58 [label = Constant]
-int_58 [label = "1"]
-Constant_58 -> int_58
-VarDecl_54 -> VarInit_59
-VarInit_59 [label = VarInit]
-c_59 [label = c]
-VarInit_59 -> c_59
-VarInit_59 -> Constant_60
+"int_10" [label = "int"]
+BuiltinType_10 -> "int_10"
+VarDecl_9 -> VarInit_11
+VarInit_11 [label = VarInit]
+err_11 [label = err]
+VarInit_11 -> err_11
+VarInit_11 -> Constant_12
+Constant_12 [label = Constant]
+int_12 [label = "0"]
+Constant_12 -> int_12
+FuncBody_8 -> VarDecl_13
+VarDecl_13 [label = VarDecl]
+VarDecl_13 -> BuiltinType_14
+BuiltinType_14 [label = BuiltinType]
+"int_14" [label = "int"]
+BuiltinType_14 -> "int_14"
+VarDecl_13 -> VarInit_15
+VarInit_15 [label = VarInit]
+a_15 [label = a]
+VarInit_15 -> a_15
+VarDecl_13 -> VarInit_16
+VarInit_16 [label = VarInit]
+b_16 [label = b]
+VarInit_16 -> b_16
+VarInit_16 -> Constant_17
+Constant_17 [label = Constant]
+int_17 [label = "1"]
+Constant_17 -> int_17
+VarDecl_13 -> VarInit_18
+VarInit_18 [label = VarInit]
+c_18 [label = c]
+VarInit_18 -> c_18
+VarInit_18 -> Constant_19
+Constant_19 [label = Constant]
+int_19 [label = "2"]
+Constant_19 -> int_19
+FuncBody_8 -> VarDecl_20
+VarDecl_20 [label = VarDecl]
+VarDecl_20 -> BuiltinType_21
+BuiltinType_21 [label = BuiltinType]
+"int_21" [label = "int"]
+BuiltinType_21 -> "int_21"
+VarDecl_20 -> VarInit_22
+VarInit_22 [label = VarInit]
+d_22 [label = d]
+VarInit_22 -> d_22
+VarInit_22 -> Constant_23
+Constant_23 [label = Constant]
+int_23 [label = "3"]
+Constant_23 -> int_23
+VarDecl_20 -> VarInit_24
+VarInit_24 [label = VarInit]
+e_24 [label = e]
+VarInit_24 -> e_24
+FuncBody_8 -> VarDecl_25
+VarDecl_25 [label = VarDecl]
+VarDecl_25 -> BuiltinType_26
+BuiltinType_26 [label = BuiltinType]
+"int_26" [label = "int"]
+BuiltinType_26 -> "int_26"
+VarDecl_25 -> VarInit_27
+VarInit_27 [label = VarInit]
+f_27 [label = f]
+VarInit_27 -> f_27
+FuncBody_8 -> Assign_28
+Assign_28 [label = Assign]
+Assign_28 -> Variable_29
+Variable_29 [label = Variable]
+a_29 [label = a]
+Variable_29 -> a_29
+Assign_28 -> Constant_30
+Constant_30 [label = Constant]
+int_30 [label = "0"]
+Constant_30 -> int_30
+FuncBody_8 -> Assign_31
+Assign_31 [label = Assign]
+Assign_31 -> Variable_32
+Variable_32 [label = Variable]
+e_32 [label = e]
+Variable_32 -> e_32
+Assign_31 -> Constant_33
+Constant_33 [label = Constant]
+int_33 [label = "4"]
+Constant_33 -> int_33
+FuncBody_8 -> Assign_34
+Assign_34 [label = Assign]
+Assign_34 -> Variable_35
+Variable_35 [label = Variable]
+f_35 [label = f]
+Variable_35 -> f_35
+Assign_34 -> Constant_36
+Constant_36 [label = Constant]
+int_36 [label = "5"]
+Constant_36 -> int_36
+FuncBody_8 -> VarDecl_37
+VarDecl_37 [label = VarDecl]
+VarDecl_37 -> BuiltinType_38
+BuiltinType_38 [label = BuiltinType]
+"int_38" [label = "int"]
+BuiltinType_38 -> "int_38"
+VarDecl_37 -> VarInit_39
+VarInit_39 [label = VarInit]
+g_39 [label = g]
+VarInit_39 -> g_39
+VarDecl_37 -> VarInit_40
+VarInit_40 [label = VarInit]
+h_40 [label = h]
+VarInit_40 -> h_40
+FuncBody_8 -> Assign_41
+Assign_41 [label = Assign]
+Assign_41 -> Variable_42
+Variable_42 [label = Variable]
+g_42 [label = g]
+Variable_42 -> g_42
+Assign_41 -> Constant_43
+Constant_43 [label = Constant]
+int_43 [label = "6"]
+Constant_43 -> int_43
+FuncBody_8 -> Assign_44
+Assign_44 [label = Assign]
+Assign_44 -> Variable_45
+Variable_45 [label = Variable]
+h_45 [label = h]
+Variable_45 -> h_45
+Assign_44 -> Constant_46
+Constant_46 [label = Constant]
+int_46 [label = "7"]
+Constant_46 -> int_46
+FuncBody_8 -> IfStmt_47
+IfStmt_47 [label = IfStmt]
+IfStmt_47 -> LogicNotEq_48
+LogicNotEq_48 [label = LogicNotEq]
+LogicNotEq_48 -> Variable_49
+Variable_49 [label = Variable]
+a_49 [label = a]
+Variable_49 -> a_49
+LogicNotEq_48 -> Constant_50
+Constant_50 [label = Constant]
+int_50 [label = "0"]
+Constant_50 -> int_50
+IfStmt_47 -> Assign_51
+Assign_51 [label = Assign]
+Assign_51 -> Variable_52
+Variable_52 [label = Variable]
+err_52 [label = err]
+Variable_52 -> err_52
+Assign_51 -> Constant_53
+Constant_53 [label = Constant]
+int_53 [label = "1"]
+Constant_53 -> int_53
+FuncBody_8 -> IfStmt_54
+IfStmt_54 [label = IfStmt]
+IfStmt_54 -> LogicNotEq_55
+LogicNotEq_55 [label = LogicNotEq]
+LogicNotEq_55 -> Variable_56
+Variable_56 [label = Variable]
+b_56 [label = b]
+Variable_56 -> b_56
+LogicNotEq_55 -> Constant_57
+Constant_57 [label = Constant]
+int_57 [label = "1"]
+Constant_57 -> int_57
+IfStmt_54 -> Assign_58
+Assign_58 [label = Assign]
+Assign_58 -> Variable_59
+Variable_59 [label = Variable]
+err_59 [label = err]
+Variable_59 -> err_59
+Assign_58 -> Constant_60
 Constant_60 [label = Constant]
-int_60 [label = "2"]
+int_60 [label = "1"]
 Constant_60 -> int_60
-FuncBody_51 -> VarDecl_61
-VarDecl_61 [label = VarDecl]
-VarDecl_61 -> BuiltinType_62
-BuiltinType_62 [label = BuiltinType]
-"int_62" [label = "int"]
-BuiltinType_62 -> "int_62"
-VarDecl_61 -> VarInit_63
-VarInit_63 [label = VarInit]
-d_63 [label = d]
-VarInit_63 -> d_63
-VarInit_63 -> Constant_64
+FuncBody_8 -> IfStmt_61
+IfStmt_61 [label = IfStmt]
+IfStmt_61 -> LogicNotEq_62
+LogicNotEq_62 [label = LogicNotEq]
+LogicNotEq_62 -> Variable_63
+Variable_63 [label = Variable]
+c_63 [label = c]
+Variable_63 -> c_63
+LogicNotEq_62 -> Constant_64
 Constant_64 [label = Constant]
-int_64 [label = "3"]
+int_64 [label = "2"]
 Constant_64 -> int_64
-VarDecl_61 -> VarInit_65
-VarInit_65 [label = VarInit]
-e_65 [label = e]
-VarInit_65 -> e_65
-FuncBody_51 -> VarDecl_66
-VarDecl_66 [label = VarDecl]
-VarDecl_66 -> BuiltinType_67
-BuiltinType_67 [label = BuiltinType]
-"int_67" [label = "int"]
-BuiltinType_67 -> "int_67"
-VarDecl_66 -> VarInit_68
-VarInit_68 [label = VarInit]
-f_68 [label = f]
-VarInit_68 -> f_68
-FuncBody_51 -> Assign_69
-Assign_69 [label = Assign]
-Assign_69 -> Variable_70
+IfStmt_61 -> Assign_65
+Assign_65 [label = Assign]
+Assign_65 -> Variable_66
+Variable_66 [label = Variable]
+err_66 [label = err]
+Variable_66 -> err_66
+Assign_65 -> Constant_67
+Constant_67 [label = Constant]
+int_67 [label = "1"]
+Constant_67 -> int_67
+FuncBody_8 -> IfStmt_68
+IfStmt_68 [label = IfStmt]
+IfStmt_68 -> LogicNotEq_69
+LogicNotEq_69 [label = LogicNotEq]
+LogicNotEq_69 -> Variable_70
 Variable_70 [label = Variable]
-a_70 [label = a]
-Variable_70 -> a_70
-Assign_69 -> Constant_71
+d_70 [label = d]
+Variable_70 -> d_70
+LogicNotEq_69 -> Constant_71
 Constant_71 [label = Constant]
-int_71 [label = "0"]
+int_71 [label = "3"]
 Constant_71 -> int_71
-FuncBody_51 -> Assign_72
+IfStmt_68 -> Assign_72
 Assign_72 [label = Assign]
 Assign_72 -> Variable_73
 Variable_73 [label = Variable]
-e_73 [label = e]
-Variable_73 -> e_73
+err_73 [label = err]
+Variable_73 -> err_73
 Assign_72 -> Constant_74
 Constant_74 [label = Constant]
-int_74 [label = "4"]
+int_74 [label = "1"]
 Constant_74 -> int_74
-FuncBody_51 -> Assign_75
-Assign_75 [label = Assign]
-Assign_75 -> Variable_76
-Variable_76 [label = Variable]
-f_76 [label = f]
-Variable_76 -> f_76
-Assign_75 -> Constant_77
-Constant_77 [label = Constant]
-int_77 [label = "5"]
-Constant_77 -> int_77
-FuncBody_51 -> VarDecl_78
-VarDecl_78 [label = VarDecl]
-VarDecl_78 -> BuiltinType_79
-BuiltinType_79 [label = BuiltinType]
-"int_79" [label = "int"]
-BuiltinType_79 -> "int_79"
-VarDecl_78 -> VarInit_80
-VarInit_80 [label = VarInit]
-g_80 [label = g]
-VarInit_80 -> g_80
-VarDecl_78 -> VarInit_81
-VarInit_81 [label = VarInit]
-h_81 [label = h]
-VarInit_81 -> h_81
-FuncBody_51 -> Assign_82
-Assign_82 [label = Assign]
-Assign_82 -> Variable_83
-Variable_83 [label = Variable]
-g_83 [label = g]
-Variable_83 -> g_83
-Assign_82 -> Constant_84
-Constant_84 [label = Constant]
-int_84 [label = "6"]
-Constant_84 -> int_84
-FuncBody_51 -> Assign_85
-Assign_85 [label = Assign]
-Assign_85 -> Variable_86
-Variable_86 [label = Variable]
-h_86 [label = h]
-Variable_86 -> h_86
-Assign_85 -> Constant_87
-Constant_87 [label = Constant]
-int_87 [label = "7"]
-Constant_87 -> int_87
-FuncBody_51 -> FuncCall_88
-FuncCall_88 [label = FuncCall]
-printf_88[ label = printf]
-FuncCall_88 -> printf_88
-FuncCall_88 -> ConstStr_89
-ConstStr_89 [label = ConstStr]
-str_89 [label = "%d %d %d %d %d %d"]
-ConstStr_89 -> str_89
-FuncCall_88 -> Variable_90
-Variable_90 [label = Variable]
-a_90 [label = a]
-Variable_90 -> a_90
-FuncCall_88 -> Variable_91
+FuncBody_8 -> IfStmt_75
+IfStmt_75 [label = IfStmt]
+IfStmt_75 -> LogicNotEq_76
+LogicNotEq_76 [label = LogicNotEq]
+LogicNotEq_76 -> Variable_77
+Variable_77 [label = Variable]
+e_77 [label = e]
+Variable_77 -> e_77
+LogicNotEq_76 -> Constant_78
+Constant_78 [label = Constant]
+int_78 [label = "4"]
+Constant_78 -> int_78
+IfStmt_75 -> Assign_79
+Assign_79 [label = Assign]
+Assign_79 -> Variable_80
+Variable_80 [label = Variable]
+err_80 [label = err]
+Variable_80 -> err_80
+Assign_79 -> Constant_81
+Constant_81 [label = Constant]
+int_81 [label = "1"]
+Constant_81 -> int_81
+FuncBody_8 -> IfStmt_82
+IfStmt_82 [label = IfStmt]
+IfStmt_82 -> LogicNotEq_83
+LogicNotEq_83 [label = LogicNotEq]
+LogicNotEq_83 -> Variable_84
+Variable_84 [label = Variable]
+f_84 [label = f]
+Variable_84 -> f_84
+LogicNotEq_83 -> Constant_85
+Constant_85 [label = Constant]
+int_85 [label = "5"]
+Constant_85 -> int_85
+IfStmt_82 -> Assign_86
+Assign_86 [label = Assign]
+Assign_86 -> Variable_87
+Variable_87 [label = Variable]
+err_87 [label = err]
+Variable_87 -> err_87
+Assign_86 -> Constant_88
+Constant_88 [label = Constant]
+int_88 [label = "1"]
+Constant_88 -> int_88
+FuncBody_8 -> IfStmt_89
+IfStmt_89 [label = IfStmt]
+IfStmt_89 -> LogicNotEq_90
+LogicNotEq_90 [label = LogicNotEq]
+LogicNotEq_90 -> Variable_91
 Variable_91 [label = Variable]
-b_91 [label = b]
-Variable_91 -> b_91
-FuncCall_88 -> Variable_92
-Variable_92 [label = Variable]
-c_92 [label = c]
-Variable_92 -> c_92
-FuncCall_88 -> Variable_93
-Variable_93 [label = Variable]
-d_93 [label = d]
-Variable_93 -> d_93
-FuncCall_88 -> Variable_94
+g_91 [label = g]
+Variable_91 -> g_91
+LogicNotEq_90 -> Constant_92
+Constant_92 [label = Constant]
+int_92 [label = "6"]
+Constant_92 -> int_92
+IfStmt_89 -> Assign_93
+Assign_93 [label = Assign]
+Assign_93 -> Variable_94
 Variable_94 [label = Variable]
-e_94 [label = e]
-Variable_94 -> e_94
-FuncCall_88 -> Variable_95
-Variable_95 [label = Variable]
-f_95 [label = f]
-Variable_95 -> f_95
-FuncBody_51 -> FuncCall_96
-FuncCall_96 [label = FuncCall]
-printf_96[ label = printf]
-FuncCall_96 -> printf_96
-FuncCall_96 -> ConstStr_97
-ConstStr_97 [label = ConstStr]
-str_97 [label = "%d %d"]
-ConstStr_97 -> str_97
-FuncCall_96 -> Variable_98
+err_94 [label = err]
+Variable_94 -> err_94
+Assign_93 -> Constant_95
+Constant_95 [label = Constant]
+int_95 [label = "1"]
+Constant_95 -> int_95
+FuncBody_8 -> IfStmt_96
+IfStmt_96 [label = IfStmt]
+IfStmt_96 -> LogicNotEq_97
+LogicNotEq_97 [label = LogicNotEq]
+LogicNotEq_97 -> Variable_98
 Variable_98 [label = Variable]
-g_98 [label = g]
-Variable_98 -> g_98
-FuncCall_96 -> Variable_99
-Variable_99 [label = Variable]
-h_99 [label = h]
-Variable_99 -> h_99
-FuncBody_51 -> FuncCall_100
-FuncCall_100 [label = FuncCall]
-check_int_100[ label = check_int]
-FuncCall_100 -> check_int_100
-FuncCall_100 -> ConstStr_101
-ConstStr_101 [label = ConstStr]
-str_101 [label = "a"]
-ConstStr_101 -> str_101
-FuncCall_100 -> Variable_102
-Variable_102 [label = Variable]
-a_102 [label = a]
-Variable_102 -> a_102
-FuncCall_100 -> Constant_103
-Constant_103 [label = Constant]
-int_103 [label = "0"]
-Constant_103 -> int_103
-FuncBody_51 -> FuncCall_104
-FuncCall_104 [label = FuncCall]
-check_int_104[ label = check_int]
-FuncCall_104 -> check_int_104
-FuncCall_104 -> ConstStr_105
-ConstStr_105 [label = ConstStr]
-str_105 [label = "b"]
-ConstStr_105 -> str_105
-FuncCall_104 -> Variable_106
-Variable_106 [label = Variable]
-b_106 [label = b]
-Variable_106 -> b_106
-FuncCall_104 -> Constant_107
-Constant_107 [label = Constant]
-int_107 [label = "1"]
-Constant_107 -> int_107
-FuncBody_51 -> FuncCall_108
+h_98 [label = h]
+Variable_98 -> h_98
+LogicNotEq_97 -> Constant_99
+Constant_99 [label = Constant]
+int_99 [label = "7"]
+Constant_99 -> int_99
+IfStmt_96 -> Assign_100
+Assign_100 [label = Assign]
+Assign_100 -> Variable_101
+Variable_101 [label = Variable]
+err_101 [label = err]
+Variable_101 -> err_101
+Assign_100 -> Constant_102
+Constant_102 [label = Constant]
+int_102 [label = "1"]
+Constant_102 -> int_102
+FuncBody_8 -> IfStmt_103
+IfStmt_103 [label = IfStmt]
+IfStmt_103 -> LogicEq_104
+LogicEq_104 [label = LogicEq]
+LogicEq_104 -> Variable_105
+Variable_105 [label = Variable]
+err_105 [label = err]
+Variable_105 -> err_105
+LogicEq_104 -> Constant_106
+Constant_106 [label = Constant]
+int_106 [label = "0"]
+Constant_106 -> int_106
+IfStmt_103 -> Block_107
+Block_107 [label = Block]
+Block_107 -> FuncCall_108
 FuncCall_108 [label = FuncCall]
-check_int_108[ label = check_int]
-FuncCall_108 -> check_int_108
+printf_108[ label = printf]
+FuncCall_108 -> printf_108
 FuncCall_108 -> ConstStr_109
 ConstStr_109 [label = ConstStr]
-str_109 [label = "c"]
+str_109 [label = "7.variable_list.c PASS"]
 ConstStr_109 -> str_109
-FuncCall_108 -> Variable_110
-Variable_110 [label = Variable]
-c_110 [label = c]
-Variable_110 -> c_110
-FuncCall_108 -> Constant_111
-Constant_111 [label = Constant]
-int_111 [label = "2"]
-Constant_111 -> int_111
-FuncBody_51 -> FuncCall_112
-FuncCall_112 [label = FuncCall]
-check_int_112[ label = check_int]
-FuncCall_112 -> check_int_112
-FuncCall_112 -> ConstStr_113
-ConstStr_113 [label = ConstStr]
-str_113 [label = "d"]
-ConstStr_113 -> str_113
-FuncCall_112 -> Variable_114
+IfStmt_103 -> Block_110
+Block_110 [label = Block]
+Block_110 -> FuncCall_111
+FuncCall_111 [label = FuncCall]
+printf_111[ label = printf]
+FuncCall_111 -> printf_111
+FuncCall_111 -> ConstStr_112
+ConstStr_112 [label = ConstStr]
+str_112 [label = "7.variable_list.c FAIL"]
+ConstStr_112 -> str_112
+FuncBody_8 -> ReturnStmt_113
+ReturnStmt_113 [label = ReturnStmt]
+ReturnStmt_113 -> Variable_114
 Variable_114 [label = Variable]
-d_114 [label = d]
-Variable_114 -> d_114
-FuncCall_112 -> Constant_115
-Constant_115 [label = Constant]
-int_115 [label = "3"]
-Constant_115 -> int_115
-FuncBody_51 -> FuncCall_116
-FuncCall_116 [label = FuncCall]
-check_int_116[ label = check_int]
-FuncCall_116 -> check_int_116
-FuncCall_116 -> ConstStr_117
-ConstStr_117 [label = ConstStr]
-str_117 [label = "e"]
-ConstStr_117 -> str_117
-FuncCall_116 -> Variable_118
-Variable_118 [label = Variable]
-e_118 [label = e]
-Variable_118 -> e_118
-FuncCall_116 -> Constant_119
-Constant_119 [label = Constant]
-int_119 [label = "4"]
-Constant_119 -> int_119
-FuncBody_51 -> FuncCall_120
-FuncCall_120 [label = FuncCall]
-check_int_120[ label = check_int]
-FuncCall_120 -> check_int_120
-FuncCall_120 -> ConstStr_121
-ConstStr_121 [label = ConstStr]
-str_121 [label = "f"]
-ConstStr_121 -> str_121
-FuncCall_120 -> Variable_122
-Variable_122 [label = Variable]
-f_122 [label = f]
-Variable_122 -> f_122
-FuncCall_120 -> Constant_123
-Constant_123 [label = Constant]
-int_123 [label = "5"]
-Constant_123 -> int_123
-FuncBody_51 -> FuncCall_124
-FuncCall_124 [label = FuncCall]
-check_int_124[ label = check_int]
-FuncCall_124 -> check_int_124
-FuncCall_124 -> ConstStr_125
-ConstStr_125 [label = ConstStr]
-str_125 [label = "g"]
-ConstStr_125 -> str_125
-FuncCall_124 -> Variable_126
-Variable_126 [label = Variable]
-g_126 [label = g]
-Variable_126 -> g_126
-FuncCall_124 -> Constant_127
-Constant_127 [label = Constant]
-int_127 [label = "6"]
-Constant_127 -> int_127
-FuncBody_51 -> FuncCall_128
-FuncCall_128 [label = FuncCall]
-check_int_128[ label = check_int]
-FuncCall_128 -> check_int_128
-FuncCall_128 -> ConstStr_129
-ConstStr_129 [label = ConstStr]
-str_129 [label = "h"]
-ConstStr_129 -> str_129
-FuncCall_128 -> Variable_130
-Variable_130 [label = Variable]
-h_130 [label = h]
-Variable_130 -> h_130
-FuncCall_128 -> Constant_131
-Constant_131 [label = Constant]
-int_131 [label = "7"]
-Constant_131 -> int_131
-FuncBody_51 -> FuncCall_132
-FuncCall_132 [label = FuncCall]
-report_result_132[ label = report_result]
-FuncCall_132 -> report_result_132
-FuncBody_51 -> ReturnStmt_133
-ReturnStmt_133 [label = ReturnStmt]
-ReturnStmt_133 -> Variable_134
-Variable_134 [label = Variable]
-test_errors_134 [label = test_errors]
-Variable_134 -> test_errors_134
+err_114 [label = err]
+Variable_114 -> err_114
 }

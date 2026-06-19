@@ -1,42 +1,35 @@
 int printf(char*, ...);
 
-int test_errors = 0;
-
-void check_int(const char* name, int actual, int expected) {
-  if (actual != expected) {
-    printf("ERROR [%s]: got %d expected %d\n", name, actual, expected);
-    test_errors++;
-  }
-}
-
-void report_result(void) {
-  if (test_errors == 0) {
-    printf("PASS\n");
-  } else {
-    printf("FAIL: %d error(s)\n", test_errors);
-  }
-}
-
 struct Data {
   int id;
   int data;
 };
 
 int main() {
-  printf("**** 24.struct_array.c ****\n");
-
+  int err = 0;
   Data da[2];
+  int id;
+  int data;
+
   da[0].id = 0;
   da[0].data = 0;
   da[1].id = 10;
   da[1].data = 80;
-  printf("da[1].id:%d da[1].data:%d\n", da[1].id, da[1].data);
 
-  check_int("da[1].id", da[1].id, 10);
-  check_int("da[1].data", da[1].data, 80);
-  check_int("da[0].id default", da[0].id, 0);
-  check_int("da[0].data default", da[0].data, 0);
+  id = da[1].id;
+  data = da[1].data;
+  if (id != 10) err = 1;
+  if (data != 80) err = 1;
 
-  report_result();
-  return test_errors;
+  id = da[0].id;
+  data = da[0].data;
+  if (id != 0) err = 1;
+  if (data != 0) err = 1;
+
+  if (err == 0) {
+    printf("24.struct_array.c PASS\n");
+  } else {
+    printf("24.struct_array.c FAIL\n");
+  }
+  return err;
 }
