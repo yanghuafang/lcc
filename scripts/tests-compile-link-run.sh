@@ -40,6 +40,7 @@ tests=(
   "36.typedef_struct.c"
   "37.static_file.c"
   "38.static_local.c"
+  "39.break_continue_hierarchy.c"
 )
 
 compileC2Obj() {

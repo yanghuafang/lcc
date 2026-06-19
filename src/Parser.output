@@ -780,21 +780,6 @@ State 26
     SEMICOLON  [reduce using rule 19 (VarType)]
     $default   reduce using rule 19 (VarType)
 
-    shift/reduce conflict on token SEMICOLON:
-       19 VarType: _VarType •
-       18 TypeDecl: _VarType • SEMICOLON
-      Example: _VarType • SEMICOLON
-      Shift derivation
-        Decl
-        ↳ 6: TypeDecl
-             ↳ 18: _VarType • SEMICOLON
-      Reduce derivation
-        Decl
-        ↳ 5: VarDecl
-             ↳ 17: VarType          VarList SEMICOLON
-                   ↳ 19: _VarType • ↳ 17: ε
-
-
 
 State 27
 
@@ -938,33 +923,6 @@ State 41
     ArrayBoundList  go to state 56
     ArrayBound      go to state 57
 
-    shift/reduce conflict on token LBRACKET:
-       43 ArrayBoundList: ε •
-       44 ArrayBound: • LBRACKET INTEGER RBRACKET
-      Example: • LBRACKET INTEGER RBRACKET
-      Shift derivation
-        ArrayBoundList
-        ↳ 42: ArrayBound
-              ↳ 44: • LBRACKET INTEGER RBRACKET
-      Reduce derivation
-        ArrayBoundList
-        ↳ 41: ArrayBoundList ArrayBound
-              ↳ 43: ε •      ↳ 44: LBRACKET INTEGER RBRACKET
-
-    shift/reduce conflict on token LBRACKET:
-       43 ArrayBoundList: ε •
-       45 ArrayBound: • LBRACKET RBRACKET
-      Example: • LBRACKET RBRACKET
-      Shift derivation
-        ArrayBoundList
-        ↳ 42: ArrayBound
-              ↳ 45: • LBRACKET RBRACKET
-      Reduce derivation
-        ArrayBoundList
-        ↳ 41: ArrayBoundList ArrayBound
-              ↳ 43: ε •      ↳ 45: LBRACKET RBRACKET
-
-
 
 State 42
 
@@ -1013,33 +971,6 @@ State 46
 
     ArrayBoundList  go to state 56
     ArrayBound      go to state 57
-
-    shift/reduce conflict on token LBRACKET:
-       43 ArrayBoundList: ε •
-       44 ArrayBound: • LBRACKET INTEGER RBRACKET
-      Example: • LBRACKET INTEGER RBRACKET
-      Shift derivation
-        ArrayBoundList
-        ↳ 42: ArrayBound
-              ↳ 44: • LBRACKET INTEGER RBRACKET
-      Reduce derivation
-        ArrayBoundList
-        ↳ 41: ArrayBoundList ArrayBound
-              ↳ 43: ε •      ↳ 44: LBRACKET INTEGER RBRACKET
-
-    shift/reduce conflict on token LBRACKET:
-       43 ArrayBoundList: ε •
-       45 ArrayBound: • LBRACKET RBRACKET
-      Example: • LBRACKET RBRACKET
-      Shift derivation
-        ArrayBoundList
-        ↳ 42: ArrayBound
-              ↳ 45: • LBRACKET RBRACKET
-      Reduce derivation
-        ArrayBoundList
-        ↳ 41: ArrayBoundList ArrayBound
-              ↳ 43: ε •      ↳ 45: LBRACKET RBRACKET
-
 
 
 State 47
@@ -1437,33 +1368,6 @@ State 78
 
     ArrayBoundList  go to state 56
     ArrayBound      go to state 57
-
-    shift/reduce conflict on token LBRACKET:
-       43 ArrayBoundList: ε •
-       44 ArrayBound: • LBRACKET INTEGER RBRACKET
-      Example: • LBRACKET INTEGER RBRACKET
-      Shift derivation
-        ArrayBoundList
-        ↳ 42: ArrayBound
-              ↳ 44: • LBRACKET INTEGER RBRACKET
-      Reduce derivation
-        ArrayBoundList
-        ↳ 41: ArrayBoundList ArrayBound
-              ↳ 43: ε •      ↳ 44: LBRACKET INTEGER RBRACKET
-
-    shift/reduce conflict on token LBRACKET:
-       43 ArrayBoundList: ε •
-       45 ArrayBound: • LBRACKET RBRACKET
-      Example: • LBRACKET RBRACKET
-      Shift derivation
-        ArrayBoundList
-        ↳ 42: ArrayBound
-              ↳ 45: • LBRACKET RBRACKET
-      Reduce derivation
-        ArrayBoundList
-        ↳ 41: ArrayBoundList ArrayBound
-              ↳ 43: ε •      ↳ 45: LBRACKET RBRACKET
-
 
 
 State 79
@@ -2204,20 +2108,6 @@ State 124
     IDENTIFIER  [reduce using rule 22 (_VarType)]
     $default    reduce using rule 22 (_VarType)
 
-    shift/reduce conflict on token IDENTIFIER:
-       22 _VarType: STRUCT IDENTIFIER LBRACE FieldDecls RBRACE •
-        9 TypedefDecl: TYPEDEF STRUCT IDENTIFIER LBRACE FieldDecls RBRACE • IDENTIFIER SEMICOLON
-      Example: TYPEDEF STRUCT IDENTIFIER LBRACE FieldDecls RBRACE • IDENTIFIER SEMICOLON
-      Shift derivation
-        TypedefDecl
-        ↳ 9: TYPEDEF STRUCT IDENTIFIER LBRACE FieldDecls RBRACE • IDENTIFIER SEMICOLON
-      Reduce derivation
-        TypedefDecl
-        ↳ 8: TYPEDEF VarType                                                  IDENTIFIER SEMICOLON
-                     ↳ 19: _VarType
-                           ↳ 22: STRUCT IDENTIFIER LBRACE FieldDecls RBRACE •
-
-
 
 State 125
 
@@ -2228,20 +2118,6 @@ State 125
 
     IDENTIFIER  [reduce using rule 24 (_VarType)]
     $default    reduce using rule 24 (_VarType)
-
-    shift/reduce conflict on token IDENTIFIER:
-       24 _VarType: UNION IDENTIFIER LBRACE FieldDecls RBRACE •
-       10 TypedefDecl: TYPEDEF UNION IDENTIFIER LBRACE FieldDecls RBRACE • IDENTIFIER SEMICOLON
-      Example: TYPEDEF UNION IDENTIFIER LBRACE FieldDecls RBRACE • IDENTIFIER SEMICOLON
-      Shift derivation
-        TypedefDecl
-        ↳ 10: TYPEDEF UNION IDENTIFIER LBRACE FieldDecls RBRACE • IDENTIFIER SEMICOLON
-      Reduce derivation
-        TypedefDecl
-        ↳ 8: TYPEDEF VarType                                                 IDENTIFIER SEMICOLON
-                     ↳ 19: _VarType
-                           ↳ 24: UNION IDENTIFIER LBRACE FieldDecls RBRACE •
-
 
 
 State 126
@@ -2330,20 +2206,6 @@ State 131
     LBRACKET  [reduce using rule 124 (Expr)]
     $default  reduce using rule 124 (Expr)
 
-    shift/reduce conflict on token LBRACKET:
-      124 Expr: ASTERISK Expr •
-      117 Expr: Expr • LBRACKET Expr RBRACKET
-      Example: ASTERISK Expr • LBRACKET Expr RBRACKET
-      Shift derivation
-        Expr
-        ↳ 124: ASTERISK Expr
-                        ↳ 117: Expr • LBRACKET Expr RBRACKET
-      Reduce derivation
-        Expr
-        ↳ 117: Expr                   LBRACKET Expr RBRACKET
-               ↳ 124: ASTERISK Expr •
-
-
 
 State 132
 
@@ -2394,20 +2256,6 @@ State 132
     LBRACKET  [reduce using rule 125 (Expr)]
     $default  reduce using rule 125 (Expr)
 
-    shift/reduce conflict on token LBRACKET:
-      125 Expr: AMPERSAND Expr •
-      117 Expr: Expr • LBRACKET Expr RBRACKET
-      Example: AMPERSAND Expr • LBRACKET Expr RBRACKET
-      Shift derivation
-        Expr
-        ↳ 125: AMPERSAND Expr
-                         ↳ 117: Expr • LBRACKET Expr RBRACKET
-      Reduce derivation
-        Expr
-        ↳ 117: Expr                    LBRACKET Expr RBRACKET
-               ↳ 125: AMPERSAND Expr •
-
-
 
 State 133
 
@@ -2427,21 +2275,6 @@ State 133
     RPARENTHESES  [reduce using rule 110 (Expr)]
     IDENTIFIER    reduce using rule 29 (_VarType)
     $default      reduce using rule 110 (Expr)
-
-    reduce/reduce conflict on tokens COMMA, SEMICOLON, ASTERISK, RPARENTHESES:
-       29 _VarType: IDENTIFIER •
-      110 Expr: IDENTIFIER •
-      Example: IDENTIFIER • SEMICOLON
-      First reduce derivation
-        Stmt
-        ↳ 90: TypeDecl
-              ↳ 18: _VarType           SEMICOLON
-                    ↳ 29: IDENTIFIER •
-      Second reduce derivation
-        Stmt
-        ↳ 80: Expr                SEMICOLON
-              ↳ 110: IDENTIFIER •
-
 
 
 State 134
@@ -2714,20 +2547,6 @@ State 141
     LBRACKET  [reduce using rule 122 (Expr)]
     $default  reduce using rule 122 (Expr)
 
-    shift/reduce conflict on token LBRACKET:
-      122 Expr: ADD Expr •
-      117 Expr: Expr • LBRACKET Expr RBRACKET
-      Example: ADD Expr • LBRACKET Expr RBRACKET
-      Shift derivation
-        Expr
-        ↳ 122: ADD Expr
-                   ↳ 117: Expr • LBRACKET Expr RBRACKET
-      Reduce derivation
-        Expr
-        ↳ 117: Expr              LBRACKET Expr RBRACKET
-               ↳ 122: ADD Expr •
-
-
 
 State 142
 
@@ -2777,20 +2596,6 @@ State 142
 
     LBRACKET  [reduce using rule 123 (Expr)]
     $default  reduce using rule 123 (Expr)
-
-    shift/reduce conflict on token LBRACKET:
-      123 Expr: SUB Expr •
-      117 Expr: Expr • LBRACKET Expr RBRACKET
-      Example: SUB Expr • LBRACKET Expr RBRACKET
-      Shift derivation
-        Expr
-        ↳ 123: SUB Expr
-                   ↳ 117: Expr • LBRACKET Expr RBRACKET
-      Reduce derivation
-        Expr
-        ↳ 117: Expr              LBRACKET Expr RBRACKET
-               ↳ 123: SUB Expr •
-
 
 
 State 143
@@ -2842,20 +2647,6 @@ State 143
     LBRACKET  [reduce using rule 134 (Expr)]
     $default  reduce using rule 134 (Expr)
 
-    shift/reduce conflict on token LBRACKET:
-      134 Expr: DADD Expr •
-      117 Expr: Expr • LBRACKET Expr RBRACKET
-      Example: DADD Expr • LBRACKET Expr RBRACKET
-      Shift derivation
-        Expr
-        ↳ 134: DADD Expr
-                    ↳ 117: Expr • LBRACKET Expr RBRACKET
-      Reduce derivation
-        Expr
-        ↳ 117: Expr               LBRACKET Expr RBRACKET
-               ↳ 134: DADD Expr •
-
-
 
 State 144
 
@@ -2905,20 +2696,6 @@ State 144
 
     LBRACKET  [reduce using rule 135 (Expr)]
     $default  reduce using rule 135 (Expr)
-
-    shift/reduce conflict on token LBRACKET:
-      135 Expr: DSUB Expr •
-      117 Expr: Expr • LBRACKET Expr RBRACKET
-      Example: DSUB Expr • LBRACKET Expr RBRACKET
-      Shift derivation
-        Expr
-        ↳ 135: DSUB Expr
-                    ↳ 117: Expr • LBRACKET Expr RBRACKET
-      Reduce derivation
-        Expr
-        ↳ 117: Expr               LBRACKET Expr RBRACKET
-               ↳ 135: DSUB Expr •
-
 
 
 State 145
@@ -2970,20 +2747,6 @@ State 145
     LBRACKET  [reduce using rule 144 (Expr)]
     $default  reduce using rule 144 (Expr)
 
-    shift/reduce conflict on token LBRACKET:
-      144 Expr: BNOT Expr •
-      117 Expr: Expr • LBRACKET Expr RBRACKET
-      Example: BNOT Expr • LBRACKET Expr RBRACKET
-      Shift derivation
-        Expr
-        ↳ 144: BNOT Expr
-                    ↳ 117: Expr • LBRACKET Expr RBRACKET
-      Reduce derivation
-        Expr
-        ↳ 117: Expr               LBRACKET Expr RBRACKET
-               ↳ 144: BNOT Expr •
-
-
 
 State 146
 
@@ -3033,20 +2796,6 @@ State 146
 
     LBRACKET  [reduce using rule 154 (Expr)]
     $default  reduce using rule 154 (Expr)
-
-    shift/reduce conflict on token LBRACKET:
-      154 Expr: NOT Expr •
-      117 Expr: Expr • LBRACKET Expr RBRACKET
-      Example: NOT Expr • LBRACKET Expr RBRACKET
-      Shift derivation
-        Expr
-        ↳ 154: NOT Expr
-                   ↳ 117: Expr • LBRACKET Expr RBRACKET
-      Reduce derivation
-        Expr
-        ↳ 117: Expr              LBRACKET Expr RBRACKET
-               ↳ 154: NOT Expr •
-
 
 
 State 147
@@ -4332,46 +4081,6 @@ State 197
     RPARENTHESES  [reduce using rule 110 (Expr)]
     $default      reduce using rule 110 (Expr)
 
-    shift/reduce conflict on token RPARENTHESES:
-       29 _VarType: IDENTIFIER •
-      121 Expr: SIZEOF LPARENTHESES IDENTIFIER • RPARENTHESES
-      Example: SIZEOF LPARENTHESES IDENTIFIER • RPARENTHESES
-      Shift derivation
-        Expr
-        ↳ 121: SIZEOF LPARENTHESES IDENTIFIER • RPARENTHESES
-      Reduce derivation
-        Expr
-        ↳ 119: SIZEOF LPARENTHESES VarType                  RPARENTHESES
-                                   ↳ 19: _VarType
-                                         ↳ 29: IDENTIFIER •
-
-    reduce/reduce conflict on tokens ASTERISK, RPARENTHESES:
-       29 _VarType: IDENTIFIER •
-      110 Expr: IDENTIFIER •
-      Example: SIZEOF LPARENTHESES IDENTIFIER • RPARENTHESES
-      First reduce derivation
-        Expr
-        ↳ 119: SIZEOF LPARENTHESES VarType                  RPARENTHESES
-                                   ↳ 19: _VarType
-                                         ↳ 29: IDENTIFIER •
-      Second reduce derivation
-        Expr
-        ↳ 120: SIZEOF LPARENTHESES Expr                RPARENTHESES
-                                   ↳ 110: IDENTIFIER •
-
-    shift/reduce conflict on token RPARENTHESES:
-      110 Expr: IDENTIFIER •
-      121 Expr: SIZEOF LPARENTHESES IDENTIFIER • RPARENTHESES
-      Example: SIZEOF LPARENTHESES IDENTIFIER • RPARENTHESES
-      Shift derivation
-        Expr
-        ↳ 121: SIZEOF LPARENTHESES IDENTIFIER • RPARENTHESES
-      Reduce derivation
-        Expr
-        ↳ 120: SIZEOF LPARENTHESES Expr                RPARENTHESES
-                                   ↳ 110: IDENTIFIER •
-
-
 
 State 198
 
@@ -4626,20 +4335,6 @@ State 202
     LBRACKET  [reduce using rule 113 (Expr)]
     $default  reduce using rule 113 (Expr)
 
-    shift/reduce conflict on token LBRACKET:
-      113 Expr: Expr COMMA Expr •
-      117 Expr: Expr • LBRACKET Expr RBRACKET
-      Example: Expr COMMA Expr • LBRACKET Expr RBRACKET
-      Shift derivation
-        Expr
-        ↳ 113: Expr COMMA Expr
-                          ↳ 117: Expr • LBRACKET Expr RBRACKET
-      Reduce derivation
-        Expr
-        ↳ 117: Expr                     LBRACKET Expr RBRACKET
-               ↳ 113: Expr COMMA Expr •
-
-
 
 State 203
 
@@ -4776,20 +4471,6 @@ State 205
     LBRACKET  [reduce using rule 129 (Expr)]
     $default  reduce using rule 129 (Expr)
 
-    shift/reduce conflict on token LBRACKET:
-      129 Expr: Expr ASTERISK Expr •
-      117 Expr: Expr • LBRACKET Expr RBRACKET
-      Example: Expr ASTERISK Expr • LBRACKET Expr RBRACKET
-      Shift derivation
-        Expr
-        ↳ 129: Expr ASTERISK Expr
-                             ↳ 117: Expr • LBRACKET Expr RBRACKET
-      Reduce derivation
-        Expr
-        ↳ 117: Expr                        LBRACKET Expr RBRACKET
-               ↳ 129: Expr ASTERISK Expr •
-
-
 
 State 206
 
@@ -4852,20 +4533,6 @@ State 206
 
     LBRACKET  [reduce using rule 141 (Expr)]
     $default  reduce using rule 141 (Expr)
-
-    shift/reduce conflict on token LBRACKET:
-      141 Expr: Expr AMPERSAND Expr •
-      117 Expr: Expr • LBRACKET Expr RBRACKET
-      Example: Expr AMPERSAND Expr • LBRACKET Expr RBRACKET
-      Shift derivation
-        Expr
-        ↳ 141: Expr AMPERSAND Expr
-                              ↳ 117: Expr • LBRACKET Expr RBRACKET
-      Reduce derivation
-        Expr
-        ↳ 117: Expr                         LBRACKET Expr RBRACKET
-               ↳ 141: Expr AMPERSAND Expr •
-
 
 
 State 207
@@ -5033,20 +4700,6 @@ State 209
     LBRACKET  [reduce using rule 126 (Expr)]
     $default  reduce using rule 126 (Expr)
 
-    shift/reduce conflict on token LBRACKET:
-      126 Expr: Expr ASSIGN Expr •
-      117 Expr: Expr • LBRACKET Expr RBRACKET
-      Example: Expr ASSIGN Expr • LBRACKET Expr RBRACKET
-      Shift derivation
-        Expr
-        ↳ 126: Expr ASSIGN Expr
-                           ↳ 117: Expr • LBRACKET Expr RBRACKET
-      Reduce derivation
-        Expr
-        ↳ 117: Expr                      LBRACKET Expr RBRACKET
-               ↳ 126: Expr ASSIGN Expr •
-
-
 
 State 210
 
@@ -5099,20 +4752,6 @@ State 210
 
     LBRACKET  [reduce using rule 127 (Expr)]
     $default  reduce using rule 127 (Expr)
-
-    shift/reduce conflict on token LBRACKET:
-      127 Expr: Expr ADD Expr •
-      117 Expr: Expr • LBRACKET Expr RBRACKET
-      Example: Expr ADD Expr • LBRACKET Expr RBRACKET
-      Shift derivation
-        Expr
-        ↳ 127: Expr ADD Expr
-                        ↳ 117: Expr • LBRACKET Expr RBRACKET
-      Reduce derivation
-        Expr
-        ↳ 117: Expr                   LBRACKET Expr RBRACKET
-               ↳ 127: Expr ADD Expr •
-
 
 
 State 211
@@ -5167,20 +4806,6 @@ State 211
     LBRACKET  [reduce using rule 128 (Expr)]
     $default  reduce using rule 128 (Expr)
 
-    shift/reduce conflict on token LBRACKET:
-      128 Expr: Expr SUB Expr •
-      117 Expr: Expr • LBRACKET Expr RBRACKET
-      Example: Expr SUB Expr • LBRACKET Expr RBRACKET
-      Shift derivation
-        Expr
-        ↳ 128: Expr SUB Expr
-                        ↳ 117: Expr • LBRACKET Expr RBRACKET
-      Reduce derivation
-        Expr
-        ↳ 117: Expr                   LBRACKET Expr RBRACKET
-               ↳ 128: Expr SUB Expr •
-
-
 
 State 212
 
@@ -5231,20 +4856,6 @@ State 212
     LBRACKET  [reduce using rule 130 (Expr)]
     $default  reduce using rule 130 (Expr)
 
-    shift/reduce conflict on token LBRACKET:
-      130 Expr: Expr DIV Expr •
-      117 Expr: Expr • LBRACKET Expr RBRACKET
-      Example: Expr DIV Expr • LBRACKET Expr RBRACKET
-      Shift derivation
-        Expr
-        ↳ 130: Expr DIV Expr
-                        ↳ 117: Expr • LBRACKET Expr RBRACKET
-      Reduce derivation
-        Expr
-        ↳ 117: Expr                   LBRACKET Expr RBRACKET
-               ↳ 130: Expr DIV Expr •
-
-
 
 State 213
 
@@ -5294,20 +4905,6 @@ State 213
 
     LBRACKET  [reduce using rule 131 (Expr)]
     $default  reduce using rule 131 (Expr)
-
-    shift/reduce conflict on token LBRACKET:
-      131 Expr: Expr MOD Expr •
-      117 Expr: Expr • LBRACKET Expr RBRACKET
-      Example: Expr MOD Expr • LBRACKET Expr RBRACKET
-      Shift derivation
-        Expr
-        ↳ 131: Expr MOD Expr
-                        ↳ 117: Expr • LBRACKET Expr RBRACKET
-      Reduce derivation
-        Expr
-        ↳ 117: Expr                   LBRACKET Expr RBRACKET
-               ↳ 131: Expr MOD Expr •
-
 
 
 State 214
@@ -5389,20 +4986,6 @@ State 214
     LBRACKET  [reduce using rule 136 (Expr)]
     $default  reduce using rule 136 (Expr)
 
-    shift/reduce conflict on token LBRACKET:
-      136 Expr: Expr ADDEQ Expr •
-      117 Expr: Expr • LBRACKET Expr RBRACKET
-      Example: Expr ADDEQ Expr • LBRACKET Expr RBRACKET
-      Shift derivation
-        Expr
-        ↳ 136: Expr ADDEQ Expr
-                          ↳ 117: Expr • LBRACKET Expr RBRACKET
-      Reduce derivation
-        Expr
-        ↳ 117: Expr                     LBRACKET Expr RBRACKET
-               ↳ 136: Expr ADDEQ Expr •
-
-
 
 State 215
 
@@ -5482,20 +5065,6 @@ State 215
 
     LBRACKET  [reduce using rule 137 (Expr)]
     $default  reduce using rule 137 (Expr)
-
-    shift/reduce conflict on token LBRACKET:
-      137 Expr: Expr SUBEQ Expr •
-      117 Expr: Expr • LBRACKET Expr RBRACKET
-      Example: Expr SUBEQ Expr • LBRACKET Expr RBRACKET
-      Shift derivation
-        Expr
-        ↳ 137: Expr SUBEQ Expr
-                          ↳ 117: Expr • LBRACKET Expr RBRACKET
-      Reduce derivation
-        Expr
-        ↳ 117: Expr                     LBRACKET Expr RBRACKET
-               ↳ 137: Expr SUBEQ Expr •
-
 
 
 State 216
@@ -5577,20 +5146,6 @@ State 216
     LBRACKET  [reduce using rule 138 (Expr)]
     $default  reduce using rule 138 (Expr)
 
-    shift/reduce conflict on token LBRACKET:
-      138 Expr: Expr MULEQ Expr •
-      117 Expr: Expr • LBRACKET Expr RBRACKET
-      Example: Expr MULEQ Expr • LBRACKET Expr RBRACKET
-      Shift derivation
-        Expr
-        ↳ 138: Expr MULEQ Expr
-                          ↳ 117: Expr • LBRACKET Expr RBRACKET
-      Reduce derivation
-        Expr
-        ↳ 117: Expr                     LBRACKET Expr RBRACKET
-               ↳ 138: Expr MULEQ Expr •
-
-
 
 State 217
 
@@ -5670,20 +5225,6 @@ State 217
 
     LBRACKET  [reduce using rule 139 (Expr)]
     $default  reduce using rule 139 (Expr)
-
-    shift/reduce conflict on token LBRACKET:
-      139 Expr: Expr DIVEQ Expr •
-      117 Expr: Expr • LBRACKET Expr RBRACKET
-      Example: Expr DIVEQ Expr • LBRACKET Expr RBRACKET
-      Shift derivation
-        Expr
-        ↳ 139: Expr DIVEQ Expr
-                          ↳ 117: Expr • LBRACKET Expr RBRACKET
-      Reduce derivation
-        Expr
-        ↳ 117: Expr                     LBRACKET Expr RBRACKET
-               ↳ 139: Expr DIVEQ Expr •
-
 
 
 State 218
@@ -5765,20 +5306,6 @@ State 218
     LBRACKET  [reduce using rule 140 (Expr)]
     $default  reduce using rule 140 (Expr)
 
-    shift/reduce conflict on token LBRACKET:
-      140 Expr: Expr MODEQ Expr •
-      117 Expr: Expr • LBRACKET Expr RBRACKET
-      Example: Expr MODEQ Expr • LBRACKET Expr RBRACKET
-      Shift derivation
-        Expr
-        ↳ 140: Expr MODEQ Expr
-                          ↳ 117: Expr • LBRACKET Expr RBRACKET
-      Reduce derivation
-        Expr
-        ↳ 117: Expr                     LBRACKET Expr RBRACKET
-               ↳ 140: Expr MODEQ Expr •
-
-
 
 State 219
 
@@ -5844,20 +5371,6 @@ State 219
     LBRACKET  [reduce using rule 142 (Expr)]
     $default  reduce using rule 142 (Expr)
 
-    shift/reduce conflict on token LBRACKET:
-      142 Expr: Expr BOR Expr •
-      117 Expr: Expr • LBRACKET Expr RBRACKET
-      Example: Expr BOR Expr • LBRACKET Expr RBRACKET
-      Shift derivation
-        Expr
-        ↳ 142: Expr BOR Expr
-                        ↳ 117: Expr • LBRACKET Expr RBRACKET
-      Reduce derivation
-        Expr
-        ↳ 117: Expr                   LBRACKET Expr RBRACKET
-               ↳ 142: Expr BOR Expr •
-
-
 
 State 220
 
@@ -5921,20 +5434,6 @@ State 220
 
     LBRACKET  [reduce using rule 143 (Expr)]
     $default  reduce using rule 143 (Expr)
-
-    shift/reduce conflict on token LBRACKET:
-      143 Expr: Expr BXOR Expr •
-      117 Expr: Expr • LBRACKET Expr RBRACKET
-      Example: Expr BXOR Expr • LBRACKET Expr RBRACKET
-      Shift derivation
-        Expr
-        ↳ 143: Expr BXOR Expr
-                         ↳ 117: Expr • LBRACKET Expr RBRACKET
-      Reduce derivation
-        Expr
-        ↳ 117: Expr                    LBRACKET Expr RBRACKET
-               ↳ 143: Expr BXOR Expr •
-
 
 
 State 221
@@ -6016,20 +5515,6 @@ State 221
     LBRACKET  [reduce using rule 145 (Expr)]
     $default  reduce using rule 145 (Expr)
 
-    shift/reduce conflict on token LBRACKET:
-      145 Expr: Expr BANDEQ Expr •
-      117 Expr: Expr • LBRACKET Expr RBRACKET
-      Example: Expr BANDEQ Expr • LBRACKET Expr RBRACKET
-      Shift derivation
-        Expr
-        ↳ 145: Expr BANDEQ Expr
-                           ↳ 117: Expr • LBRACKET Expr RBRACKET
-      Reduce derivation
-        Expr
-        ↳ 117: Expr                      LBRACKET Expr RBRACKET
-               ↳ 145: Expr BANDEQ Expr •
-
-
 
 State 222
 
@@ -6109,20 +5594,6 @@ State 222
 
     LBRACKET  [reduce using rule 146 (Expr)]
     $default  reduce using rule 146 (Expr)
-
-    shift/reduce conflict on token LBRACKET:
-      146 Expr: Expr BOREQ Expr •
-      117 Expr: Expr • LBRACKET Expr RBRACKET
-      Example: Expr BOREQ Expr • LBRACKET Expr RBRACKET
-      Shift derivation
-        Expr
-        ↳ 146: Expr BOREQ Expr
-                          ↳ 117: Expr • LBRACKET Expr RBRACKET
-      Reduce derivation
-        Expr
-        ↳ 117: Expr                     LBRACKET Expr RBRACKET
-               ↳ 146: Expr BOREQ Expr •
-
 
 
 State 223
@@ -6204,20 +5675,6 @@ State 223
     LBRACKET  [reduce using rule 147 (Expr)]
     $default  reduce using rule 147 (Expr)
 
-    shift/reduce conflict on token LBRACKET:
-      147 Expr: Expr BXOREQ Expr •
-      117 Expr: Expr • LBRACKET Expr RBRACKET
-      Example: Expr BXOREQ Expr • LBRACKET Expr RBRACKET
-      Shift derivation
-        Expr
-        ↳ 147: Expr BXOREQ Expr
-                           ↳ 117: Expr • LBRACKET Expr RBRACKET
-      Reduce derivation
-        Expr
-        ↳ 117: Expr                      LBRACKET Expr RBRACKET
-               ↳ 147: Expr BXOREQ Expr •
-
-
 
 State 224
 
@@ -6273,20 +5730,6 @@ State 224
     LBRACKET  [reduce using rule 148 (Expr)]
     $default  reduce using rule 148 (Expr)
 
-    shift/reduce conflict on token LBRACKET:
-      148 Expr: Expr SHL Expr •
-      117 Expr: Expr • LBRACKET Expr RBRACKET
-      Example: Expr SHL Expr • LBRACKET Expr RBRACKET
-      Shift derivation
-        Expr
-        ↳ 148: Expr SHL Expr
-                        ↳ 117: Expr • LBRACKET Expr RBRACKET
-      Reduce derivation
-        Expr
-        ↳ 117: Expr                   LBRACKET Expr RBRACKET
-               ↳ 148: Expr SHL Expr •
-
-
 
 State 225
 
@@ -6341,20 +5784,6 @@ State 225
 
     LBRACKET  [reduce using rule 149 (Expr)]
     $default  reduce using rule 149 (Expr)
-
-    shift/reduce conflict on token LBRACKET:
-      149 Expr: Expr SHR Expr •
-      117 Expr: Expr • LBRACKET Expr RBRACKET
-      Example: Expr SHR Expr • LBRACKET Expr RBRACKET
-      Shift derivation
-        Expr
-        ↳ 149: Expr SHR Expr
-                        ↳ 117: Expr • LBRACKET Expr RBRACKET
-      Reduce derivation
-        Expr
-        ↳ 117: Expr                   LBRACKET Expr RBRACKET
-               ↳ 149: Expr SHR Expr •
-
 
 
 State 226
@@ -6436,20 +5865,6 @@ State 226
     LBRACKET  [reduce using rule 150 (Expr)]
     $default  reduce using rule 150 (Expr)
 
-    shift/reduce conflict on token LBRACKET:
-      150 Expr: Expr SHLEQ Expr •
-      117 Expr: Expr • LBRACKET Expr RBRACKET
-      Example: Expr SHLEQ Expr • LBRACKET Expr RBRACKET
-      Shift derivation
-        Expr
-        ↳ 150: Expr SHLEQ Expr
-                          ↳ 117: Expr • LBRACKET Expr RBRACKET
-      Reduce derivation
-        Expr
-        ↳ 117: Expr                     LBRACKET Expr RBRACKET
-               ↳ 150: Expr SHLEQ Expr •
-
-
 
 State 227
 
@@ -6530,20 +5945,6 @@ State 227
     LBRACKET  [reduce using rule 151 (Expr)]
     $default  reduce using rule 151 (Expr)
 
-    shift/reduce conflict on token LBRACKET:
-      151 Expr: Expr SHREQ Expr •
-      117 Expr: Expr • LBRACKET Expr RBRACKET
-      Example: Expr SHREQ Expr • LBRACKET Expr RBRACKET
-      Shift derivation
-        Expr
-        ↳ 151: Expr SHREQ Expr
-                          ↳ 117: Expr • LBRACKET Expr RBRACKET
-      Reduce derivation
-        Expr
-        ↳ 117: Expr                     LBRACKET Expr RBRACKET
-               ↳ 151: Expr SHREQ Expr •
-
-
 
 State 228
 
@@ -6609,20 +6010,6 @@ State 228
 
     LBRACKET  [reduce using rule 152 (Expr)]
     $default  reduce using rule 152 (Expr)
-
-    shift/reduce conflict on token LBRACKET:
-      152 Expr: Expr AND Expr •
-      117 Expr: Expr • LBRACKET Expr RBRACKET
-      Example: Expr AND Expr • LBRACKET Expr RBRACKET
-      Shift derivation
-        Expr
-        ↳ 152: Expr AND Expr
-                        ↳ 117: Expr • LBRACKET Expr RBRACKET
-      Reduce derivation
-        Expr
-        ↳ 117: Expr                   LBRACKET Expr RBRACKET
-               ↳ 152: Expr AND Expr •
-
 
 
 State 229
@@ -6691,20 +6078,6 @@ State 229
     LBRACKET  [reduce using rule 153 (Expr)]
     $default  reduce using rule 153 (Expr)
 
-    shift/reduce conflict on token LBRACKET:
-      153 Expr: Expr OR Expr •
-      117 Expr: Expr • LBRACKET Expr RBRACKET
-      Example: Expr OR Expr • LBRACKET Expr RBRACKET
-      Shift derivation
-        Expr
-        ↳ 153: Expr OR Expr
-                       ↳ 117: Expr • LBRACKET Expr RBRACKET
-      Reduce derivation
-        Expr
-        ↳ 117: Expr                  LBRACKET Expr RBRACKET
-               ↳ 153: Expr OR Expr •
-
-
 
 State 230
 
@@ -6765,20 +6138,6 @@ State 230
 
     LBRACKET  [reduce using rule 155 (Expr)]
     $default  reduce using rule 155 (Expr)
-
-    shift/reduce conflict on token LBRACKET:
-      155 Expr: Expr EQ Expr •
-      117 Expr: Expr • LBRACKET Expr RBRACKET
-      Example: Expr EQ Expr • LBRACKET Expr RBRACKET
-      Shift derivation
-        Expr
-        ↳ 155: Expr EQ Expr
-                       ↳ 117: Expr • LBRACKET Expr RBRACKET
-      Reduce derivation
-        Expr
-        ↳ 117: Expr                  LBRACKET Expr RBRACKET
-               ↳ 155: Expr EQ Expr •
-
 
 
 State 231
@@ -6841,20 +6200,6 @@ State 231
     LBRACKET  [reduce using rule 156 (Expr)]
     $default  reduce using rule 156 (Expr)
 
-    shift/reduce conflict on token LBRACKET:
-      156 Expr: Expr NEQ Expr •
-      117 Expr: Expr • LBRACKET Expr RBRACKET
-      Example: Expr NEQ Expr • LBRACKET Expr RBRACKET
-      Shift derivation
-        Expr
-        ↳ 156: Expr NEQ Expr
-                        ↳ 117: Expr • LBRACKET Expr RBRACKET
-      Reduce derivation
-        Expr
-        ↳ 117: Expr                   LBRACKET Expr RBRACKET
-               ↳ 156: Expr NEQ Expr •
-
-
 
 State 232
 
@@ -6911,20 +6256,6 @@ State 232
 
     LBRACKET  [reduce using rule 159 (Expr)]
     $default  reduce using rule 159 (Expr)
-
-    shift/reduce conflict on token LBRACKET:
-      159 Expr: Expr GT Expr •
-      117 Expr: Expr • LBRACKET Expr RBRACKET
-      Example: Expr GT Expr • LBRACKET Expr RBRACKET
-      Shift derivation
-        Expr
-        ↳ 159: Expr GT Expr
-                       ↳ 117: Expr • LBRACKET Expr RBRACKET
-      Reduce derivation
-        Expr
-        ↳ 117: Expr                  LBRACKET Expr RBRACKET
-               ↳ 159: Expr GT Expr •
-
 
 
 State 233
@@ -6983,20 +6314,6 @@ State 233
     LBRACKET  [reduce using rule 160 (Expr)]
     $default  reduce using rule 160 (Expr)
 
-    shift/reduce conflict on token LBRACKET:
-      160 Expr: Expr GE Expr •
-      117 Expr: Expr • LBRACKET Expr RBRACKET
-      Example: Expr GE Expr • LBRACKET Expr RBRACKET
-      Shift derivation
-        Expr
-        ↳ 160: Expr GE Expr
-                       ↳ 117: Expr • LBRACKET Expr RBRACKET
-      Reduce derivation
-        Expr
-        ↳ 117: Expr                  LBRACKET Expr RBRACKET
-               ↳ 160: Expr GE Expr •
-
-
 
 State 234
 
@@ -7054,20 +6371,6 @@ State 234
     LBRACKET  [reduce using rule 157 (Expr)]
     $default  reduce using rule 157 (Expr)
 
-    shift/reduce conflict on token LBRACKET:
-      157 Expr: Expr LT Expr •
-      117 Expr: Expr • LBRACKET Expr RBRACKET
-      Example: Expr LT Expr • LBRACKET Expr RBRACKET
-      Shift derivation
-        Expr
-        ↳ 157: Expr LT Expr
-                       ↳ 117: Expr • LBRACKET Expr RBRACKET
-      Reduce derivation
-        Expr
-        ↳ 117: Expr                  LBRACKET Expr RBRACKET
-               ↳ 157: Expr LT Expr •
-
-
 
 State 235
 
@@ -7124,20 +6427,6 @@ State 235
 
     LBRACKET  [reduce using rule 158 (Expr)]
     $default  reduce using rule 158 (Expr)
-
-    shift/reduce conflict on token LBRACKET:
-      158 Expr: Expr LE Expr •
-      117 Expr: Expr • LBRACKET Expr RBRACKET
-      Example: Expr LE Expr • LBRACKET Expr RBRACKET
-      Shift derivation
-        Expr
-        ↳ 158: Expr LE Expr
-                       ↳ 117: Expr • LBRACKET Expr RBRACKET
-      Reduce derivation
-        Expr
-        ↳ 117: Expr                  LBRACKET Expr RBRACKET
-               ↳ 158: Expr LE Expr •
-
 
 
 State 236
@@ -7577,20 +6866,6 @@ State 265
 
     LBRACKET  [reduce using rule 118 (Expr)]
     $default  reduce using rule 118 (Expr)
-
-    shift/reduce conflict on token LBRACKET:
-      118 Expr: LPARENTHESES VarType RPARENTHESES Expr •
-      117 Expr: Expr • LBRACKET Expr RBRACKET
-      Example: LPARENTHESES VarType RPARENTHESES Expr • LBRACKET Expr RBRACKET
-      Shift derivation
-        Expr
-        ↳ 118: LPARENTHESES VarType RPARENTHESES Expr
-                                                 ↳ 117: Expr • LBRACKET Expr RBRACKET
-      Reduce derivation
-        Expr
-        ↳ 117: Expr                                            LBRACKET Expr RBRACKET
-               ↳ 118: LPARENTHESES VarType RPARENTHESES Expr •
-
 
 
 State 266
@@ -8187,20 +7462,6 @@ State 288
 
     LBRACKET  [reduce using rule 161 (Expr)]
     $default  reduce using rule 161 (Expr)
-
-    shift/reduce conflict on token LBRACKET:
-      161 Expr: Expr QUESTION Expr COLON Expr •
-      117 Expr: Expr • LBRACKET Expr RBRACKET
-      Example: Expr QUESTION Expr COLON Expr • LBRACKET Expr RBRACKET
-      Shift derivation
-        Expr
-        ↳ 161: Expr QUESTION Expr COLON Expr
-                                        ↳ 117: Expr • LBRACKET Expr RBRACKET
-      Reduce derivation
-        Expr
-        ↳ 117: Expr                                   LBRACKET Expr RBRACKET
-               ↳ 161: Expr QUESTION Expr COLON Expr •
-
 
 
 State 289
@@ -8974,22 +8235,6 @@ State 305
 
     ELSE      [reduce using rule 94 (IfStmt)]
     $default  reduce using rule 94 (IfStmt)
-
-    shift/reduce conflict on token ELSE:
-       94 IfStmt: IF LPARENTHESES Expr RPARENTHESES Stmt •
-       93 IfStmt: IF LPARENTHESES Expr RPARENTHESES Stmt • ELSE Stmt
-      Example: IF LPARENTHESES Expr RPARENTHESES IF LPARENTHESES Expr RPARENTHESES Stmt • ELSE Stmt
-      Shift derivation
-        IfStmt
-        ↳ 94: IF LPARENTHESES Expr RPARENTHESES Stmt
-                                                ↳ 81: IfStmt
-                                                      ↳ 93: IF LPARENTHESES Expr RPARENTHESES Stmt • ELSE Stmt
-      Reduce derivation
-        IfStmt
-        ↳ 93: IF LPARENTHESES Expr RPARENTHESES Stmt                                                 ELSE Stmt
-                                                ↳ 81: IfStmt
-                                                      ↳ 94: IF LPARENTHESES Expr RPARENTHESES Stmt •
-
 
 
 State 306

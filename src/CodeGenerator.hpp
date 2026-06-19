@@ -128,6 +128,18 @@ class CodeGenerator {
   // Pop continue and break basic blocks from according stacks.
   void leaveLoop();
 
+  // Push break target for switch (fall-through uses setSwitchFallthroughBlock).
+  void enterSwitch(llvm::BasicBlock* breakBlock);
+
+  // Pop switch break target from break stack.
+  void leaveSwitch();
+
+  // Set the fall-through target while generating the current case body.
+  void setSwitchFallthroughBlock(llvm::BasicBlock* fallthroughBlock);
+
+  // Fall-through target for the case body currently being generated.
+  llvm::BasicBlock* getSwitchFallthroughBlock();
+
   // Get the destination block of the continue block on top of continue stack.
   llvm::BasicBlock* getContinueBlock();
 
@@ -220,6 +232,9 @@ class CodeGenerator {
   std::vector<llvm::BasicBlock*> continueBlockStack_;
   // To store target block for break statement.
   std::vector<llvm::BasicBlock*> breakBlockStack_;
+
+  // Fall-through target for the switch case currently being lowered.
+  llvm::BasicBlock* switchFallthroughBlock_ = nullptr;
 
   // Be used to switch insert point to global block.
   llvm::BasicBlock* globalBlock_;

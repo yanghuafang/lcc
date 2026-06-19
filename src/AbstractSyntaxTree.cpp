@@ -1725,11 +1725,10 @@ llvm::Value* SwitchStmt::genCode(CodeGenerator& generator) {
     func->getBasicBlockList().push_back(caseBlocks[i]);
     generator.getBuilder().SetInsertPoint(caseBlocks[i]);
 
-    // TODO: What behavior if continue in a case statement and the whole switch
-    // statement is in an outer loop.
-    generator.enterLoop(caseBlocks[i + 1], caseBlocks.back());
+    generator.enterSwitch(caseBlocks.back());
+    generator.setSwitchFallthroughBlock(caseBlocks[i + 1]);
     caseStmtList_->at(i)->genCode(generator);
-    generator.leaveLoop();
+    generator.leaveSwitch();
   }
   generator.popSymbolTable();
 
@@ -1753,8 +1752,12 @@ llvm::Value* CaseStmt::genCode(CodeGenerator& generator) {
     }
   }
 
-  // No break, jump to the next case block.
-  Utils::terminateBlockByBr(generator.getBuilder(), generator.getContinueBlock());
+  // No break: fall through to the next case (or switch.end on the last case).
+  llvm::BasicBlock* fallthroughBlock = generator.getSwitchFallthroughBlock();
+  if (fallthroughBlock == nullptr) {
+    throw std::logic_error("Case fall-through outside switch!");
+  }
+  Utils::terminateBlockByBr(generator.getBuilder(), fallthroughBlock);
   return nullptr;
 }
 
@@ -1918,7 +1921,7 @@ llvm::Value* WhileStmt::genCode(CodeGenerator& generator) {
 llvm::Value* ContinueStmt::genCode(CodeGenerator& generator) {
   llvm::BasicBlock* continueToBlock = generator.getContinueBlock();
   if (continueToBlock == nullptr) {
-    throw std::logic_error("Continue must be in switch or loop!");
+    throw std::logic_error("Continue must be in a loop!");
   }
 
   generator.getBuilder().CreateBr(continueToBlock);

@@ -348,13 +348,34 @@ void CodeGenerator::enterLoop(llvm::BasicBlock* continueBlock,
 }
 
 void CodeGenerator::leaveLoop() {
-  assert(continueBlockStack_.size() == breakBlockStack_.size());
   if (continueBlockStack_.empty() || breakBlockStack_.empty()) {
     return;
   }
 
   continueBlockStack_.pop_back();
   breakBlockStack_.pop_back();
+}
+
+void CodeGenerator::enterSwitch(llvm::BasicBlock* breakBlock) {
+  breakBlockStack_.push_back(breakBlock);
+}
+
+void CodeGenerator::leaveSwitch() {
+  if (breakBlockStack_.empty()) {
+    return;
+  }
+
+  breakBlockStack_.pop_back();
+  switchFallthroughBlock_ = nullptr;
+}
+
+void CodeGenerator::setSwitchFallthroughBlock(
+    llvm::BasicBlock* fallthroughBlock) {
+  switchFallthroughBlock_ = fallthroughBlock;
+}
+
+llvm::BasicBlock* CodeGenerator::getSwitchFallthroughBlock() {
+  return switchFallthroughBlock_;
 }
 
 llvm::BasicBlock* CodeGenerator::getContinueBlock() {
