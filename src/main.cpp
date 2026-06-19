@@ -12,6 +12,20 @@ extern int yyparse();
 
 extern AST::Program* g_root;
 
+namespace {
+
+// Frees g_root after compile; must outlive CodeGenerator, which stores
+// non-owning AST::VarType* pointers in symbol tables during genIrCode.
+class AstRootOwner {
+ public:
+  ~AstRootOwner() {
+    delete g_root;
+    g_root = nullptr;
+  }
+};
+
+}  // namespace
+
 int main(int argc, char* argv[]) {
   // Arguments parsing...
 
@@ -102,9 +116,13 @@ int main(int argc, char* argv[]) {
   // Lex & syntax parsing.
   int ret = yyparse();
   if (ret != 0) {
+    delete g_root;
+    g_root = nullptr;
     std::cerr << "yyparse failed with ret " << ret << std::endl;
     return 4;
   }
+
+  AstRootOwner astRootOwner;
 
   fclose(p);
   p = nullptr;

@@ -128,6 +128,11 @@ AST::Program* g_root;
 %token<doubleVal>               DOUBLEVAL
 %token<strVal>                  STRING
 
+// Lexer allocates idVal/strVal with new; actions copy into AST std::string
+// members. Bison discards the token value after the rule completes.
+%destructor { delete $$; } <idVal>
+%destructor { delete $$; } <strVal>
+
  /* Define non-terminal symbols */
 
 %type<program>                  Program

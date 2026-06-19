@@ -31,13 +31,23 @@ CodeGenerator::CodeGenerator()
       currentFunc_(nullptr) {}
 
 CodeGenerator::~CodeGenerator() {
+  // popSymbolTable is not always paired on every exit path; drain both stacks.
+  while (!symbolTableStack_.empty()) {
+    delete symbolTableStack_.back();
+    symbolTableStack_.pop_back();
+  }
+  while (!typedefTableStack_.empty()) {
+    delete typedefTableStack_.back();
+    typedefTableStack_.pop_back();
+  }
+
   delete structTypeTable_;
   structTypeTable_ = nullptr;
   delete unionTypeTable_;
   unionTypeTable_ = nullptr;
-
-  // llvm::DataLayout will be cleaned up automatically, as it is owned by
-  // llvm::Module, so do not need to delete it.
+  // Constructed separately from Module; not owned by the module.
+  delete dataLayout_;
+  dataLayout_ = nullptr;
   delete module_;
   module_ = nullptr;
 }

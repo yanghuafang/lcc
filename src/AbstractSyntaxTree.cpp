@@ -43,6 +43,17 @@ ArrayTypeInfo getArrayTypeInfo(AST::VarType* varType) {
   return info;
 }
 
+// buildVarType() wraps the shared VarDecl base type; release only the ArrayType
+// prefix so the shared base is not double-freed.
+void releaseArrayTypeChain(AST::VarType* built) {
+  while (built != nullptr && built->isArrayType()) {
+    auto* arrayType = static_cast<AST::ArrayType*>(built);
+    built = arrayType->baseType_;
+    arrayType->baseType_ = nullptr;
+    delete arrayType;
+  }
+}
+
 bool initListHasNested(const AST::InitList& initList) {
   for (AST::InitElement* element : initList) {
     if (element->isNested()) {
@@ -1214,7 +1225,8 @@ llvm::Value* VarDecl::genCode(CodeGenerator& generator) {
       }
     }
 
-    VarType* varType = var->buildVarType(varType_, resolvedBounds);
+    var->arrayVarType_ = var->buildVarType(varType_, resolvedBounds);
+    VarType* varType = var->arrayVarType_;
     llvm::Type* llvmVarType = varType->getType(generator);
     if (llvmVarType == nullptr) {
       throw std::logic_error("Define variable with unknown type!");
@@ -2669,6 +2681,216 @@ llvm::Value* TernaryCondition::genCodePtr(CodeGenerator& generator) {
       [&generator](Expr* expr) { return expr->genCodePtr(generator); },
       "Unmatched type of true and false expressions for ternary operator "
       "\"? :\" which returns left value!");
+}
+
+// Destructors — tree ownership (see file header in AbstractSyntaxTree.hpp).
+// Expression bases LhsRhsExpr and UnaryExpr own child Expr*; concrete operator
+// nodes inherit that cleanup via empty ~Foo() overrides.
+
+namespace {
+
+void deleteStmts(AST::Stmts* stmts) {
+  if (stmts == nullptr) {
+    return;
+  }
+  for (AST::Stmt* stmt : *stmts) {
+    delete stmt;
+  }
+  delete stmts;
+}
+
+void deleteInitList(AST::InitList* initList) {
+  if (initList == nullptr) {
+    return;
+  }
+  for (AST::InitElement* element : *initList) {
+    delete element;
+  }
+  delete initList;
+}
+
+void deleteFieldDecls(AST::FieldDecls* fieldDecls) {
+  if (fieldDecls == nullptr) {
+    return;
+  }
+  for (AST::FieldDecl* fieldDecl : *fieldDecls) {
+    delete fieldDecl;
+  }
+  delete fieldDecls;
+}
+
+void deleteEnumList(AST::EnumList* enumList) {
+  if (enumList == nullptr) {
+    return;
+  }
+  for (AST::Enum* enumeration : *enumList) {
+    delete enumeration;
+  }
+  delete enumList;
+}
+
+void deleteExprList(AST::ExprList* exprList) {
+  if (exprList == nullptr) {
+    return;
+  }
+  for (AST::Expr* expr : *exprList) {
+    delete expr;
+  }
+  delete exprList;
+}
+
+}  // namespace
+
+Node::~Node() = default;
+
+Program::~Program() {
+  if (decls_ != nullptr) {
+    for (AST::Decl* decl : *decls_) {
+      delete decl;
+    }
+    delete decls_;
+    decls_ = nullptr;
+  }
+}
+
+FuncDecl::~FuncDecl() {
+  delete retType_;
+  delete paramList_;
+  delete funcBody_;
+}
+
+Param::~Param() { delete varType_; }
+
+ParamList::~ParamList() {
+  for (AST::Param* param : *this) {
+    delete param;
+  }
+}
+
+FuncBody::~FuncBody() {
+  deleteStmts(content_);
+}
+
+// arrayVarType_ chains end at varType_; destroy VarInits before the shared base.
+VarDecl::~VarDecl() {
+  if (varList_ != nullptr) {
+    for (AST::VarInit* var : *varList_) {
+      delete var;
+    }
+    delete varList_;
+    varList_ = nullptr;
+  }
+  delete varType_;
+}
+
+InitElement::~InitElement() {
+  delete expr_;
+  deleteInitList(nested_);
+}
+
+VarInit::~VarInit() {
+  delete initialExpr_;
+  deleteInitList(initList_);
+  releaseArrayTypeChain(arrayVarType_);
+  arrayVarType_ = nullptr;
+}
+
+TypeDecl::~TypeDecl() { delete varType_; }
+
+TypedefDecl::~TypedefDecl() { delete underlyingType_; }
+
+VarType::~VarType() = default;
+
+PointerType::~PointerType() { delete baseType_; }
+
+ArrayType::~ArrayType() { delete baseType_; }
+
+StructType::~StructType() { deleteFieldDecls(structBody_); }
+
+UnionType::~UnionType() { deleteFieldDecls(unionBody_); }
+
+FieldDecl::~FieldDecl() {
+  delete varType_;
+  delete memberList_;
+}
+
+EnumType::~EnumType() { deleteEnumList(enumList_); }
+
+IfStmt::~IfStmt() {
+  delete condition_;
+  delete thenStmt_;
+  delete elseStmt_;
+}
+
+SwitchStmt::~SwitchStmt() {
+  delete matcher_;
+  if (caseStmtList_ != nullptr) {
+    for (AST::CaseStmt* caseStmt : *caseStmtList_) {
+      delete caseStmt;
+    }
+    delete caseStmtList_;
+    caseStmtList_ = nullptr;
+  }
+}
+
+CaseStmt::~CaseStmt() {
+  delete condition_;
+  deleteStmts(content_);
+}
+
+ForStmt::~ForStmt() {
+  delete initial_;
+  delete condition_;
+  delete update_;
+  delete loopBody_;
+}
+
+DoStmt::~DoStmt() {
+  delete loopBody_;
+  delete condition_;
+}
+
+WhileStmt::~WhileStmt() {
+  delete condition_;
+  delete loopBody_;
+}
+
+ReturnStmt::~ReturnStmt() { delete retVal_; }
+
+Block::~Block() { deleteStmts(content_); }
+
+LhsRhsExpr::~LhsRhsExpr() {
+  delete lhs_;
+  delete rhs_;
+}
+
+UnaryExpr::~UnaryExpr() { delete operand_; }
+
+FuncCall::~FuncCall() { deleteExprList(argList_); }
+
+StructRef::~StructRef() { delete struct_; }
+
+StructDeref::~StructDeref() { delete structPtr_; }
+
+Subscript::~Subscript() {
+  delete array_;
+  delete index_;
+}
+
+TypeCast::~TypeCast() {
+  delete varType_;
+  delete operand_;
+}
+
+SizeOf::~SizeOf() {
+  delete varType_;
+  delete expr_;
+}
+
+TernaryCondition::~TernaryCondition() {
+  delete condition_;
+  delete trueExpr_;
+  delete falseExpr_;
 }
 
 }  // namespace AST
