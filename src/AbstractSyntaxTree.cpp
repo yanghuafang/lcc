@@ -929,9 +929,11 @@ llvm::Value* FuncDecl::genCode(CodeGenerator& generator) {
 
   llvm::FunctionType* funcType =
       llvm::FunctionType::get(retType, paramTypes, paramList_->isVariant_);
+  llvm::GlobalValue::LinkageTypes linkage = isStatic_
+                                                ? llvm::GlobalValue::InternalLinkage
+                                                : llvm::GlobalValue::ExternalLinkage;
   llvm::Function* func =
-      llvm::Function::Create(funcType, llvm::GlobalValue::ExternalLinkage,
-                             funcName_, &generator.getModule());
+      llvm::Function::Create(funcType, linkage, funcName_, &generator.getModule());
 
   std::vector<VarType*> paramVarTypes;
   for (Param* param : *paramList_) {
@@ -951,6 +953,11 @@ llvm::Value* FuncDecl::genCode(CodeGenerator& generator) {
     if (func->getFunctionType() != funcType) {
       throw std::logic_error("Redefine function " + funcName_ +
                              " with different params!");
+    }
+
+    if (func->getLinkage() != linkage) {
+      throw std::logic_error("Function " + funcName_ +
+                             " declarations conflict on static linkage!");
     }
 
     // Function declaration conflict.
@@ -1043,6 +1050,11 @@ VarType* VarInit::buildVarType(VarType* baseType,
 // Per VarInit: resolve bounds → build nested ArrayType → alloca or global,
 // then brace init, char string literal, scalar expr, or undef (global only).
 llvm::Value* VarDecl::genCode(CodeGenerator& generator) {
+  if (isStatic_ && generator.getCurrentFunction() != nullptr) {
+    throw std::logic_error(
+        "Block-scope static variables are not supported yet!");
+  }
+
   llvm::Type* baseLlvmType = varType_->getType(generator);
   if (baseLlvmType == nullptr) {
     throw std::logic_error("Define variable with unknown type!");
@@ -1142,9 +1154,12 @@ llvm::Value* VarDecl::genCode(CodeGenerator& generator) {
         initializer = llvm::UndefValue::get(llvmVarType);
       }
 
+      llvm::GlobalValue::LinkageTypes linkage = isStatic_
+                                                    ? llvm::GlobalValue::InternalLinkage
+                                                    : llvm::GlobalValue::ExternalLinkage;
       llvm::GlobalVariable* globalVar = new llvm::GlobalVariable(
-          generator.getModule(), llvmVarType, varType_->isConst_,
-          llvm::Function::ExternalLinkage, initializer, var->varName_);
+          generator.getModule(), llvmVarType, varType_->isConst_, linkage,
+          initializer, var->varName_);
       if (!generator.addVariable(var->varName_, globalVar, varType)) {
         if (generator.hasTypedefAliasInCurrentScope(var->varName_)) {
           throw std::logic_error(

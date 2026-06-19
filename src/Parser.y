@@ -108,7 +108,7 @@ AST::Program* g_root;
        AND OR NOT
        EQ NEQ GT GE LT LE
        CHAR SHORT INT LONG
-       UNSIGNED CONST VOID
+       UNSIGNED CONST STATIC VOID
        FLOAT DOUBLE
        BOOL TRUE FALSE
        IF ELSE
@@ -247,7 +247,13 @@ TypedefDecl: TYPEDEF VarType IDENTIFIER SEMICOLON
                                       new AST::UnionType($5, *$3), *$7); }
             ;
 
-FuncDecl:   VarType IDENTIFIER LPARENTHESES ParamList RPARENTHESES SEMICOLON
+FuncDecl:   STATIC VarType IDENTIFIER LPARENTHESES ParamList RPARENTHESES SEMICOLON
+                                { $$ = new AST::FuncDecl($2, *$3, $5);
+                                  $$->isStatic_ = true; }
+            | STATIC VarType IDENTIFIER LPARENTHESES ParamList RPARENTHESES FuncBody
+                                { $$ = new AST::FuncDecl($2, *$3, $5, $7);
+                                  $$->isStatic_ = true; }
+            | VarType IDENTIFIER LPARENTHESES ParamList RPARENTHESES SEMICOLON
                                 { $$ = new AST::FuncDecl($1, *$2, $4); }
             | VarType IDENTIFIER LPARENTHESES ParamList RPARENTHESES FuncBody
                                 { $$ = new AST::FuncDecl($1, *$2, $4, $6); }
@@ -256,7 +262,9 @@ FuncDecl:   VarType IDENTIFIER LPARENTHESES ParamList RPARENTHESES SEMICOLON
 FuncBody:   LBRACE Stmts RBRACE { $$ = new AST::FuncBody($2); }
             ;
 
-VarDecl:    VarType VarList SEMICOLON
+VarDecl:    STATIC VarType VarList SEMICOLON
+                                { $$ = new AST::VarDecl($2, $3); $$->isStatic_ = true; }
+            | VarType VarList SEMICOLON
                                 { $$ = new AST::VarDecl($1, $2); }
             ;
 

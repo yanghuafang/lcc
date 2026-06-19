@@ -20,6 +20,8 @@ Before extending, it helps to know what the current codebase already supports:
 | 2D array brace initialization | nested/flat init, `int a[][5] = {…}` (`tests/34.array_2d_brace_init.c`) |
 | `typedef` of `VarType` spellings | `typedef unsigned long size_t;`, pointer/builtin aliases (`tests/35.typedef_builtin.c`) |
 | `typedef` struct aliases / disambiguation | struct tag refs, combined `typedef struct S {…} S;`, typedef/variable conflicts (`tests/36.typedef_struct.c`) |
+| File-scope `static` | TU-local variables and functions via `InternalLinkage` (`tests/37.static_file.c`) |
+| Block-scope `static` | **Not yet** — planned as step 5b |
 | User-defined types | `struct`, `union`, `enum` with tag names (`DefinedType` lookup) |
 | Type names in expressions | `_VarType: IDENTIFIER` for registered tags and typedef aliases |
 | `-g` CLI flag | Parsed in `main.cpp` — **not** passed to `CodeGenerator` yet |
@@ -36,7 +38,7 @@ See [Conflicts.md](Conflicts.md) for parser ambiguities that some roadmap items 
 | **1** | [1D array initialization](#1d-array-initialization) (done) | Medium | Brace init, inferred `[]`, string literals |
 | **2** | [`typedef` and `size_t`](#4-typedef-and-size_t) (done) | Medium–large | 4a + 4b complete |
 | **—** | [3D arrays](#3d-arrays-deferred) | — | Deferred; 2D covers teaching goals for now |
-| **3** | [`static`](#5-static) | Medium | Storage class / linkage |
+| **3** | [`static`](#5-static) | Medium | 5a done; 5b (block-scope) next |
 | **4** | [`-g` debug info](#6--g-debug-info) | Medium–large | LLVM `DIBuilder` |
 
 **Optional timing:** Step 5 is independent of language features. If you are debugging many new test programs with LLDB, consider implementing `-g` right after step 1 — it does not require new grammar rules.
@@ -242,28 +244,55 @@ int a[][5] = { {1}, {2,3} };
 
 ## 5. `static`
 
-**Goal:** C storage class for file-local and function-local static variables (and optionally static functions).
+Split into **5a** (file-scope linkage) and **5b** (function-local static variables).
+
+### 5a — file-scope `static` — **done**
+
+**Goal:**
 
 ```c
 static int counter = 0;
 
-void f(void) {
-  static int once;
+static int helper(int value) {
+  return value + counter;
+}
+
+int bump(void) {
+  counter++;
+  return helper(counter);
 }
 ```
 
-### Gap today
+| Layer | Changes |
+|-------|---------|
+| **Lexer** | `STATIC` token |
+| **Parser** | `STATIC` prefix on `VarDecl` and `FuncDecl` |
+| **AST** | `isStatic_` on `VarDecl` and `FuncDecl` |
+| **Codegen** | `llvm::GlobalValue::InternalLinkage` for file-scope globals and functions |
 
-- README documents: use global variables instead of `static`.
-- Globals use `ExternalLinkage`; locals are always stack `alloca`s.
+**Tests:** `tests/37.static_file.c` — persistent file-static state, static helper function.
 
-### Work involved
+**Out of scope for 5a:** block-scope `static` (rejected at codegen with a clear error).
+
+### 5b — block-scope `static` (next)
+
+**Goal:**
+
+```c
+void f(void) {
+  static int once;
+  once++;
+}
+```
 
 | Layer | Changes |
 |-------|---------|
-| **Parser** | `STATIC` token; storage class on `VarDecl` / `FuncDecl` |
-| **AST** | Storage-class field on declarations |
-| **Codegen** | `llvm::GlobalValue::InternalLinkage` for file `static`; unique global symbols for local `static` with one-time init |
+| **Codegen** | Mangled module globals for local `static`; one-time init (constant and runtime) |
+
+### Gap before 5a
+
+- Globals used `ExternalLinkage`; locals were always stack `alloca`s.
+- README workaround: use global variables instead of `static`.
 
 ### Why after typedef
 

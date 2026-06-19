@@ -16,6 +16,7 @@ Not like the most popular industrial C compilers, such as clang and gcc which ad
 - Two dimensional array: `int matrix[8][5];`, subscript `matrix[i][j]`, including mixed lists such as `int a[2][3], b;`
 - Two dimensional array brace initialization: `int a[8][5] = {{0,1,2},{3,4,5}};`, flat `{0,1,2,3,4,5}`, and `int a[][5] = {{1},{2,3}};`
 - Typedef: builtin and pointer aliases (`typedef unsigned long size_t;`, `typedef int* IntPtr;`); struct and union aliases (`typedef struct Employee Employee;`, `typedef struct Employee* EmployeePtr;`, `typedef struct Point { int x; int y; } Point;`, `typedef union U { int a; float b; } U;`)
+- File-scope `static`: file-local variables and functions (`static int counter = 0;`, `static int helper(int x) { … }`)
 - Variable list: such as `a = 1, b, c = 3`
 - Variant parameters: `...`
 - Function declaration, definition and call.
@@ -50,7 +51,7 @@ Except the following features:
 - Struct tag typedefs before definition: `typedef struct Employee Employee;` requires the struct to be defined first, or use the combined form `typedef struct S { … } S;`.
 - Expression/type disambiguation (State 96): typedef names in expression positions may still parse as types; lcc rejects typedef names used as variables in the same scope.
 - `extern`: `lcc` requires function declaration for linkage, extern variable is not allowed.
-- `static`: not supported by `lcc`, use global variable.
+- Block-scope `static` (function-local static variables): not supported yet.
 
 `lcc` compiles a translation unit (.c file) to an object file (.o), then the object file can be linked to an executable by `clang` or `gcc`.  
 
@@ -161,5 +162,5 @@ Such as `settings set target.source-map /Users/yanghuafang/study-projects/lcc-bu
 
 For step-by-step detail (dependencies, tests, and legal/illegal forms), see [`docs/Roadmap.md`](docs/Roadmap.md). Array work through 2D and typedef (builtin and struct/union) are done; 3D arrays are deferred.
 
-- Support `static`.
+- Support block-scope `static` (function-local static variables).
 - Implement `lcc` `-g` option to generate object file with debug info.

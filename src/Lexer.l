@@ -128,6 +128,7 @@ char escapeDecode(char c) {
 
 "unsigned"          { return UNSIGNED; }
 "const"             { return CONST; }
+"static"            { return STATIC; }
 "void"              { return VOID; }
 
 "float"             { return FLOAT; }

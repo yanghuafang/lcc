@@ -223,13 +223,15 @@ class FuncDecl : public Decl {
   std::string funcName_;
   ParamList* paramList_;
   FuncBody* funcBody_;
+  bool isStatic_;
 
   FuncDecl(VarType* retType, const std::string& funcName, ParamList* paramList,
            FuncBody* funcBody = nullptr)
       : retType_(retType),
         funcName_(funcName),
         paramList_(paramList),
-        funcBody_(funcBody) {}
+        funcBody_(funcBody),
+        isStatic_(false) {}
   ~FuncDecl() {}
 
   llvm::Value* genCode(CodeGenerator& generator) override;
@@ -279,9 +281,10 @@ class VarDecl : public Decl {
  public:
   VarType* varType_;
   VarList* varList_;
+  bool isStatic_;
 
   VarDecl(VarType* varType, VarList* varList)
-      : varType_(varType), varList_(varList) {}
+      : varType_(varType), varList_(varList), isStatic_(false) {}
   ~VarDecl() {}
 
   llvm::Value* genCode(CodeGenerator& generator) override;

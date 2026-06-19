@@ -114,37 +114,38 @@ extern int yydebug;
     LONG = 307,                    /* LONG  */
     UNSIGNED = 308,                /* UNSIGNED  */
     CONST = 309,                   /* CONST  */
-    VOID = 310,                    /* VOID  */
-    FLOAT = 311,                   /* FLOAT  */
-    DOUBLE = 312,                  /* DOUBLE  */
-    BOOL = 313,                    /* BOOL  */
-    TRUE = 314,                    /* TRUE  */
-    FALSE = 315,                   /* FALSE  */
-    IF = 316,                      /* IF  */
-    ELSE = 317,                    /* ELSE  */
-    SWITCH = 318,                  /* SWITCH  */
-    CASE = 319,                    /* CASE  */
-    DEFAULT = 320,                 /* DEFAULT  */
-    FOR = 321,                     /* FOR  */
-    DO = 322,                      /* DO  */
-    WHILE = 323,                   /* WHILE  */
-    CONTINUE = 324,                /* CONTINUE  */
-    BREAK = 325,                   /* BREAK  */
-    RETURN = 326,                  /* RETURN  */
-    STRUCT = 327,                  /* STRUCT  */
-    UNION = 328,                   /* UNION  */
-    ENUM = 329,                    /* ENUM  */
-    TYPEDEF = 330,                 /* TYPEDEF  */
-    SIZEOF = 331,                  /* SIZEOF  */
-    IDENTIFIER = 332,              /* IDENTIFIER  */
-    CHARACTER = 333,               /* CHARACTER  */
-    INTEGER = 334,                 /* INTEGER  */
-    UINTEGER = 335,                /* UINTEGER  */
-    LONGVAL = 336,                 /* LONGVAL  */
-    ULONGVAL = 337,                /* ULONGVAL  */
-    FLOATVAL = 338,                /* FLOATVAL  */
-    DOUBLEVAL = 339,               /* DOUBLEVAL  */
-    STRING = 340                   /* STRING  */
+    STATIC = 310,                  /* STATIC  */
+    VOID = 311,                    /* VOID  */
+    FLOAT = 312,                   /* FLOAT  */
+    DOUBLE = 313,                  /* DOUBLE  */
+    BOOL = 314,                    /* BOOL  */
+    TRUE = 315,                    /* TRUE  */
+    FALSE = 316,                   /* FALSE  */
+    IF = 317,                      /* IF  */
+    ELSE = 318,                    /* ELSE  */
+    SWITCH = 319,                  /* SWITCH  */
+    CASE = 320,                    /* CASE  */
+    DEFAULT = 321,                 /* DEFAULT  */
+    FOR = 322,                     /* FOR  */
+    DO = 323,                      /* DO  */
+    WHILE = 324,                   /* WHILE  */
+    CONTINUE = 325,                /* CONTINUE  */
+    BREAK = 326,                   /* BREAK  */
+    RETURN = 327,                  /* RETURN  */
+    STRUCT = 328,                  /* STRUCT  */
+    UNION = 329,                   /* UNION  */
+    ENUM = 330,                    /* ENUM  */
+    TYPEDEF = 331,                 /* TYPEDEF  */
+    SIZEOF = 332,                  /* SIZEOF  */
+    IDENTIFIER = 333,              /* IDENTIFIER  */
+    CHARACTER = 334,               /* CHARACTER  */
+    INTEGER = 335,                 /* INTEGER  */
+    UINTEGER = 336,                /* UINTEGER  */
+    LONGVAL = 337,                 /* LONGVAL  */
+    ULONGVAL = 338,                /* ULONGVAL  */
+    FLOATVAL = 339,                /* FLOATVAL  */
+    DOUBLEVAL = 340,               /* DOUBLEVAL  */
+    STRING = 341                   /* STRING  */
   };
   typedef enum yytokentype yytoken_kind_t;
 #endif
@@ -225,7 +226,7 @@ union YYSTYPE
     AST::Enum* enumeration;
     AST::EnumList* enumList;
 
-#line 229 "Parser.hpp"
+#line 230 "Parser.hpp"
 
 };
 typedef union YYSTYPE YYSTYPE;

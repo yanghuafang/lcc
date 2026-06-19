@@ -36,7 +36,11 @@ std::pair<std::string, std::string> Program::genGraph() {
 std::pair<std::string, std::string> FuncDecl::genGraph() {
   std::string id = getId();
   std::string root = "FuncDecl_" + id;
-  std::string tree = root + " [label = FuncDecl]\n";
+  std::string tree = root + " [label = FuncDecl";
+  if (isStatic_) {
+    tree += ", static = true";
+  }
+  tree += "]\n";
 
   // retType_
   if (retType_ != nullptr) {
@@ -132,7 +136,11 @@ std::pair<std::string, std::string> FuncBody::genGraph() {
 std::pair<std::string, std::string> VarDecl::genGraph() {
   std::string id = getId();
   std::string root = "VarDecl_" + id;
-  std::string tree = root + " [label = VarDecl]\n";
+  std::string tree = root + " [label = VarDecl";
+  if (isStatic_) {
+    tree += ", static = true";
+  }
+  tree += "]\n";
 
   // varType_
   if (varType_ != nullptr) {
