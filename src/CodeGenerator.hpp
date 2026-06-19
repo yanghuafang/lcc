@@ -26,6 +26,7 @@ class Value;
 class StructType;
 class Function;
 class BasicBlock;
+class AllocaInst;
 
 class Module;
 class DataLayout;
@@ -166,6 +167,11 @@ class CodeGenerator {
 
   // Attach the node's source line to the next IR instructions (-g, inside a function).
   void setDebugLocation(const AST::SourceLoc& loc);
+
+  void declareDebugAlloca(llvm::AllocaInst* alloca, const std::string& name,
+                          llvm::Type* llvmType, AST::VarType* varType,
+                          const AST::SourceLoc& loc,
+                          unsigned paramArgNo = 0);  // 1-based for params; 0 = local
 
   // Generate object code for target architecture.
   void genObjectCode(const std::string& fileName);

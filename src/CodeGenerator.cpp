@@ -3,6 +3,7 @@
 #include <llvm/Analysis/LoopAnalysisManager.h>
 #include <llvm/IR/LegacyPassManager.h>
 #include <llvm/IR/PassManager.h>
+#include <llvm/IR/Instructions.h>
 #include <llvm/IR/DebugInfoMetadata.h>
 #include <llvm/IR/Function.h>
 #include <llvm/IR/Verifier.h>
@@ -423,6 +424,31 @@ void CodeGenerator::setDebugLocation(const AST::SourceLoc& loc) {
 
   unsigned col = loc.col > 0 ? loc.col : 1;
   debugInfo_->setLocation(builder_, loc.line, subprogram, col);
+}
+
+void CodeGenerator::declareDebugAlloca(llvm::AllocaInst* alloca,
+                                       const std::string& name,
+                                       llvm::Type* llvmType,
+                                       AST::VarType* varType,
+                                       const AST::SourceLoc& loc,
+                                       unsigned paramArgNo) {
+  if (!isDebugInfoEnabled() || alloca == nullptr || loc.line == 0) {
+    return;
+  }
+
+  // Requires enterFunction() on the owning function (see FuncDecl::genCode).
+  llvm::Function* func = getCurrentFunction();
+  if (func == nullptr) {
+    return;
+  }
+
+  llvm::DISubprogram* subprogram = func->getSubprogram();
+  if (subprogram == nullptr) {
+    return;
+  }
+
+  debugInfo_->declareAlloca(alloca, subprogram, name, llvmType, varType,
+                            loc.line, loc.col, paramArgNo);
 }
 
 void CodeGenerator::genIrCode(AST::Program* root,

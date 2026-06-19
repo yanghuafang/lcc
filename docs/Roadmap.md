@@ -24,7 +24,7 @@ Before extending, it helps to know what the current codebase already supports:
 | Block-scope `static` | Mangled module globals, one-time init (`tests/38.static_local.c`) |
 | User-defined types | `struct`, `union`, `enum` with tag names (`DefinedType` lookup) |
 | Type names in expressions | `_VarType: IDENTIFIER` for registered tags and typedef aliases |
-| `-g` CLI flag | Parsed in `main.cpp`; passed to `CodeGenerator` — **6a–6b** emit compile unit, subprograms, and statement `DebugLoc`; locals pending (6c–6d) |
+| `-g` CLI flag | Parsed in `main.cpp`; passed to `CodeGenerator` — **6a–6c** emit compile unit, stepping, and local/param debug variables; struct scopes pending (6d) |
 
 See [Conflicts.md](Conflicts.md) for parser ambiguities that some roadmap items will touch (especially `typedef`).
 
@@ -310,15 +310,16 @@ Orthogonal to types and initializers. Teaches linkage and lifetime without block
 
 - **6a (done):** `-g` and source path reach `CodeGenerator`; `DIBuilder` emits a compile unit and per-function `DISubprogram` in the object file.
 - **6b (done):** Parser locations on statements; `DebugLoc` on emitted instructions for line stepping.
-- **6c–6d (pending):** `dbg.declare` for params/locals, struct debug types, lexical blocks.
+- **6c (done):** `dbg.declare` for parameters and stack locals; `DIType` mapping for builtins, pointers, and arrays.
+- **6d (pending):** struct debug types, lexical blocks, `-g`/`-O` policy polish.
 
 ### Work involved
 
 | Layer | Changes |
 |-------|---------|
 | **Driver** | Pass debug flag from `main.cpp` into `CodeGenerator` — **done (6a)** |
-| **LLVM** | `DIBuilder`: compile unit, file/line, subprograms — **subprograms done (6a)**; local variables and rich types in 6c–6d |
-| **AST / codegen** | `SourceLoc` on functions and statements (6a–6b); `dbg.declare` for locals in 6c |
+| **LLVM** | `DIBuilder`: compile unit, subprograms, statement `DebugLoc` (6a–6b); `dbg.declare` + `DIType` for locals/params (6c); rich struct types in 6d |
+| **AST / codegen** | `SourceLoc` on functions and statements (6a–6b); param/local `declareAlloca` in 6c |
 
 ### Why fifth in the language roadmap
 

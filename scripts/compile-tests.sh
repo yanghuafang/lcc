@@ -33,6 +33,8 @@ if [[ -n "$compile_mode" ]]; then
   setCompileMode "$compile_mode" || exit 1
 fi
 
+set -e
+
 mkdir -p ../../lcc-build/debug
 
 if [ ${#remaining[@]} -eq 0 ]; then

@@ -1141,6 +1141,8 @@ llvm::Value* FuncDecl::genCode(CodeGenerator& generator) {
     llvm::BasicBlock* funcBlock =
         llvm::BasicBlock::Create(generator.getContext(), "entry", func);
     generator.getBuilder().SetInsertPoint(funcBlock);
+    // enterFunction before param debug info: setDebugLocation uses getCurrentFunction().
+    generator.enterFunction(func);
 
     if (subprogram != nullptr) {
       generator.setDebugLocation(loc());
@@ -1159,10 +1161,14 @@ llvm::Value* FuncDecl::genCode(CodeGenerator& generator) {
       // Add parameter to symbol table.
       generator.addVariable(paramList_->at(index)->varName_, allocaInst,
                               paramList_->at(index)->varType_);
+      if (subprogram != nullptr) {
+        generator.declareDebugAlloca(
+            allocaInst, paramList_->at(index)->varName_, paramTypes[index],
+            paramList_->at(index)->varType_, loc(), index + 1);
+      }
     }
 
     // Generate code of the function body.
-    generator.enterFunction(func);
     generator.pushSymbolTable();
     funcBody_->genCode(generator);
     generator.popSymbolTable();
@@ -1275,6 +1281,9 @@ llvm::Value* VarDecl::genCode(CodeGenerator& generator) {
             "It is not allowed to redefine the same local variable " +
             var->varName_ + " in the same scope!");
       }
+
+      generator.declareDebugAlloca(allocaInst, var->varName_, llvmVarType,
+                                   varType, loc());
 
       if (var->hasBraceInit()) {
         storeBraceArrayInitializer(generator, allocaInst, llvmVarType, varType,

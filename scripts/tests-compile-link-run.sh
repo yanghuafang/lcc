@@ -76,9 +76,13 @@ compileC2Obj() {
   local obj=$2
   local ir=$3
   local graph=$4
-  ../../lcc-build/lcc ${lcc_debug_flags} ${lcc_opt_flags} \
+  if ! ../../lcc-build/lcc ${lcc_debug_flags} ${lcc_opt_flags} \
     -i ../tests/${source} -o ../../lcc-build/${obj} \
-    -l ../debug/${ir} -v ../debug/${graph}
+    -l ../debug/${ir} -v ../debug/${graph}; then
+    echo "Failed to compile ${source}" >&2
+    rm -f ../../lcc-build/${obj}
+    return 1
+  fi
 }
 
 graph2Image() {

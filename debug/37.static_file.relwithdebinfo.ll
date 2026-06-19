@@ -12,93 +12,100 @@ declare i32 @printf(i8*, ...)
 define internal i32 @helper(i32 %0) !dbg !2 {
 entry:
   %value = alloca i32, align 4
-  store i32 %0, i32* %value, align 4
-  %1 = load i32, i32* %value, align 4, !dbg !7
-  %2 = load i32, i32* @counter, align 4, !dbg !7
-  %3 = add i32 %1, %2, !dbg !7
-  ret i32 %3, !dbg !7
+  call void @llvm.dbg.declare(metadata i32* %value, metadata !7, metadata !DIExpression()), !dbg !8
+  store i32 %0, i32* %value, align 4, !dbg !8
+  %1 = load i32, i32* %value, align 4, !dbg !9
+  %2 = load i32, i32* @counter, align 4, !dbg !9
+  %3 = add i32 %1, %2, !dbg !9
+  ret i32 %3, !dbg !9
 }
 
-define i32 @bump() !dbg !8 {
+; Function Attrs: nofree nosync nounwind readnone speculatable willreturn
+declare void @llvm.dbg.declare(metadata, metadata, metadata) #0
+
+define i32 @bump() !dbg !10 {
 entry:
-  %0 = load i32, i32* @counter, align 4, !dbg !11
-  %1 = add i32 %0, 1, !dbg !11
-  store i32 %1, i32* @counter, align 4, !dbg !11
-  %2 = load i32, i32* @counter, align 4, !dbg !12
-  ret i32 %2, !dbg !12
+  %0 = load i32, i32* @counter, align 4, !dbg !13
+  %1 = add i32 %0, 1, !dbg !13
+  store i32 %1, i32* @counter, align 4, !dbg !13
+  %2 = load i32, i32* @counter, align 4, !dbg !14
+  ret i32 %2, !dbg !14
 }
 
-define i32 @bump_with_helper() !dbg !13 {
+define i32 @bump_with_helper() !dbg !15 {
 entry:
-  %0 = load i32, i32* @counter, align 4, !dbg !14
-  %1 = add i32 %0, 1, !dbg !14
-  store i32 %1, i32* @counter, align 4, !dbg !14
-  %2 = load i32, i32* @counter, align 4, !dbg !15
-  %3 = call i32 @helper(i32 %2), !dbg !15
-  ret i32 %3, !dbg !15
+  %0 = load i32, i32* @counter, align 4, !dbg !16
+  %1 = add i32 %0, 1, !dbg !16
+  store i32 %1, i32* @counter, align 4, !dbg !16
+  %2 = load i32, i32* @counter, align 4, !dbg !17
+  %3 = call i32 @helper(i32 %2), !dbg !17
+  ret i32 %3, !dbg !17
 }
 
-define i32 @main() !dbg !16 {
+define i32 @main() !dbg !18 {
 entry:
   %err = alloca i32, align 4
-  store i32 0, i32* %err, align 4, !dbg !17
-  %0 = call i32 @helper(i32 5), !dbg !18
-  %1 = icmp ne i32 %0, 5, !dbg !18
-  br i1 %1, label %then, label %if.end, !dbg !18
+  call void @llvm.dbg.declare(metadata i32* %err, metadata !19, metadata !DIExpression()), !dbg !20
+  store i32 0, i32* %err, align 4, !dbg !20
+  %0 = call i32 @helper(i32 5), !dbg !21
+  %1 = icmp ne i32 %0, 5, !dbg !21
+  br i1 %1, label %then, label %if.end, !dbg !21
 
 then:                                             ; preds = %entry
-  store i32 1, i32* %err, align 4, !dbg !19
-  %2 = load i32, i32* %err, align 4, !dbg !19
-  br label %if.end, !dbg !19
+  store i32 1, i32* %err, align 4, !dbg !22
+  %2 = load i32, i32* %err, align 4, !dbg !22
+  br label %if.end, !dbg !22
 
 if.end:                                           ; preds = %entry, %then
-  %3 = call i32 @bump(), !dbg !20
-  %4 = icmp ne i32 %3, 1, !dbg !20
-  br i1 %4, label %then1, label %if.end3, !dbg !20
+  %3 = call i32 @bump(), !dbg !23
+  %4 = icmp ne i32 %3, 1, !dbg !23
+  br i1 %4, label %then1, label %if.end3, !dbg !23
 
 then1:                                            ; preds = %if.end
-  store i32 1, i32* %err, align 4, !dbg !21
-  %5 = load i32, i32* %err, align 4, !dbg !21
-  br label %if.end3, !dbg !21
+  store i32 1, i32* %err, align 4, !dbg !24
+  %5 = load i32, i32* %err, align 4, !dbg !24
+  br label %if.end3, !dbg !24
 
 if.end3:                                          ; preds = %if.end, %then1
-  %6 = call i32 @bump(), !dbg !22
-  %7 = icmp ne i32 %6, 2, !dbg !22
-  br i1 %7, label %then4, label %if.end6, !dbg !22
+  %6 = call i32 @bump(), !dbg !25
+  %7 = icmp ne i32 %6, 2, !dbg !25
+  br i1 %7, label %then4, label %if.end6, !dbg !25
 
 then4:                                            ; preds = %if.end3
-  store i32 1, i32* %err, align 4, !dbg !23
-  %8 = load i32, i32* %err, align 4, !dbg !23
-  br label %if.end6, !dbg !23
+  store i32 1, i32* %err, align 4, !dbg !26
+  %8 = load i32, i32* %err, align 4, !dbg !26
+  br label %if.end6, !dbg !26
 
 if.end6:                                          ; preds = %if.end3, %then4
-  %9 = call i32 @helper(i32 3), !dbg !24
-  %10 = icmp ne i32 %9, 5, !dbg !24
-  br i1 %10, label %then7, label %if.end9, !dbg !24
+  %9 = call i32 @helper(i32 3), !dbg !27
+  %10 = icmp ne i32 %9, 5, !dbg !27
+  br i1 %10, label %then7, label %if.end9, !dbg !27
 
 then7:                                            ; preds = %if.end6
-  store i32 1, i32* %err, align 4, !dbg !25
-  %11 = load i32, i32* %err, align 4, !dbg !25
-  br label %if.end9, !dbg !25
+  store i32 1, i32* %err, align 4, !dbg !28
+  %11 = load i32, i32* %err, align 4, !dbg !28
+  br label %if.end9, !dbg !28
 
 if.end9:                                          ; preds = %if.end6, %then7
-  %12 = call i32 @bump_with_helper(), !dbg !26
-  %13 = icmp ne i32 %12, 6, !dbg !26
-  br i1 %13, label %then10, label %if.end12, !dbg !26
+  %12 = call i32 @bump_with_helper(), !dbg !29
+  %13 = icmp ne i32 %12, 6, !dbg !29
+  br i1 %13, label %then10, label %if.end12, !dbg !29
 
 then10:                                           ; preds = %if.end9
-  store i32 1, i32* %err, align 4, !dbg !27
-  %14 = load i32, i32* %err, align 4, !dbg !27
-  br label %if.end12, !dbg !27
+  store i32 1, i32* %err, align 4, !dbg !30
+  %14 = load i32, i32* %err, align 4, !dbg !30
+  br label %if.end12, !dbg !30
 
 if.end12:                                         ; preds = %if.end9, %then10
-  %15 = load i32, i32* %err, align 4, !dbg !28
-  %16 = icmp eq i32 %15, 0, !dbg !28
-  %. = select i1 %16, i8* getelementptr inbounds ([23 x i8], [23 x i8]* @0, i32 0, i32 0), i8* getelementptr inbounds ([23 x i8], [23 x i8]* @1, i32 0, i32 0), !dbg !29
-  %17 = call i32 (i8*, ...) @printf(i8* %.), !dbg !29
-  %18 = load i32, i32* %err, align 4, !dbg !30
-  ret i32 %18, !dbg !30
+  %15 = load i32, i32* %err, align 4, !dbg !31
+  %16 = icmp eq i32 %15, 0, !dbg !31
+  %. = select i1 %16, i8* getelementptr inbounds ([23 x i8], [23 x i8]* @0, i32 0, i32 0), i8* getelementptr inbounds ([23 x i8], [23 x i8]* @1, i32 0, i32 0), !dbg !32
+  %17 = call i32 (i8*, ...) @printf(i8* %.), !dbg !32
+  %18 = load i32, i32* %err, align 4, !dbg !33
+  ret i32 %18, !dbg !33
 }
+
+attributes #0 = { nofree nosync nounwind readnone speculatable willreturn }
 
 !llvm.dbg.cu = !{!0}
 
@@ -109,27 +116,30 @@ if.end12:                                         ; preds = %if.end9, %then10
 !4 = !{!5, !5}
 !5 = !DIBasicType(name: "int", size: 32, encoding: DW_ATE_signed)
 !6 = !{}
-!7 = !DILocation(line: 6, column: 3, scope: !2)
-!8 = distinct !DISubprogram(name: "bump", linkageName: "bump", scope: null, file: !1, line: 9, type: !9, scopeLine: 9, spFlags: DISPFlagDefinition, unit: !0, retainedNodes: !6)
-!9 = !DISubroutineType(types: !10)
-!10 = !{!5}
-!11 = !DILocation(line: 10, column: 3, scope: !8)
-!12 = !DILocation(line: 11, column: 3, scope: !8)
-!13 = distinct !DISubprogram(name: "bump_with_helper", linkageName: "bump_with_helper", scope: null, file: !1, line: 14, type: !9, scopeLine: 14, spFlags: DISPFlagDefinition, unit: !0, retainedNodes: !6)
-!14 = !DILocation(line: 15, column: 3, scope: !13)
-!15 = !DILocation(line: 16, column: 3, scope: !13)
-!16 = distinct !DISubprogram(name: "main", linkageName: "main", scope: null, file: !1, line: 19, type: !9, scopeLine: 19, spFlags: DISPFlagDefinition, unit: !0, retainedNodes: !6)
-!17 = !DILocation(line: 20, column: 3, scope: !16)
-!18 = !DILocation(line: 22, column: 3, scope: !16)
-!19 = !DILocation(line: 22, column: 23, scope: !16)
-!20 = !DILocation(line: 23, column: 3, scope: !16)
-!21 = !DILocation(line: 23, column: 20, scope: !16)
-!22 = !DILocation(line: 24, column: 3, scope: !16)
-!23 = !DILocation(line: 24, column: 20, scope: !16)
-!24 = !DILocation(line: 25, column: 3, scope: !16)
-!25 = !DILocation(line: 25, column: 23, scope: !16)
-!26 = !DILocation(line: 26, column: 3, scope: !16)
-!27 = !DILocation(line: 26, column: 32, scope: !16)
-!28 = !DILocation(line: 28, column: 3, scope: !16)
-!29 = !DILocation(line: 0, scope: !16)
-!30 = !DILocation(line: 33, column: 3, scope: !16)
+!7 = !DILocalVariable(name: "value", arg: 1, scope: !2, file: !1, line: 5, type: !5)
+!8 = !DILocation(line: 5, column: 12, scope: !2)
+!9 = !DILocation(line: 6, column: 3, scope: !2)
+!10 = distinct !DISubprogram(name: "bump", linkageName: "bump", scope: null, file: !1, line: 9, type: !11, scopeLine: 9, spFlags: DISPFlagDefinition, unit: !0, retainedNodes: !6)
+!11 = !DISubroutineType(types: !12)
+!12 = !{!5}
+!13 = !DILocation(line: 10, column: 3, scope: !10)
+!14 = !DILocation(line: 11, column: 3, scope: !10)
+!15 = distinct !DISubprogram(name: "bump_with_helper", linkageName: "bump_with_helper", scope: null, file: !1, line: 14, type: !11, scopeLine: 14, spFlags: DISPFlagDefinition, unit: !0, retainedNodes: !6)
+!16 = !DILocation(line: 15, column: 3, scope: !15)
+!17 = !DILocation(line: 16, column: 3, scope: !15)
+!18 = distinct !DISubprogram(name: "main", linkageName: "main", scope: null, file: !1, line: 19, type: !11, scopeLine: 19, spFlags: DISPFlagDefinition, unit: !0, retainedNodes: !6)
+!19 = !DILocalVariable(name: "err", scope: !18, file: !1, line: 20, type: !5)
+!20 = !DILocation(line: 20, column: 3, scope: !18)
+!21 = !DILocation(line: 22, column: 3, scope: !18)
+!22 = !DILocation(line: 22, column: 23, scope: !18)
+!23 = !DILocation(line: 23, column: 3, scope: !18)
+!24 = !DILocation(line: 23, column: 20, scope: !18)
+!25 = !DILocation(line: 24, column: 3, scope: !18)
+!26 = !DILocation(line: 24, column: 20, scope: !18)
+!27 = !DILocation(line: 25, column: 3, scope: !18)
+!28 = !DILocation(line: 25, column: 23, scope: !18)
+!29 = !DILocation(line: 26, column: 3, scope: !18)
+!30 = !DILocation(line: 26, column: 32, scope: !18)
+!31 = !DILocation(line: 28, column: 3, scope: !18)
+!32 = !DILocation(line: 0, scope: !18)
+!33 = !DILocation(line: 33, column: 3, scope: !18)

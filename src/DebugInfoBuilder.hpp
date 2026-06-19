@@ -4,8 +4,17 @@
 #include <llvm/IR/LLVMContext.h>
 #include <llvm/IR/Module.h>
 
+#include "Types.hpp"
+
+#include <map>
 #include <string>
 #include <vector>
+
+namespace AST {
+
+class VarType;
+
+}  // namespace AST
 
 namespace llvm {
 
@@ -14,6 +23,7 @@ class DICompileUnit;
 class DIFile;
 class DISubprogram;
 class DIType;
+class AllocaInst;
 class Function;
 class FunctionType;
 class Type;
@@ -36,11 +46,22 @@ class DebugInfoBuilder {
   void setLocation(llvm::IRBuilder<>& builder, unsigned line,
                    llvm::DISubprogram* subprogram, unsigned col = 1);
 
+  // dbg.declare on entry-block allocas so LLDB can show params/locals (-O0).
+  void declareAlloca(llvm::AllocaInst* alloca, llvm::DISubprogram* subprogram,
+                     const std::string& name, llvm::Type* llvmType,
+                     AST::VarType* varType, unsigned line, unsigned col,
+                     unsigned paramArgNo = 0);
+
   void finalize();
 
  private:
+  llvm::DIType* getOrCreateDIType(llvm::Type* llvmType, AST::VarType* varType);
   llvm::DIType* getOrCreateLlvmType(llvm::Type* type);
+  llvm::DIType* getOrCreateBuiltinDIType(AST::BuiltinTypeId typeId);
   llvm::DIType* getOrCreateVoidType();
+  void insertAllocaDeclare(llvm::AllocaInst* alloca,
+                           llvm::DILocalVariable* variable, unsigned line,
+                           unsigned col, llvm::DISubprogram* subprogram);
 
   llvm::Module& module_;
   llvm::LLVMContext& context_;
@@ -48,4 +69,5 @@ class DebugInfoBuilder {
   llvm::DICompileUnit* compileUnit_;
   llvm::DIFile* file_;
   bool initialized_;
+  std::map<llvm::Type*, llvm::DIType*> llvmTypeCache_;
 };

@@ -126,7 +126,7 @@ lcc -i <input.c> -o <output.o> [-v <ast.dot>] [-l <ir.ll>] [-g] [-O0|-O1|-O2|-O3
 | `-o` | yes | Output object file (`.o`) |
 | `-v` | no | AST graph (GraphViz `.dot`) |
 | `-l` | no | LLVM IR (`.ll`) |
-| `-g` | no | Embed DWARF in the object file (6a–6b: functions + statement line info; use with `-O0` for reliable stepping) |
+| `-g` | no | Embed DWARF in the object file (6a–6c: functions, line stepping, local/param variables; use with `-O0`) |
 | `-O0` … `-Oz` | no | LLVM optimization level (mutually exclusive) |
 
 **Defaults when flags are omitted**
@@ -259,4 +259,4 @@ Such as `settings set target.source-map /Users/yanghuafang/study-projects/lcc-bu
 
 For step-by-step detail (dependencies, tests, and legal/illegal forms), see [`docs/Roadmap.md`](docs/Roadmap.md). Array work through 2D and typedef (builtin and struct/union) are done; 3D arrays are deferred.
 
-- Finish `-g` debug info: local variables (6c), struct scopes (6d). Function subprograms, compile unit, and line stepping are done (6a–6b).
+- Finish `-g` debug info: struct scopes and `-g`/`-O` policy (6d). Subprograms, line stepping, and local/param variables are done (6a–6c).
