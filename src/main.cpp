@@ -145,7 +145,9 @@ int main(int argc, char* argv[]) {
   // (getExprTypeId / getExprVarType) happen on demand while emitting IR.
   CodeGenerator generator;
   try {
-    generator.genIrCode(g_root, optimizationLevel);
+    generator.genIrCode(g_root, optimizationLevel,
+                      parser.get<bool>("-g"),
+                      parser.get<std::string>("-i"));
     std::cout << "Generated IR code successfully!" << std::endl;
   } catch (std::exception& e) {
     std::cerr << "Failed to generate IR code!" << std::endl;

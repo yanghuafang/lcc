@@ -4,6 +4,7 @@
 #include <llvm/IR/LLVMContext.h>
 
 #include <map>
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -29,6 +30,8 @@ class Module;
 class DataLayout;
 
 }  // namespace llvm
+
+class DebugInfoBuilder;
 
 // Owns one translation unit's LLVM state: Context, Module, IRBuilder, and
 // symbol tables. AST nodes call back here for name lookup and for builder access.
@@ -153,7 +156,12 @@ class CodeGenerator {
   void switchInsertPointToCurrentBlock();
 
   // Take AST as input to generate IR code.
-  void genIrCode(AST::Program* root, const std::string& optimizationLevel = "");
+  void genIrCode(AST::Program* root, const std::string& optimizationLevel = "",
+                 bool generateDebugInfo = false,
+                 const std::string& sourcePath = "");
+
+  bool isDebugInfoEnabled() const { return debugInfo_ != nullptr; }
+  DebugInfoBuilder* debugInfo() { return debugInfo_.get(); }
 
   // Generate object code for target architecture.
   void genObjectCode(const std::string& fileName);
@@ -245,4 +253,6 @@ class CodeGenerator {
 
   std::map<std::string, AST::VarType*> funcRetTypes_;
   std::map<std::string, std::vector<AST::VarType*>> funcParamTypes_;
+
+  std::unique_ptr<DebugInfoBuilder> debugInfo_;
 };

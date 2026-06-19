@@ -9,10 +9,34 @@ compileAll() {
   done
 }
 
+compile_mode=""
+remaining=()
+
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --debug|--release|--relwithdebinfo)
+      if [[ -n "$compile_mode" ]]; then
+        echo "Only one compile mode may be specified." >&2
+        exit 1
+      fi
+      compile_mode="$1"
+      shift
+      ;;
+    *)
+      remaining+=("$1")
+      shift
+      ;;
+  esac
+done
+
+if [[ -n "$compile_mode" ]]; then
+  setCompileMode "$compile_mode" || exit 1
+fi
+
 mkdir -p ../../lcc-build/debug
 
-if [ $# -eq 0 ]; then
+if [ ${#remaining[@]} -eq 0 ]; then
   compileAll
 else
-  compile "$1"
+  compile "${remaining[0]}"
 fi

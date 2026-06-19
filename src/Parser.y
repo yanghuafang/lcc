@@ -254,14 +254,18 @@ TypedefDecl: TYPEDEF VarType IDENTIFIER SEMICOLON
 
 FuncDecl:   STATIC VarType IDENTIFIER LPARENTHESES ParamList RPARENTHESES SEMICOLON
                                 { $$ = new AST::FuncDecl($2, *$3, $5);
-                                  $$->isStatic_ = true; }
+                                  $$->isStatic_ = true;
+                                  $$->setLoc(@3.first_line, @3.first_column); }
             | STATIC VarType IDENTIFIER LPARENTHESES ParamList RPARENTHESES FuncBody
                                 { $$ = new AST::FuncDecl($2, *$3, $5, $7);
-                                  $$->isStatic_ = true; }
+                                  $$->isStatic_ = true;
+                                  $$->setLoc(@3.first_line, @3.first_column); }
             | VarType IDENTIFIER LPARENTHESES ParamList RPARENTHESES SEMICOLON
-                                { $$ = new AST::FuncDecl($1, *$2, $4); }
+                                { $$ = new AST::FuncDecl($1, *$2, $4);
+                                  $$->setLoc(@2.first_line, @2.first_column); }
             | VarType IDENTIFIER LPARENTHESES ParamList RPARENTHESES FuncBody
-                                { $$ = new AST::FuncDecl($1, *$2, $4, $6); }
+                                { $$ = new AST::FuncDecl($1, *$2, $4, $6);
+                                  $$->setLoc(@2.first_line, @2.first_column); }
             ;
 
 FuncBody:   LBRACE Stmts RBRACE { $$ = new AST::FuncBody($2); }

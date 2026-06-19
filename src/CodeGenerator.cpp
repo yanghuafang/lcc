@@ -17,6 +17,7 @@
 #include <iostream>
 
 #include "AbstractSyntaxTree.hpp"
+#include "DebugInfoBuilder.hpp"
 
 CodeGenerator::CodeGenerator()
     : context_(),
@@ -404,10 +405,17 @@ void CodeGenerator::switchInsertPointToCurrentBlock() {
 }
 
 void CodeGenerator::genIrCode(AST::Program* root,
-                              const std::string& optimizationLevel) {
+                              const std::string& optimizationLevel,
+                              bool generateDebugInfo,
+                              const std::string& sourcePath) {
   if (root == nullptr) {
     std::cerr << "AST root is nullptr!" << std::endl;
     return;
+  }
+
+  if (generateDebugInfo) {
+    debugInfo_ = std::make_unique<DebugInfoBuilder>(*module_);
+    debugInfo_->initialize(sourcePath);
   }
 
   // Create top level symbol table, and push it to stack.
@@ -429,7 +437,17 @@ void CodeGenerator::genIrCode(AST::Program* root,
   // Pop top level symbol table, and destroy it.
   popSymbolTable();
 
-  optimizeCode(optimizationLevel);
+  // -g skips optimizations so DWARF stays aligned with source; finalize DI metadata
+  // here so genObjectCode can emit debug sections from the module.
+  if (generateDebugInfo) {
+    if (!optimizationLevel.empty() && optimizationLevel != "O0") {
+      std::cerr << "Warning: -g ignores -" << optimizationLevel
+                << "; use -g -O0 for reliable debug info." << std::endl;
+    }
+    debugInfo_->finalize();
+  } else {
+    optimizeCode(optimizationLevel);
+  }
 }
 
 void CodeGenerator::genObjectCode(const std::string& fileName) {

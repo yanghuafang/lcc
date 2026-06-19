@@ -24,7 +24,7 @@ Before extending, it helps to know what the current codebase already supports:
 | Block-scope `static` | Mangled module globals, one-time init (`tests/38.static_local.c`) |
 | User-defined types | `struct`, `union`, `enum` with tag names (`DefinedType` lookup) |
 | Type names in expressions | `_VarType: IDENTIFIER` for registered tags and typedef aliases |
-| `-g` CLI flag | Parsed in `main.cpp` — **not** passed to `CodeGenerator` yet |
+| `-g` CLI flag | Parsed in `main.cpp`; passed to `CodeGenerator` — **6a** emits compile unit + function subprograms; line stepping and locals pending (6b–6d) |
 
 See [Conflicts.md](Conflicts.md) for parser ambiguities that some roadmap items will touch (especially `typedef`).
 
@@ -308,16 +308,16 @@ Orthogonal to types and initializers. Teaches linkage and lifetime without block
 
 ### Gap today
 
-- `main.cpp` defines `--generate-debug-info` / `-g`.
-- The flag is **not** passed into `CodeGenerator`; `genObjectCode` emits code without debug metadata.
+- **6a (done):** `-g` and source path reach `CodeGenerator`; `DIBuilder` emits a compile unit and per-function `DISubprogram` in the object file.
+- **6b–6d (pending):** AST source locations on statements, `DebugLoc` on instructions, `dbg.declare` for params/locals, struct debug types.
 
 ### Work involved
 
 | Layer | Changes |
 |-------|---------|
-| **Driver** | Pass debug flag from `main.cpp` into `CodeGenerator` |
-| **LLVM** | `DIBuilder`: compile unit, file/line, subprograms, local variables |
-| **AST / codegen** | Optional: record source locations on nodes (`%locations` is already enabled in `Parser.y`) |
+| **Driver** | Pass debug flag from `main.cpp` into `CodeGenerator` — **done (6a)** |
+| **LLVM** | `DIBuilder`: compile unit, file/line, subprograms — **subprograms done (6a)**; local variables and rich types in 6c–6d |
+| **AST / codegen** | `SourceLoc` on `FuncDecl` (6a); extend to statements for stepping (6b) |
 
 ### Why fifth in the language roadmap
 

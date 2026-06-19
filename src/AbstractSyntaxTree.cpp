@@ -2,6 +2,7 @@
 
 #include <llvm/IR/BasicBlock.h>
 #include <llvm/IR/Constants.h>
+#include <llvm/IR/DebugInfoMetadata.h>
 #include <llvm/IR/DerivedTypes.h>
 #include <llvm/IR/Function.h>
 #include <llvm/IR/Instructions.h>
@@ -11,6 +12,7 @@
 #include <exception>
 
 #include "CodeGenerator.hpp"
+#include "DebugInfoBuilder.hpp"
 #include "Utils.hpp"
 
 namespace {
@@ -1116,12 +1118,26 @@ llvm::Value* FuncDecl::genCode(CodeGenerator& generator) {
     }
   }
 
+  // -g: attach a DWARF subprogram to definitions; line is the function name token.
+  llvm::DISubprogram* subprogram = nullptr;
+  if (funcBody_ != nullptr && generator.isDebugInfoEnabled()) {
+    unsigned line = loc().line > 0 ? loc().line : 1;
+    subprogram = generator.debugInfo()->createFunction(func, funcName_, line,
+                                                       funcType);
+  }
+
   // Generate code if function body exists.
   if (funcBody_ != nullptr) {
     // Create and insert the entry block.
     llvm::BasicBlock* funcBlock =
         llvm::BasicBlock::Create(generator.getContext(), "entry", func);
     generator.getBuilder().SetInsertPoint(funcBlock);
+
+    if (subprogram != nullptr) {
+      unsigned line = loc().line > 0 ? loc().line : 1;
+      generator.debugInfo()->setLocation(generator.getBuilder(), line,
+                                         subprogram);
+    }
 
     // Allocate symbol table for function parameters.
     generator.pushSymbolTable();

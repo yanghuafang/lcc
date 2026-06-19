@@ -43,12 +43,41 @@ tests=(
   "39.break_continue_hierarchy.c"
 )
 
+# lcc flags for test compilation; set via setCompileMode() from compile-tests.sh.
+lcc_debug_flags=""
+lcc_opt_flags=""
+compile_mode=""
+
+setCompileMode() {
+  compile_mode="$1"
+  case "$1" in
+    --debug)
+      lcc_debug_flags="-g"
+      lcc_opt_flags="-O0"
+      ;;
+    --release)
+      lcc_debug_flags=""
+      lcc_opt_flags="-O2"
+      ;;
+    --relwithdebinfo)
+      lcc_debug_flags="-g"
+      lcc_opt_flags="-O2"
+      ;;
+    *)
+      echo "Unknown compile mode: $1" >&2
+      echo "Expected --debug, --release, or --relwithdebinfo." >&2
+      return 1
+      ;;
+  esac
+}
+
 compileC2Obj() {
   local source=$1
   local obj=$2
   local ir=$3
   local graph=$4
-  ../../lcc-build/lcc -i ../tests/${source} -o ../../lcc-build/${obj} \
+  ../../lcc-build/lcc ${lcc_debug_flags} ${lcc_opt_flags} \
+    -i ../tests/${source} -o ../../lcc-build/${obj} \
     -l ../debug/${ir} -v ../debug/${graph}
 }
 
@@ -61,9 +90,22 @@ graph2Image() {
 
 compile() {
   local source=$1
-  local obj=${source%.c}.o
-  local ir=${source%.c}.ll
-  local graph=${source%.c}.dot
+  local base=${source%.c}
+  local obj=${base}.o
+  local ir_suffix=".ll"
+  case "$compile_mode" in
+    --debug)
+      ir_suffix=".debug.ll"
+      ;;
+    --release)
+      ir_suffix=".release.ll"
+      ;;
+    --relwithdebinfo)
+      ir_suffix=".relwithdebinfo.ll"
+      ;;
+  esac
+  local ir="${base}${ir_suffix}"
+  local graph=${base}.dot
   compileC2Obj ${source} ${obj} ${ir} ${graph}
   graph2Image ${source}
 }

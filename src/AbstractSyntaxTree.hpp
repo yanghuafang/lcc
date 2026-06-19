@@ -179,12 +179,25 @@ class TernaryCondition;
 // Class definition
 namespace AST {
 
-// Base class of AST nodes
+struct SourceLoc {
+  unsigned line = 0;
+  unsigned col = 0;
+};
+
+// Parser-filled source position for -g (Bison %locations). FuncDecl only in 6a;
+// statement nodes gain locations in 6b for line stepping.
 class Node {
  public:
   Node() {}
   // Virtual so delete g_root (Program*) runs the concrete destructor chain.
   virtual ~Node();
+
+  void setLoc(unsigned line, unsigned col = 0) {
+    loc_.line = line;
+    loc_.col = col;
+  }
+
+  const SourceLoc& loc() const { return loc_; }
 
   // Interface to generate IR code.
   virtual llvm::Value* genCode(CodeGenerator& generator) = 0;
@@ -192,6 +205,9 @@ class Node {
   // Generate Graphviz DOT for this subtree (used by Visualizer only, not
   // codegen). Returns (rootNodeId, dotFragment).
   virtual std::pair<std::string, std::string> genGraph() = 0;
+
+ protected:
+  SourceLoc loc_;
 };
 
 // Grammar Root
