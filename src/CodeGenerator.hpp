@@ -14,6 +14,7 @@ class Program;
 class StructType;
 class UnionType;
 class VarType;
+struct SourceLoc;
 
 }  // namespace AST
 
@@ -162,6 +163,9 @@ class CodeGenerator {
 
   bool isDebugInfoEnabled() const { return debugInfo_ != nullptr; }
   DebugInfoBuilder* debugInfo() { return debugInfo_.get(); }
+
+  // Attach the node's source line to the next IR instructions (-g, inside a function).
+  void setDebugLocation(const AST::SourceLoc& loc);
 
   // Generate object code for target architecture.
   void genObjectCode(const std::string& fileName);

@@ -184,8 +184,7 @@ struct SourceLoc {
   unsigned col = 0;
 };
 
-// Parser-filled source position for -g (Bison %locations). FuncDecl only in 6a;
-// statement nodes gain locations in 6b for line stepping.
+// Parser-filled source position for -g; flex fills yylloc, Parser.y copies into setLoc().
 class Node {
  public:
   Node() {}

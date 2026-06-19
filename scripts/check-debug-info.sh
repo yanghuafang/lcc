@@ -22,4 +22,10 @@ if ! llvm-dwarfdump --name=main "${obj_file}" | grep -q 'DW_TAG_subprogram'; the
   exit 1
 fi
 
+line_count=$(llvm-dwarfdump --debug-line "${obj_file}" | awk '/^0x[0-9a-f]+/ { print $2 }' | sort -u | wc -l | tr -d ' ')
+if [ "${line_count}" -lt 2 ]; then
+  echo "Expected multiple source lines in debug info for ${obj_file}, got ${line_count} unique lines" >&2
+  exit 1
+fi
+
 echo "Debug info check passed."

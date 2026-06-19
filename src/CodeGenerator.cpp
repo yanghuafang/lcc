@@ -3,6 +3,8 @@
 #include <llvm/Analysis/LoopAnalysisManager.h>
 #include <llvm/IR/LegacyPassManager.h>
 #include <llvm/IR/PassManager.h>
+#include <llvm/IR/DebugInfoMetadata.h>
+#include <llvm/IR/Function.h>
 #include <llvm/IR/Verifier.h>
 #include <llvm/MC/TargetRegistry.h>
 #include <llvm/Passes/PassBuilder.h>
@@ -402,6 +404,25 @@ void CodeGenerator::switchInsertPointToGlobalBlock() {
 
 void CodeGenerator::switchInsertPointToCurrentBlock() {
   builder_.SetInsertPoint(currentBlock_);
+}
+
+void CodeGenerator::setDebugLocation(const AST::SourceLoc& loc) {
+  if (!isDebugInfoEnabled() || loc.line == 0) {
+    return;
+  }
+
+  llvm::Function* func = getCurrentFunction();
+  if (func == nullptr) {
+    return;
+  }
+
+  llvm::DISubprogram* subprogram = func->getSubprogram();
+  if (subprogram == nullptr) {
+    return;
+  }
+
+  unsigned col = loc.col > 0 ? loc.col : 1;
+  debugInfo_->setLocation(builder_, loc.line, subprogram, col);
 }
 
 void CodeGenerator::genIrCode(AST::Program* root,

@@ -13,209 +13,249 @@ entry:
   %i = alloca i32, align 4
   %count = alloca i32, align 4
   %n = alloca i32, align 4
-  store i32 %0, i32* %n, align 4, !dbg !7
+  store i32 %0, i32* %n, align 4
   store i32 0, i32* %count, align 4, !dbg !7
-  store i32 1, i32* %i, align 4, !dbg !7
-  br label %for.cond, !dbg !7
+  store i32 1, i32* %i, align 4, !dbg !8
+  br label %for.cond, !dbg !8
 
 for.cond:                                         ; preds = %for.update, %entry
-  %1 = load i32, i32* %i, align 4, !dbg !7
-  %2 = load i32, i32* %n, align 4, !dbg !7
-  %3 = icmp sle i32 %1, %2, !dbg !7
-  br i1 %3, label %for.loop, label %for.end, !dbg !7
+  %1 = load i32, i32* %i, align 4, !dbg !8
+  %2 = load i32, i32* %n, align 4, !dbg !8
+  %3 = icmp sle i32 %1, %2, !dbg !8
+  br i1 %3, label %for.loop, label %for.end, !dbg !8
 
 for.loop:                                         ; preds = %for.cond
-  %4 = load i32, i32* %i, align 4, !dbg !7
-  %5 = srem i32 %4, 2, !dbg !7
-  %6 = icmp ne i32 %5, 0, !dbg !7
-  br i1 %6, label %for.update, label %if.end, !dbg !7
-
-if.end:                                           ; preds = %for.loop
-  %7 = load i32, i32* %count, align 4, !dbg !7
-  %8 = add i32 %7, 1, !dbg !7
-  store i32 %8, i32* %count, align 4, !dbg !7
-  %9 = load i32, i32* %count, align 4, !dbg !7
-  br label %for.update, !dbg !7
-
-for.update:                                       ; preds = %for.loop, %if.end
-  %10 = load i32, i32* %i, align 4, !dbg !7
-  %11 = add i32 %10, 1, !dbg !7
-  store i32 %11, i32* %i, align 4, !dbg !7
-  %12 = load i32, i32* %i, align 4, !dbg !7
-  br label %for.cond, !dbg !7
-
-for.end:                                          ; preds = %for.cond
-  %13 = load i32, i32* %count, align 4, !dbg !7
-  ret i32 %13, !dbg !7
-}
-
-define i32 @countEvenNumber2(i32 %0) !dbg !8 {
-entry:
-  %i = alloca i32, align 4
-  %count = alloca i32, align 4
-  %n = alloca i32, align 4
-  store i32 %0, i32* %n, align 4, !dbg !9
-  store i32 0, i32* %count, align 4, !dbg !9
-  store i32 1, i32* %i, align 4, !dbg !9
-  br label %while.cond, !dbg !9
-
-while.cond:                                       ; preds = %if.end, %then, %entry
-  %1 = load i32, i32* %i, align 4, !dbg !9
-  %2 = load i32, i32* %n, align 4, !dbg !9
-  %3 = icmp sle i32 %1, %2, !dbg !9
-  br i1 %3, label %while.loop, label %while.end, !dbg !9
-
-while.loop:                                       ; preds = %while.cond
   %4 = load i32, i32* %i, align 4, !dbg !9
   %5 = srem i32 %4, 2, !dbg !9
   %6 = icmp ne i32 %5, 0, !dbg !9
-  br i1 %6, label %then, label %if.end, !dbg !9
+  br i1 %6, label %for.update, label %if.end, !dbg !9
 
-then:                                             ; preds = %while.loop
-  %7 = load i32, i32* %i, align 4, !dbg !9
-  %8 = add i32 %7, 1, !dbg !9
-  store i32 %8, i32* %i, align 4, !dbg !9
-  %9 = load i32, i32* %i, align 4, !dbg !9
-  br label %while.cond, !dbg !9
+if.end:                                           ; preds = %for.loop
+  %7 = load i32, i32* %count, align 4, !dbg !10
+  %8 = add i32 %7, 1, !dbg !10
+  store i32 %8, i32* %count, align 4, !dbg !10
+  %9 = load i32, i32* %count, align 4, !dbg !10
+  br label %for.update, !dbg !10
 
-if.end:                                           ; preds = %while.loop
-  %10 = load i32, i32* %count, align 4, !dbg !9
-  %11 = add i32 %10, 1, !dbg !9
-  store i32 %11, i32* %count, align 4, !dbg !9
-  %12 = load i32, i32* %count, align 4, !dbg !9
-  %13 = load i32, i32* %i, align 4, !dbg !9
-  %14 = add i32 %13, 1, !dbg !9
-  store i32 %14, i32* %i, align 4, !dbg !9
-  %15 = load i32, i32* %i, align 4, !dbg !9
-  br label %while.cond, !dbg !9
+for.update:                                       ; preds = %for.loop, %if.end
+  %10 = load i32, i32* %i, align 4, !dbg !10
+  %11 = add i32 %10, 1, !dbg !10
+  store i32 %11, i32* %i, align 4, !dbg !10
+  %12 = load i32, i32* %i, align 4, !dbg !10
+  br label %for.cond, !dbg !10
 
-while.end:                                        ; preds = %while.cond
-  %16 = load i32, i32* %count, align 4, !dbg !9
-  ret i32 %16, !dbg !9
+for.end:                                          ; preds = %for.cond
+  %13 = load i32, i32* %count, align 4, !dbg !11
+  ret i32 %13, !dbg !11
 }
 
-define i32 @countEvenNumber3(i32 %0) !dbg !10 {
+define i32 @countEvenNumber2(i32 %0) !dbg !12 {
 entry:
   %i = alloca i32, align 4
   %count = alloca i32, align 4
   %n = alloca i32, align 4
   store i32 %0, i32* %n, align 4, !dbg !11
-  store i32 0, i32* %count, align 4, !dbg !11
-  store i32 1, i32* %i, align 4, !dbg !11
-  br label %do.loop, !dbg !11
+  store i32 0, i32* %count, align 4, !dbg !13
+  store i32 1, i32* %i, align 4, !dbg !14
+  br label %while.cond, !dbg !15
 
-do.loop:                                          ; preds = %do.cond, %entry
-  %1 = load i32, i32* %i, align 4, !dbg !11
-  %2 = srem i32 %1, 2, !dbg !11
-  %3 = icmp ne i32 %2, 0, !dbg !11
-  br i1 %3, label %then, label %if.end, !dbg !11
+while.cond:                                       ; preds = %if.end, %then, %entry
+  %1 = load i32, i32* %i, align 4, !dbg !15
+  %2 = load i32, i32* %n, align 4, !dbg !15
+  %3 = icmp sle i32 %1, %2, !dbg !15
+  br i1 %3, label %while.loop, label %while.end, !dbg !15
 
-then:                                             ; preds = %do.loop
-  %4 = load i32, i32* %i, align 4, !dbg !11
-  %5 = add i32 %4, 1, !dbg !11
-  store i32 %5, i32* %i, align 4, !dbg !11
-  %6 = load i32, i32* %i, align 4, !dbg !11
-  br label %do.cond, !dbg !11
+while.loop:                                       ; preds = %while.cond
+  %4 = load i32, i32* %i, align 4, !dbg !16
+  %5 = srem i32 %4, 2, !dbg !16
+  %6 = icmp ne i32 %5, 0, !dbg !16
+  br i1 %6, label %then, label %if.end, !dbg !16
 
-if.end:                                           ; preds = %do.loop
-  %7 = load i32, i32* %count, align 4, !dbg !11
-  %8 = add i32 %7, 1, !dbg !11
-  store i32 %8, i32* %count, align 4, !dbg !11
-  %9 = load i32, i32* %count, align 4, !dbg !11
-  %10 = load i32, i32* %i, align 4, !dbg !11
-  %11 = add i32 %10, 1, !dbg !11
-  store i32 %11, i32* %i, align 4, !dbg !11
-  %12 = load i32, i32* %i, align 4, !dbg !11
-  br label %do.cond, !dbg !11
+then:                                             ; preds = %while.loop
+  %7 = load i32, i32* %i, align 4, !dbg !17
+  %8 = add i32 %7, 1, !dbg !17
+  store i32 %8, i32* %i, align 4, !dbg !17
+  %9 = load i32, i32* %i, align 4, !dbg !17
+  br label %while.cond, !dbg !18
 
-do.cond:                                          ; preds = %if.end, %then
-  %13 = load i32, i32* %i, align 4, !dbg !11
-  %14 = load i32, i32* %n, align 4, !dbg !11
-  %15 = icmp sle i32 %13, %14, !dbg !11
-  br i1 %15, label %do.loop, label %do.end, !dbg !11
+if.end:                                           ; preds = %while.loop
+  %10 = load i32, i32* %count, align 4, !dbg !19
+  %11 = add i32 %10, 1, !dbg !19
+  store i32 %11, i32* %count, align 4, !dbg !19
+  %12 = load i32, i32* %count, align 4, !dbg !19
+  %13 = load i32, i32* %i, align 4, !dbg !20
+  %14 = add i32 %13, 1, !dbg !20
+  store i32 %14, i32* %i, align 4, !dbg !20
+  %15 = load i32, i32* %i, align 4, !dbg !20
+  br label %while.cond, !dbg !20
 
-do.end:                                           ; preds = %do.cond
-  %16 = load i32, i32* %count, align 4, !dbg !11
-  ret i32 %16, !dbg !11
+while.end:                                        ; preds = %while.cond
+  %16 = load i32, i32* %count, align 4, !dbg !21
+  ret i32 %16, !dbg !21
 }
 
-define i32 @main() !dbg !12 {
+define i32 @countEvenNumber3(i32 %0) !dbg !22 {
+entry:
+  %i = alloca i32, align 4
+  %count = alloca i32, align 4
+  %n = alloca i32, align 4
+  store i32 %0, i32* %n, align 4, !dbg !21
+  store i32 0, i32* %count, align 4, !dbg !23
+  store i32 1, i32* %i, align 4, !dbg !24
+  br label %do.loop, !dbg !25
+
+do.loop:                                          ; preds = %do.cond, %entry
+  %1 = load i32, i32* %i, align 4, !dbg !26
+  %2 = srem i32 %1, 2, !dbg !26
+  %3 = icmp ne i32 %2, 0, !dbg !26
+  br i1 %3, label %then, label %if.end, !dbg !26
+
+then:                                             ; preds = %do.loop
+  %4 = load i32, i32* %i, align 4, !dbg !27
+  %5 = add i32 %4, 1, !dbg !27
+  store i32 %5, i32* %i, align 4, !dbg !27
+  %6 = load i32, i32* %i, align 4, !dbg !27
+  br label %do.cond, !dbg !28
+
+if.end:                                           ; preds = %do.loop
+  %7 = load i32, i32* %count, align 4, !dbg !29
+  %8 = add i32 %7, 1, !dbg !29
+  store i32 %8, i32* %count, align 4, !dbg !29
+  %9 = load i32, i32* %count, align 4, !dbg !29
+  %10 = load i32, i32* %i, align 4, !dbg !30
+  %11 = add i32 %10, 1, !dbg !30
+  store i32 %11, i32* %i, align 4, !dbg !30
+  %12 = load i32, i32* %i, align 4, !dbg !30
+  br label %do.cond, !dbg !30
+
+do.cond:                                          ; preds = %if.end, %then
+  %13 = load i32, i32* %i, align 4, !dbg !30
+  %14 = load i32, i32* %n, align 4, !dbg !30
+  %15 = icmp sle i32 %13, %14, !dbg !30
+  br i1 %15, label %do.loop, label %do.end, !dbg !30
+
+do.end:                                           ; preds = %do.cond
+  %16 = load i32, i32* %count, align 4, !dbg !31
+  ret i32 %16, !dbg !31
+}
+
+define i32 @main() !dbg !32 {
 entry:
   %err = alloca i32, align 4
-  store i32 0, i32* %err, align 4, !dbg !15
-  %0 = call i32 @countEvenNumber(i32 32), !dbg !15
-  %1 = icmp ne i32 %0, 16, !dbg !15
-  br i1 %1, label %then, label %if.end, !dbg !15
+  store i32 0, i32* %err, align 4, !dbg !35
+  %0 = call i32 @countEvenNumber(i32 32), !dbg !36
+  %1 = icmp ne i32 %0, 16, !dbg !36
+  br i1 %1, label %then, label %if.end, !dbg !36
 
 then:                                             ; preds = %entry
-  store i32 1, i32* %err, align 4, !dbg !15
-  %2 = load i32, i32* %err, align 4, !dbg !15
-  br label %if.end, !dbg !15
+  store i32 1, i32* %err, align 4, !dbg !37
+  %2 = load i32, i32* %err, align 4, !dbg !37
+  br label %if.end, !dbg !37
 
 if.end:                                           ; preds = %entry, %then
-  %3 = call i32 @countEvenNumber2(i32 32), !dbg !15
-  %4 = icmp ne i32 %3, 16, !dbg !15
-  br i1 %4, label %then1, label %if.end3, !dbg !15
+  %3 = call i32 @countEvenNumber2(i32 32), !dbg !38
+  %4 = icmp ne i32 %3, 16, !dbg !38
+  br i1 %4, label %then1, label %if.end3, !dbg !38
 
 then1:                                            ; preds = %if.end
-  store i32 1, i32* %err, align 4, !dbg !15
-  %5 = load i32, i32* %err, align 4, !dbg !15
-  br label %if.end3, !dbg !15
+  store i32 1, i32* %err, align 4, !dbg !39
+  %5 = load i32, i32* %err, align 4, !dbg !39
+  br label %if.end3, !dbg !39
 
 if.end3:                                          ; preds = %if.end, %then1
-  %6 = call i32 @countEvenNumber3(i32 32), !dbg !15
-  %7 = icmp ne i32 %6, 16, !dbg !15
-  br i1 %7, label %then4, label %if.end6, !dbg !15
+  %6 = call i32 @countEvenNumber3(i32 32), !dbg !40
+  %7 = icmp ne i32 %6, 16, !dbg !40
+  br i1 %7, label %then4, label %if.end6, !dbg !40
 
 then4:                                            ; preds = %if.end3
-  store i32 1, i32* %err, align 4, !dbg !15
-  %8 = load i32, i32* %err, align 4, !dbg !15
-  br label %if.end6, !dbg !15
+  store i32 1, i32* %err, align 4, !dbg !41
+  %8 = load i32, i32* %err, align 4, !dbg !41
+  br label %if.end6, !dbg !41
 
 if.end6:                                          ; preds = %if.end3, %then4
-  %9 = call i32 @countEvenNumber(i32 0), !dbg !15
-  %10 = icmp ne i32 %9, 0, !dbg !15
-  br i1 %10, label %then7, label %if.end9, !dbg !15
+  %9 = call i32 @countEvenNumber(i32 0), !dbg !42
+  %10 = icmp ne i32 %9, 0, !dbg !42
+  br i1 %10, label %then7, label %if.end9, !dbg !42
 
 then7:                                            ; preds = %if.end6
-  store i32 1, i32* %err, align 4, !dbg !15
-  %11 = load i32, i32* %err, align 4, !dbg !15
-  br label %if.end9, !dbg !15
+  store i32 1, i32* %err, align 4, !dbg !43
+  %11 = load i32, i32* %err, align 4, !dbg !43
+  br label %if.end9, !dbg !43
 
 if.end9:                                          ; preds = %if.end6, %then7
-  %12 = call i32 @countEvenNumber(i32 1), !dbg !15
-  %13 = icmp ne i32 %12, 0, !dbg !15
-  br i1 %13, label %then10, label %if.end12, !dbg !15
+  %12 = call i32 @countEvenNumber(i32 1), !dbg !44
+  %13 = icmp ne i32 %12, 0, !dbg !44
+  br i1 %13, label %then10, label %if.end12, !dbg !44
 
 then10:                                           ; preds = %if.end9
-  store i32 1, i32* %err, align 4, !dbg !15
-  %14 = load i32, i32* %err, align 4, !dbg !15
-  br label %if.end12, !dbg !15
+  store i32 1, i32* %err, align 4, !dbg !45
+  %14 = load i32, i32* %err, align 4, !dbg !45
+  br label %if.end12, !dbg !45
 
 if.end12:                                         ; preds = %if.end9, %then10
-  %15 = load i32, i32* %err, align 4, !dbg !15
-  %16 = icmp eq i32 %15, 0, !dbg !15
-  %. = select i1 %16, i8* getelementptr inbounds ([20 x i8], [20 x i8]* @0, i32 0, i32 0), i8* getelementptr inbounds ([20 x i8], [20 x i8]* @1, i32 0, i32 0), !dbg !15
-  %17 = call i32 (i8*, ...) @printf(i8* %.), !dbg !15
-  %18 = load i32, i32* %err, align 4, !dbg !15
-  ret i32 %18, !dbg !15
+  %15 = load i32, i32* %err, align 4, !dbg !46
+  %16 = icmp eq i32 %15, 0, !dbg !46
+  %. = select i1 %16, i8* getelementptr inbounds ([20 x i8], [20 x i8]* @0, i32 0, i32 0), i8* getelementptr inbounds ([20 x i8], [20 x i8]* @1, i32 0, i32 0), !dbg !47
+  %17 = call i32 (i8*, ...) @printf(i8* %.), !dbg !47
+  %18 = load i32, i32* %err, align 4, !dbg !48
+  ret i32 %18, !dbg !48
 }
 
 !llvm.dbg.cu = !{!0}
 
 !0 = distinct !DICompileUnit(language: DW_LANG_C, file: !1, producer: "lcc", isOptimized: false, runtimeVersion: 0, emissionKind: FullDebug)
 !1 = !DIFile(filename: "21.continue.c", directory: "../tests")
-!2 = distinct !DISubprogram(name: "countEvenNumber", linkageName: "countEvenNumber", scope: null, file: !1, line: 1, type: !3, scopeLine: 1, spFlags: DISPFlagDefinition, unit: !0, retainedNodes: !6)
+!2 = distinct !DISubprogram(name: "countEvenNumber", linkageName: "countEvenNumber", scope: null, file: !1, line: 3, type: !3, scopeLine: 3, spFlags: DISPFlagDefinition, unit: !0, retainedNodes: !6)
 !3 = !DISubroutineType(types: !4)
 !4 = !{!5, !5}
 !5 = !DIBasicType(name: "int", size: 32, encoding: DW_ATE_signed)
 !6 = !{}
-!7 = !DILocation(line: 1, column: 1, scope: !2)
-!8 = distinct !DISubprogram(name: "countEvenNumber2", linkageName: "countEvenNumber2", scope: null, file: !1, line: 1, type: !3, scopeLine: 1, spFlags: DISPFlagDefinition, unit: !0, retainedNodes: !6)
-!9 = !DILocation(line: 1, column: 1, scope: !8)
-!10 = distinct !DISubprogram(name: "countEvenNumber3", linkageName: "countEvenNumber3", scope: null, file: !1, line: 1, type: !3, scopeLine: 1, spFlags: DISPFlagDefinition, unit: !0, retainedNodes: !6)
-!11 = !DILocation(line: 1, column: 1, scope: !10)
-!12 = distinct !DISubprogram(name: "main", linkageName: "main", scope: null, file: !1, line: 1, type: !13, scopeLine: 1, spFlags: DISPFlagDefinition, unit: !0, retainedNodes: !6)
-!13 = !DISubroutineType(types: !14)
-!14 = !{!5}
-!15 = !DILocation(line: 1, column: 1, scope: !12)
+!7 = !DILocation(line: 4, column: 3, scope: !2)
+!8 = !DILocation(line: 5, column: 8, scope: !2)
+!9 = !DILocation(line: 6, column: 5, scope: !2)
+!10 = !DILocation(line: 9, column: 5, scope: !2)
+!11 = !DILocation(line: 11, column: 3, scope: !2)
+!12 = distinct !DISubprogram(name: "countEvenNumber2", linkageName: "countEvenNumber2", scope: null, file: !1, line: 14, type: !3, scopeLine: 14, spFlags: DISPFlagDefinition, unit: !0, retainedNodes: !6)
+!13 = !DILocation(line: 15, column: 3, scope: !12)
+!14 = !DILocation(line: 16, column: 3, scope: !12)
+!15 = !DILocation(line: 17, column: 3, scope: !12)
+!16 = !DILocation(line: 18, column: 5, scope: !12)
+!17 = !DILocation(line: 19, column: 7, scope: !12)
+!18 = !DILocation(line: 20, column: 7, scope: !12)
+!19 = !DILocation(line: 22, column: 5, scope: !12)
+!20 = !DILocation(line: 23, column: 5, scope: !12)
+!21 = !DILocation(line: 25, column: 3, scope: !12)
+!22 = distinct !DISubprogram(name: "countEvenNumber3", linkageName: "countEvenNumber3", scope: null, file: !1, line: 28, type: !3, scopeLine: 28, spFlags: DISPFlagDefinition, unit: !0, retainedNodes: !6)
+!23 = !DILocation(line: 29, column: 3, scope: !22)
+!24 = !DILocation(line: 30, column: 3, scope: !22)
+!25 = !DILocation(line: 31, column: 3, scope: !22)
+!26 = !DILocation(line: 32, column: 5, scope: !22)
+!27 = !DILocation(line: 33, column: 7, scope: !22)
+!28 = !DILocation(line: 34, column: 7, scope: !22)
+!29 = !DILocation(line: 36, column: 5, scope: !22)
+!30 = !DILocation(line: 37, column: 5, scope: !22)
+!31 = !DILocation(line: 39, column: 3, scope: !22)
+!32 = distinct !DISubprogram(name: "main", linkageName: "main", scope: null, file: !1, line: 42, type: !33, scopeLine: 42, spFlags: DISPFlagDefinition, unit: !0, retainedNodes: !6)
+!33 = !DISubroutineType(types: !34)
+!34 = !{!5}
+!35 = !DILocation(line: 43, column: 3, scope: !32)
+!36 = !DILocation(line: 45, column: 3, scope: !32)
+!37 = !DILocation(line: 45, column: 34, scope: !32)
+!38 = !DILocation(line: 46, column: 3, scope: !32)
+!39 = !DILocation(line: 46, column: 35, scope: !32)
+!40 = !DILocation(line: 47, column: 3, scope: !32)
+!41 = !DILocation(line: 47, column: 35, scope: !32)
+!42 = !DILocation(line: 48, column: 3, scope: !32)
+!43 = !DILocation(line: 48, column: 32, scope: !32)
+!44 = !DILocation(line: 49, column: 3, scope: !32)
+!45 = !DILocation(line: 49, column: 32, scope: !32)
+!46 = !DILocation(line: 51, column: 3, scope: !32)
+!47 = !DILocation(line: 0, scope: !32)
+!48 = !DILocation(line: 56, column: 3, scope: !32)
+!dbg attachment points at wrong subprogram for function
+!12 = distinct !DISubprogram(name: "countEvenNumber2", linkageName: "countEvenNumber2", scope: null, file: !1, line: 14, type: !3, scopeLine: 14, spFlags: DISPFlagDefinition, unit: !0, retainedNodes: !6)
+i32 (i32)* @countEvenNumber2
+  store i32 %0, i32* %n, align 4, !dbg !11
+!11 = !DILocation(line: 11, column: 3, scope: !2)
+!2 = distinct !DISubprogram(name: "countEvenNumber", linkageName: "countEvenNumber", scope: null, file: !1, line: 3, type: !3, scopeLine: 3, spFlags: DISPFlagDefinition, unit: !0, retainedNodes: !6)
+!2 = distinct !DISubprogram(name: "countEvenNumber", linkageName: "countEvenNumber", scope: null, file: !1, line: 3, type: !3, scopeLine: 3, spFlags: DISPFlagDefinition, unit: !0, retainedNodes: !6)

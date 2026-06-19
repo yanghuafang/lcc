@@ -17,6 +17,15 @@
 
 namespace {
 
+// -g: stamp the statement's parser line on the IRBuilder before lowering it.
+llvm::Value* generateStmt(CodeGenerator& generator, AST::Stmt* stmt) {
+  if (stmt == nullptr) {
+    return nullptr;
+  }
+  generator.setDebugLocation(stmt->loc());
+  return stmt->genCode(generator);
+}
+
 // Array declarator and initializer helpers (VarDecl::genCode only).
 // Parser attaches bounds and inits to VarInit (per name in a VarList).
 // kInferredArrayBound is resolved in resolveArrayBounds(); brace inits are
@@ -1134,9 +1143,7 @@ llvm::Value* FuncDecl::genCode(CodeGenerator& generator) {
     generator.getBuilder().SetInsertPoint(funcBlock);
 
     if (subprogram != nullptr) {
-      unsigned line = loc().line > 0 ? loc().line : 1;
-      generator.debugInfo()->setLocation(generator.getBuilder(), line,
-                                         subprogram);
+      generator.setDebugLocation(loc());
     }
 
     // Allocate symbol table for function parameters.
@@ -1174,7 +1181,7 @@ llvm::Value* FuncBody::genCode(CodeGenerator& generator) {
     if (generator.getBuilder().GetInsertBlock()->getTerminator() != nullptr) {
       break;
     } else {
-      stmt->genCode(generator);
+      generateStmt(generator, stmt);
     }
   }
 
@@ -1641,6 +1648,7 @@ llvm::Type* EnumType::getType(CodeGenerator& generator) {
 // Lower if/else to a three-block CFG: then, else, if.end. Each branch gets its
 // own symbol table scope so block-local declarations do not leak.
 llvm::Value* IfStmt::genCode(CodeGenerator& generator) {
+  generator.setDebugLocation(loc());
   llvm::Value* condition = condition_->genCode(generator);
   condition = Utils::castToBool(generator.getBuilder(), condition);
   if (condition == nullptr) {
@@ -1659,7 +1667,7 @@ llvm::Value* IfStmt::genCode(CodeGenerator& generator) {
   generator.getBuilder().SetInsertPoint(thenBlock);
   if (thenStmt_ != nullptr) {
     generator.pushSymbolTable();
-    thenStmt_->genCode(generator);
+    generateStmt(generator, thenStmt_);
     generator.popSymbolTable();
   }
   Utils::terminateBlockByBr(generator.getBuilder(), endBlock);
@@ -1669,7 +1677,7 @@ llvm::Value* IfStmt::genCode(CodeGenerator& generator) {
   generator.getBuilder().SetInsertPoint(elseBlock);
   if (elseStmt_ != nullptr) {
     generator.pushSymbolTable();
-    elseStmt_->genCode(generator);
+    generateStmt(generator, elseStmt_);
     generator.popSymbolTable();
   }
   Utils::terminateBlockByBr(generator.getBuilder(), endBlock);
@@ -1686,6 +1694,7 @@ llvm::Value* IfStmt::genCode(CodeGenerator& generator) {
 // Lower switch as a chain of compare blocks (not the LLVM switch instruction).
 // Each case gets a basic block; fall-through is modeled by shared block layout.
 llvm::Value* SwitchStmt::genCode(CodeGenerator& generator) {
+  generator.setDebugLocation(loc());
   llvm::Function* func = generator.getCurrentFunction();
   llvm::Value* matcher = matcher_->genCode(generator);
 
@@ -1758,13 +1767,14 @@ llvm::Value* SwitchStmt::genCode(CodeGenerator& generator) {
 }
 
 llvm::Value* CaseStmt::genCode(CodeGenerator& generator) {
+  generator.setDebugLocation(loc());
   // Generate case statements one by one.
   for (Stmt* stmt : *content_) {
     if (generator.getBuilder().GetInsertBlock()->getTerminator()) {
       // Stop code generation if encounter a terminator, such as "break".
       break;
     } else if (stmt != nullptr) {
-      stmt->genCode(generator);
+      generateStmt(generator, stmt);
     }
   }
 
@@ -1780,6 +1790,7 @@ llvm::Value* CaseStmt::genCode(CodeGenerator& generator) {
 // CFG: init -> for.cond -> for.loop / for.end; for.loop -> for.update -> for.cond.
 // enterLoop wires continue to for.update and break to for.end.
 llvm::Value* ForStmt::genCode(CodeGenerator& generator) {
+  generator.setDebugLocation(loc());
   llvm::Function* func = generator.getCurrentFunction();
   llvm::BasicBlock* conditionBlock =
       llvm::BasicBlock::Create(generator.getContext(), "for.cond");
@@ -1790,7 +1801,7 @@ llvm::Value* ForStmt::genCode(CodeGenerator& generator) {
 
   if (initial_ != nullptr) {
     generator.pushSymbolTable();
-    initial_->genCode(generator);
+    generateStmt(generator, initial_);
   }
 
   // Create unconditional branch to condition block.
@@ -1818,7 +1829,7 @@ llvm::Value* ForStmt::genCode(CodeGenerator& generator) {
   if (loopBody_ != nullptr) {
     generator.enterLoop(updateBlock, endBlock);
     generator.pushSymbolTable();
-    loopBody_->genCode(generator);
+    generateStmt(generator, loopBody_);
     generator.popSymbolTable();
     generator.leaveLoop();
   }
@@ -1848,6 +1859,7 @@ llvm::Value* ForStmt::genCode(CodeGenerator& generator) {
 }
 
 llvm::Value* DoStmt::genCode(CodeGenerator& generator) {
+  generator.setDebugLocation(loc());
   llvm::Function* func = generator.getCurrentFunction();
   llvm::BasicBlock* conditionBlock =
       llvm::BasicBlock::Create(generator.getContext(), "do.cond");
@@ -1863,7 +1875,7 @@ llvm::Value* DoStmt::genCode(CodeGenerator& generator) {
   if (loopBody_ != nullptr) {
     generator.enterLoop(conditionBlock, endBlock);
     generator.pushSymbolTable();
-    loopBody_->genCode(generator);
+    generateStmt(generator, loopBody_);
     generator.popSymbolTable();
     generator.leaveLoop();
   }
@@ -1892,6 +1904,7 @@ llvm::Value* DoStmt::genCode(CodeGenerator& generator) {
 
 // enterLoop wires continue to the condition block and break to while.end.
 llvm::Value* WhileStmt::genCode(CodeGenerator& generator) {
+  generator.setDebugLocation(loc());
   llvm::Function* func = generator.getCurrentFunction();
   llvm::BasicBlock* conditionBlock =
       llvm::BasicBlock::Create(generator.getContext(), "while.cond");
@@ -1919,7 +1932,7 @@ llvm::Value* WhileStmt::genCode(CodeGenerator& generator) {
   if (loopBody_ != nullptr) {
     generator.enterLoop(conditionBlock, endBlock);
     generator.pushSymbolTable();
-    loopBody_->genCode(generator);
+    generateStmt(generator, loopBody_);
     generator.popSymbolTable();
     generator.leaveLoop();
   }
@@ -1935,6 +1948,7 @@ llvm::Value* WhileStmt::genCode(CodeGenerator& generator) {
 }
 
 llvm::Value* ContinueStmt::genCode(CodeGenerator& generator) {
+  generator.setDebugLocation(loc());
   llvm::BasicBlock* continueToBlock = generator.getContinueBlock();
   if (continueToBlock == nullptr) {
     throw std::logic_error("Continue must be in a loop!");
@@ -1945,6 +1959,7 @@ llvm::Value* ContinueStmt::genCode(CodeGenerator& generator) {
 }
 
 llvm::Value* BreakStmt::genCode(CodeGenerator& generator) {
+  generator.setDebugLocation(loc());
   llvm::BasicBlock* breakToBlock = generator.getBreakBlock();
   if (breakToBlock == nullptr) {
     throw std::logic_error("Break must be in switch or loop!");
@@ -1955,6 +1970,7 @@ llvm::Value* BreakStmt::genCode(CodeGenerator& generator) {
 }
 
 llvm::Value* ReturnStmt::genCode(CodeGenerator& generator) {
+  generator.setDebugLocation(loc());
   llvm::Function* func = generator.getCurrentFunction();
   if (func == nullptr) {
     throw std::logic_error("Return should be in a function body!");
@@ -1983,6 +1999,7 @@ llvm::Value* ReturnStmt::genCode(CodeGenerator& generator) {
 }
 
 llvm::Value* Block::genCode(CodeGenerator& generator) {
+  generator.setDebugLocation(loc());
   generator.pushSymbolTable();
   // Generate code for statements one by one in block.
   for (Stmt* stmt : *content_) {
@@ -1990,7 +2007,7 @@ llvm::Value* Block::genCode(CodeGenerator& generator) {
       // Stop code generation if encounter a terminator, such as "break".
       break;
     } else if (stmt != nullptr) {
-      stmt->genCode(generator);
+      generateStmt(generator, stmt);
     }
   }
   generator.popSymbolTable();
