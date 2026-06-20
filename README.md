@@ -126,7 +126,7 @@ lcc -i <input.c> -o <output.o> [-v <ast.dot>] [-l <ir.ll>] [-g] [-O0|-O1|-O2|-O3
 | `-o` | yes | Output object file (`.o`) |
 | `-v` | no | AST graph (GraphViz `.dot`) |
 | `-l` | no | LLVM IR (`.ll`) |
-| `-g` | no | Embed DWARF in the object file (6a–6c: functions, line stepping, local/param variables; use with `-O0`) |
+| `-g` | no | Embed DWARF in the object file (use without `-O` for reliable stepping and variables) |
 | `-O0` … `-Oz` | no | LLVM optimization level (mutually exclusive) |
 
 **Defaults when flags are omitted**
@@ -135,7 +135,7 @@ lcc -i <input.c> -o <output.o> [-v <ast.dot>] [-l <ir.ll>] [-g] [-O0|-O1|-O2|-O3
 |--------------|-------------------|-------------------|
 | *(none)* | No | No passes (raw codegen IR) |
 | `-O0` only | No | O0 pipeline |
-| `-g` only | Yes | Skipped (`-g` disables opts in 6a) |
+| `-g` only | Yes | Skipped (`-g` disables LLVM opts to keep dbg.declare allocas) |
 | `-g -O0` | Yes | Skipped |
 | `-g -O2` (etc.) | Yes | Skipped; warning printed |
 
@@ -218,7 +218,7 @@ Optional compile mode (at most one; applies to all tests or the single named tes
 | *(none)* | *(none)* | Default regression run (no DWARF, no LLVM opts) |
 | `--debug` | `-g -O0` | Debuggable test binaries |
 | `--release` | `-O2` | Optimized, no debug info |
-| `--relwithdebinfo` | `-g -O2` | Optimized with debug info (`-g` currently skips opts until 6d) |
+| `--relwithdebinfo` | `-g -O2` | DWARF emitted; LLVM opts still skipped under `-g` (see flags table above) |
 
 Examples:
 
@@ -259,4 +259,4 @@ Such as `settings set target.source-map /Users/yanghuafang/study-projects/lcc-bu
 
 For step-by-step detail (dependencies, tests, and legal/illegal forms), see [`docs/Roadmap.md`](docs/Roadmap.md). Array work through 2D and typedef (builtin and struct/union) are done; 3D arrays are deferred.
 
-- Finish `-g` debug info: struct scopes and `-g`/`-O` policy (6d). Subprograms, line stepping, and local/param variables are done (6a–6c).
+- `-g` debug info is complete for `-g`/`-O0`-style builds: subprograms, line stepping, locals/params, struct members, and lexical blocks. Optimized debugging (`dbg.value` salvage) remains out of scope.

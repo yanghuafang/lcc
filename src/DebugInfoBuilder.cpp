@@ -8,6 +8,7 @@
 #include <llvm/Support/Path.h>
 
 #include "AbstractSyntaxTree.hpp"
+#include "CodeGenerator.hpp"
 
 DebugInfoBuilder::DebugInfoBuilder(llvm::Module& module)
     : module_(module),
@@ -15,7 +16,8 @@ DebugInfoBuilder::DebugInfoBuilder(llvm::Module& module)
       dib_(new llvm::DIBuilder(module)),
       compileUnit_(nullptr),
       file_(nullptr),
-      initialized_(false) {}
+      initialized_(false),
+      codeGenerator_(nullptr) {}
 
 DebugInfoBuilder::~DebugInfoBuilder() { delete dib_; }
 
@@ -35,6 +37,10 @@ void DebugInfoBuilder::initialize(const std::string& sourcePath) {
       /*isOptimized=*/false, "", 0, "",
       llvm::DICompileUnit::FullDebug, 0);
   initialized_ = true;
+}
+
+void DebugInfoBuilder::setCodeGenerator(CodeGenerator* generator) {
+  codeGenerator_ = generator;
 }
 
 llvm::DIType* DebugInfoBuilder::getOrCreateVoidType() {
@@ -77,9 +83,104 @@ llvm::DIType* DebugInfoBuilder::getOrCreateBuiltinDIType(
   }
 }
 
+llvm::DIType* DebugInfoBuilder::getOrCreateStructDIType(
+    AST::StructType* structType) {
+  // Member offsets come from StructLayout so DWARF matches struct GEP lowering.
+  if (structType == nullptr || codeGenerator_ == nullptr) {
+    return dib_->createBasicType("struct", 32, llvm::dwarf::DW_ATE_unsigned);
+  }
+
+  auto cached = structTypeCache_.find(structType);
+  if (cached != structTypeCache_.end()) {
+    return cached->second;
+  }
+
+  llvm::Type* llvmType = structType->getType(*codeGenerator_);
+  llvm::StructType* llvmStruct = llvm::cast<llvm::StructType>(llvmType);
+  const uint64_t sizeInBits =
+      module_.getDataLayout().getTypeSizeInBits(llvmType);
+  const unsigned alignInBits =
+      module_.getDataLayout().getABITypeAlign(llvmType).value() * 8;
+  const llvm::StructLayout* layout =
+      module_.getDataLayout().getStructLayout(llvmStruct);
+
+  std::vector<llvm::Metadata*> members;
+  size_t memberIndex = 0;
+  for (AST::FieldDecl* field : *structType->structBody_) {
+    llvm::Type* fieldLlvmType = field->varType_->getType(*codeGenerator_);
+    llvm::DIType* fieldDiType =
+        getOrCreateDIType(fieldLlvmType, field->varType_);
+    const uint64_t memberSizeBits =
+        module_.getDataLayout().getTypeSizeInBits(fieldLlvmType);
+    const uint32_t memberAlignBits =
+        module_.getDataLayout().getABITypeAlign(fieldLlvmType).value() * 8;
+    for (const std::string& name : *field->memberList_) {
+      const uint64_t offsetBits = layout->getElementOffset(memberIndex) * 8;
+      members.push_back(dib_->createMemberType(
+          compileUnit_, name, file_, 0, memberSizeBits, memberAlignBits,
+          offsetBits, llvm::DINode::FlagZero, fieldDiType));
+      ++memberIndex;
+    }
+  }
+
+  llvm::DIType* composite = dib_->createStructType(
+      compileUnit_, structType->typeName_, file_, 0, sizeInBits, alignInBits,
+      llvm::DINode::FlagZero, nullptr, dib_->getOrCreateArray(members));
+  structTypeCache_[structType] = composite;
+  llvmTypeCache_[llvmType] = composite;
+  return composite;
+}
+
+llvm::DIType* DebugInfoBuilder::getOrCreateUnionDIType(
+    AST::UnionType* unionType) {
+  if (unionType == nullptr || codeGenerator_ == nullptr) {
+    return dib_->createBasicType("union", 32, llvm::dwarf::DW_ATE_unsigned);
+  }
+
+  auto cached = unionTypeCache_.find(unionType);
+  if (cached != unionTypeCache_.end()) {
+    return cached->second;
+  }
+
+  llvm::Type* llvmType = unionType->getType(*codeGenerator_);
+  const uint64_t sizeInBits =
+      module_.getDataLayout().getTypeSizeInBits(llvmType);
+  const unsigned alignInBits =
+      module_.getDataLayout().getABITypeAlign(llvmType).value() * 8;
+
+  std::vector<llvm::Metadata*> members;
+  for (AST::FieldDecl* field : *unionType->unionBody_) {
+    llvm::Type* fieldLlvmType = field->varType_->getType(*codeGenerator_);
+    llvm::DIType* fieldDiType =
+        getOrCreateDIType(fieldLlvmType, field->varType_);
+    const uint64_t memberSizeBits =
+        module_.getDataLayout().getTypeSizeInBits(fieldLlvmType);
+    const uint32_t memberAlignBits =
+        module_.getDataLayout().getABITypeAlign(fieldLlvmType).value() * 8;
+    for (const std::string& name : *field->memberList_) {
+      members.push_back(dib_->createMemberType(
+          compileUnit_, name, file_, 0, memberSizeBits, memberAlignBits, 0,
+          llvm::DINode::FlagZero, fieldDiType));
+    }
+  }
+
+  llvm::DIType* composite = dib_->createUnionType(
+      compileUnit_, unionType->typeName_, file_, 0, sizeInBits, alignInBits,
+      llvm::DINode::FlagZero, dib_->getOrCreateArray(members));
+  unionTypeCache_[unionType] = composite;
+  llvmTypeCache_[llvmType] = composite;
+  return composite;
+}
+
 llvm::DIType* DebugInfoBuilder::getOrCreateDIType(llvm::Type* llvmType,
                                                   AST::VarType* varType) {
   // LLVM integer types carry no signedness; prefer the AST VarType when present.
+  if (varType != nullptr && varType->isStructType()) {
+    return getOrCreateStructDIType(static_cast<AST::StructType*>(varType));
+  }
+  if (varType != nullptr && varType->isUnionType()) {
+    return getOrCreateUnionDIType(static_cast<AST::UnionType*>(varType));
+  }
   if (varType != nullptr && varType->isBuiltinType()) {
     return getOrCreateBuiltinDIType(
         static_cast<AST::BuiltinType*>(varType)->typeId_);
@@ -148,7 +249,16 @@ llvm::DIType* DebugInfoBuilder::getOrCreateLlvmType(llvm::Type* type) {
   }
   if (type->isStructTy()) {
     llvm::StructType* structTy = llvm::cast<llvm::StructType>(type);
-    std::string name = structTy->hasName() ? structTy->getName().str() : "struct";
+    if (codeGenerator_ != nullptr) {
+      if (AST::StructType* astStruct = codeGenerator_->findStructType(structTy)) {
+        return getOrCreateStructDIType(astStruct);
+      }
+      if (AST::UnionType* astUnion = codeGenerator_->findUnionType(structTy)) {
+        return getOrCreateUnionDIType(astUnion);
+      }
+    }
+    std::string name =
+        structTy->hasName() ? structTy->getName().str() : "struct";
     return dib_->createBasicType(
         name, module_.getDataLayout().getTypeSizeInBits(type),
         llvm::dwarf::DW_ATE_unsigned);
@@ -188,12 +298,21 @@ llvm::DISubprogram* DebugInfoBuilder::createFunction(
   return subprogram;
 }
 
+llvm::DIScope* DebugInfoBuilder::createLexicalBlock(llvm::DIScope* parent,
+                                                    unsigned line,
+                                                    unsigned col) {
+  if (!initialized_ || parent == nullptr || line == 0) {
+    return parent;
+  }
+
+  return dib_->createLexicalBlock(parent, file_, line, col > 0 ? col : 1);
+}
+
 void DebugInfoBuilder::insertAllocaDeclare(
     llvm::AllocaInst* alloca, llvm::DILocalVariable* variable, unsigned line,
-    unsigned col, llvm::DISubprogram* subprogram) {
+    unsigned col, llvm::DIScope* scope) {
   llvm::DIExpression* expr = llvm::DIExpression::get(context_, {});
-  llvm::DILocation* location =
-      llvm::DILocation::get(context_, line, col, subprogram);
+  llvm::DILocation* location = llvm::DILocation::get(context_, line, col, scope);
   // Keep dbg.declare in the entry block, immediately after the matching alloca.
   if (llvm::Instruction* insertBefore = alloca->getNextNode()) {
     dib_->insertDeclare(alloca, variable, expr, location, insertBefore);
@@ -203,11 +322,10 @@ void DebugInfoBuilder::insertAllocaDeclare(
 }
 
 void DebugInfoBuilder::declareAlloca(
-    llvm::AllocaInst* alloca, llvm::DISubprogram* subprogram,
-    const std::string& name, llvm::Type* llvmType, AST::VarType* varType,
-    unsigned line, unsigned col, unsigned paramArgNo) {
-  if (!initialized_ || subprogram == nullptr || alloca == nullptr ||
-      line == 0) {
+    llvm::AllocaInst* alloca, llvm::DIScope* scope, const std::string& name,
+    llvm::Type* llvmType, AST::VarType* varType, unsigned line, unsigned col,
+    unsigned paramArgNo) {
+  if (!initialized_ || scope == nullptr || alloca == nullptr || line == 0) {
     return;
   }
 
@@ -216,24 +334,23 @@ void DebugInfoBuilder::declareAlloca(
 
   llvm::DILocalVariable* variable = nullptr;
   if (paramArgNo > 0) {
-    variable = dib_->createParameterVariable(subprogram, name, paramArgNo, file_,
-                                             line, diType);
+    variable = dib_->createParameterVariable(scope, name, paramArgNo, file_, line,
+                                             diType);
   } else {
-    variable = dib_->createAutoVariable(subprogram, name, file_, line, diType);
+    variable = dib_->createAutoVariable(scope, name, file_, line, diType);
   }
 
-  insertAllocaDeclare(alloca, variable, line, useCol, subprogram);
+  insertAllocaDeclare(alloca, variable, line, useCol, scope);
 }
 
 void DebugInfoBuilder::setLocation(llvm::IRBuilder<>& builder, unsigned line,
-                                   llvm::DISubprogram* subprogram,
-                                   unsigned col) {
-  if (subprogram == nullptr) {
+                                   llvm::DIScope* scope, unsigned col) {
+  if (scope == nullptr) {
     return;
   }
 
   llvm::DILocation* location =
-      llvm::DILocation::get(context_, line, col, subprogram);
+      llvm::DILocation::get(context_, line, col, scope);
   builder.SetCurrentDebugLocation(location);
 }
 

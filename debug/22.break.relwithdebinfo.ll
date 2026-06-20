@@ -40,71 +40,71 @@ for.loop:                                         ; preds = %for.cond
   br i1 %7, label %then, label %if.end, !dbg !16
 
 then:                                             ; preds = %for.loop
-  %8 = load i32, i32* %i, align 4, !dbg !17
-  store i32 %8, i32* %recordi, align 4, !dbg !17
-  %9 = load i32, i32* %recordi, align 4, !dbg !17
-  br label %for.end, !dbg !18
+  %8 = load i32, i32* %i, align 4, !dbg !18
+  store i32 %8, i32* %recordi, align 4, !dbg !18
+  %9 = load i32, i32* %recordi, align 4, !dbg !18
+  br label %for.end, !dbg !20
 
 if.end:                                           ; preds = %for.loop
-  %10 = load i32, i32* %count, align 4, !dbg !19
-  %11 = add i32 %10, 1, !dbg !19
-  store i32 %11, i32* %count, align 4, !dbg !19
-  %12 = load i32, i32* %count, align 4, !dbg !19
-  %13 = load i32, i32* %i, align 4, !dbg !19
-  %14 = add i32 %13, 1, !dbg !19
-  store i32 %14, i32* %i, align 4, !dbg !19
-  %15 = load i32, i32* %i, align 4, !dbg !19
-  br label %for.cond, !dbg !19
+  %10 = load i32, i32* %count, align 4, !dbg !21
+  %11 = add i32 %10, 1, !dbg !21
+  store i32 %11, i32* %count, align 4, !dbg !21
+  %12 = load i32, i32* %count, align 4, !dbg !21
+  %13 = load i32, i32* %i, align 4, !dbg !21
+  %14 = add i32 %13, 1, !dbg !21
+  store i32 %14, i32* %i, align 4, !dbg !21
+  %15 = load i32, i32* %i, align 4, !dbg !21
+  br label %for.cond, !dbg !21
 
 for.end:                                          ; preds = %for.cond, %then
-  %16 = load i32, i32* %count, align 4, !dbg !20
-  ret i32 %16, !dbg !20
+  %16 = load i32, i32* %count, align 4, !dbg !22
+  ret i32 %16, !dbg !22
 }
 
 ; Function Attrs: nofree nosync nounwind readnone speculatable willreturn
 declare void @llvm.dbg.declare(metadata, metadata, metadata) #0
 
-define i32 @main() !dbg !21 {
+define i32 @main() !dbg !23 {
 entry:
   %err = alloca i32, align 4
-  call void @llvm.dbg.declare(metadata i32* %err, metadata !24, metadata !DIExpression()), !dbg !25
-  store i32 0, i32* %err, align 4, !dbg !25
-  %0 = call i32 @countNumber(i32 100, i32 37), !dbg !26
-  %1 = icmp ne i32 %0, 37, !dbg !26
-  br i1 %1, label %then, label %if.end, !dbg !26
+  call void @llvm.dbg.declare(metadata i32* %err, metadata !26, metadata !DIExpression()), !dbg !27
+  store i32 0, i32* %err, align 4, !dbg !27
+  %0 = call i32 @countNumber(i32 100, i32 37), !dbg !28
+  %1 = icmp ne i32 %0, 37, !dbg !28
+  br i1 %1, label %then, label %if.end, !dbg !28
 
 then:                                             ; preds = %entry
-  store i32 1, i32* %err, align 4, !dbg !27
-  %2 = load i32, i32* %err, align 4, !dbg !27
-  br label %if.end, !dbg !27
+  store i32 1, i32* %err, align 4, !dbg !29
+  %2 = load i32, i32* %err, align 4, !dbg !29
+  br label %if.end, !dbg !29
 
 if.end:                                           ; preds = %entry, %then
-  %3 = call i32 @countNumber(i32 10, i32 10), !dbg !28
-  %4 = icmp ne i32 %3, 10, !dbg !28
-  br i1 %4, label %then1, label %if.end3, !dbg !28
+  %3 = call i32 @countNumber(i32 10, i32 10), !dbg !30
+  %4 = icmp ne i32 %3, 10, !dbg !30
+  br i1 %4, label %then1, label %if.end3, !dbg !30
 
 then1:                                            ; preds = %if.end
-  store i32 1, i32* %err, align 4, !dbg !29
-  %5 = load i32, i32* %err, align 4, !dbg !29
-  br label %if.end3, !dbg !29
+  store i32 1, i32* %err, align 4, !dbg !31
+  %5 = load i32, i32* %err, align 4, !dbg !31
+  br label %if.end3, !dbg !31
 
 if.end3:                                          ; preds = %if.end, %then1
-  %6 = call i32 @countNumber(i32 5, i32 0), !dbg !30
-  %7 = icmp ne i32 %6, 0, !dbg !30
-  br i1 %7, label %then4, label %if.end6, !dbg !30
+  %6 = call i32 @countNumber(i32 5, i32 0), !dbg !32
+  %7 = icmp ne i32 %6, 0, !dbg !32
+  br i1 %7, label %then4, label %if.end6, !dbg !32
 
 then4:                                            ; preds = %if.end3
-  store i32 1, i32* %err, align 4, !dbg !31
-  %8 = load i32, i32* %err, align 4, !dbg !31
-  br label %if.end6, !dbg !31
+  store i32 1, i32* %err, align 4, !dbg !33
+  %8 = load i32, i32* %err, align 4, !dbg !33
+  br label %if.end6, !dbg !33
 
 if.end6:                                          ; preds = %if.end3, %then4
-  %9 = load i32, i32* %err, align 4, !dbg !32
-  %10 = icmp eq i32 %9, 0, !dbg !32
-  %. = select i1 %10, i8* getelementptr inbounds ([17 x i8], [17 x i8]* @0, i32 0, i32 0), i8* getelementptr inbounds ([17 x i8], [17 x i8]* @1, i32 0, i32 0), !dbg !33
-  %11 = call i32 (i8*, ...) @printf(i8* %.), !dbg !33
-  %12 = load i32, i32* %err, align 4, !dbg !34
-  ret i32 %12, !dbg !34
+  %9 = load i32, i32* %err, align 4, !dbg !34
+  %10 = icmp eq i32 %9, 0, !dbg !34
+  %. = select i1 %10, i8* getelementptr inbounds ([17 x i8], [17 x i8]* @0, i32 0, i32 0), i8* getelementptr inbounds ([17 x i8], [17 x i8]* @1, i32 0, i32 0), !dbg !35
+  %11 = call i32 (i8*, ...) @printf(i8* %.), !dbg !35
+  %12 = load i32, i32* %err, align 4, !dbg !36
+  ret i32 %12, !dbg !36
 }
 
 attributes #0 = { nofree nosync nounwind readnone speculatable willreturn }
@@ -127,22 +127,24 @@ attributes #0 = { nofree nosync nounwind readnone speculatable willreturn }
 !13 = !DILocalVariable(name: "smallRange", arg: 2, scope: !2, file: !1, line: 3, type: !5)
 !14 = !DILocation(line: 3, column: 5, scope: !2)
 !15 = !DILocalVariable(name: "maxRange", arg: 1, scope: !2, file: !1, line: 3, type: !5)
-!16 = !DILocation(line: 7, column: 5, scope: !2)
-!17 = !DILocation(line: 8, column: 7, scope: !2)
-!18 = !DILocation(line: 9, column: 7, scope: !2)
-!19 = !DILocation(line: 11, column: 5, scope: !2)
-!20 = !DILocation(line: 13, column: 3, scope: !2)
-!21 = distinct !DISubprogram(name: "main", linkageName: "main", scope: null, file: !1, line: 16, type: !22, scopeLine: 16, spFlags: DISPFlagDefinition, unit: !0, retainedNodes: !6)
-!22 = !DISubroutineType(types: !23)
-!23 = !{!5}
-!24 = !DILocalVariable(name: "err", scope: !21, file: !1, line: 17, type: !5)
-!25 = !DILocation(line: 17, column: 3, scope: !21)
-!26 = !DILocation(line: 19, column: 3, scope: !21)
-!27 = !DILocation(line: 19, column: 35, scope: !21)
-!28 = !DILocation(line: 20, column: 3, scope: !21)
-!29 = !DILocation(line: 20, column: 34, scope: !21)
-!30 = !DILocation(line: 21, column: 3, scope: !21)
-!31 = !DILocation(line: 21, column: 31, scope: !21)
-!32 = !DILocation(line: 23, column: 3, scope: !21)
-!33 = !DILocation(line: 0, scope: !21)
-!34 = !DILocation(line: 28, column: 3, scope: !21)
+!16 = !DILocation(line: 7, column: 5, scope: !17)
+!17 = distinct !DILexicalBlock(scope: !2, file: !1, line: 6, column: 42)
+!18 = !DILocation(line: 8, column: 7, scope: !19)
+!19 = distinct !DILexicalBlock(scope: !17, file: !1, line: 7, column: 25)
+!20 = !DILocation(line: 9, column: 7, scope: !19)
+!21 = !DILocation(line: 11, column: 5, scope: !17)
+!22 = !DILocation(line: 13, column: 3, scope: !2)
+!23 = distinct !DISubprogram(name: "main", linkageName: "main", scope: null, file: !1, line: 16, type: !24, scopeLine: 16, spFlags: DISPFlagDefinition, unit: !0, retainedNodes: !6)
+!24 = !DISubroutineType(types: !25)
+!25 = !{!5}
+!26 = !DILocalVariable(name: "err", scope: !23, file: !1, line: 17, type: !5)
+!27 = !DILocation(line: 17, column: 3, scope: !23)
+!28 = !DILocation(line: 19, column: 3, scope: !23)
+!29 = !DILocation(line: 19, column: 35, scope: !23)
+!30 = !DILocation(line: 20, column: 3, scope: !23)
+!31 = !DILocation(line: 20, column: 34, scope: !23)
+!32 = !DILocation(line: 21, column: 3, scope: !23)
+!33 = !DILocation(line: 21, column: 31, scope: !23)
+!34 = !DILocation(line: 23, column: 3, scope: !23)
+!35 = !DILocation(line: 0, scope: !23)
+!36 = !DILocation(line: 28, column: 3, scope: !23)

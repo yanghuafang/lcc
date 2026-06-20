@@ -2008,7 +2008,7 @@ llvm::Value* ReturnStmt::genCode(CodeGenerator& generator) {
 }
 
 llvm::Value* Block::genCode(CodeGenerator& generator) {
-  generator.setDebugLocation(loc());
+  generator.pushDebugLexicalBlock(loc());
   generator.pushSymbolTable();
   // Generate code for statements one by one in block.
   for (Stmt* stmt : *content_) {
@@ -2020,6 +2020,7 @@ llvm::Value* Block::genCode(CodeGenerator& generator) {
     }
   }
   generator.popSymbolTable();
+  generator.popDebugLexicalBlock();
   return nullptr;
 }
 

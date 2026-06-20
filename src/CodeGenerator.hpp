@@ -27,6 +27,7 @@ class StructType;
 class Function;
 class BasicBlock;
 class AllocaInst;
+class DIScope;
 
 class Module;
 class DataLayout;
@@ -168,6 +169,11 @@ class CodeGenerator {
   // Attach the node's source line to the next IR instructions (-g, inside a function).
   void setDebugLocation(const AST::SourceLoc& loc);
 
+  // Nested { } scopes for DWARF lexical blocks (used by Block::genCode).
+  void pushDebugLexicalBlock(const AST::SourceLoc& loc);
+  void popDebugLexicalBlock();
+  llvm::DIScope* getCurrentDebugScope();
+
   void declareDebugAlloca(llvm::AllocaInst* alloca, const std::string& name,
                           llvm::Type* llvmType, AST::VarType* varType,
                           const AST::SourceLoc& loc,
@@ -265,4 +271,5 @@ class CodeGenerator {
   std::map<std::string, std::vector<AST::VarType*>> funcParamTypes_;
 
   std::unique_ptr<DebugInfoBuilder> debugInfo_;
+  std::vector<llvm::DIScope*> debugScopeStack_;
 };
