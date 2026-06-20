@@ -63,7 +63,35 @@ User must specify function declarations manually for linkage. Define `size_t` fi
 
 ## Install dependencies
 
-`brew install flex bison llvm@14 argparse graphviz cmake`
+### macOS
+
+```bash
+brew install flex bison llvm@14 argparse graphviz cmake
+```
+
+### Ubuntu 24.04 LTS
+
+`llvm-14` and `libargparse-dev` are available from Ubuntu apt on **24.04 LTS**. Other releases (e.g. 22.04, 26.04) are not supported.
+
+From `lcc/scripts`:
+
+```bash
+./install-deps-ubuntu.sh
+```
+
+Or manually:
+
+```bash
+sudo apt-get update
+sudo apt-get install -y build-essential cmake flex bison graphviz clang git \
+  llvm-14 llvm-14-dev llvm-14-tools libargparse-dev
+```
+
+CMake **3.22+** is required (`cmake_minimum_required` in the project).
+
+On Ubuntu, **g++** (from `build-essential`) builds `lcc`; **clang** links test executables by default (`LCC_LINKER`).
+
+**Requirements on both platforms:** LLVM **14**, flex, bison, argparse (CMake package), graphviz (`dot`), and a system C/C++ linker (`clang` or `gcc`) to link `.o` files produced by `lcc`.
 
 ## Build `lcc`
 
@@ -75,7 +103,7 @@ cd lcc/scripts
 ./build-lcc.sh
 ```
 
-The compiler binary is written to `../../lcc-build/lcc` (relative to `scripts/`). `build-lcc.sh` sources `build-env.sh`, which puts Homebrew `flex`, `bison`, and LLVM 14 on `PATH`.
+The compiler binary is written to `../../lcc-build/lcc` (relative to `scripts/`). `build-lcc.sh` sources `build-env.sh`, which configures `PATH` for flex, bison, and LLVM 14 tools (`llvm-dwarfdump`, etc.) on macOS (Homebrew) and Ubuntu (`/usr/lib/llvm-14`).
 
 ### `build-lcc.sh` options
 
@@ -174,14 +202,17 @@ Example:
 clang ../../lcc-build/0.hello_world.o -o ../../lcc-build/0.hello_world
 ```
 
+On macOS, `link-tests.sh` uses `/usr/bin/clang` by default so linked binaries find system libraries. Override with `LCC_LINKER` if needed (e.g. `LCC_LINKER=gcc ./link-tests.sh` on Linux).
+
 ## Scripts (`lcc/scripts`)
 
 | Script | Purpose |
 |--------|---------|
-| `build-env.sh` | Export `PATH`, `CPPFLAGS`, `LDFLAGS` for Homebrew flex, bison, LLVM 14 (sourced by other scripts) |
+| `build-env.sh` | Export `PATH`, `LLVM_DIR`, `LCC_LINKER`, and compile flags for macOS (Homebrew) or Ubuntu (apt LLVM 14) |
+| `install-deps-ubuntu.sh` | Install apt packages on Ubuntu 24.04 LTS (LLVM 14, flex, bison, etc.) |
 | `build-lcc.sh` | Configure and build the `lcc` compiler (see [Build `lcc`](#build-lcc)) |
 | `compile-tests.sh` | Compile unit tests to `../../lcc-build/*.o`; also writes AST/IR under `../debug/` |
-| `link-tests.sh` | Link `../../lcc-build/*.o` to executables with `clang` |
+| `link-tests.sh` | Link `../../lcc-build/*.o` to executables with `LCC_LINKER` (default: system `clang`) |
 | `run-tests.sh` | Run linked test binaries |
 | `check-debug-info.sh` | Temporary smoke test: compile `0.hello_world.c` with `-g -O0`, check `llvm-dwarfdump` for `DW_TAG_subprogram` |
 

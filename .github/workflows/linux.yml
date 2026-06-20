@@ -1,0 +1,40 @@
+name: Linux
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+
+jobs:
+  ubuntu:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install dependencies
+        working-directory: scripts
+        run: ./install-deps-ubuntu.sh
+
+      - name: Build lcc
+        working-directory: scripts
+        run: ./build-lcc.sh
+
+      - name: Compile tests
+        working-directory: scripts
+        run: ./compile-tests.sh
+
+      - name: Link tests
+        working-directory: scripts
+        run: |
+          source ./build-env.sh
+          echo "LCC_LINKER=${LCC_LINKER}"
+          ./link-tests.sh
+
+      - name: Run tests
+        working-directory: scripts
+        run: ./run-tests.sh
+
+      - name: Debug info smoke test
+        working-directory: scripts
+        run: ./check-debug-info.sh

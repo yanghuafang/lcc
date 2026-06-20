@@ -1,5 +1,8 @@
 #!/bin/bash
 
+script_dir="$(cd "$(dirname "$0")" && pwd)"
+source "${script_dir}/build-env.sh" || exit 1
+
 tests=(
   "0.hello_world.c"
   "1.builtin_types.c"
@@ -117,14 +120,26 @@ compile() {
 linkObj2Bin() {
   local obj=$1
   local bin=$2
-  clang ../../lcc-build/${obj} -o ../../lcc-build/${bin}
+  local link_flags=()
+  if [[ "$(uname -s)" == Linux ]]; then
+    # lcc emits non-PIC objects; Ubuntu defaults to PIE executables.
+    link_flags=(-no-pie)
+  fi
+  if ! "${LCC_LINKER}" ../../lcc-build/${obj} -o ../../lcc-build/${bin} \
+    "${link_flags[@]}"; then
+    echo "Failed to link ${obj} with ${LCC_LINKER}" >&2
+    return 1
+  fi
 }
 
 link() {
   local source=$1
   local obj=${source%.c}.o
   local bin=${source%.c}
-  linkObj2Bin $obj $bin
+  if ! linkObj2Bin "$obj" "$bin"; then
+    echo "Failed while linking ${source}" >&2
+    return 1
+  fi
 }
 
 runBin() {

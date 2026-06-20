@@ -1,6 +1,6 @@
 #!/bin/bash
 
-source ./build-env.sh
+source ./build-env.sh || exit 1
 
 build_type="Release"
 build_mode=""
@@ -53,5 +53,10 @@ if [[ "$parse_counterexamples" == true ]]; then
   cd ../scripts
 fi
 
-cmake -S ../ -B ../../lcc-build -DCMAKE_BUILD_TYPE="${build_type}"
+cmake -S ../ -B ../../lcc-build \
+  -DCMAKE_BUILD_TYPE="${build_type}" \
+  -DLLVM_DIR="${LLVM_DIR}" \
+  -DCMAKE_EXE_LINKER_FLAGS="" \
+  -DCMAKE_SHARED_LINKER_FLAGS="" \
+  -DCMAKE_MODULE_LINKER_FLAGS=""
 cmake --build ../../lcc-build

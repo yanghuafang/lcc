@@ -9,8 +9,8 @@ source "${script_dir}/build-env.sh"
 lcc="${script_dir}/../../lcc-build/lcc"
 hello_source="${script_dir}/../tests/0.hello_world.c"
 struct_source="${script_dir}/../tests/2.struct_type.c"
-hello_obj="$(mktemp -t 0.hello_world.o)"
-struct_obj="$(mktemp -t 2.struct_type.o)"
+hello_obj="$(mktemp "${TMPDIR:-/tmp}/lcc-check-hello-XXXXXX")"
+struct_obj="$(mktemp "${TMPDIR:-/tmp}/lcc-check-struct-XXXXXX")"
 
 cleanup() {
   rm -f "${hello_obj}" "${struct_obj}"
@@ -35,8 +35,8 @@ if [ "${line_count}" -lt 2 ]; then
   exit 1
 fi
 
-lex_source="$(mktemp -t lex_scope.c)"
-lex_obj="$(mktemp -t lex_scope.o)"
+lex_source="$(mktemp "${TMPDIR:-/tmp}/lcc-check-lex-src-XXXXXX")"
+lex_obj="$(mktemp "${TMPDIR:-/tmp}/lcc-check-lex-obj-XXXXXX")"
 cat > "${lex_source}" <<'EOF'
 int main() {
   int err = 0;
