@@ -8,15 +8,17 @@ lcc's grammar is intentionally compact: declarations, statements, and expression
 
 | Kind | Count | Bison default |
 |------|------:|---------------|
-| Shift/reduce | 43 | Prefer **shift** |
+| Shift/reduce | 48 | Prefer **shift** |
 | Reduce/reduce | 6 | Prefer the **first** grammar rule |
 
 As of the current grammar, `./build-lcc.sh` (which runs `bison -d Parser.y` via CMake) prints:
 
 ```
-Parser.y: warning: 43 shift/reduce conflicts [-Wconflicts-sr]
+Parser.y: warning: 48 shift/reduce conflicts [-Wconflicts-sr]
 Parser.y: warning: 6 reduce/reduce conflicts [-Wconflicts-rr]
 ```
+
+State numbers in `Parser.output` **change when the grammar grows** (new rules insert states). Regenerate with `bison -d Parser.y -v` and search for `conflicts:` rather than relying on fixed state IDs from an older report.
 
 ## How to inspect conflicts yourself
 
@@ -42,7 +44,7 @@ cd scripts
 ./build-lcc.sh
 ```
 
-`Parser.output` lists every LR state. Lines like `State 96 conflicts: 4 reduce/reduce` mark states where the parser had to guess. Bracketed actions such as `[reduce using rule 90 (Expr)]` show the action Bison **did not** take by default.
+`Parser.output` lists every LR state. Lines like `State 133 conflicts: 4 reduce/reduce` mark states where the parser had to guess. Bracketed actions such as `[reduce using rule 110 (Expr)]` show the action Bison **did not** take by default.
 
 ## Background: what is a conflict?
 
@@ -68,16 +70,20 @@ You can override defaults with precedence (`%left`, `%right`, `%nonassoc`) or ex
 ## Conflict map (high level)
 
 ```
-43 shift/reduce
+48 shift/reduce
 ├── 40  Expr • [ subscript ]     (subscript vs completed unary/binary operand)
+├──  3  IDENTIFIER • [           (ArrayBoundList ε vs `[`; FuncDecl `(` vs array declarator)
+├──  2  struct/union • IDENTIFIER (typedef name vs closing _VarType)
 ├──  1  _VarType • ;             (TypeDecl vs VarDecl with empty VarList)
-├──  1  sizeof ( id • )          (three sizeof productions)
+├──  1  sizeof ( id • )          (three sizeof productions — shift on `)`)
 └──  1  if (...) stmt • else     (dangling else — resolved by %nonassoc ELSE)
 
  6 reduce/reduce
 ├──  4  IDENTIFIER •             (typedef name as _VarType vs variable as Expr)
 └──  2  sizeof ( id • )          (_VarType vs Expr inside sizeof)
 ```
+
+The extra five shift/reduce conflicts (vs an earlier 43-conflict grammar) come from **array bounds** and **typedef struct/union** rules added for 2D arrays and `typedef` support.
 
 The sections below walk through each group.
 
@@ -131,7 +137,7 @@ Default shift/reduce resolution **shifts** `[`, which chooses the correct C read
 
 ### Where to look in Parser.output
 
-Conflicts appear in many states (e.g. states 99–193) after unary/binary rules. Counterexample pattern:
+Conflicts appear in many states after unary/binary rules — for example **states 131–132, 141–146, 202–235, 265, and 288** (search for `LBRACKET  [reduce using rule` or `conflicts: 1 shift/reduce` in the file header). Counterexample pattern:
 
 ```
 Example: ASTERISK Expr • LBRACKET Expr RBRACKET
@@ -186,7 +192,7 @@ After parsing `if (b) stmt1 •`, the parser can:
 
 ### Where to look
 
-- **State 261** in `Parser.output`
+- **State 305** in `Parser.output`
 - Counterexample:
 
 ```
@@ -228,7 +234,7 @@ Default: **shift** `;` → `TypeDecl` wins when `_VarType` is immediately follow
 
 ### Where to look
 
-- **State 23** in `Parser.output`
+- **State 26** in `Parser.output`
 
 ### Takeaway
 
@@ -267,11 +273,11 @@ For `MyType;` at file scope, the first reading is a forward type declaration; th
 
 ### What Bison does
 
-Reduce/reduce default: pick **rule 20** (`_VarType: IDENTIFIER`) over **rule 90** (`Expr: IDENTIFIER`) because it appears first in the grammar file.
+Reduce/reduce default: pick **rule 29** (`_VarType: IDENTIFIER`) over **rule 110** (`Expr: IDENTIFIER`) because it appears first in the grammar file.
 
 ### Where to look
 
-- **State 96** — four reduce/reduce conflicts on `COMMA`, `SEMICOLON`, `ASTERISK`, `RPARENTHESES`
+- **State 133** — four reduce/reduce conflicts on `COMMA`, `SEMICOLON`, `ASTERISK`, `RPARENTHESES`
 
 ### Practical impact
 
@@ -293,9 +299,9 @@ Reduce/reduce conflicts are **never** resolved by "shift." You must either reord
 ### Three rules for one syntax
 
 ```yacc
-Expr: SIZEOF LPARENTHESES VarType RPARENTHESES    /* sizeof(type) */
-    | SIZEOF LPARENTHESES Expr RPARENTHESES       /* sizeof expression */
-    | SIZEOF LPARENTHESES IDENTIFIER RPARENTHESES /* sizeof name — dedicated */
+Expr: SIZEOF LPARENTHESES VarType RPARENTHESES    /* sizeof(type) — rule 119 */
+    | SIZEOF LPARENTHESES Expr RPARENTHESES       /* sizeof expression — rule 120 */
+    | SIZEOF LPARENTHESES IDENTIFIER RPARENTHESES /* sizeof name — rule 121 */
     ;
 ```
 
@@ -303,13 +309,13 @@ For input `sizeof ( foo )`, after `foo •`:
 
 | Candidate | Path |
 |-----------|------|
-| Rule 101 | `sizeof ( IDENTIFIER )` — shift `)` |
-| Rule 99 | `sizeof ( VarType )` with `VarType → _VarType → IDENTIFIER` |
-| Rule 100 | `sizeof ( Expr )` with `Expr → IDENTIFIER` |
+| Rule 121 | `sizeof ( IDENTIFIER )` — shift `)` |
+| Rule 119 | `sizeof ( VarType )` with `VarType → _VarType → IDENTIFIER` |
+| Rule 120 | `sizeof ( Expr )` with `Expr → IDENTIFIER` |
 
 ### What Bison does
 
-- On `)`: **shift** prefers the dedicated `IDENTIFIER` production (rule 101).
+- On `)`: **shift** prefers the dedicated `IDENTIFIER` production (rule 121).
 - Reduce/reduce on `*` / `)`: **first** matching reduce — `_VarType` path before `Expr`.
 
 ### Semantic note
@@ -318,11 +324,52 @@ All three actions build an `AST::SizeOf` node in `Parser.y`. The conflict affect
 
 ### Where to look
 
-- **State 155** in `Parser.output`
+- **State 197** in `Parser.output`
 
 ### Takeaway
 
 Overlapping productions are common when a language allows `sizeof(T)` and `sizeof expr` with similar syntax. A dedicated third rule removes some ambiguity but can introduce new conflicts unless the grammar is unified.
+
+---
+
+## 6. Array bounds and typedef struct/union (5 shift/reduce)
+
+These conflicts appeared when lcc gained **array declarators** (`VarInit: IDENTIFIER ArrayBoundList …`) and **typedef struct/union** productions. They are separate from the subscript-vs-operator group in section 1.
+
+### ArrayBoundList ε vs `[` (3 conflicts)
+
+After `IDENTIFIER •`, the parser can:
+
+- **Shift** `[` — start `ArrayBoundList` / array declarator (`int a[10];`, `int a[] = {…};`).
+- **Reduce** `ArrayBoundList → ε` — treat the name as a non-array declarator and continue (e.g. function parameter list).
+
+The same position also overlaps **function declarators** when lookahead is `(` vs `[`:
+
+```yacc
+FuncDecl: VarType IDENTIFIER LPARENTHESES …
+VarInit:  IDENTIFIER ArrayBoundList …
+```
+
+Default **shift** on `[` and `(` favors the longer declarator path.
+
+**Where to look:** states **41**, **46**, and **78** in `Parser.output`.
+
+### Struct/union body complete vs typedef alias name (2 conflicts)
+
+After `struct Tag { … } •` or `union Tag { … } •`:
+
+| Action | Meaning |
+|--------|---------|
+| **Shift** `IDENTIFIER` | Continue `typedef struct Tag { … } Alias;` |
+| **Reduce** `_VarType` | Close at `struct Tag { … }` (tag reference only) |
+
+Default **shift** favors the typedef form when an alias name follows.
+
+**Where to look:** states **124** and **125** in `Parser.output`.
+
+### Takeaway
+
+Declaration syntax in C entangles types, declarators, and specifiers. Each new declarator form can add shift/reduce states without changing the older conflict groups.
 
 ---
 
@@ -350,6 +397,7 @@ For a **learning compiler** with a fixed test suite: **yes**, with caveats.
 | Subscript vs operators | Yes (shift) | Low |
 | Dangling else | Yes (`%nonassoc ELSE`) | Low |
 | TypeDecl vs empty VarDecl | Shift favors `TypeDecl` | Low — odd forms like `int;` |
+| Array bounds / typedef struct | Shift favors declarator continuation | Low for current tests |
 | IDENTIFIER type vs expr | First rule wins (`_VarType`) | Medium for typedef-heavy code |
 | sizeof overload | Similar AST nodes | Low for current tests |
 
@@ -359,7 +407,7 @@ A conflict-free grammar is possible but usually costs more non-terminals, lexer 
 
 ## Suggested exercises
 
-1. **Reproduce** — Run `bison -d Parser.y -v` and find state 261. Read the item set and actions for `ELSE`.
+1. **Reproduce** — Run `bison -d Parser.y -v` and find state 305. Read the item set and actions for `ELSE`.
 
 2. **Counterexample** — Run `bison -d Parser.y -Wcounterexamples 2>&1 | rg -A12 "LBRACKET"` and trace one example on paper.
 
@@ -367,7 +415,7 @@ A conflict-free grammar is possible but usually costs more non-terminals, lexer 
 
 4. **Test ambiguity** — Write a small `.c` file using a typedef name both as a type and as a variable in a function body. Does lcc parse what you expect?
 
-5. **Compare** — Read how `Parser.y` merges `Stmt`, `Expr`, and `Decl` (e.g. `Expr : public Stmt` in the AST). Relate that design choice to state 96.
+5. **Compare** — Read how `Parser.y` merges `Stmt`, `Expr`, and `Decl` (e.g. `Expr : public Stmt` in the AST). Relate that design choice to state 133.
 
 ---
 
@@ -376,6 +424,6 @@ A conflict-free grammar is possible but usually costs more non-terminals, lexer 
 - [Bison manual — Operator Precedence](https://www.gnu.org/software/bison/manual/html_node/Precedence.html)
 - [Bison manual — Shift/Reduce](https://www.gnu.org/software/bison/manual/html_node/Shift_002fReduce.html)
 - [Bison manual — Reduce/Reduce](https://www.gnu.org/software/bison/manual/html_node/Reduce_002fReduce.html)
-- lcc `README.md` — manual bison commands and `Parser.output` generation
+- [Install.md](Install.md) — manual bison commands and `Parser.output` generation
 - `src/Parser.y` — full grammar and precedence declarations
 - `src/Parser.output` — complete LR automaton (regenerate with `bison -d Parser.y -v`)
