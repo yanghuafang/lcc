@@ -1,51 +1,46 @@
 ; ModuleID = 'lcc'
 source_filename = "lcc"
-target datalayout = "e-m:o-i64:64-i128:128-n32:64-S128"
+target datalayout = "e-m:o-p270:32:32-p271:32:32-p272:64:64-i64:64-i128:128-n32:64-S128-Fn32"
 target triple = "arm64-apple-darwin25.5.0"
 
-%union.ID = type { i8* }
-%struct.Student = type { i32, i8*, i8, float }
+%union.ID = type { ptr }
+%struct.Student = type { i32, ptr, i8, float }
 
 @0 = private unnamed_addr constant [17 x i8] c"9.sizeof.c PASS\0A\00", align 1
 @1 = private unnamed_addr constant [17 x i8] c"9.sizeof.c FAIL\0A\00", align 1
 
-declare i32 @printf(i8*, ...)
+declare i32 @printf(ptr, ...)
 
 define i32 @main() !dbg !2 {
 entry:
   %sex = alloca i32, align 4
-  call void @llvm.dbg.declare(metadata i32* %sex, metadata !7, metadata !DIExpression()), !dbg !8
+    #dbg_declare(ptr %sex, !7, !DIExpression(), !8)
   %id = alloca %union.ID, align 8
-  call void @llvm.dbg.declare(metadata %union.ID* %id, metadata !9, metadata !DIExpression()), !dbg !16
+    #dbg_declare(ptr %id, !9, !DIExpression(), !16)
   %student = alloca %struct.Student, align 8
-  call void @llvm.dbg.declare(metadata %struct.Student* %student, metadata !17, metadata !DIExpression()), !dbg !24
-  %pc = alloca i8*, align 8
-  call void @llvm.dbg.declare(metadata i8** %pc, metadata !25, metadata !DIExpression()), !dbg !26
+    #dbg_declare(ptr %student, !17, !DIExpression(), !24)
+  %pc = alloca ptr, align 8
+    #dbg_declare(ptr %pc, !25, !DIExpression(), !26)
   %d = alloca double, align 8
-  call void @llvm.dbg.declare(metadata double* %d, metadata !27, metadata !DIExpression()), !dbg !29
+    #dbg_declare(ptr %d, !27, !DIExpression(), !29)
   %f = alloca float, align 4
-  call void @llvm.dbg.declare(metadata float* %f, metadata !30, metadata !DIExpression()), !dbg !31
+    #dbg_declare(ptr %f, !30, !DIExpression(), !31)
   %l = alloca i64, align 8
-  call void @llvm.dbg.declare(metadata i64* %l, metadata !32, metadata !DIExpression()), !dbg !34
+    #dbg_declare(ptr %l, !32, !DIExpression(), !34)
   %i = alloca i32, align 4
-  call void @llvm.dbg.declare(metadata i32* %i, metadata !35, metadata !DIExpression()), !dbg !36
+    #dbg_declare(ptr %i, !35, !DIExpression(), !36)
   %c = alloca i8, align 1
-  call void @llvm.dbg.declare(metadata i8* %c, metadata !37, metadata !DIExpression()), !dbg !38
+    #dbg_declare(ptr %c, !37, !DIExpression(), !38)
   %err = alloca i32, align 4
-  call void @llvm.dbg.declare(metadata i32* %err, metadata !39, metadata !DIExpression()), !dbg !40
-  store i32 0, i32* %err, align 4, !dbg !40
-  %0 = load i32, i32* %err, align 4, !dbg !41
+    #dbg_declare(ptr %err, !39, !DIExpression(), !40)
+  store i32 0, ptr %err, align 4, !dbg !40
+  %0 = load i32, ptr %err, align 4, !dbg !41
   %1 = icmp eq i32 %0, 0, !dbg !41
-  %. = select i1 %1, i8* getelementptr inbounds ([17 x i8], [17 x i8]* @0, i32 0, i32 0), i8* getelementptr inbounds ([17 x i8], [17 x i8]* @1, i32 0, i32 0), !dbg !42
-  %2 = call i32 (i8*, ...) @printf(i8* %.), !dbg !42
-  %3 = load i32, i32* %err, align 4, !dbg !43
+  %. = select i1 %1, ptr @0, ptr @1, !dbg !42
+  %2 = call i32 (ptr, ...) @printf(ptr %.), !dbg !42
+  %3 = load i32, ptr %err, align 4, !dbg !43
   ret i32 %3, !dbg !43
 }
-
-; Function Attrs: nofree nosync nounwind readnone speculatable willreturn
-declare void @llvm.dbg.declare(metadata, metadata, metadata) #0
-
-attributes #0 = { nofree nosync nounwind readnone speculatable willreturn }
 
 !llvm.dbg.cu = !{!0}
 

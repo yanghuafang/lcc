@@ -11,7 +11,7 @@ lcc -i <input.c> -o <output.o> [-v <ast.dot>] [-l <ir.ll>] [-g] [-O0|-O1|-O2|-O3
 | `-i` | yes | Input C source file |
 | `-o` | yes | Output object file (`.o`) |
 | `-v` | no | AST graph (GraphViz `.dot`) |
-| `-l` | no | LLVM IR (`.ll`) |
+| `-l` | no | LLVM IR (`.ll`; test scripts use `.debug.ll`, `.release.ll`, or `.relwithdebinfo.ll`) |
 | `-g` | no | Embed DWARF in the object file (use without `-O` for reliable stepping and variables) |
 | `-O0` … `-Oz` | no | LLVM optimization level (mutually exclusive) |
 
@@ -28,8 +28,8 @@ lcc -i <input.c> -o <output.o> [-v <ast.dot>] [-l <ir.ll>] [-g] [-O0|-O1|-O2|-O3
 Example (AST + IR + object), from `lcc/scripts`:
 
 ```bash
-../../lcc-build/lcc -i ../tests/0.hello_world.c -o ../../lcc-build/0.hello_world.o \
-  -v ../debug/0.hello_world.dot -l ../debug/0.hello_world.ll
+../../lcc-build/lcc -g -O0 -i ../tests/0.hello_world.c -o ../../lcc-build/0.hello_world.o \
+  -v ../debug/0.hello_world.dot -l ../debug/0.hello_world.debug.ll
 ```
 
 Render the AST image:

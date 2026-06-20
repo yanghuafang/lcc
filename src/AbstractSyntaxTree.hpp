@@ -24,6 +24,8 @@ class Type;
 //
 // There is no separate semantic-analysis pass. getExprTypeId() and
 // getExprVarType() supply C type information while genCode() emits IR.
+// LLVM 20+ opaque pointers: load/store/GEP pointee types come from VarType
+// (see Utils), not from llvm::Type* on pointer values.
 //
 // Ownership: Parser allocates nodes with new; each parent owns its child
 // pointers and deletes them in ~Node overrides. delete Program (g_root)
@@ -1120,6 +1122,7 @@ class LhsRhsAssign : public LhsRhsExpr {
 
  public:
   llvm::Value* genCode(CodeGenerator& generator) override;
+  VarType* getLValueVarType(CodeGenerator& generator) override;
 };
 
 class Assign : public LhsRhsAssign {

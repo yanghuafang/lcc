@@ -4,12 +4,13 @@
 
 On both macOS and Ubuntu:
 
-- **LLVM 14** (libraries and tools such as `llvm-dwarfdump`)
+- **LLVM 20** (libraries and tools such as `llvm-dwarfdump`)
 - **flex**, **bison**
 - **argparse** (CMake `find_package` or FetchContent fallback)
 - **graphviz** (`dot` for AST images)
 - A system C/C++ linker (**`clang`** or **`gcc`**) to link `.o` files produced by `lcc`
 - **CMake 3.22+** (`cmake_minimum_required` in the project)
+- **C++17** (`CMAKE_CXX_STANDARD` in `CMakeLists.txt`; required by LLVM 20 headers)
 
 Build output lives in `../../lcc-build/` relative to `lcc/scripts/` (sibling of the repo checkout).
 
@@ -18,12 +19,12 @@ Build output lives in `../../lcc-build/` relative to `lcc/scripts/` (sibling of 
 ### macOS
 
 ```bash
-brew install flex bison llvm@14 argparse graphviz cmake
+brew install flex bison llvm@20 argparse graphviz cmake
 ```
 
 ### Ubuntu 24.04 LTS
 
-`llvm-14` and `libargparse-dev` are available from Ubuntu apt on **24.04 LTS**. Other releases (e.g. 22.04, 26.04) are not supported.
+`llvm-20` and `libargparse-dev` are available from Ubuntu apt on **24.04 LTS**. Other releases (e.g. 22.04, 26.04) are not supported.
 
 From `lcc/scripts`:
 
@@ -36,7 +37,7 @@ Or manually:
 ```bash
 sudo apt-get update
 sudo apt-get install -y build-essential cmake flex bison graphviz clang git \
-  llvm-14 llvm-14-dev llvm-14-tools libargparse-dev
+  llvm-20 llvm-20-dev llvm-20-tools libargparse-dev
 ```
 
 On Ubuntu, **g++** (from `build-essential`) builds `lcc` by default; **clang** at `/usr/bin/clang` links test executables (`LCC_LINKER`). See [Testing.md](Testing.md).
@@ -49,7 +50,7 @@ cd lcc/scripts
 ./build-lcc.sh
 ```
 
-The compiler binary is `../../lcc-build/lcc`. `build-lcc.sh` sources `build-env.sh`, which configures `PATH` for flex, bison, and LLVM 14 tools on macOS (Homebrew) and Ubuntu (`/usr/lib/llvm-14`).
+The compiler binary is `../../lcc-build/lcc`. `build-lcc.sh` sources `build-env.sh`, which configures `PATH` for flex, bison, and LLVM 20 tools on macOS (Homebrew) and Ubuntu (`/usr/lib/llvm-20`).
 
 ### `build-lcc.sh` options
 

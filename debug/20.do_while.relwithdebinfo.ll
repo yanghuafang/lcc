@@ -1,97 +1,94 @@
 ; ModuleID = 'lcc'
 source_filename = "lcc"
-target datalayout = "e-m:o-i64:64-i128:128-n32:64-S128"
+target datalayout = "e-m:o-p270:32:32-p271:32:32-p272:64:64-i64:64-i128:128-n32:64-S128-Fn32"
 target triple = "arm64-apple-darwin25.5.0"
 
 @0 = private unnamed_addr constant [20 x i8] c"20.do_while.c PASS\0A\00", align 1
 @1 = private unnamed_addr constant [20 x i8] c"20.do_while.c FAIL\0A\00", align 1
 
-declare i32 @printf(i8*, ...)
+declare i32 @printf(ptr, ...)
 
 define i32 @countSum(i32 %0) !dbg !2 {
 entry:
   %i = alloca i32, align 4
-  call void @llvm.dbg.declare(metadata i32* %i, metadata !7, metadata !DIExpression()), !dbg !8
+    #dbg_declare(ptr %i, !7, !DIExpression(), !8)
   %sum = alloca i32, align 4
-  call void @llvm.dbg.declare(metadata i32* %sum, metadata !9, metadata !DIExpression()), !dbg !10
+    #dbg_declare(ptr %sum, !9, !DIExpression(), !10)
   %n = alloca i32, align 4
-  call void @llvm.dbg.declare(metadata i32* %n, metadata !11, metadata !DIExpression()), !dbg !12
-  store i32 %0, i32* %n, align 4, !dbg !12
-  store i32 0, i32* %sum, align 4, !dbg !10
-  store i32 1, i32* %i, align 4, !dbg !8
+    #dbg_declare(ptr %n, !11, !DIExpression(), !12)
+  store i32 %0, ptr %n, align 4, !dbg !12
+  store i32 0, ptr %sum, align 4, !dbg !10
+  store i32 1, ptr %i, align 4, !dbg !8
   br label %while.cond, !dbg !13
 
 while.cond:                                       ; preds = %while.loop, %entry
-  %1 = load i32, i32* %i, align 4, !dbg !13
-  %2 = load i32, i32* %n, align 4, !dbg !13
+  %1 = load i32, ptr %i, align 4, !dbg !13
+  %2 = load i32, ptr %n, align 4, !dbg !13
   %3 = icmp sle i32 %1, %2, !dbg !13
   br i1 %3, label %while.loop, label %while.end, !dbg !13
 
 while.loop:                                       ; preds = %while.cond
-  %4 = load i32, i32* %i, align 4, !dbg !14
-  %5 = load i32, i32* %sum, align 4, !dbg !14
+  %4 = load i32, ptr %i, align 4, !dbg !14
+  %5 = load i32, ptr %sum, align 4, !dbg !14
   %6 = add i32 %5, %4, !dbg !14
-  store i32 %6, i32* %sum, align 4, !dbg !14
-  %7 = load i32, i32* %sum, align 4, !dbg !14
-  %8 = load i32, i32* %i, align 4, !dbg !16
+  store i32 %6, ptr %sum, align 4, !dbg !14
+  %7 = load i32, ptr %sum, align 4, !dbg !14
+  %8 = load i32, ptr %i, align 4, !dbg !16
   %9 = add i32 %8, 1, !dbg !16
-  store i32 %9, i32* %i, align 4, !dbg !16
-  %10 = load i32, i32* %i, align 4, !dbg !16
+  store i32 %9, ptr %i, align 4, !dbg !16
+  %10 = load i32, ptr %i, align 4, !dbg !16
   br label %while.cond, !dbg !16
 
 while.end:                                        ; preds = %while.cond
-  %11 = load i32, i32* %sum, align 4, !dbg !17
+  %11 = load i32, ptr %sum, align 4, !dbg !17
   ret i32 %11, !dbg !17
 }
-
-; Function Attrs: nofree nosync nounwind readnone speculatable willreturn
-declare void @llvm.dbg.declare(metadata, metadata, metadata) #0
 
 define i32 @countSum2(i32 %0) !dbg !18 {
 entry:
   %i = alloca i32, align 4
-  call void @llvm.dbg.declare(metadata i32* %i, metadata !19, metadata !DIExpression()), !dbg !20
+    #dbg_declare(ptr %i, !19, !DIExpression(), !20)
   %sum = alloca i32, align 4
-  call void @llvm.dbg.declare(metadata i32* %sum, metadata !21, metadata !DIExpression()), !dbg !22
+    #dbg_declare(ptr %sum, !21, !DIExpression(), !22)
   %n = alloca i32, align 4
-  call void @llvm.dbg.declare(metadata i32* %n, metadata !23, metadata !DIExpression()), !dbg !24
-  store i32 %0, i32* %n, align 4, !dbg !24
-  store i32 0, i32* %sum, align 4, !dbg !22
-  store i32 0, i32* %i, align 4, !dbg !20
+    #dbg_declare(ptr %n, !23, !DIExpression(), !24)
+  store i32 %0, ptr %n, align 4, !dbg !24
+  store i32 0, ptr %sum, align 4, !dbg !22
+  store i32 0, ptr %i, align 4, !dbg !20
   br label %do.loop, !dbg !25
 
 do.loop:                                          ; preds = %do.loop, %entry
-  %1 = load i32, i32* %i, align 4, !dbg !26
-  %2 = load i32, i32* %sum, align 4, !dbg !26
+  %1 = load i32, ptr %i, align 4, !dbg !26
+  %2 = load i32, ptr %sum, align 4, !dbg !26
   %3 = add i32 %2, %1, !dbg !26
-  store i32 %3, i32* %sum, align 4, !dbg !26
-  %4 = load i32, i32* %sum, align 4, !dbg !26
-  %5 = load i32, i32* %i, align 4, !dbg !28
+  store i32 %3, ptr %sum, align 4, !dbg !26
+  %4 = load i32, ptr %sum, align 4, !dbg !26
+  %5 = load i32, ptr %i, align 4, !dbg !28
   %6 = add i32 %5, 1, !dbg !28
-  store i32 %6, i32* %i, align 4, !dbg !28
-  %7 = load i32, i32* %i, align 4, !dbg !28
-  %8 = load i32, i32* %i, align 4, !dbg !28
-  %9 = load i32, i32* %n, align 4, !dbg !28
+  store i32 %6, ptr %i, align 4, !dbg !28
+  %7 = load i32, ptr %i, align 4, !dbg !28
+  %8 = load i32, ptr %i, align 4, !dbg !28
+  %9 = load i32, ptr %n, align 4, !dbg !28
   %10 = icmp sle i32 %8, %9, !dbg !28
   br i1 %10, label %do.loop, label %do.end, !dbg !28
 
 do.end:                                           ; preds = %do.loop
-  %11 = load i32, i32* %sum, align 4, !dbg !29
+  %11 = load i32, ptr %sum, align 4, !dbg !29
   ret i32 %11, !dbg !29
 }
 
 define i32 @main() !dbg !30 {
 entry:
   %err = alloca i32, align 4
-  call void @llvm.dbg.declare(metadata i32* %err, metadata !33, metadata !DIExpression()), !dbg !34
-  store i32 0, i32* %err, align 4, !dbg !34
+    #dbg_declare(ptr %err, !33, !DIExpression(), !34)
+  store i32 0, ptr %err, align 4, !dbg !34
   %0 = call i32 @countSum(i32 100), !dbg !35
   %1 = icmp ne i32 %0, 5050, !dbg !35
   br i1 %1, label %then, label %if.end, !dbg !35
 
 then:                                             ; preds = %entry
-  store i32 1, i32* %err, align 4, !dbg !36
-  %2 = load i32, i32* %err, align 4, !dbg !36
+  store i32 1, ptr %err, align 4, !dbg !36
+  %2 = load i32, ptr %err, align 4, !dbg !36
   br label %if.end, !dbg !36
 
 if.end:                                           ; preds = %entry, %then
@@ -100,8 +97,8 @@ if.end:                                           ; preds = %entry, %then
   br i1 %4, label %then1, label %if.end3, !dbg !37
 
 then1:                                            ; preds = %if.end
-  store i32 1, i32* %err, align 4, !dbg !38
-  %5 = load i32, i32* %err, align 4, !dbg !38
+  store i32 1, ptr %err, align 4, !dbg !38
+  %5 = load i32, ptr %err, align 4, !dbg !38
   br label %if.end3, !dbg !38
 
 if.end3:                                          ; preds = %if.end, %then1
@@ -110,8 +107,8 @@ if.end3:                                          ; preds = %if.end, %then1
   br i1 %7, label %then4, label %if.end6, !dbg !39
 
 then4:                                            ; preds = %if.end3
-  store i32 1, i32* %err, align 4, !dbg !40
-  %8 = load i32, i32* %err, align 4, !dbg !40
+  store i32 1, ptr %err, align 4, !dbg !40
+  %8 = load i32, ptr %err, align 4, !dbg !40
   br label %if.end6, !dbg !40
 
 if.end6:                                          ; preds = %if.end3, %then4
@@ -120,20 +117,18 @@ if.end6:                                          ; preds = %if.end3, %then4
   br i1 %10, label %then7, label %if.end9, !dbg !41
 
 then7:                                            ; preds = %if.end6
-  store i32 1, i32* %err, align 4, !dbg !42
-  %11 = load i32, i32* %err, align 4, !dbg !42
+  store i32 1, ptr %err, align 4, !dbg !42
+  %11 = load i32, ptr %err, align 4, !dbg !42
   br label %if.end9, !dbg !42
 
 if.end9:                                          ; preds = %if.end6, %then7
-  %12 = load i32, i32* %err, align 4, !dbg !43
+  %12 = load i32, ptr %err, align 4, !dbg !43
   %13 = icmp eq i32 %12, 0, !dbg !43
-  %. = select i1 %13, i8* getelementptr inbounds ([20 x i8], [20 x i8]* @0, i32 0, i32 0), i8* getelementptr inbounds ([20 x i8], [20 x i8]* @1, i32 0, i32 0), !dbg !44
-  %14 = call i32 (i8*, ...) @printf(i8* %.), !dbg !44
-  %15 = load i32, i32* %err, align 4, !dbg !45
+  %. = select i1 %13, ptr @0, ptr @1, !dbg !44
+  %14 = call i32 (ptr, ...) @printf(ptr %.), !dbg !44
+  %15 = load i32, ptr %err, align 4, !dbg !45
   ret i32 %15, !dbg !45
 }
-
-attributes #0 = { nofree nosync nounwind readnone speculatable willreturn }
 
 !llvm.dbg.cu = !{!0}
 

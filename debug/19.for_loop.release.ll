@@ -1,11 +1,11 @@
 ; ModuleID = 'lcc'
 source_filename = "lcc"
-target datalayout = "e-m:o-i64:64-i128:128-n32:64-S128"
+target datalayout = "e-m:o-p270:32:32-p271:32:32-p272:64:64-i64:64-i128:128-n32:64-S128-Fn32"
 target triple = "arm64-apple-darwin25.5.0"
 
 @str.1 = private unnamed_addr constant [19 x i8] c"19.for_loop.c PASS\00", align 1
 
-; Function Attrs: nofree norecurse nosync nounwind readnone
+; Function Attrs: nofree norecurse nosync nounwind memory(none)
 define i32 @countSum(i32 %0) local_unnamed_addr #0 {
 entry:
   %.not6 = icmp slt i32 %0, 1
@@ -27,7 +27,7 @@ for.end:                                          ; preds = %for.loop, %entry
   ret i32 %sum.0.lcssa
 }
 
-; Function Attrs: nofree norecurse nosync nounwind readnone
+; Function Attrs: nofree norecurse nosync nounwind memory(none)
 define i32 @countSum2(i32 %0) local_unnamed_addr #0 {
 entry:
   %.not6 = icmp slt i32 %0, 1
@@ -49,7 +49,7 @@ for.end:                                          ; preds = %for.loop, %entry
   ret i32 %sum.0.lcssa
 }
 
-; Function Attrs: nofree norecurse nosync nounwind readnone
+; Function Attrs: nofree norecurse nosync nounwind memory(none)
 define i32 @countSum3(i32 %0) local_unnamed_addr #0 {
 entry:
   %.not7 = icmp slt i32 %0, 1
@@ -72,14 +72,14 @@ for.end:                                          ; preds = %for.loop, %entry
 }
 
 ; Function Attrs: nofree nounwind
-define i32 @main() local_unnamed_addr #1 {
+define noundef range(i32 0, 2) i32 @main() local_unnamed_addr #1 {
 if.end15:
-  %puts26 = tail call i32 @puts(i8* nonnull dereferenceable(1) getelementptr inbounds ([19 x i8], [19 x i8]* @str.1, i64 0, i64 0))
+  %puts26 = tail call i32 @puts(ptr nonnull dereferenceable(1) @str.1)
   ret i32 0
 }
 
 ; Function Attrs: nofree nounwind
-declare noundef i32 @puts(i8* nocapture noundef readonly) local_unnamed_addr #1
+declare noundef i32 @puts(ptr nocapture noundef readonly) local_unnamed_addr #1
 
-attributes #0 = { nofree norecurse nosync nounwind readnone }
+attributes #0 = { nofree norecurse nosync nounwind memory(none) }
 attributes #1 = { nofree nounwind }

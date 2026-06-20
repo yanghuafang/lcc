@@ -48,7 +48,9 @@ class DebugInfoBuilder {
 
   llvm::DISubprogram* createFunction(llvm::Function* func,
                                      const std::string& name, unsigned line,
-                                     llvm::FunctionType* funcType);
+                                     llvm::FunctionType* funcType,
+                                     AST::VarType* retVarType,
+                                     const std::vector<AST::VarType*>& paramVarTypes);
 
   void setLocation(llvm::IRBuilder<>& builder, unsigned line, llvm::DIScope* scope,
                    unsigned col = 1);

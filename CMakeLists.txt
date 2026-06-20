@@ -2,10 +2,10 @@ cmake_minimum_required(VERSION 3.22)
 
 project(lcc)
 
-set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD 17)
 
-message(STATUS "C Comipler: ${CMAKE_C_COMPILER}")
-message(STATUS "CXX Comipler: ${CMAKE_CXX_COMPILER}")
+message(STATUS "C Compiler: ${CMAKE_C_COMPILER}")
+message(STATUS "CXX Compiler: ${CMAKE_CXX_COMPILER}")
 
 # Generate lexer
 

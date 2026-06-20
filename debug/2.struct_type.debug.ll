@@ -1,113 +1,108 @@
 ; ModuleID = 'lcc'
 source_filename = "lcc"
-target datalayout = "e-m:o-i64:64-i128:128-n32:64-S128"
+target datalayout = "e-m:o-p270:32:32-p271:32:32-p272:64:64-i64:64-i128:128-n32:64-S128-Fn32"
 target triple = "arm64-apple-darwin25.5.0"
 
-%struct.Employee = type { i8*, i8, i32, i32, float }
+%struct.Employee = type { ptr, i8, i32, i32, float }
 
 @0 = private unnamed_addr constant [9 x i8] c"employee\00", align 1
 @1 = private unnamed_addr constant [22 x i8] c"2.struct_type.c PASS\0A\00", align 1
 @2 = private unnamed_addr constant [22 x i8] c"2.struct_type.c FAIL\0A\00", align 1
 
-declare i32 @printf(i8*, ...)
+declare i32 @printf(ptr, ...)
 
 define i32 @main() !dbg !2 {
 entry:
   %age = alloca i32, align 4
-  call void @llvm.dbg.declare(metadata i32* %age, metadata !7, metadata !DIExpression()), !dbg !8
+    #dbg_declare(ptr %age, !7, !DIExpression(), !8)
   %sex = alloca i32, align 4
-  call void @llvm.dbg.declare(metadata i32* %sex, metadata !9, metadata !DIExpression()), !dbg !10
+    #dbg_declare(ptr %sex, !9, !DIExpression(), !10)
   %id = alloca i32, align 4
-  call void @llvm.dbg.declare(metadata i32* %id, metadata !11, metadata !DIExpression()), !dbg !12
+    #dbg_declare(ptr %id, !11, !DIExpression(), !12)
   %employee = alloca %struct.Employee, align 8
-  call void @llvm.dbg.declare(metadata %struct.Employee* %employee, metadata !13, metadata !DIExpression()), !dbg !25
+    #dbg_declare(ptr %employee, !13, !DIExpression(), !25)
   %err = alloca i32, align 4
-  call void @llvm.dbg.declare(metadata i32* %err, metadata !26, metadata !DIExpression()), !dbg !27
-  store i32 0, i32* %err, align 4, !dbg !27
-  %0 = bitcast %struct.Employee* %employee to i8**, !dbg !28
-  store i8* getelementptr inbounds ([9 x i8], [9 x i8]* @0, i32 0, i32 0), i8** %0, align 8, !dbg !28
-  %1 = load i8*, i8** %0, align 8, !dbg !28
-  %2 = getelementptr %struct.Employee, %struct.Employee* %employee, i32 0, i32 1, !dbg !29
-  store i8 77, i8* %2, align 1, !dbg !29
-  %3 = load i8, i8* %2, align 1, !dbg !29
-  %4 = getelementptr %struct.Employee, %struct.Employee* %employee, i32 0, i32 2, !dbg !30
-  store i32 100, i32* %4, align 4, !dbg !30
-  %5 = load i32, i32* %4, align 4, !dbg !30
-  %6 = getelementptr %struct.Employee, %struct.Employee* %employee, i32 0, i32 3, !dbg !31
-  store i32 22, i32* %6, align 4, !dbg !31
-  %7 = load i32, i32* %6, align 4, !dbg !31
-  %8 = getelementptr %struct.Employee, %struct.Employee* %employee, i32 0, i32 4, !dbg !32
-  store float 3.000000e+03, float* %8, align 4, !dbg !32
-  %9 = load float, float* %8, align 4, !dbg !32
-  %10 = getelementptr %struct.Employee, %struct.Employee* %employee, i32 0, i32 2, !dbg !12
-  %11 = load i32, i32* %10, align 4, !dbg !12
-  store i32 %11, i32* %id, align 4, !dbg !12
-  %12 = getelementptr %struct.Employee, %struct.Employee* %employee, i32 0, i32 1, !dbg !10
-  %13 = load i8, i8* %12, align 1, !dbg !10
+    #dbg_declare(ptr %err, !26, !DIExpression(), !27)
+  store i32 0, ptr %err, align 4, !dbg !27
+  %0 = bitcast ptr %employee to ptr, !dbg !28
+  store ptr @0, ptr %0, align 8, !dbg !28
+  %1 = load ptr, ptr %0, align 8, !dbg !28
+  %2 = getelementptr %struct.Employee, ptr %employee, i32 0, i32 1, !dbg !29
+  store i8 77, ptr %2, align 1, !dbg !29
+  %3 = load i8, ptr %2, align 1, !dbg !29
+  %4 = getelementptr %struct.Employee, ptr %employee, i32 0, i32 2, !dbg !30
+  store i32 100, ptr %4, align 4, !dbg !30
+  %5 = load i32, ptr %4, align 4, !dbg !30
+  %6 = getelementptr %struct.Employee, ptr %employee, i32 0, i32 3, !dbg !31
+  store i32 22, ptr %6, align 4, !dbg !31
+  %7 = load i32, ptr %6, align 4, !dbg !31
+  %8 = getelementptr %struct.Employee, ptr %employee, i32 0, i32 4, !dbg !32
+  store float 3.000000e+03, ptr %8, align 4, !dbg !32
+  %9 = load float, ptr %8, align 4, !dbg !32
+  %10 = getelementptr %struct.Employee, ptr %employee, i32 0, i32 2, !dbg !12
+  %11 = load i32, ptr %10, align 4, !dbg !12
+  store i32 %11, ptr %id, align 4, !dbg !12
+  %12 = getelementptr %struct.Employee, ptr %employee, i32 0, i32 1, !dbg !10
+  %13 = load i8, ptr %12, align 1, !dbg !10
   %14 = sext i8 %13 to i32, !dbg !10
-  store i32 %14, i32* %sex, align 4, !dbg !10
-  %15 = getelementptr %struct.Employee, %struct.Employee* %employee, i32 0, i32 3, !dbg !8
-  %16 = load i32, i32* %15, align 4, !dbg !8
-  store i32 %16, i32* %age, align 4, !dbg !8
-  %17 = load i32, i32* %id, align 4, !dbg !33
+  store i32 %14, ptr %sex, align 4, !dbg !10
+  %15 = getelementptr %struct.Employee, ptr %employee, i32 0, i32 3, !dbg !8
+  %16 = load i32, ptr %15, align 4, !dbg !8
+  store i32 %16, ptr %age, align 4, !dbg !8
+  %17 = load i32, ptr %id, align 4, !dbg !33
   %18 = icmp ne i32 %17, 100, !dbg !33
   br i1 %18, label %then, label %if.end, !dbg !33
 
 then:                                             ; preds = %entry
-  store i32 1, i32* %err, align 4, !dbg !34
-  %19 = load i32, i32* %err, align 4, !dbg !34
+  store i32 1, ptr %err, align 4, !dbg !34
+  %19 = load i32, ptr %err, align 4, !dbg !34
   br label %if.end, !dbg !34
 
 if.end:                                           ; preds = %entry, %then
-  %20 = load i32, i32* %sex, align 4, !dbg !35
+  %20 = load i32, ptr %sex, align 4, !dbg !35
   %21 = icmp ne i32 %20, 77, !dbg !35
   br i1 %21, label %then1, label %if.end3, !dbg !35
 
 then1:                                            ; preds = %if.end
-  store i32 1, i32* %err, align 4, !dbg !36
-  %22 = load i32, i32* %err, align 4, !dbg !36
+  store i32 1, ptr %err, align 4, !dbg !36
+  %22 = load i32, ptr %err, align 4, !dbg !36
   br label %if.end3, !dbg !36
 
 if.end3:                                          ; preds = %if.end, %then1
-  %23 = load i32, i32* %age, align 4, !dbg !37
+  %23 = load i32, ptr %age, align 4, !dbg !37
   %24 = icmp ne i32 %23, 22, !dbg !37
   br i1 %24, label %then4, label %if.end6, !dbg !37
 
 then4:                                            ; preds = %if.end3
-  store i32 1, i32* %err, align 4, !dbg !38
-  %25 = load i32, i32* %err, align 4, !dbg !38
+  store i32 1, ptr %err, align 4, !dbg !38
+  %25 = load i32, ptr %err, align 4, !dbg !38
   br label %if.end6, !dbg !38
 
 if.end6:                                          ; preds = %if.end3, %then4
-  %26 = getelementptr %struct.Employee, %struct.Employee* %employee, i32 0, i32 3, !dbg !39
-  store i32 0, i32* %26, align 4, !dbg !39
-  %27 = load i32, i32* %26, align 4, !dbg !39
-  %28 = getelementptr %struct.Employee, %struct.Employee* %employee, i32 0, i32 3, !dbg !40
-  %29 = load i32, i32* %28, align 4, !dbg !40
-  store i32 %29, i32* %age, align 4, !dbg !40
-  %30 = load i32, i32* %age, align 4, !dbg !40
-  %31 = load i32, i32* %age, align 4, !dbg !41
+  %26 = getelementptr %struct.Employee, ptr %employee, i32 0, i32 3, !dbg !39
+  store i32 0, ptr %26, align 4, !dbg !39
+  %27 = load i32, ptr %26, align 4, !dbg !39
+  %28 = getelementptr %struct.Employee, ptr %employee, i32 0, i32 3, !dbg !40
+  %29 = load i32, ptr %28, align 4, !dbg !40
+  store i32 %29, ptr %age, align 4, !dbg !40
+  %30 = load i32, ptr %age, align 4, !dbg !40
+  %31 = load i32, ptr %age, align 4, !dbg !41
   %32 = icmp ne i32 %31, 0, !dbg !41
   br i1 %32, label %then7, label %if.end9, !dbg !41
 
 then7:                                            ; preds = %if.end6
-  store i32 1, i32* %err, align 4, !dbg !42
-  %33 = load i32, i32* %err, align 4, !dbg !42
+  store i32 1, ptr %err, align 4, !dbg !42
+  %33 = load i32, ptr %err, align 4, !dbg !42
   br label %if.end9, !dbg !42
 
 if.end9:                                          ; preds = %if.end6, %then7
-  %34 = load i32, i32* %err, align 4, !dbg !43
+  %34 = load i32, ptr %err, align 4, !dbg !43
   %35 = icmp eq i32 %34, 0, !dbg !43
-  %. = select i1 %35, i8* getelementptr inbounds ([22 x i8], [22 x i8]* @1, i32 0, i32 0), i8* getelementptr inbounds ([22 x i8], [22 x i8]* @2, i32 0, i32 0), !dbg !44
-  %36 = call i32 (i8*, ...) @printf(i8* %.), !dbg !44
-  %37 = load i32, i32* %err, align 4, !dbg !45
+  %. = select i1 %35, ptr @1, ptr @2, !dbg !44
+  %36 = call i32 (ptr, ...) @printf(ptr %.), !dbg !44
+  %37 = load i32, ptr %err, align 4, !dbg !45
   ret i32 %37, !dbg !45
 }
-
-; Function Attrs: nofree nosync nounwind readnone speculatable willreturn
-declare void @llvm.dbg.declare(metadata, metadata, metadata) #0
-
-attributes #0 = { nofree nosync nounwind readnone speculatable willreturn }
 
 !llvm.dbg.cu = !{!0}
 

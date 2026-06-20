@@ -1,6 +1,6 @@
 ; ModuleID = 'lcc'
 source_filename = "lcc"
-target datalayout = "e-m:o-i64:64-i128:128-n32:64-S128"
+target datalayout = "e-m:o-p270:32:32-p271:32:32-p272:64:64-i64:64-i128:128-n32:64-S128-Fn32"
 target triple = "arm64-apple-darwin25.5.0"
 
 %struct.Data = type { i32, i32 }
@@ -8,251 +8,236 @@ target triple = "arm64-apple-darwin25.5.0"
 @0 = private unnamed_addr constant [31 x i8] c"29.struct_pointer_move.c PASS\0A\00", align 1
 @1 = private unnamed_addr constant [31 x i8] c"29.struct_pointer_move.c FAIL\0A\00", align 1
 
-declare i32 @printf(i8*, ...)
+declare i32 @printf(ptr, ...)
 
 define i32 @main() !dbg !2 {
 entry:
-  %p = alloca %struct.Data*, align 8
-  call void @llvm.dbg.declare(metadata %struct.Data** %p, metadata !7, metadata !DIExpression()), !dbg !13
+  %p = alloca ptr, align 8
+    #dbg_declare(ptr %p, !7, !DIExpression(), !10)
   %val = alloca i32, align 4
-  call void @llvm.dbg.declare(metadata i32* %val, metadata !14, metadata !DIExpression()), !dbg !15
+    #dbg_declare(ptr %val, !11, !DIExpression(), !12)
   %id = alloca i32, align 4
-  call void @llvm.dbg.declare(metadata i32* %id, metadata !16, metadata !DIExpression()), !dbg !17
+    #dbg_declare(ptr %id, !13, !DIExpression(), !14)
   %data = alloca [4 x %struct.Data], align 8
-  call void @llvm.dbg.declare(metadata [4 x %struct.Data]* %data, metadata !18, metadata !DIExpression()), !dbg !22
+    #dbg_declare(ptr %data, !15, !DIExpression(), !19)
   %err = alloca i32, align 4
-  call void @llvm.dbg.declare(metadata i32* %err, metadata !23, metadata !DIExpression()), !dbg !24
-  store i32 0, i32* %err, align 4, !dbg !24
-  %0 = bitcast [4 x %struct.Data]* %data to %struct.Data*, !dbg !25
-  %1 = bitcast %struct.Data* %0 to %struct.Data*, !dbg !25
-  %2 = bitcast %struct.Data* %1 to i32*, !dbg !25
-  store i32 10, i32* %2, align 4, !dbg !25
-  %3 = load i32, i32* %2, align 4, !dbg !25
-  %4 = bitcast [4 x %struct.Data]* %data to %struct.Data*, !dbg !26
-  %5 = bitcast %struct.Data* %4 to %struct.Data*, !dbg !26
-  %6 = getelementptr %struct.Data, %struct.Data* %5, i32 0, i32 1, !dbg !26
-  store i32 12, i32* %6, align 4, !dbg !26
-  %7 = load i32, i32* %6, align 4, !dbg !26
-  %8 = bitcast [4 x %struct.Data]* %data to %struct.Data*, !dbg !27
-  %9 = getelementptr %struct.Data, %struct.Data* %8, i32 1, !dbg !27
-  %10 = bitcast %struct.Data* %9 to i32*, !dbg !27
-  store i32 20, i32* %10, align 4, !dbg !27
-  %11 = load i32, i32* %10, align 4, !dbg !27
-  %12 = bitcast [4 x %struct.Data]* %data to %struct.Data*, !dbg !28
-  %13 = getelementptr %struct.Data, %struct.Data* %12, i32 1, !dbg !28
-  %14 = getelementptr %struct.Data, %struct.Data* %13, i32 0, i32 1, !dbg !28
-  store i32 24, i32* %14, align 4, !dbg !28
-  %15 = load i32, i32* %14, align 4, !dbg !28
-  %16 = bitcast [4 x %struct.Data]* %data to %struct.Data*, !dbg !29
-  %17 = getelementptr %struct.Data, %struct.Data* %16, i32 2, !dbg !29
-  %18 = bitcast %struct.Data* %17 to i32*, !dbg !29
-  store i32 30, i32* %18, align 4, !dbg !29
-  %19 = load i32, i32* %18, align 4, !dbg !29
-  %20 = bitcast [4 x %struct.Data]* %data to %struct.Data*, !dbg !30
-  %21 = getelementptr %struct.Data, %struct.Data* %20, i32 2, !dbg !30
-  %22 = getelementptr %struct.Data, %struct.Data* %21, i32 0, i32 1, !dbg !30
-  store i32 36, i32* %22, align 4, !dbg !30
-  %23 = load i32, i32* %22, align 4, !dbg !30
-  %24 = bitcast [4 x %struct.Data]* %data to %struct.Data*, !dbg !31
-  %25 = getelementptr %struct.Data, %struct.Data* %24, i32 3, !dbg !31
-  %26 = bitcast %struct.Data* %25 to i32*, !dbg !31
-  store i32 40, i32* %26, align 4, !dbg !31
-  %27 = load i32, i32* %26, align 4, !dbg !31
-  %28 = bitcast [4 x %struct.Data]* %data to %struct.Data*, !dbg !32
-  %29 = getelementptr %struct.Data, %struct.Data* %28, i32 3, !dbg !32
-  %30 = getelementptr %struct.Data, %struct.Data* %29, i32 0, i32 1, !dbg !32
-  store i32 48, i32* %30, align 4, !dbg !32
-  %31 = load i32, i32* %30, align 4, !dbg !32
-  %32 = bitcast [4 x %struct.Data]* %data to %struct.Data*, !dbg !13
-  store %struct.Data* %32, %struct.Data** %p, align 8, !dbg !13
-  %33 = load %struct.Data*, %struct.Data** %p, align 8, !dbg !33
-  %34 = bitcast %struct.Data* %33 to i32*, !dbg !33
-  %35 = load i32, i32* %34, align 4, !dbg !33
-  store i32 %35, i32* %id, align 4, !dbg !33
-  %36 = load i32, i32* %id, align 4, !dbg !33
-  %37 = load %struct.Data*, %struct.Data** %p, align 8, !dbg !34
-  %38 = getelementptr %struct.Data, %struct.Data* %37, i32 0, i32 1, !dbg !34
-  %39 = load i32, i32* %38, align 4, !dbg !34
-  store i32 %39, i32* %val, align 4, !dbg !34
-  %40 = load i32, i32* %val, align 4, !dbg !34
-  %41 = load i32, i32* %id, align 4, !dbg !35
-  %42 = icmp ne i32 %41, 10, !dbg !35
-  br i1 %42, label %then, label %if.end, !dbg !35
+    #dbg_declare(ptr %err, !20, !DIExpression(), !21)
+  store i32 0, ptr %err, align 4, !dbg !21
+  %0 = bitcast ptr %data to ptr, !dbg !22
+  %1 = bitcast ptr %0 to ptr, !dbg !22
+  store i32 10, ptr %1, align 4, !dbg !22
+  %2 = load i32, ptr %1, align 4, !dbg !22
+  %3 = bitcast ptr %data to ptr, !dbg !23
+  %4 = getelementptr %struct.Data, ptr %3, i32 0, i32 1, !dbg !23
+  store i32 12, ptr %4, align 4, !dbg !23
+  %5 = load i32, ptr %4, align 4, !dbg !23
+  %6 = getelementptr %struct.Data, ptr %data, i32 1, !dbg !24
+  %7 = bitcast ptr %6 to ptr, !dbg !24
+  store i32 20, ptr %7, align 4, !dbg !24
+  %8 = load i32, ptr %7, align 4, !dbg !24
+  %9 = getelementptr %struct.Data, ptr %data, i32 1, !dbg !25
+  %10 = getelementptr %struct.Data, ptr %9, i32 0, i32 1, !dbg !25
+  store i32 24, ptr %10, align 4, !dbg !25
+  %11 = load i32, ptr %10, align 4, !dbg !25
+  %12 = getelementptr %struct.Data, ptr %data, i32 2, !dbg !26
+  %13 = bitcast ptr %12 to ptr, !dbg !26
+  store i32 30, ptr %13, align 4, !dbg !26
+  %14 = load i32, ptr %13, align 4, !dbg !26
+  %15 = getelementptr %struct.Data, ptr %data, i32 2, !dbg !27
+  %16 = getelementptr %struct.Data, ptr %15, i32 0, i32 1, !dbg !27
+  store i32 36, ptr %16, align 4, !dbg !27
+  %17 = load i32, ptr %16, align 4, !dbg !27
+  %18 = getelementptr %struct.Data, ptr %data, i32 3, !dbg !28
+  %19 = bitcast ptr %18 to ptr, !dbg !28
+  store i32 40, ptr %19, align 4, !dbg !28
+  %20 = load i32, ptr %19, align 4, !dbg !28
+  %21 = getelementptr %struct.Data, ptr %data, i32 3, !dbg !29
+  %22 = getelementptr %struct.Data, ptr %21, i32 0, i32 1, !dbg !29
+  store i32 48, ptr %22, align 4, !dbg !29
+  %23 = load i32, ptr %22, align 4, !dbg !29
+  store ptr %data, ptr %p, align 8, !dbg !10
+  %24 = load ptr, ptr %p, align 8, !dbg !30
+  %25 = bitcast ptr %24 to ptr, !dbg !30
+  %26 = load i32, ptr %25, align 4, !dbg !30
+  store i32 %26, ptr %id, align 4, !dbg !30
+  %27 = load i32, ptr %id, align 4, !dbg !30
+  %28 = load ptr, ptr %p, align 8, !dbg !31
+  %29 = getelementptr %struct.Data, ptr %28, i32 0, i32 1, !dbg !31
+  %30 = load i32, ptr %29, align 4, !dbg !31
+  store i32 %30, ptr %val, align 4, !dbg !31
+  %31 = load i32, ptr %val, align 4, !dbg !31
+  %32 = load i32, ptr %id, align 4, !dbg !32
+  %33 = icmp ne i32 %32, 10, !dbg !32
+  br i1 %33, label %then, label %if.end, !dbg !32
 
 then:                                             ; preds = %entry
-  store i32 1, i32* %err, align 4, !dbg !36
-  %43 = load i32, i32* %err, align 4, !dbg !36
-  br label %if.end, !dbg !36
+  store i32 1, ptr %err, align 4, !dbg !33
+  %34 = load i32, ptr %err, align 4, !dbg !33
+  br label %if.end, !dbg !33
 
 if.end:                                           ; preds = %entry, %then
-  %44 = load i32, i32* %val, align 4, !dbg !37
-  %45 = icmp ne i32 %44, 12, !dbg !37
-  br i1 %45, label %then1, label %if.end3, !dbg !37
+  %35 = load i32, ptr %val, align 4, !dbg !34
+  %36 = icmp ne i32 %35, 12, !dbg !34
+  br i1 %36, label %then1, label %if.end3, !dbg !34
 
 then1:                                            ; preds = %if.end
-  store i32 1, i32* %err, align 4, !dbg !38
-  %46 = load i32, i32* %err, align 4, !dbg !38
-  br label %if.end3, !dbg !38
+  store i32 1, ptr %err, align 4, !dbg !35
+  %37 = load i32, ptr %err, align 4, !dbg !35
+  br label %if.end3, !dbg !35
 
 if.end3:                                          ; preds = %if.end, %then1
-  %47 = load %struct.Data*, %struct.Data** %p, align 8, !dbg !39
-  %48 = getelementptr %struct.Data, %struct.Data* %47, i32 1, !dbg !39
-  store %struct.Data* %48, %struct.Data** %p, align 8, !dbg !39
-  %49 = load %struct.Data*, %struct.Data** %p, align 8, !dbg !39
-  %50 = load %struct.Data*, %struct.Data** %p, align 8, !dbg !40
-  %51 = bitcast %struct.Data* %50 to i32*, !dbg !40
-  %52 = load i32, i32* %51, align 4, !dbg !40
-  store i32 %52, i32* %id, align 4, !dbg !40
-  %53 = load i32, i32* %id, align 4, !dbg !40
-  %54 = load %struct.Data*, %struct.Data** %p, align 8, !dbg !41
-  %55 = getelementptr %struct.Data, %struct.Data* %54, i32 0, i32 1, !dbg !41
-  %56 = load i32, i32* %55, align 4, !dbg !41
-  store i32 %56, i32* %val, align 4, !dbg !41
-  %57 = load i32, i32* %val, align 4, !dbg !41
-  %58 = load i32, i32* %id, align 4, !dbg !42
-  %59 = icmp ne i32 %58, 20, !dbg !42
-  br i1 %59, label %then4, label %if.end6, !dbg !42
+  %38 = load ptr, ptr %p, align 8, !dbg !36
+  %39 = getelementptr %struct.Data, ptr %38, i32 1, !dbg !36
+  store ptr %39, ptr %p, align 8, !dbg !36
+  %40 = load ptr, ptr %p, align 8, !dbg !36
+  %41 = load ptr, ptr %p, align 8, !dbg !37
+  %42 = bitcast ptr %41 to ptr, !dbg !37
+  %43 = load i32, ptr %42, align 4, !dbg !37
+  store i32 %43, ptr %id, align 4, !dbg !37
+  %44 = load i32, ptr %id, align 4, !dbg !37
+  %45 = load ptr, ptr %p, align 8, !dbg !38
+  %46 = getelementptr %struct.Data, ptr %45, i32 0, i32 1, !dbg !38
+  %47 = load i32, ptr %46, align 4, !dbg !38
+  store i32 %47, ptr %val, align 4, !dbg !38
+  %48 = load i32, ptr %val, align 4, !dbg !38
+  %49 = load i32, ptr %id, align 4, !dbg !39
+  %50 = icmp ne i32 %49, 20, !dbg !39
+  br i1 %50, label %then4, label %if.end6, !dbg !39
 
 then4:                                            ; preds = %if.end3
-  store i32 1, i32* %err, align 4, !dbg !43
-  %60 = load i32, i32* %err, align 4, !dbg !43
-  br label %if.end6, !dbg !43
+  store i32 1, ptr %err, align 4, !dbg !40
+  %51 = load i32, ptr %err, align 4, !dbg !40
+  br label %if.end6, !dbg !40
 
 if.end6:                                          ; preds = %if.end3, %then4
-  %61 = load i32, i32* %val, align 4, !dbg !44
-  %62 = icmp ne i32 %61, 24, !dbg !44
-  br i1 %62, label %then7, label %if.end9, !dbg !44
+  %52 = load i32, ptr %val, align 4, !dbg !41
+  %53 = icmp ne i32 %52, 24, !dbg !41
+  br i1 %53, label %then7, label %if.end9, !dbg !41
 
 then7:                                            ; preds = %if.end6
-  store i32 1, i32* %err, align 4, !dbg !45
-  %63 = load i32, i32* %err, align 4, !dbg !45
-  br label %if.end9, !dbg !45
+  store i32 1, ptr %err, align 4, !dbg !42
+  %54 = load i32, ptr %err, align 4, !dbg !42
+  br label %if.end9, !dbg !42
 
 if.end9:                                          ; preds = %if.end6, %then7
-  %64 = load %struct.Data*, %struct.Data** %p, align 8, !dbg !46
-  %65 = getelementptr %struct.Data, %struct.Data* %64, i32 1, !dbg !46
-  store %struct.Data* %65, %struct.Data** %p, align 8, !dbg !46
-  %66 = load %struct.Data*, %struct.Data** %p, align 8, !dbg !46
-  %67 = load %struct.Data*, %struct.Data** %p, align 8, !dbg !47
-  %68 = bitcast %struct.Data* %67 to i32*, !dbg !47
-  %69 = load i32, i32* %68, align 4, !dbg !47
-  store i32 %69, i32* %id, align 4, !dbg !47
-  %70 = load i32, i32* %id, align 4, !dbg !47
-  %71 = load i32, i32* %id, align 4, !dbg !48
-  %72 = icmp ne i32 %71, 30, !dbg !48
-  br i1 %72, label %then10, label %if.end12, !dbg !48
+  %55 = load ptr, ptr %p, align 8, !dbg !43
+  %56 = getelementptr %struct.Data, ptr %55, i64 1, !dbg !43
+  store ptr %56, ptr %p, align 8, !dbg !43
+  %57 = load ptr, ptr %p, align 8, !dbg !43
+  %58 = load ptr, ptr %p, align 8, !dbg !44
+  %59 = bitcast ptr %58 to ptr, !dbg !44
+  %60 = load i32, ptr %59, align 4, !dbg !44
+  store i32 %60, ptr %id, align 4, !dbg !44
+  %61 = load i32, ptr %id, align 4, !dbg !44
+  %62 = load i32, ptr %id, align 4, !dbg !45
+  %63 = icmp ne i32 %62, 30, !dbg !45
+  br i1 %63, label %then10, label %if.end12, !dbg !45
 
 then10:                                           ; preds = %if.end9
-  store i32 1, i32* %err, align 4, !dbg !49
-  %73 = load i32, i32* %err, align 4, !dbg !49
-  br label %if.end12, !dbg !49
+  store i32 1, ptr %err, align 4, !dbg !46
+  %64 = load i32, ptr %err, align 4, !dbg !46
+  br label %if.end12, !dbg !46
 
 if.end12:                                         ; preds = %if.end9, %then10
-  %74 = load %struct.Data*, %struct.Data** %p, align 8, !dbg !50
-  %75 = getelementptr %struct.Data, %struct.Data* %74, i32 1, !dbg !50
-  store %struct.Data* %75, %struct.Data** %p, align 8, !dbg !50
-  %76 = load %struct.Data*, %struct.Data** %p, align 8, !dbg !51
-  %77 = bitcast %struct.Data* %76 to i32*, !dbg !51
-  %78 = load i32, i32* %77, align 4, !dbg !51
-  store i32 %78, i32* %id, align 4, !dbg !51
-  %79 = load i32, i32* %id, align 4, !dbg !51
-  %80 = load %struct.Data*, %struct.Data** %p, align 8, !dbg !52
-  %81 = getelementptr %struct.Data, %struct.Data* %80, i32 0, i32 1, !dbg !52
-  %82 = load i32, i32* %81, align 4, !dbg !52
-  store i32 %82, i32* %val, align 4, !dbg !52
-  %83 = load i32, i32* %val, align 4, !dbg !52
-  %84 = load i32, i32* %id, align 4, !dbg !53
-  %85 = icmp ne i32 %84, 40, !dbg !53
-  br i1 %85, label %then13, label %if.end15, !dbg !53
+  %65 = load ptr, ptr %p, align 8, !dbg !47
+  %66 = getelementptr %struct.Data, ptr %65, i64 1, !dbg !47
+  store ptr %66, ptr %p, align 8, !dbg !47
+  %67 = load ptr, ptr %p, align 8, !dbg !48
+  %68 = bitcast ptr %67 to ptr, !dbg !48
+  %69 = load i32, ptr %68, align 4, !dbg !48
+  store i32 %69, ptr %id, align 4, !dbg !48
+  %70 = load i32, ptr %id, align 4, !dbg !48
+  %71 = load ptr, ptr %p, align 8, !dbg !49
+  %72 = getelementptr %struct.Data, ptr %71, i32 0, i32 1, !dbg !49
+  %73 = load i32, ptr %72, align 4, !dbg !49
+  store i32 %73, ptr %val, align 4, !dbg !49
+  %74 = load i32, ptr %val, align 4, !dbg !49
+  %75 = load i32, ptr %id, align 4, !dbg !50
+  %76 = icmp ne i32 %75, 40, !dbg !50
+  br i1 %76, label %then13, label %if.end15, !dbg !50
 
 then13:                                           ; preds = %if.end12
-  store i32 1, i32* %err, align 4, !dbg !54
-  %86 = load i32, i32* %err, align 4, !dbg !54
-  br label %if.end15, !dbg !54
+  store i32 1, ptr %err, align 4, !dbg !51
+  %77 = load i32, ptr %err, align 4, !dbg !51
+  br label %if.end15, !dbg !51
 
 if.end15:                                         ; preds = %if.end12, %then13
-  %87 = load i32, i32* %val, align 4, !dbg !55
-  %88 = icmp ne i32 %87, 48, !dbg !55
-  br i1 %88, label %then16, label %if.end18, !dbg !55
+  %78 = load i32, ptr %val, align 4, !dbg !52
+  %79 = icmp ne i32 %78, 48, !dbg !52
+  br i1 %79, label %then16, label %if.end18, !dbg !52
 
 then16:                                           ; preds = %if.end15
-  store i32 1, i32* %err, align 4, !dbg !56
-  %89 = load i32, i32* %err, align 4, !dbg !56
-  br label %if.end18, !dbg !56
+  store i32 1, ptr %err, align 4, !dbg !53
+  %80 = load i32, ptr %err, align 4, !dbg !53
+  br label %if.end18, !dbg !53
 
 if.end18:                                         ; preds = %if.end15, %then16
-  %90 = bitcast [4 x %struct.Data]* %data to %struct.Data*, !dbg !57
-  %91 = getelementptr %struct.Data, %struct.Data* %90, i32 3, !dbg !57
-  store %struct.Data* %91, %struct.Data** %p, align 8, !dbg !57
-  %92 = load %struct.Data*, %struct.Data** %p, align 8, !dbg !57
-  %93 = load %struct.Data*, %struct.Data** %p, align 8, !dbg !58
-  %94 = getelementptr %struct.Data, %struct.Data* %93, i32 -1, !dbg !58
-  store %struct.Data* %94, %struct.Data** %p, align 8, !dbg !58
-  %95 = load %struct.Data*, %struct.Data** %p, align 8, !dbg !58
-  %96 = load %struct.Data*, %struct.Data** %p, align 8, !dbg !59
-  %97 = bitcast %struct.Data* %96 to i32*, !dbg !59
-  %98 = load i32, i32* %97, align 4, !dbg !59
-  store i32 %98, i32* %id, align 4, !dbg !59
-  %99 = load i32, i32* %id, align 4, !dbg !59
-  %100 = load i32, i32* %id, align 4, !dbg !60
-  %101 = icmp ne i32 %100, 30, !dbg !60
-  br i1 %101, label %then19, label %if.end21, !dbg !60
+  %81 = getelementptr %struct.Data, ptr %data, i32 3, !dbg !54
+  store ptr %81, ptr %p, align 8, !dbg !54
+  %82 = load ptr, ptr %p, align 8, !dbg !54
+  %83 = load ptr, ptr %p, align 8, !dbg !55
+  %84 = getelementptr %struct.Data, ptr %83, i32 -1, !dbg !55
+  store ptr %84, ptr %p, align 8, !dbg !55
+  %85 = load ptr, ptr %p, align 8, !dbg !55
+  %86 = load ptr, ptr %p, align 8, !dbg !56
+  %87 = bitcast ptr %86 to ptr, !dbg !56
+  %88 = load i32, ptr %87, align 4, !dbg !56
+  store i32 %88, ptr %id, align 4, !dbg !56
+  %89 = load i32, ptr %id, align 4, !dbg !56
+  %90 = load i32, ptr %id, align 4, !dbg !57
+  %91 = icmp ne i32 %90, 30, !dbg !57
+  br i1 %91, label %then19, label %if.end21, !dbg !57
 
 then19:                                           ; preds = %if.end18
-  store i32 1, i32* %err, align 4, !dbg !61
-  %102 = load i32, i32* %err, align 4, !dbg !61
-  br label %if.end21, !dbg !61
+  store i32 1, ptr %err, align 4, !dbg !58
+  %92 = load i32, ptr %err, align 4, !dbg !58
+  br label %if.end21, !dbg !58
 
 if.end21:                                         ; preds = %if.end18, %then19
-  %103 = load %struct.Data*, %struct.Data** %p, align 8, !dbg !62
-  %104 = getelementptr %struct.Data, %struct.Data* %103, i32 -1, !dbg !62
-  store %struct.Data* %104, %struct.Data** %p, align 8, !dbg !62
-  %105 = load %struct.Data*, %struct.Data** %p, align 8, !dbg !62
-  %106 = load %struct.Data*, %struct.Data** %p, align 8, !dbg !63
-  %107 = bitcast %struct.Data* %106 to i32*, !dbg !63
-  %108 = load i32, i32* %107, align 4, !dbg !63
-  store i32 %108, i32* %id, align 4, !dbg !63
-  %109 = load i32, i32* %id, align 4, !dbg !63
-  %110 = load i32, i32* %id, align 4, !dbg !64
-  %111 = icmp ne i32 %110, 20, !dbg !64
-  br i1 %111, label %then22, label %if.end24, !dbg !64
+  %93 = load ptr, ptr %p, align 8, !dbg !59
+  %94 = getelementptr %struct.Data, ptr %93, i64 -1, !dbg !59
+  store ptr %94, ptr %p, align 8, !dbg !59
+  %95 = load ptr, ptr %p, align 8, !dbg !59
+  %96 = load ptr, ptr %p, align 8, !dbg !60
+  %97 = bitcast ptr %96 to ptr, !dbg !60
+  %98 = load i32, ptr %97, align 4, !dbg !60
+  store i32 %98, ptr %id, align 4, !dbg !60
+  %99 = load i32, ptr %id, align 4, !dbg !60
+  %100 = load i32, ptr %id, align 4, !dbg !61
+  %101 = icmp ne i32 %100, 20, !dbg !61
+  br i1 %101, label %then22, label %if.end24, !dbg !61
 
 then22:                                           ; preds = %if.end21
-  store i32 1, i32* %err, align 4, !dbg !65
-  %112 = load i32, i32* %err, align 4, !dbg !65
-  br label %if.end24, !dbg !65
+  store i32 1, ptr %err, align 4, !dbg !62
+  %102 = load i32, ptr %err, align 4, !dbg !62
+  br label %if.end24, !dbg !62
 
 if.end24:                                         ; preds = %if.end21, %then22
-  %113 = load %struct.Data*, %struct.Data** %p, align 8, !dbg !66
-  %114 = getelementptr %struct.Data, %struct.Data* %113, i32 -1, !dbg !66
-  store %struct.Data* %114, %struct.Data** %p, align 8, !dbg !66
-  %115 = load %struct.Data*, %struct.Data** %p, align 8, !dbg !67
-  %116 = bitcast %struct.Data* %115 to i32*, !dbg !67
-  %117 = load i32, i32* %116, align 4, !dbg !67
-  store i32 %117, i32* %id, align 4, !dbg !67
-  %118 = load i32, i32* %id, align 4, !dbg !67
-  %119 = load i32, i32* %id, align 4, !dbg !68
-  %120 = icmp ne i32 %119, 10, !dbg !68
-  br i1 %120, label %then25, label %if.end27, !dbg !68
+  %103 = load ptr, ptr %p, align 8, !dbg !63
+  %104 = getelementptr %struct.Data, ptr %103, i64 -1, !dbg !63
+  store ptr %104, ptr %p, align 8, !dbg !63
+  %105 = load ptr, ptr %p, align 8, !dbg !64
+  %106 = bitcast ptr %105 to ptr, !dbg !64
+  %107 = load i32, ptr %106, align 4, !dbg !64
+  store i32 %107, ptr %id, align 4, !dbg !64
+  %108 = load i32, ptr %id, align 4, !dbg !64
+  %109 = load i32, ptr %id, align 4, !dbg !65
+  %110 = icmp ne i32 %109, 10, !dbg !65
+  br i1 %110, label %then25, label %if.end27, !dbg !65
 
 then25:                                           ; preds = %if.end24
-  store i32 1, i32* %err, align 4, !dbg !69
-  %121 = load i32, i32* %err, align 4, !dbg !69
-  br label %if.end27, !dbg !69
+  store i32 1, ptr %err, align 4, !dbg !66
+  %111 = load i32, ptr %err, align 4, !dbg !66
+  br label %if.end27, !dbg !66
 
 if.end27:                                         ; preds = %if.end24, %then25
-  %122 = load i32, i32* %err, align 4, !dbg !70
-  %123 = icmp eq i32 %122, 0, !dbg !70
-  %. = select i1 %123, i8* getelementptr inbounds ([31 x i8], [31 x i8]* @0, i32 0, i32 0), i8* getelementptr inbounds ([31 x i8], [31 x i8]* @1, i32 0, i32 0), !dbg !71
-  %124 = call i32 (i8*, ...) @printf(i8* %.), !dbg !71
-  %125 = load i32, i32* %err, align 4, !dbg !72
-  ret i32 %125, !dbg !72
+  %112 = load i32, ptr %err, align 4, !dbg !67
+  %113 = icmp eq i32 %112, 0, !dbg !67
+  %. = select i1 %113, ptr @0, ptr @1, !dbg !68
+  %114 = call i32 (ptr, ...) @printf(ptr %.), !dbg !68
+  %115 = load i32, ptr %err, align 4, !dbg !69
+  ret i32 %115, !dbg !69
 }
-
-; Function Attrs: nofree nosync nounwind readnone speculatable willreturn
-declare void @llvm.dbg.declare(metadata, metadata, metadata) #0
-
-attributes #0 = { nofree nosync nounwind readnone speculatable willreturn }
 
 !llvm.dbg.cu = !{!0}
 
@@ -265,67 +250,64 @@ attributes #0 = { nofree nosync nounwind readnone speculatable willreturn }
 !6 = !{}
 !7 = !DILocalVariable(name: "p", scope: !2, file: !1, line: 23, type: !8)
 !8 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !9, size: 64)
-!9 = !DICompositeType(tag: DW_TAG_structure_type, name: "Data", file: !1, size: 64, align: 32, elements: !10)
-!10 = !{!11, !12}
-!11 = !DIDerivedType(tag: DW_TAG_member, name: "id", file: !1, baseType: !5, size: 32, align: 32)
-!12 = !DIDerivedType(tag: DW_TAG_member, name: "data", file: !1, baseType: !5, size: 32, align: 32, offset: 32)
-!13 = !DILocation(line: 23, column: 3, scope: !2)
-!14 = !DILocalVariable(name: "val", scope: !2, file: !1, line: 12, type: !5)
-!15 = !DILocation(line: 12, column: 3, scope: !2)
-!16 = !DILocalVariable(name: "id", scope: !2, file: !1, line: 11, type: !5)
-!17 = !DILocation(line: 11, column: 3, scope: !2)
-!18 = !DILocalVariable(name: "data", scope: !2, file: !1, line: 10, type: !19)
-!19 = !DICompositeType(tag: DW_TAG_array_type, baseType: !9, size: 256, align: 32, elements: !20)
-!20 = !{!21}
-!21 = !DISubrange(count: 4, lowerBound: 0)
-!22 = !DILocation(line: 10, column: 3, scope: !2)
-!23 = !DILocalVariable(name: "err", scope: !2, file: !1, line: 9, type: !5)
-!24 = !DILocation(line: 9, column: 3, scope: !2)
-!25 = !DILocation(line: 14, column: 3, scope: !2)
-!26 = !DILocation(line: 15, column: 3, scope: !2)
-!27 = !DILocation(line: 16, column: 3, scope: !2)
-!28 = !DILocation(line: 17, column: 3, scope: !2)
-!29 = !DILocation(line: 18, column: 3, scope: !2)
-!30 = !DILocation(line: 19, column: 3, scope: !2)
-!31 = !DILocation(line: 20, column: 3, scope: !2)
-!32 = !DILocation(line: 21, column: 3, scope: !2)
-!33 = !DILocation(line: 24, column: 3, scope: !2)
-!34 = !DILocation(line: 25, column: 3, scope: !2)
-!35 = !DILocation(line: 26, column: 3, scope: !2)
-!36 = !DILocation(line: 26, column: 17, scope: !2)
-!37 = !DILocation(line: 27, column: 3, scope: !2)
-!38 = !DILocation(line: 27, column: 18, scope: !2)
-!39 = !DILocation(line: 28, column: 3, scope: !2)
-!40 = !DILocation(line: 29, column: 3, scope: !2)
-!41 = !DILocation(line: 30, column: 3, scope: !2)
-!42 = !DILocation(line: 31, column: 3, scope: !2)
-!43 = !DILocation(line: 31, column: 17, scope: !2)
-!44 = !DILocation(line: 32, column: 3, scope: !2)
-!45 = !DILocation(line: 32, column: 18, scope: !2)
-!46 = !DILocation(line: 33, column: 3, scope: !2)
-!47 = !DILocation(line: 34, column: 3, scope: !2)
-!48 = !DILocation(line: 35, column: 3, scope: !2)
-!49 = !DILocation(line: 35, column: 17, scope: !2)
-!50 = !DILocation(line: 36, column: 3, scope: !2)
-!51 = !DILocation(line: 37, column: 3, scope: !2)
-!52 = !DILocation(line: 38, column: 3, scope: !2)
-!53 = !DILocation(line: 39, column: 3, scope: !2)
-!54 = !DILocation(line: 39, column: 17, scope: !2)
-!55 = !DILocation(line: 40, column: 3, scope: !2)
-!56 = !DILocation(line: 40, column: 18, scope: !2)
-!57 = !DILocation(line: 42, column: 3, scope: !2)
-!58 = !DILocation(line: 43, column: 3, scope: !2)
-!59 = !DILocation(line: 44, column: 3, scope: !2)
-!60 = !DILocation(line: 45, column: 3, scope: !2)
-!61 = !DILocation(line: 45, column: 17, scope: !2)
-!62 = !DILocation(line: 46, column: 3, scope: !2)
-!63 = !DILocation(line: 47, column: 3, scope: !2)
-!64 = !DILocation(line: 48, column: 3, scope: !2)
-!65 = !DILocation(line: 48, column: 17, scope: !2)
-!66 = !DILocation(line: 49, column: 3, scope: !2)
-!67 = !DILocation(line: 50, column: 3, scope: !2)
-!68 = !DILocation(line: 51, column: 3, scope: !2)
-!69 = !DILocation(line: 51, column: 17, scope: !2)
-!70 = !DILocation(line: 53, column: 3, scope: !2)
-!71 = !DILocation(line: 0, scope: !2)
-!72 = !DILocation(line: 58, column: 3, scope: !2)
+!9 = !DIBasicType(name: "void", encoding: DW_ATE_address)
+!10 = !DILocation(line: 23, column: 3, scope: !2)
+!11 = !DILocalVariable(name: "val", scope: !2, file: !1, line: 12, type: !5)
+!12 = !DILocation(line: 12, column: 3, scope: !2)
+!13 = !DILocalVariable(name: "id", scope: !2, file: !1, line: 11, type: !5)
+!14 = !DILocation(line: 11, column: 3, scope: !2)
+!15 = !DILocalVariable(name: "data", scope: !2, file: !1, line: 10, type: !16)
+!16 = !DICompositeType(tag: DW_TAG_array_type, baseType: !9, size: 256, align: 32, elements: !17)
+!17 = !{!18}
+!18 = !DISubrange(count: 4, lowerBound: 0)
+!19 = !DILocation(line: 10, column: 3, scope: !2)
+!20 = !DILocalVariable(name: "err", scope: !2, file: !1, line: 9, type: !5)
+!21 = !DILocation(line: 9, column: 3, scope: !2)
+!22 = !DILocation(line: 14, column: 3, scope: !2)
+!23 = !DILocation(line: 15, column: 3, scope: !2)
+!24 = !DILocation(line: 16, column: 3, scope: !2)
+!25 = !DILocation(line: 17, column: 3, scope: !2)
+!26 = !DILocation(line: 18, column: 3, scope: !2)
+!27 = !DILocation(line: 19, column: 3, scope: !2)
+!28 = !DILocation(line: 20, column: 3, scope: !2)
+!29 = !DILocation(line: 21, column: 3, scope: !2)
+!30 = !DILocation(line: 24, column: 3, scope: !2)
+!31 = !DILocation(line: 25, column: 3, scope: !2)
+!32 = !DILocation(line: 26, column: 3, scope: !2)
+!33 = !DILocation(line: 26, column: 17, scope: !2)
+!34 = !DILocation(line: 27, column: 3, scope: !2)
+!35 = !DILocation(line: 27, column: 18, scope: !2)
+!36 = !DILocation(line: 28, column: 3, scope: !2)
+!37 = !DILocation(line: 29, column: 3, scope: !2)
+!38 = !DILocation(line: 30, column: 3, scope: !2)
+!39 = !DILocation(line: 31, column: 3, scope: !2)
+!40 = !DILocation(line: 31, column: 17, scope: !2)
+!41 = !DILocation(line: 32, column: 3, scope: !2)
+!42 = !DILocation(line: 32, column: 18, scope: !2)
+!43 = !DILocation(line: 33, column: 3, scope: !2)
+!44 = !DILocation(line: 34, column: 3, scope: !2)
+!45 = !DILocation(line: 35, column: 3, scope: !2)
+!46 = !DILocation(line: 35, column: 17, scope: !2)
+!47 = !DILocation(line: 36, column: 3, scope: !2)
+!48 = !DILocation(line: 37, column: 3, scope: !2)
+!49 = !DILocation(line: 38, column: 3, scope: !2)
+!50 = !DILocation(line: 39, column: 3, scope: !2)
+!51 = !DILocation(line: 39, column: 17, scope: !2)
+!52 = !DILocation(line: 40, column: 3, scope: !2)
+!53 = !DILocation(line: 40, column: 18, scope: !2)
+!54 = !DILocation(line: 42, column: 3, scope: !2)
+!55 = !DILocation(line: 43, column: 3, scope: !2)
+!56 = !DILocation(line: 44, column: 3, scope: !2)
+!57 = !DILocation(line: 45, column: 3, scope: !2)
+!58 = !DILocation(line: 45, column: 17, scope: !2)
+!59 = !DILocation(line: 46, column: 3, scope: !2)
+!60 = !DILocation(line: 47, column: 3, scope: !2)
+!61 = !DILocation(line: 48, column: 3, scope: !2)
+!62 = !DILocation(line: 48, column: 17, scope: !2)
+!63 = !DILocation(line: 49, column: 3, scope: !2)
+!64 = !DILocation(line: 50, column: 3, scope: !2)
+!65 = !DILocation(line: 51, column: 3, scope: !2)
+!66 = !DILocation(line: 51, column: 17, scope: !2)
+!67 = !DILocation(line: 53, column: 3, scope: !2)
+!68 = !DILocation(line: 0, scope: !2)
+!69 = !DILocation(line: 58, column: 3, scope: !2)

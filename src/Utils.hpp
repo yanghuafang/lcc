@@ -65,19 +65,28 @@ class Utils {
                                        IntCmpPred pred, llvm::Value* lhs,
                                        llvm::Value* rhs, bool isUnsigned);
 
-  static llvm::Value* createLoad(llvm::IRBuilder<>& builder, llvm::Value* lhs);
+  static llvm::Value* createLoad(llvm::IRBuilder<>& builder, llvm::Value* ptr,
+                                   AST::VarType* lvalueVarType,
+                                   CodeGenerator& generator);
 
   static llvm::Value* createAssign(
       llvm::IRBuilder<>& builder, llvm::Value* lhs, llvm::Value* rhs,
+      AST::VarType* lhsVarType, CodeGenerator& generator,
       AST::BuiltinTypeId srcTypeId = AST::BuiltinTypeId::UNKNOWN,
       AST::BuiltinTypeId dstTypeId = AST::BuiltinTypeId::UNKNOWN);
 
   static llvm::Value* createAdd(llvm::IRBuilder<>& builder, llvm::Value* lhs,
-                                llvm::Value* rhs, AST::BuiltinTypeId lhsTypeId,
+                                llvm::Value* rhs, AST::VarType* lhsVarType,
+                                AST::VarType* rhsVarType,
+                                CodeGenerator& generator,
+                                AST::BuiltinTypeId lhsTypeId,
                                 AST::BuiltinTypeId rhsTypeId);
 
   static llvm::Value* createSub(llvm::IRBuilder<>& builder, llvm::Value* lhs,
-                                llvm::Value* rhs, AST::BuiltinTypeId lhsTypeId,
+                                llvm::Value* rhs, AST::VarType* lhsVarType,
+                                AST::VarType* rhsVarType,
+                                CodeGenerator& generator,
+                                AST::BuiltinTypeId lhsTypeId,
                                 AST::BuiltinTypeId rhsTypeId);
 
   static llvm::Value* createMul(llvm::IRBuilder<>& builder, llvm::Value* lhs,
@@ -128,9 +137,22 @@ class Utils {
 
   static AST::BuiltinTypeId varTypeToTypeId(AST::VarType* varType);
 
+  // LLVM 20+ opaque pointers: pointee types live on AST VarType, not llvm::Type*.
+  // resolveTypedefVarType peels DefinedType aliases before the helpers below.
   static AST::VarType* resolveTypedefVarType(AST::VarType* varType,
                                              CodeGenerator& generator);
 
   static AST::BuiltinTypeId resolvedVarTypeToTypeId(AST::VarType* varType,
                                                     CodeGenerator& generator);
+
+  // LLVM element type for GEP / PtrDiff on a pointer expression (from AST, not IR).
+  static llvm::Type* pointerArithmeticElementType(AST::VarType* ptrExprVarType,
+                                                  CodeGenerator& generator);
+
+  // LLVM type stored through ptr (load/store), after array-to-pointer decay.
+  static llvm::Type* memoryAccessType(AST::VarType* lvalueVarType,
+                                      CodeGenerator& generator);
+
+  static llvm::Type* opaquePointerType(llvm::LLVMContext& context,
+                                       unsigned addressSpace = 0);
 };

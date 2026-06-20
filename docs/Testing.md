@@ -6,7 +6,7 @@ All commands below assume `cd lcc/scripts`.
 
 | Script | Purpose |
 |--------|---------|
-| `build-env.sh` | Export `PATH`, `LLVM_DIR`, `LCC_LINKER` for macOS (Homebrew) or Ubuntu (apt LLVM 14) |
+| `build-env.sh` | Export `PATH`, `LLVM_DIR`, `LCC_LINKER` for macOS (Homebrew) or Ubuntu (apt LLVM 20) |
 | `install-deps-ubuntu.sh` | Install apt packages on Ubuntu 24.04 LTS |
 | `build-lcc.sh` | Configure and build the `lcc` compiler — see [Install.md](Install.md) |
 | `compile-tests.sh` | Compile unit tests to `../../lcc-build/*.o`; writes AST/IR under `../debug/` |
@@ -47,12 +47,14 @@ Each test prints `PASS` or `FAIL` on stdout. Scripts exit non-zero on the first 
 
 Optional compile mode (at most one; applies to all tests or the single named test):
 
-| Flag | `lcc` flags | Use |
-|------|-------------|-----|
-| *(none)* | *(none)* | Default regression run (no DWARF, no LLVM opts) |
-| `--debug` | `-g -O0` | Debuggable test binaries |
-| `--release` | `-O2` | Optimized, no debug info |
-| `--relwithdebinfo` | `-g -O2` | DWARF emitted; LLVM opts still skipped under `-g` — see [Usage.md](Usage.md) |
+| Flag | `lcc` flags | IR suffix |
+|------|-------------|-----------|
+| *(none)* | `-g -O0` | `.debug.ll` (same as `--debug`) |
+| `--debug` | `-g -O0` | `.debug.ll` |
+| `--release` | `-O2` | `.release.ll` |
+| `--relwithdebinfo` | `-g -O2`¹ | `.relwithdebinfo.ll` |
+
+¹ `-g` disables LLVM optimization in `lcc`; `-O2` is passed but ignored (warning printed). DWARF is still emitted; IR differs from `--debug` mainly in the checked-in snapshot name.
 
 Examples:
 
@@ -62,7 +64,7 @@ Examples:
 ./compile-tests.sh --relwithdebinfo
 ```
 
-`compile-tests.sh` always passes `-v` and `-l` so AST (`.dot`, `.png`) and IR (`.ll`) land in `lcc/debug/`. Checked-in copies of those artifacts live under `lcc/debug/` in the repo.
+`compile-tests.sh` always passes `-v` and `-l` so AST (`.dot`, `.png`) and IR land in `lcc/debug/`. The repo keeps reference IR for all three modes: `*.debug.ll`, `*.release.ll`, and `*.relwithdebinfo.ll` (40 tests × 3 modes).
 
 ### Debug-info smoke test
 

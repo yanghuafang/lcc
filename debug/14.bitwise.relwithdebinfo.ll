@@ -1,240 +1,235 @@
 ; ModuleID = 'lcc'
 source_filename = "lcc"
-target datalayout = "e-m:o-i64:64-i128:128-n32:64-S128"
+target datalayout = "e-m:o-p270:32:32-p271:32:32-p272:64:64-i64:64-i128:128-n32:64-S128-Fn32"
 target triple = "arm64-apple-darwin25.5.0"
 
 @0 = private unnamed_addr constant [19 x i8] c"14.bitwise.c PASS\0A\00", align 1
 @1 = private unnamed_addr constant [19 x i8] c"14.bitwise.c FAIL\0A\00", align 1
 
-declare i32 @printf(i8*, ...)
+declare i32 @printf(ptr, ...)
 
 define i32 @main() !dbg !2 {
 entry:
   %const37 = bitcast i32 -2023406815 to i32
   %const = bitcast i32 35930656 to i32
   %signedVal = alloca i32, align 4
-  call void @llvm.dbg.declare(metadata i32* %signedVal, metadata !7, metadata !DIExpression()), !dbg !8
+    #dbg_declare(ptr %signedVal, !7, !DIExpression(), !8)
   %msbSet = alloca i32, align 4
-  call void @llvm.dbg.declare(metadata i32* %msbSet, metadata !9, metadata !DIExpression()), !dbg !11
+    #dbg_declare(ptr %msbSet, !9, !DIExpression(), !11)
   %rightShiftVal = alloca i32, align 4
-  call void @llvm.dbg.declare(metadata i32* %rightShiftVal, metadata !12, metadata !DIExpression()), !dbg !13
+    #dbg_declare(ptr %rightShiftVal, !12, !DIExpression(), !13)
   %leftShiftVal = alloca i32, align 4
-  call void @llvm.dbg.declare(metadata i32* %leftShiftVal, metadata !14, metadata !DIExpression()), !dbg !15
+    #dbg_declare(ptr %leftShiftVal, !14, !DIExpression(), !15)
   %xoreqVal = alloca i32, align 4
-  call void @llvm.dbg.declare(metadata i32* %xoreqVal, metadata !16, metadata !DIExpression()), !dbg !17
+    #dbg_declare(ptr %xoreqVal, !16, !DIExpression(), !17)
   %oreqVal = alloca i32, align 4
-  call void @llvm.dbg.declare(metadata i32* %oreqVal, metadata !18, metadata !DIExpression()), !dbg !19
+    #dbg_declare(ptr %oreqVal, !18, !DIExpression(), !19)
   %andeqVal = alloca i32, align 4
-  call void @llvm.dbg.declare(metadata i32* %andeqVal, metadata !20, metadata !DIExpression()), !dbg !21
+    #dbg_declare(ptr %andeqVal, !20, !DIExpression(), !21)
   %notVal2 = alloca i32, align 4
-  call void @llvm.dbg.declare(metadata i32* %notVal2, metadata !22, metadata !DIExpression()), !dbg !23
+    #dbg_declare(ptr %notVal2, !22, !DIExpression(), !23)
   %notVal1 = alloca i32, align 4
-  call void @llvm.dbg.declare(metadata i32* %notVal1, metadata !24, metadata !DIExpression()), !dbg !25
+    #dbg_declare(ptr %notVal1, !24, !DIExpression(), !25)
   %xorVal = alloca i32, align 4
-  call void @llvm.dbg.declare(metadata i32* %xorVal, metadata !26, metadata !DIExpression()), !dbg !27
+    #dbg_declare(ptr %xorVal, !26, !DIExpression(), !27)
   %orVal = alloca i32, align 4
-  call void @llvm.dbg.declare(metadata i32* %orVal, metadata !28, metadata !DIExpression()), !dbg !29
+    #dbg_declare(ptr %orVal, !28, !DIExpression(), !29)
   %andVal = alloca i32, align 4
-  call void @llvm.dbg.declare(metadata i32* %andVal, metadata !30, metadata !DIExpression()), !dbg !31
+    #dbg_declare(ptr %andVal, !30, !DIExpression(), !31)
   %b = alloca i32, align 4
-  call void @llvm.dbg.declare(metadata i32* %b, metadata !32, metadata !DIExpression()), !dbg !33
+    #dbg_declare(ptr %b, !32, !DIExpression(), !33)
   %a = alloca i32, align 4
-  call void @llvm.dbg.declare(metadata i32* %a, metadata !34, metadata !DIExpression()), !dbg !35
+    #dbg_declare(ptr %a, !34, !DIExpression(), !35)
   %err = alloca i32, align 4
-  call void @llvm.dbg.declare(metadata i32* %err, metadata !36, metadata !DIExpression()), !dbg !37
-  store i32 0, i32* %err, align 4, !dbg !37
-  store i32 305419896, i32* %a, align 4, !dbg !35
-  store i32 %const37, i32* %b, align 4, !dbg !33
-  %0 = load i32, i32* %a, align 4, !dbg !31
-  %1 = load i32, i32* %b, align 4, !dbg !31
+    #dbg_declare(ptr %err, !36, !DIExpression(), !37)
+  store i32 0, ptr %err, align 4, !dbg !37
+  store i32 305419896, ptr %a, align 4, !dbg !35
+  store i32 %const37, ptr %b, align 4, !dbg !33
+  %0 = load i32, ptr %a, align 4, !dbg !31
+  %1 = load i32, ptr %b, align 4, !dbg !31
   %2 = and i32 %0, %1, !dbg !31
-  store i32 %2, i32* %andVal, align 4, !dbg !31
-  %3 = load i32, i32* %a, align 4, !dbg !29
-  %4 = load i32, i32* %b, align 4, !dbg !29
+  store i32 %2, ptr %andVal, align 4, !dbg !31
+  %3 = load i32, ptr %a, align 4, !dbg !29
+  %4 = load i32, ptr %b, align 4, !dbg !29
   %5 = or i32 %3, %4, !dbg !29
-  store i32 %5, i32* %orVal, align 4, !dbg !29
-  %6 = load i32, i32* %a, align 4, !dbg !27
-  %7 = load i32, i32* %b, align 4, !dbg !27
+  store i32 %5, ptr %orVal, align 4, !dbg !29
+  %6 = load i32, ptr %a, align 4, !dbg !27
+  %7 = load i32, ptr %b, align 4, !dbg !27
   %8 = xor i32 %6, %7, !dbg !27
-  store i32 %8, i32* %xorVal, align 4, !dbg !27
-  %9 = load i32, i32* %a, align 4, !dbg !25
+  store i32 %8, ptr %xorVal, align 4, !dbg !27
+  %9 = load i32, ptr %a, align 4, !dbg !25
   %10 = xor i32 %9, -1, !dbg !25
-  store i32 %10, i32* %notVal1, align 4, !dbg !25
-  %11 = load i32, i32* %b, align 4, !dbg !23
+  store i32 %10, ptr %notVal1, align 4, !dbg !25
+  %11 = load i32, ptr %b, align 4, !dbg !23
   %12 = xor i32 %11, -1, !dbg !23
-  store i32 %12, i32* %notVal2, align 4, !dbg !23
-  %13 = load i32, i32* %andVal, align 4, !dbg !21
-  store i32 %13, i32* %andeqVal, align 4, !dbg !21
-  %14 = load i32, i32* %a, align 4, !dbg !38
-  %15 = load i32, i32* %andeqVal, align 4, !dbg !38
+  store i32 %12, ptr %notVal2, align 4, !dbg !23
+  %13 = load i32, ptr %andVal, align 4, !dbg !21
+  store i32 %13, ptr %andeqVal, align 4, !dbg !21
+  %14 = load i32, ptr %a, align 4, !dbg !38
+  %15 = load i32, ptr %andeqVal, align 4, !dbg !38
   %16 = and i32 %15, %14, !dbg !38
-  store i32 %16, i32* %andeqVal, align 4, !dbg !38
-  %17 = load i32, i32* %andeqVal, align 4, !dbg !38
-  %18 = load i32, i32* %orVal, align 4, !dbg !19
-  store i32 %18, i32* %oreqVal, align 4, !dbg !19
-  %19 = load i32, i32* %a, align 4, !dbg !39
-  %20 = load i32, i32* %oreqVal, align 4, !dbg !39
+  store i32 %16, ptr %andeqVal, align 4, !dbg !38
+  %17 = load i32, ptr %andeqVal, align 4, !dbg !38
+  %18 = load i32, ptr %orVal, align 4, !dbg !19
+  store i32 %18, ptr %oreqVal, align 4, !dbg !19
+  %19 = load i32, ptr %a, align 4, !dbg !39
+  %20 = load i32, ptr %oreqVal, align 4, !dbg !39
   %21 = or i32 %20, %19, !dbg !39
-  store i32 %21, i32* %oreqVal, align 4, !dbg !39
-  %22 = load i32, i32* %oreqVal, align 4, !dbg !39
-  %23 = load i32, i32* %xorVal, align 4, !dbg !17
-  store i32 %23, i32* %xoreqVal, align 4, !dbg !17
-  %24 = load i32, i32* %a, align 4, !dbg !40
-  %25 = load i32, i32* %xoreqVal, align 4, !dbg !40
+  store i32 %21, ptr %oreqVal, align 4, !dbg !39
+  %22 = load i32, ptr %oreqVal, align 4, !dbg !39
+  %23 = load i32, ptr %xorVal, align 4, !dbg !17
+  store i32 %23, ptr %xoreqVal, align 4, !dbg !17
+  %24 = load i32, ptr %a, align 4, !dbg !40
+  %25 = load i32, ptr %xoreqVal, align 4, !dbg !40
   %26 = xor i32 %25, %24, !dbg !40
-  store i32 %26, i32* %xoreqVal, align 4, !dbg !40
-  %27 = load i32, i32* %xoreqVal, align 4, !dbg !40
-  %28 = load i32, i32* %a, align 4, !dbg !15
+  store i32 %26, ptr %xoreqVal, align 4, !dbg !40
+  %27 = load i32, ptr %xoreqVal, align 4, !dbg !40
+  %28 = load i32, ptr %a, align 4, !dbg !15
   %29 = shl i32 %28, 8, !dbg !15
-  store i32 %29, i32* %leftShiftVal, align 4, !dbg !15
-  %30 = load i32, i32* %b, align 4, !dbg !13
+  store i32 %29, ptr %leftShiftVal, align 4, !dbg !15
+  %30 = load i32, ptr %b, align 4, !dbg !13
   %31 = lshr i32 %30, 8, !dbg !13
-  store i32 %31, i32* %rightShiftVal, align 4, !dbg !13
-  %32 = load i32, i32* %leftShiftVal, align 4, !dbg !41
+  store i32 %31, ptr %rightShiftVal, align 4, !dbg !13
+  %32 = load i32, ptr %leftShiftVal, align 4, !dbg !41
   %33 = shl i32 %32, 8, !dbg !41
-  store i32 %33, i32* %leftShiftVal, align 4, !dbg !41
-  %34 = load i32, i32* %leftShiftVal, align 4, !dbg !41
-  %35 = load i32, i32* %rightShiftVal, align 4, !dbg !42
+  store i32 %33, ptr %leftShiftVal, align 4, !dbg !41
+  %34 = load i32, ptr %leftShiftVal, align 4, !dbg !41
+  %35 = load i32, ptr %rightShiftVal, align 4, !dbg !42
   %36 = lshr i32 %35, 8, !dbg !42
-  store i32 %36, i32* %rightShiftVal, align 4, !dbg !42
-  %37 = load i32, i32* %rightShiftVal, align 4, !dbg !42
-  %38 = load i32, i32* %andVal, align 4, !dbg !43
+  store i32 %36, ptr %rightShiftVal, align 4, !dbg !42
+  %37 = load i32, ptr %rightShiftVal, align 4, !dbg !42
+  %38 = load i32, ptr %andVal, align 4, !dbg !43
   %39 = icmp ne i32 %38, %const, !dbg !43
   br i1 %39, label %then, label %if.end, !dbg !43
 
 then:                                             ; preds = %entry
-  store i32 1, i32* %err, align 4, !dbg !44
-  %40 = load i32, i32* %err, align 4, !dbg !44
+  store i32 1, ptr %err, align 4, !dbg !44
+  %40 = load i32, ptr %err, align 4, !dbg !44
   br label %if.end, !dbg !44
 
 if.end:                                           ; preds = %entry, %then
   %const38 = bitcast i32 -1753917575 to i32, !dbg !45
-  %41 = load i32, i32* %orVal, align 4, !dbg !46
+  %41 = load i32, ptr %orVal, align 4, !dbg !46
   %42 = icmp ne i32 %41, %const38, !dbg !46
   br i1 %42, label %then1, label %if.end3, !dbg !46
 
 then1:                                            ; preds = %if.end
-  store i32 1, i32* %err, align 4, !dbg !47
-  %43 = load i32, i32* %err, align 4, !dbg !47
+  store i32 1, ptr %err, align 4, !dbg !47
+  %43 = load i32, ptr %err, align 4, !dbg !47
   br label %if.end3, !dbg !47
 
 if.end3:                                          ; preds = %if.end, %then1
-  %44 = load i32, i32* %xorVal, align 4, !dbg !48
+  %44 = load i32, ptr %xorVal, align 4, !dbg !48
   %45 = icmp ne i32 %44, -1789848231, !dbg !48
   br i1 %45, label %then4, label %if.end6, !dbg !48
 
 then4:                                            ; preds = %if.end3
-  store i32 1, i32* %err, align 4, !dbg !49
-  %46 = load i32, i32* %err, align 4, !dbg !49
+  store i32 1, ptr %err, align 4, !dbg !49
+  %46 = load i32, ptr %err, align 4, !dbg !49
   br label %if.end6, !dbg !49
 
 if.end6:                                          ; preds = %if.end3, %then4
-  %47 = load i32, i32* %notVal1, align 4, !dbg !50
+  %47 = load i32, ptr %notVal1, align 4, !dbg !50
   %48 = icmp ne i32 %47, -305419897, !dbg !50
   br i1 %48, label %then7, label %if.end9, !dbg !50
 
 then7:                                            ; preds = %if.end6
-  store i32 1, i32* %err, align 4, !dbg !51
-  %49 = load i32, i32* %err, align 4, !dbg !51
+  store i32 1, ptr %err, align 4, !dbg !51
+  %49 = load i32, ptr %err, align 4, !dbg !51
   br label %if.end9, !dbg !51
 
 if.end9:                                          ; preds = %if.end6, %then7
-  %50 = load i32, i32* %notVal2, align 4, !dbg !52
+  %50 = load i32, ptr %notVal2, align 4, !dbg !52
   %51 = icmp ne i32 %50, 2023406814, !dbg !52
   br i1 %51, label %then10, label %if.end12, !dbg !52
 
 then10:                                           ; preds = %if.end9
-  store i32 1, i32* %err, align 4, !dbg !53
-  %52 = load i32, i32* %err, align 4, !dbg !53
+  store i32 1, ptr %err, align 4, !dbg !53
+  %52 = load i32, ptr %err, align 4, !dbg !53
   br label %if.end12, !dbg !53
 
 if.end12:                                         ; preds = %if.end9, %then10
-  %53 = load i32, i32* %andeqVal, align 4, !dbg !54
+  %53 = load i32, ptr %andeqVal, align 4, !dbg !54
   %54 = icmp ne i32 %53, %const, !dbg !54
   br i1 %54, label %then13, label %if.end15, !dbg !54
 
 then13:                                           ; preds = %if.end12
-  store i32 1, i32* %err, align 4, !dbg !55
-  %55 = load i32, i32* %err, align 4, !dbg !55
+  store i32 1, ptr %err, align 4, !dbg !55
+  %55 = load i32, ptr %err, align 4, !dbg !55
   br label %if.end15, !dbg !55
 
 if.end15:                                         ; preds = %if.end12, %then13
-  %56 = load i32, i32* %oreqVal, align 4, !dbg !56
+  %56 = load i32, ptr %oreqVal, align 4, !dbg !56
   %57 = icmp ne i32 %56, %const38, !dbg !56
   br i1 %57, label %then16, label %if.end18, !dbg !56
 
 then16:                                           ; preds = %if.end15
-  store i32 1, i32* %err, align 4, !dbg !57
-  %58 = load i32, i32* %err, align 4, !dbg !57
+  store i32 1, ptr %err, align 4, !dbg !57
+  %58 = load i32, ptr %err, align 4, !dbg !57
   br label %if.end18, !dbg !57
 
 if.end18:                                         ; preds = %if.end15, %then16
-  %59 = load i32, i32* %xoreqVal, align 4, !dbg !58
+  %59 = load i32, ptr %xoreqVal, align 4, !dbg !58
   %60 = icmp ne i32 %59, %const37, !dbg !58
   br i1 %60, label %then19, label %if.end21, !dbg !58
 
 then19:                                           ; preds = %if.end18
-  store i32 1, i32* %err, align 4, !dbg !59
-  %61 = load i32, i32* %err, align 4, !dbg !59
+  store i32 1, ptr %err, align 4, !dbg !59
+  %61 = load i32, ptr %err, align 4, !dbg !59
   br label %if.end21, !dbg !59
 
 if.end21:                                         ; preds = %if.end18, %then19
-  %62 = load i32, i32* %leftShiftVal, align 4, !dbg !60
+  %62 = load i32, ptr %leftShiftVal, align 4, !dbg !60
   %63 = icmp ne i32 %62, 1450704896, !dbg !60
   br i1 %63, label %then22, label %if.end24, !dbg !60
 
 then22:                                           ; preds = %if.end21
-  store i32 1, i32* %err, align 4, !dbg !61
-  %64 = load i32, i32* %err, align 4, !dbg !61
+  store i32 1, ptr %err, align 4, !dbg !61
+  %64 = load i32, ptr %err, align 4, !dbg !61
   br label %if.end24, !dbg !61
 
 if.end24:                                         ; preds = %if.end21, %then22
-  %65 = load i32, i32* %rightShiftVal, align 4, !dbg !62
+  %65 = load i32, ptr %rightShiftVal, align 4, !dbg !62
   %66 = icmp ne i32 %65, 34661, !dbg !62
   br i1 %66, label %then25, label %if.end27, !dbg !62
 
 then25:                                           ; preds = %if.end24
-  store i32 1, i32* %err, align 4, !dbg !63
-  %67 = load i32, i32* %err, align 4, !dbg !63
+  store i32 1, ptr %err, align 4, !dbg !63
+  %67 = load i32, ptr %err, align 4, !dbg !63
   br label %if.end27, !dbg !63
 
 if.end27:                                         ; preds = %if.end24, %then25
-  store i32 -2147483648, i32* %msbSet, align 4, !dbg !11
-  %68 = load i32, i32* %msbSet, align 4, !dbg !64
+  store i32 -2147483648, ptr %msbSet, align 4, !dbg !11
+  %68 = load i32, ptr %msbSet, align 4, !dbg !64
   %69 = lshr i32 %68, 1, !dbg !64
   %70 = icmp ne i32 %69, 1073741824, !dbg !64
   br i1 %70, label %then28, label %if.end30, !dbg !64
 
 then28:                                           ; preds = %if.end27
-  store i32 1, i32* %err, align 4, !dbg !65
-  %71 = load i32, i32* %err, align 4, !dbg !65
+  store i32 1, ptr %err, align 4, !dbg !65
+  %71 = load i32, ptr %err, align 4, !dbg !65
   br label %if.end30, !dbg !65
 
 if.end30:                                         ; preds = %if.end27, %then28
-  store i32 -8, i32* %signedVal, align 4, !dbg !8
-  %72 = load i32, i32* %signedVal, align 4, !dbg !66
+  store i32 -8, ptr %signedVal, align 4, !dbg !8
+  %72 = load i32, ptr %signedVal, align 4, !dbg !66
   %73 = ashr i32 %72, 1, !dbg !66
   %74 = icmp ne i32 %73, -4, !dbg !66
   br i1 %74, label %then31, label %if.end33, !dbg !66
 
 then31:                                           ; preds = %if.end30
-  store i32 1, i32* %err, align 4, !dbg !67
-  %75 = load i32, i32* %err, align 4, !dbg !67
+  store i32 1, ptr %err, align 4, !dbg !67
+  %75 = load i32, ptr %err, align 4, !dbg !67
   br label %if.end33, !dbg !67
 
 if.end33:                                         ; preds = %if.end30, %then31
-  %76 = load i32, i32* %err, align 4, !dbg !68
+  %76 = load i32, ptr %err, align 4, !dbg !68
   %77 = icmp eq i32 %76, 0, !dbg !68
-  %. = select i1 %77, i8* getelementptr inbounds ([19 x i8], [19 x i8]* @0, i32 0, i32 0), i8* getelementptr inbounds ([19 x i8], [19 x i8]* @1, i32 0, i32 0), !dbg !45
-  %78 = call i32 (i8*, ...) @printf(i8* %.), !dbg !45
-  %79 = load i32, i32* %err, align 4, !dbg !69
+  %. = select i1 %77, ptr @0, ptr @1, !dbg !45
+  %78 = call i32 (ptr, ...) @printf(ptr %.), !dbg !45
+  %79 = load i32, ptr %err, align 4, !dbg !69
   ret i32 %79, !dbg !69
 }
-
-; Function Attrs: nofree nosync nounwind readnone speculatable willreturn
-declare void @llvm.dbg.declare(metadata, metadata, metadata) #0
-
-attributes #0 = { nofree nosync nounwind readnone speculatable willreturn }
 
 !llvm.dbg.cu = !{!0}
 

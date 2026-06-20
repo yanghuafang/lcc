@@ -29,9 +29,10 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
-if [[ -n "$compile_mode" ]]; then
-  setCompileMode "$compile_mode" || exit 1
+if [[ -z "$compile_mode" ]]; then
+  compile_mode="--debug"
 fi
+setCompileMode "$compile_mode" || exit 1
 
 set -e
 

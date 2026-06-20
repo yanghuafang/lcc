@@ -1,5 +1,6 @@
 #include "DebugInfoBuilder.hpp"
 
+#include <llvm/ADT/SmallString.h>
 #include <llvm/BinaryFormat/Dwarf.h>
 #include <llvm/IR/DIBuilder.h>
 #include <llvm/IR/DebugInfoMetadata.h>
@@ -181,9 +182,43 @@ llvm::DIType* DebugInfoBuilder::getOrCreateDIType(llvm::Type* llvmType,
   if (varType != nullptr && varType->isUnionType()) {
     return getOrCreateUnionDIType(static_cast<AST::UnionType*>(varType));
   }
+  // Opaque LLVM pointer types carry no pointee; build pointer DI from AST baseType_.
+  if (varType != nullptr && varType->isPointerType()) {
+    AST::VarType* pointee =
+        static_cast<AST::PointerType*>(varType)->baseType_;
+    llvm::DIType* pointeeDi = getOrCreateDIType(nullptr, pointee);
+    const unsigned pointerBits =
+        module_.getDataLayout().getPointerSizeInBits(0);
+    return dib_->createPointerType(pointeeDi, pointerBits);
+  }
+  if (varType != nullptr && varType->isArrayType()) {
+    AST::VarType* elementVarType = varType->getElementVarType();
+    llvm::DIType* elementDi = getOrCreateDIType(nullptr, elementVarType);
+    const uint64_t count = static_cast<AST::ArrayType*>(varType)->length_;
+    llvm::Metadata* subrange = dib_->getOrCreateSubrange(0, count);
+    llvm::DINodeArray subscripts = dib_->getOrCreateArray({subrange});
+    if (llvmType != nullptr) {
+      llvmTypeCache_[llvmType] = dib_->createArrayType(
+          module_.getDataLayout().getTypeAllocSizeInBits(llvmType),
+          module_.getDataLayout().getABITypeAlign(llvmType).value() * 8,
+          elementDi, subscripts);
+      return llvmTypeCache_[llvmType];
+    }
+    return dib_->createArrayType(
+        module_.getDataLayout().getTypeAllocSizeInBits(
+            varType->getType(*codeGenerator_)),
+        module_.getDataLayout()
+                .getABITypeAlign(varType->getType(*codeGenerator_))
+                .value() *
+            8,
+        elementDi, subscripts);
+  }
   if (varType != nullptr && varType->isBuiltinType()) {
     return getOrCreateBuiltinDIType(
         static_cast<AST::BuiltinType*>(varType)->typeId_);
+  }
+  if (varType != nullptr && varType->isEnumType()) {
+    return getOrCreateBuiltinDIType(AST::BuiltinTypeId::INT);
   }
 
   if (llvmType == nullptr) {
@@ -241,11 +276,11 @@ llvm::DIType* DebugInfoBuilder::getOrCreateLlvmType(llvm::Type* type) {
         module_.getDataLayout().getABITypeAlign(type).value() * 8, elemDi,
         subscripts);
   }
+  // No AST VarType (e.g. extern void*): opaque ptr in IR maps to void* in DWARF.
   if (type->isPointerTy()) {
-    llvm::DIType* pointee = getOrCreateLlvmType(type->getPointerElementType());
     const unsigned pointerBits =
         module_.getDataLayout().getPointerSizeInBits(0);
-    return dib_->createPointerType(pointee, pointerBits);
+    return dib_->createPointerType(getOrCreateVoidType(), pointerBits);
   }
   if (type->isStructTy()) {
     llvm::StructType* structTy = llvm::cast<llvm::StructType>(type);
@@ -269,23 +304,31 @@ llvm::DIType* DebugInfoBuilder::getOrCreateLlvmType(llvm::Type* type) {
 
 llvm::DISubprogram* DebugInfoBuilder::createFunction(
     llvm::Function* func, const std::string& name, unsigned line,
-    llvm::FunctionType* funcType) {
+    llvm::FunctionType* funcType, AST::VarType* retVarType,
+    const std::vector<AST::VarType*>& paramVarTypes) {
   if (!initialized_) {
     return nullptr;
   }
 
   std::vector<llvm::Metadata*> paramTypes;
-  // DISubroutineType lists the return type first, then parameter types.
-  llvm::DIType* retType = getOrCreateLlvmType(funcType->getReturnType());
+  llvm::DIType* retType =
+      getOrCreateDIType(funcType->getReturnType(), retVarType);
   paramTypes.push_back(retType);
 
-  for (llvm::Type* paramType : funcType->params()) {
-    llvm::Type* lowered = paramType;
-    // Match FuncDecl::genCode: array parameters are passed as pointers in LLVM IR.
-    if (paramType->isArrayTy()) {
-      lowered = paramType->getArrayElementType()->getPointerTo();
+  for (size_t i = 0; i < funcType->params().size(); ++i) {
+    AST::VarType* paramVarType =
+        i < paramVarTypes.size() ? paramVarTypes[i] : nullptr;
+    // C array parameters decay to pointers; DWARF records pointer-to-element.
+    if (paramVarType != nullptr && paramVarType->isArrayType()) {
+      llvm::DIType* elementDi =
+          getOrCreateDIType(nullptr, paramVarType->getElementVarType());
+      const unsigned pointerBits =
+          module_.getDataLayout().getPointerSizeInBits(0);
+      paramTypes.push_back(dib_->createPointerType(elementDi, pointerBits));
+    } else {
+      paramTypes.push_back(
+          getOrCreateDIType(funcType->getParamType(i), paramVarType));
     }
-    paramTypes.push_back(getOrCreateLlvmType(lowered));
   }
 
   llvm::DISubroutineType* signature = dib_->createSubroutineType(
@@ -314,8 +357,10 @@ void DebugInfoBuilder::insertAllocaDeclare(
   llvm::DIExpression* expr = llvm::DIExpression::get(context_, {});
   llvm::DILocation* location = llvm::DILocation::get(context_, line, col, scope);
   // Keep dbg.declare in the entry block, immediately after the matching alloca.
+  // insertDeclare expects an iterator insert position (Instruction* overload removed).
   if (llvm::Instruction* insertBefore = alloca->getNextNode()) {
-    dib_->insertDeclare(alloca, variable, expr, location, insertBefore);
+    dib_->insertDeclare(alloca, variable, expr, location,
+                        insertBefore->getIterator());
   } else {
     dib_->insertDeclare(alloca, variable, expr, location, alloca->getParent());
   }

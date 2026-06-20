@@ -10,14 +10,16 @@
 #include <llvm/MC/TargetRegistry.h>
 #include <llvm/Passes/PassBuilder.h>
 #include <llvm/Passes/PassPlugin.h>
+#include <llvm/Support/CodeGen.h>
 #include <llvm/Support/FileSystem.h>
-#include <llvm/Support/Host.h>
+#include <llvm/TargetParser/Host.h>
 #include <llvm/Support/TargetSelect.h>
 #include <llvm/Support/raw_ostream.h>
 #include <llvm/Target/TargetMachine.h>
 #include <llvm/Target/TargetOptions.h>
 
 #include <iostream>
+#include <optional>
 
 #include "AbstractSyntaxTree.hpp"
 #include "DebugInfoBuilder.hpp"
@@ -26,7 +28,8 @@ CodeGenerator::CodeGenerator()
     : context_(),
       builder_(context_),
       module_(new llvm::Module("lcc", context_)),
-      dataLayout_(new llvm::DataLayout(module_)),
+      // DataLayout(Module*) removed in LLVM 20; layout string comes from the module.
+      dataLayout_(new llvm::DataLayout(module_->getDataLayout())),
       structTypeTable_(new StructTypeTable),
       unionTypeTable_(new UnionTypeTable),
       globalBlock_(nullptr),
@@ -570,7 +573,7 @@ void CodeGenerator::genObjectCode(const std::string& fileName) {
   std::string cpu = "generic";
   std::string features;
   llvm::TargetOptions options;
-  auto optionalModel = llvm::Optional<llvm::Reloc::Model>();
+  std::optional<llvm::Reloc::Model> optionalModel;
   llvm::TargetMachine* targetMachine = target->createTargetMachine(
       targetTriple, cpu, features, options, optionalModel);
 
@@ -586,7 +589,7 @@ void CodeGenerator::genObjectCode(const std::string& fileName) {
 
   llvm::legacy::PassManager pm;
   if (targetMachine->addPassesToEmitFile(pm, objFileStream, nullptr,
-                                         llvm::CGFT_ObjectFile)) {
+                                         llvm::CodeGenFileType::ObjectFile)) {
     throw std::runtime_error("Failed to emit object file!");
   }
 

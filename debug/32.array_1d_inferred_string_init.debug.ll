@@ -1,6 +1,6 @@
 ; ModuleID = 'lcc'
 source_filename = "lcc"
-target datalayout = "e-m:o-i64:64-i128:128-n32:64-S128"
+target datalayout = "e-m:o-p270:32:32-p271:32:32-p272:64:64-i64:64-i128:128-n32:64-S128-Fn32"
 target triple = "arm64-apple-darwin25.5.0"
 
 @ga = global [6 x i32] [i32 10, i32 7, i32 8, i32 9, i32 1, i32 5]
@@ -9,338 +9,322 @@ target triple = "arm64-apple-darwin25.5.0"
 @0 = private unnamed_addr constant [41 x i8] c"32.array_1d_inferred_string_init.c PASS\0A\00", align 1
 @1 = private unnamed_addr constant [41 x i8] c"32.array_1d_inferred_string_init.c FAIL\0A\00", align 1
 
-declare i32 @printf(i8*, ...)
+declare i32 @printf(ptr, ...)
 
 define i32 @main() !dbg !2 {
 entry:
   %lb = alloca [6 x i8], align 1
-  call void @llvm.dbg.declare(metadata [6 x i8]* %lb, metadata !7, metadata !DIExpression()), !dbg !12
+    #dbg_declare(ptr %lb, !7, !DIExpression(), !12)
   %ls = alloca [6 x i8], align 1
-  call void @llvm.dbg.declare(metadata [6 x i8]* %ls, metadata !13, metadata !DIExpression()), !dbg !14
+    #dbg_declare(ptr %ls, !13, !DIExpression(), !14)
   %la = alloca [3 x i32], align 4
-  call void @llvm.dbg.declare(metadata [3 x i32]* %la, metadata !15, metadata !DIExpression()), !dbg !19
+    #dbg_declare(ptr %la, !15, !DIExpression(), !19)
   %err = alloca i32, align 4
-  call void @llvm.dbg.declare(metadata i32* %err, metadata !20, metadata !DIExpression()), !dbg !21
-  store i32 0, i32* %err, align 4, !dbg !21
-  %0 = bitcast [3 x i32]* %la to i32*, !dbg !19
-  store i32 1, i32* %0, align 4, !dbg !19
-  %1 = getelementptr [3 x i32], [3 x i32]* %la, i32 0, i32 1, !dbg !19
-  store i32 2, i32* %1, align 4, !dbg !19
-  %2 = getelementptr [3 x i32], [3 x i32]* %la, i32 0, i32 2, !dbg !19
-  store i32 3, i32* %2, align 4, !dbg !19
-  %3 = bitcast [6 x i8]* %ls to i8*, !dbg !14
-  store i8 104, i8* %3, align 1, !dbg !14
-  %4 = getelementptr [6 x i8], [6 x i8]* %ls, i32 0, i32 1, !dbg !14
-  store i8 101, i8* %4, align 1, !dbg !14
-  %5 = getelementptr [6 x i8], [6 x i8]* %ls, i32 0, i32 2, !dbg !14
-  store i8 108, i8* %5, align 1, !dbg !14
-  %6 = getelementptr [6 x i8], [6 x i8]* %ls, i32 0, i32 3, !dbg !14
-  store i8 108, i8* %6, align 1, !dbg !14
-  %7 = getelementptr [6 x i8], [6 x i8]* %ls, i32 0, i32 4, !dbg !14
-  store i8 111, i8* %7, align 1, !dbg !14
-  %8 = getelementptr [6 x i8], [6 x i8]* %ls, i32 0, i32 5, !dbg !14
-  store i8 0, i8* %8, align 1, !dbg !14
-  %9 = bitcast [6 x i8]* %lb to i8*, !dbg !12
-  store i8 104, i8* %9, align 1, !dbg !12
-  %10 = getelementptr [6 x i8], [6 x i8]* %lb, i32 0, i32 1, !dbg !12
-  store i8 101, i8* %10, align 1, !dbg !12
-  %11 = getelementptr [6 x i8], [6 x i8]* %lb, i32 0, i32 2, !dbg !12
-  store i8 108, i8* %11, align 1, !dbg !12
-  %12 = getelementptr [6 x i8], [6 x i8]* %lb, i32 0, i32 3, !dbg !12
-  store i8 108, i8* %12, align 1, !dbg !12
-  %13 = getelementptr [6 x i8], [6 x i8]* %lb, i32 0, i32 4, !dbg !12
-  store i8 111, i8* %13, align 1, !dbg !12
-  %14 = getelementptr [6 x i8], [6 x i8]* %lb, i32 0, i32 5, !dbg !12
-  store i8 0, i8* %14, align 1, !dbg !12
-  %15 = bitcast [3 x i32]* %la to i32*, !dbg !22
-  %16 = bitcast i32* %15 to i32*, !dbg !22
-  %17 = load i32, i32* %16, align 4, !dbg !22
-  %18 = icmp ne i32 %17, 1, !dbg !22
-  br i1 %18, label %then, label %if.end, !dbg !22
+    #dbg_declare(ptr %err, !20, !DIExpression(), !21)
+  store i32 0, ptr %err, align 4, !dbg !21
+  %0 = bitcast ptr %la to ptr, !dbg !19
+  store i32 1, ptr %0, align 4, !dbg !19
+  %1 = getelementptr [3 x i32], ptr %la, i32 0, i32 1, !dbg !19
+  store i32 2, ptr %1, align 4, !dbg !19
+  %2 = getelementptr [3 x i32], ptr %la, i32 0, i32 2, !dbg !19
+  store i32 3, ptr %2, align 4, !dbg !19
+  %3 = bitcast ptr %ls to ptr, !dbg !14
+  store i8 104, ptr %3, align 1, !dbg !14
+  %4 = getelementptr [6 x i8], ptr %ls, i32 0, i32 1, !dbg !14
+  store i8 101, ptr %4, align 1, !dbg !14
+  %5 = getelementptr [6 x i8], ptr %ls, i32 0, i32 2, !dbg !14
+  store i8 108, ptr %5, align 1, !dbg !14
+  %6 = getelementptr [6 x i8], ptr %ls, i32 0, i32 3, !dbg !14
+  store i8 108, ptr %6, align 1, !dbg !14
+  %7 = getelementptr [6 x i8], ptr %ls, i32 0, i32 4, !dbg !14
+  store i8 111, ptr %7, align 1, !dbg !14
+  %8 = getelementptr [6 x i8], ptr %ls, i32 0, i32 5, !dbg !14
+  store i8 0, ptr %8, align 1, !dbg !14
+  %9 = bitcast ptr %lb to ptr, !dbg !12
+  store i8 104, ptr %9, align 1, !dbg !12
+  %10 = getelementptr [6 x i8], ptr %lb, i32 0, i32 1, !dbg !12
+  store i8 101, ptr %10, align 1, !dbg !12
+  %11 = getelementptr [6 x i8], ptr %lb, i32 0, i32 2, !dbg !12
+  store i8 108, ptr %11, align 1, !dbg !12
+  %12 = getelementptr [6 x i8], ptr %lb, i32 0, i32 3, !dbg !12
+  store i8 108, ptr %12, align 1, !dbg !12
+  %13 = getelementptr [6 x i8], ptr %lb, i32 0, i32 4, !dbg !12
+  store i8 111, ptr %13, align 1, !dbg !12
+  %14 = getelementptr [6 x i8], ptr %lb, i32 0, i32 5, !dbg !12
+  store i8 0, ptr %14, align 1, !dbg !12
+  %15 = bitcast ptr %la to ptr, !dbg !22
+  %16 = load i32, ptr %15, align 4, !dbg !22
+  %17 = icmp ne i32 %16, 1, !dbg !22
+  br i1 %17, label %then, label %if.end, !dbg !22
 
 then:                                             ; preds = %entry
-  store i32 1, i32* %err, align 4, !dbg !23
-  %19 = load i32, i32* %err, align 4, !dbg !23
+  store i32 1, ptr %err, align 4, !dbg !23
+  %18 = load i32, ptr %err, align 4, !dbg !23
   br label %if.end, !dbg !23
 
 if.end:                                           ; preds = %entry, %then
-  %20 = bitcast [3 x i32]* %la to i32*, !dbg !24
-  %21 = getelementptr i32, i32* %20, i32 1, !dbg !24
-  %22 = load i32, i32* %21, align 4, !dbg !24
-  %23 = icmp ne i32 %22, 2, !dbg !24
-  br i1 %23, label %then1, label %if.end3, !dbg !24
+  %19 = getelementptr i32, ptr %la, i32 1, !dbg !24
+  %20 = load i32, ptr %19, align 4, !dbg !24
+  %21 = icmp ne i32 %20, 2, !dbg !24
+  br i1 %21, label %then1, label %if.end3, !dbg !24
 
 then1:                                            ; preds = %if.end
-  store i32 1, i32* %err, align 4, !dbg !25
-  %24 = load i32, i32* %err, align 4, !dbg !25
+  store i32 1, ptr %err, align 4, !dbg !25
+  %22 = load i32, ptr %err, align 4, !dbg !25
   br label %if.end3, !dbg !25
 
 if.end3:                                          ; preds = %if.end, %then1
-  %25 = bitcast [3 x i32]* %la to i32*, !dbg !26
-  %26 = getelementptr i32, i32* %25, i32 2, !dbg !26
-  %27 = load i32, i32* %26, align 4, !dbg !26
-  %28 = icmp ne i32 %27, 3, !dbg !26
-  br i1 %28, label %then4, label %if.end6, !dbg !26
+  %23 = getelementptr i32, ptr %la, i32 2, !dbg !26
+  %24 = load i32, ptr %23, align 4, !dbg !26
+  %25 = icmp ne i32 %24, 3, !dbg !26
+  br i1 %25, label %then4, label %if.end6, !dbg !26
 
 then4:                                            ; preds = %if.end3
-  store i32 1, i32* %err, align 4, !dbg !27
-  %29 = load i32, i32* %err, align 4, !dbg !27
+  store i32 1, ptr %err, align 4, !dbg !27
+  %26 = load i32, ptr %err, align 4, !dbg !27
   br label %if.end6, !dbg !27
 
 if.end6:                                          ; preds = %if.end3, %then4
-  %30 = bitcast [6 x i8]* %ls to i8*, !dbg !28
-  %31 = bitcast i8* %30 to i8*, !dbg !28
-  %32 = load i8, i8* %31, align 1, !dbg !28
-  %33 = sext i8 %32 to i32, !dbg !28
-  %34 = icmp ne i32 %33, 104, !dbg !28
-  br i1 %34, label %then7, label %if.end9, !dbg !28
+  %27 = bitcast ptr %ls to ptr, !dbg !28
+  %28 = load i8, ptr %27, align 1, !dbg !28
+  %29 = sext i8 %28 to i32, !dbg !28
+  %30 = icmp ne i32 %29, 104, !dbg !28
+  br i1 %30, label %then7, label %if.end9, !dbg !28
 
 then7:                                            ; preds = %if.end6
-  store i32 1, i32* %err, align 4, !dbg !29
-  %35 = load i32, i32* %err, align 4, !dbg !29
+  store i32 1, ptr %err, align 4, !dbg !29
+  %31 = load i32, ptr %err, align 4, !dbg !29
   br label %if.end9, !dbg !29
 
 if.end9:                                          ; preds = %if.end6, %then7
-  %36 = bitcast [6 x i8]* %ls to i8*, !dbg !30
-  %37 = getelementptr i8, i8* %36, i32 1, !dbg !30
-  %38 = load i8, i8* %37, align 1, !dbg !30
-  %39 = sext i8 %38 to i32, !dbg !30
-  %40 = icmp ne i32 %39, 101, !dbg !30
-  br i1 %40, label %then10, label %if.end12, !dbg !30
+  %32 = getelementptr i8, ptr %ls, i32 1, !dbg !30
+  %33 = load i8, ptr %32, align 1, !dbg !30
+  %34 = sext i8 %33 to i32, !dbg !30
+  %35 = icmp ne i32 %34, 101, !dbg !30
+  br i1 %35, label %then10, label %if.end12, !dbg !30
 
 then10:                                           ; preds = %if.end9
-  store i32 1, i32* %err, align 4, !dbg !31
-  %41 = load i32, i32* %err, align 4, !dbg !31
+  store i32 1, ptr %err, align 4, !dbg !31
+  %36 = load i32, ptr %err, align 4, !dbg !31
   br label %if.end12, !dbg !31
 
 if.end12:                                         ; preds = %if.end9, %then10
-  %42 = bitcast [6 x i8]* %ls to i8*, !dbg !32
-  %43 = getelementptr i8, i8* %42, i32 2, !dbg !32
-  %44 = load i8, i8* %43, align 1, !dbg !32
-  %45 = sext i8 %44 to i32, !dbg !32
-  %46 = icmp ne i32 %45, 108, !dbg !32
-  br i1 %46, label %then13, label %if.end15, !dbg !32
+  %37 = getelementptr i8, ptr %ls, i32 2, !dbg !32
+  %38 = load i8, ptr %37, align 1, !dbg !32
+  %39 = sext i8 %38 to i32, !dbg !32
+  %40 = icmp ne i32 %39, 108, !dbg !32
+  br i1 %40, label %then13, label %if.end15, !dbg !32
 
 then13:                                           ; preds = %if.end12
-  store i32 1, i32* %err, align 4, !dbg !33
-  %47 = load i32, i32* %err, align 4, !dbg !33
+  store i32 1, ptr %err, align 4, !dbg !33
+  %41 = load i32, ptr %err, align 4, !dbg !33
   br label %if.end15, !dbg !33
 
 if.end15:                                         ; preds = %if.end12, %then13
-  %48 = bitcast [6 x i8]* %ls to i8*, !dbg !34
-  %49 = getelementptr i8, i8* %48, i32 3, !dbg !34
-  %50 = load i8, i8* %49, align 1, !dbg !34
-  %51 = sext i8 %50 to i32, !dbg !34
-  %52 = icmp ne i32 %51, 108, !dbg !34
-  br i1 %52, label %then16, label %if.end18, !dbg !34
+  %42 = getelementptr i8, ptr %ls, i32 3, !dbg !34
+  %43 = load i8, ptr %42, align 1, !dbg !34
+  %44 = sext i8 %43 to i32, !dbg !34
+  %45 = icmp ne i32 %44, 108, !dbg !34
+  br i1 %45, label %then16, label %if.end18, !dbg !34
 
 then16:                                           ; preds = %if.end15
-  store i32 1, i32* %err, align 4, !dbg !35
-  %53 = load i32, i32* %err, align 4, !dbg !35
+  store i32 1, ptr %err, align 4, !dbg !35
+  %46 = load i32, ptr %err, align 4, !dbg !35
   br label %if.end18, !dbg !35
 
 if.end18:                                         ; preds = %if.end15, %then16
-  %54 = bitcast [6 x i8]* %ls to i8*, !dbg !36
-  %55 = getelementptr i8, i8* %54, i32 4, !dbg !36
-  %56 = load i8, i8* %55, align 1, !dbg !36
-  %57 = sext i8 %56 to i32, !dbg !36
-  %58 = icmp ne i32 %57, 111, !dbg !36
-  br i1 %58, label %then19, label %if.end21, !dbg !36
+  %47 = getelementptr i8, ptr %ls, i32 4, !dbg !36
+  %48 = load i8, ptr %47, align 1, !dbg !36
+  %49 = sext i8 %48 to i32, !dbg !36
+  %50 = icmp ne i32 %49, 111, !dbg !36
+  br i1 %50, label %then19, label %if.end21, !dbg !36
 
 then19:                                           ; preds = %if.end18
-  store i32 1, i32* %err, align 4, !dbg !37
-  %59 = load i32, i32* %err, align 4, !dbg !37
+  store i32 1, ptr %err, align 4, !dbg !37
+  %51 = load i32, ptr %err, align 4, !dbg !37
   br label %if.end21, !dbg !37
 
 if.end21:                                         ; preds = %if.end18, %then19
-  %60 = bitcast [6 x i8]* %ls to i8*, !dbg !38
-  %61 = getelementptr i8, i8* %60, i32 5, !dbg !38
-  %62 = load i8, i8* %61, align 1, !dbg !38
-  %63 = sext i8 %62 to i32, !dbg !38
-  %64 = icmp ne i32 %63, 0, !dbg !38
-  br i1 %64, label %then22, label %if.end24, !dbg !38
+  %52 = getelementptr i8, ptr %ls, i32 5, !dbg !38
+  %53 = load i8, ptr %52, align 1, !dbg !38
+  %54 = sext i8 %53 to i32, !dbg !38
+  %55 = icmp ne i32 %54, 0, !dbg !38
+  br i1 %55, label %then22, label %if.end24, !dbg !38
 
 then22:                                           ; preds = %if.end21
-  store i32 1, i32* %err, align 4, !dbg !39
-  %65 = load i32, i32* %err, align 4, !dbg !39
+  store i32 1, ptr %err, align 4, !dbg !39
+  %56 = load i32, ptr %err, align 4, !dbg !39
   br label %if.end24, !dbg !39
 
 if.end24:                                         ; preds = %if.end21, %then22
-  %66 = bitcast [6 x i8]* %lb to i8*, !dbg !40
-  %67 = bitcast i8* %66 to i8*, !dbg !40
-  %68 = load i8, i8* %67, align 1, !dbg !40
-  %69 = sext i8 %68 to i32, !dbg !40
-  %70 = icmp ne i32 %69, 104, !dbg !40
-  br i1 %70, label %then25, label %if.end27, !dbg !40
+  %57 = bitcast ptr %lb to ptr, !dbg !40
+  %58 = load i8, ptr %57, align 1, !dbg !40
+  %59 = sext i8 %58 to i32, !dbg !40
+  %60 = icmp ne i32 %59, 104, !dbg !40
+  br i1 %60, label %then25, label %if.end27, !dbg !40
 
 then25:                                           ; preds = %if.end24
-  store i32 1, i32* %err, align 4, !dbg !41
-  %71 = load i32, i32* %err, align 4, !dbg !41
+  store i32 1, ptr %err, align 4, !dbg !41
+  %61 = load i32, ptr %err, align 4, !dbg !41
   br label %if.end27, !dbg !41
 
 if.end27:                                         ; preds = %if.end24, %then25
-  %72 = bitcast [6 x i8]* %lb to i8*, !dbg !42
-  %73 = getelementptr i8, i8* %72, i32 5, !dbg !42
-  %74 = load i8, i8* %73, align 1, !dbg !42
-  %75 = sext i8 %74 to i32, !dbg !42
-  %76 = icmp ne i32 %75, 0, !dbg !42
-  br i1 %76, label %then28, label %if.end30, !dbg !42
+  %62 = getelementptr i8, ptr %lb, i32 5, !dbg !42
+  %63 = load i8, ptr %62, align 1, !dbg !42
+  %64 = sext i8 %63 to i32, !dbg !42
+  %65 = icmp ne i32 %64, 0, !dbg !42
+  br i1 %65, label %then28, label %if.end30, !dbg !42
 
 then28:                                           ; preds = %if.end27
-  store i32 1, i32* %err, align 4, !dbg !43
-  %77 = load i32, i32* %err, align 4, !dbg !43
+  store i32 1, ptr %err, align 4, !dbg !43
+  %66 = load i32, ptr %err, align 4, !dbg !43
   br label %if.end30, !dbg !43
 
 if.end30:                                         ; preds = %if.end27, %then28
-  %78 = load i32, i32* getelementptr inbounds ([6 x i32], [6 x i32]* @ga, i32 0, i32 0), align 4, !dbg !44
-  %79 = icmp ne i32 %78, 10, !dbg !44
-  br i1 %79, label %then31, label %if.end33, !dbg !44
+  %67 = load i32, ptr @ga, align 4, !dbg !44
+  %68 = icmp ne i32 %67, 10, !dbg !44
+  br i1 %68, label %then31, label %if.end33, !dbg !44
 
 then31:                                           ; preds = %if.end30
-  store i32 1, i32* %err, align 4, !dbg !45
-  %80 = load i32, i32* %err, align 4, !dbg !45
+  store i32 1, ptr %err, align 4, !dbg !45
+  %69 = load i32, ptr %err, align 4, !dbg !45
   br label %if.end33, !dbg !45
 
 if.end33:                                         ; preds = %if.end30, %then31
-  %81 = load i32, i32* getelementptr inbounds ([6 x i32], [6 x i32]* @ga, i32 0, i32 1), align 4, !dbg !46
-  %82 = icmp ne i32 %81, 7, !dbg !46
-  br i1 %82, label %then34, label %if.end36, !dbg !46
+  %70 = load i32, ptr getelementptr (i32, ptr @ga, i32 1), align 4, !dbg !46
+  %71 = icmp ne i32 %70, 7, !dbg !46
+  br i1 %71, label %then34, label %if.end36, !dbg !46
 
 then34:                                           ; preds = %if.end33
-  store i32 1, i32* %err, align 4, !dbg !47
-  %83 = load i32, i32* %err, align 4, !dbg !47
+  store i32 1, ptr %err, align 4, !dbg !47
+  %72 = load i32, ptr %err, align 4, !dbg !47
   br label %if.end36, !dbg !47
 
 if.end36:                                         ; preds = %if.end33, %then34
-  %84 = load i32, i32* getelementptr inbounds ([6 x i32], [6 x i32]* @ga, i32 0, i32 2), align 4, !dbg !48
-  %85 = icmp ne i32 %84, 8, !dbg !48
-  br i1 %85, label %then37, label %if.end39, !dbg !48
+  %73 = load i32, ptr getelementptr (i32, ptr @ga, i32 2), align 4, !dbg !48
+  %74 = icmp ne i32 %73, 8, !dbg !48
+  br i1 %74, label %then37, label %if.end39, !dbg !48
 
 then37:                                           ; preds = %if.end36
-  store i32 1, i32* %err, align 4, !dbg !49
-  %86 = load i32, i32* %err, align 4, !dbg !49
+  store i32 1, ptr %err, align 4, !dbg !49
+  %75 = load i32, ptr %err, align 4, !dbg !49
   br label %if.end39, !dbg !49
 
 if.end39:                                         ; preds = %if.end36, %then37
-  %87 = load i32, i32* getelementptr inbounds ([6 x i32], [6 x i32]* @ga, i32 0, i32 3), align 4, !dbg !50
-  %88 = icmp ne i32 %87, 9, !dbg !50
-  br i1 %88, label %then40, label %if.end42, !dbg !50
+  %76 = load i32, ptr getelementptr (i32, ptr @ga, i32 3), align 4, !dbg !50
+  %77 = icmp ne i32 %76, 9, !dbg !50
+  br i1 %77, label %then40, label %if.end42, !dbg !50
 
 then40:                                           ; preds = %if.end39
-  store i32 1, i32* %err, align 4, !dbg !51
-  %89 = load i32, i32* %err, align 4, !dbg !51
+  store i32 1, ptr %err, align 4, !dbg !51
+  %78 = load i32, ptr %err, align 4, !dbg !51
   br label %if.end42, !dbg !51
 
 if.end42:                                         ; preds = %if.end39, %then40
-  %90 = load i32, i32* getelementptr inbounds ([6 x i32], [6 x i32]* @ga, i32 0, i32 4), align 4, !dbg !52
-  %91 = icmp ne i32 %90, 1, !dbg !52
-  br i1 %91, label %then43, label %if.end45, !dbg !52
+  %79 = load i32, ptr getelementptr (i32, ptr @ga, i32 4), align 4, !dbg !52
+  %80 = icmp ne i32 %79, 1, !dbg !52
+  br i1 %80, label %then43, label %if.end45, !dbg !52
 
 then43:                                           ; preds = %if.end42
-  store i32 1, i32* %err, align 4, !dbg !53
-  %92 = load i32, i32* %err, align 4, !dbg !53
+  store i32 1, ptr %err, align 4, !dbg !53
+  %81 = load i32, ptr %err, align 4, !dbg !53
   br label %if.end45, !dbg !53
 
 if.end45:                                         ; preds = %if.end42, %then43
-  %93 = load i32, i32* getelementptr inbounds ([6 x i32], [6 x i32]* @ga, i32 0, i32 5), align 4, !dbg !54
-  %94 = icmp ne i32 %93, 5, !dbg !54
-  br i1 %94, label %then46, label %if.end48, !dbg !54
+  %82 = load i32, ptr getelementptr (i32, ptr @ga, i32 5), align 4, !dbg !54
+  %83 = icmp ne i32 %82, 5, !dbg !54
+  br i1 %83, label %then46, label %if.end48, !dbg !54
 
 then46:                                           ; preds = %if.end45
-  store i32 1, i32* %err, align 4, !dbg !55
-  %95 = load i32, i32* %err, align 4, !dbg !55
+  store i32 1, ptr %err, align 4, !dbg !55
+  %84 = load i32, ptr %err, align 4, !dbg !55
   br label %if.end48, !dbg !55
 
 if.end48:                                         ; preds = %if.end45, %then46
-  %96 = load i8, i8* getelementptr inbounds ([3 x i8], [3 x i8]* @gs, i32 0, i32 0), align 1, !dbg !56
-  %97 = sext i8 %96 to i32, !dbg !56
-  %98 = icmp ne i32 %97, 104, !dbg !56
-  br i1 %98, label %then49, label %if.end51, !dbg !56
+  %85 = load i8, ptr @gs, align 1, !dbg !56
+  %86 = sext i8 %85 to i32, !dbg !56
+  %87 = icmp ne i32 %86, 104, !dbg !56
+  br i1 %87, label %then49, label %if.end51, !dbg !56
 
 then49:                                           ; preds = %if.end48
-  store i32 1, i32* %err, align 4, !dbg !57
-  %99 = load i32, i32* %err, align 4, !dbg !57
+  store i32 1, ptr %err, align 4, !dbg !57
+  %88 = load i32, ptr %err, align 4, !dbg !57
   br label %if.end51, !dbg !57
 
 if.end51:                                         ; preds = %if.end48, %then49
-  %100 = load i8, i8* getelementptr inbounds ([3 x i8], [3 x i8]* @gs, i32 0, i32 1), align 1, !dbg !58
-  %101 = sext i8 %100 to i32, !dbg !58
-  %102 = icmp ne i32 %101, 105, !dbg !58
-  br i1 %102, label %then52, label %if.end54, !dbg !58
+  %89 = load i8, ptr getelementptr (i8, ptr @gs, i32 1), align 1, !dbg !58
+  %90 = sext i8 %89 to i32, !dbg !58
+  %91 = icmp ne i32 %90, 105, !dbg !58
+  br i1 %91, label %then52, label %if.end54, !dbg !58
 
 then52:                                           ; preds = %if.end51
-  store i32 1, i32* %err, align 4, !dbg !59
-  %103 = load i32, i32* %err, align 4, !dbg !59
+  store i32 1, ptr %err, align 4, !dbg !59
+  %92 = load i32, ptr %err, align 4, !dbg !59
   br label %if.end54, !dbg !59
 
 if.end54:                                         ; preds = %if.end51, %then52
-  %104 = load i8, i8* getelementptr inbounds ([3 x i8], [3 x i8]* @gs, i32 0, i32 2), align 1, !dbg !60
-  %105 = sext i8 %104 to i32, !dbg !60
-  %106 = icmp ne i32 %105, 0, !dbg !60
-  br i1 %106, label %then55, label %if.end57, !dbg !60
+  %93 = load i8, ptr getelementptr (i8, ptr @gs, i32 2), align 1, !dbg !60
+  %94 = sext i8 %93 to i32, !dbg !60
+  %95 = icmp ne i32 %94, 0, !dbg !60
+  br i1 %95, label %then55, label %if.end57, !dbg !60
 
 then55:                                           ; preds = %if.end54
-  store i32 1, i32* %err, align 4, !dbg !61
-  %107 = load i32, i32* %err, align 4, !dbg !61
+  store i32 1, ptr %err, align 4, !dbg !61
+  %96 = load i32, ptr %err, align 4, !dbg !61
   br label %if.end57, !dbg !61
 
 if.end57:                                         ; preds = %if.end54, %then55
-  %108 = load i8, i8* getelementptr inbounds ([4 x i8], [4 x i8]* @gt, i32 0, i32 0), align 1, !dbg !62
-  %109 = sext i8 %108 to i32, !dbg !62
-  %110 = icmp ne i32 %109, 104, !dbg !62
-  br i1 %110, label %then58, label %if.end60, !dbg !62
+  %97 = load i8, ptr @gt, align 1, !dbg !62
+  %98 = sext i8 %97 to i32, !dbg !62
+  %99 = icmp ne i32 %98, 104, !dbg !62
+  br i1 %99, label %then58, label %if.end60, !dbg !62
 
 then58:                                           ; preds = %if.end57
-  store i32 1, i32* %err, align 4, !dbg !63
-  %111 = load i32, i32* %err, align 4, !dbg !63
+  store i32 1, ptr %err, align 4, !dbg !63
+  %100 = load i32, ptr %err, align 4, !dbg !63
   br label %if.end60, !dbg !63
 
 if.end60:                                         ; preds = %if.end57, %then58
-  %112 = load i8, i8* getelementptr inbounds ([4 x i8], [4 x i8]* @gt, i32 0, i32 1), align 1, !dbg !64
-  %113 = sext i8 %112 to i32, !dbg !64
-  %114 = icmp ne i32 %113, 101, !dbg !64
-  br i1 %114, label %then61, label %if.end63, !dbg !64
+  %101 = load i8, ptr getelementptr (i8, ptr @gt, i32 1), align 1, !dbg !64
+  %102 = sext i8 %101 to i32, !dbg !64
+  %103 = icmp ne i32 %102, 101, !dbg !64
+  br i1 %103, label %then61, label %if.end63, !dbg !64
 
 then61:                                           ; preds = %if.end60
-  store i32 1, i32* %err, align 4, !dbg !65
-  %115 = load i32, i32* %err, align 4, !dbg !65
+  store i32 1, ptr %err, align 4, !dbg !65
+  %104 = load i32, ptr %err, align 4, !dbg !65
   br label %if.end63, !dbg !65
 
 if.end63:                                         ; preds = %if.end60, %then61
-  %116 = load i8, i8* getelementptr inbounds ([4 x i8], [4 x i8]* @gt, i32 0, i32 2), align 1, !dbg !66
-  %117 = sext i8 %116 to i32, !dbg !66
-  %118 = icmp ne i32 %117, 121, !dbg !66
-  br i1 %118, label %then64, label %if.end66, !dbg !66
+  %105 = load i8, ptr getelementptr (i8, ptr @gt, i32 2), align 1, !dbg !66
+  %106 = sext i8 %105 to i32, !dbg !66
+  %107 = icmp ne i32 %106, 121, !dbg !66
+  br i1 %107, label %then64, label %if.end66, !dbg !66
 
 then64:                                           ; preds = %if.end63
-  store i32 1, i32* %err, align 4, !dbg !67
-  %119 = load i32, i32* %err, align 4, !dbg !67
+  store i32 1, ptr %err, align 4, !dbg !67
+  %108 = load i32, ptr %err, align 4, !dbg !67
   br label %if.end66, !dbg !67
 
 if.end66:                                         ; preds = %if.end63, %then64
-  %120 = load i8, i8* getelementptr inbounds ([4 x i8], [4 x i8]* @gt, i32 0, i32 3), align 1, !dbg !68
-  %121 = sext i8 %120 to i32, !dbg !68
-  %122 = icmp ne i32 %121, 0, !dbg !68
-  br i1 %122, label %then67, label %if.end69, !dbg !68
+  %109 = load i8, ptr getelementptr (i8, ptr @gt, i32 3), align 1, !dbg !68
+  %110 = sext i8 %109 to i32, !dbg !68
+  %111 = icmp ne i32 %110, 0, !dbg !68
+  br i1 %111, label %then67, label %if.end69, !dbg !68
 
 then67:                                           ; preds = %if.end66
-  store i32 1, i32* %err, align 4, !dbg !69
-  %123 = load i32, i32* %err, align 4, !dbg !69
+  store i32 1, ptr %err, align 4, !dbg !69
+  %112 = load i32, ptr %err, align 4, !dbg !69
   br label %if.end69, !dbg !69
 
 if.end69:                                         ; preds = %if.end66, %then67
-  %124 = load i32, i32* %err, align 4, !dbg !70
-  %125 = icmp eq i32 %124, 0, !dbg !70
-  %. = select i1 %125, i8* getelementptr inbounds ([41 x i8], [41 x i8]* @0, i32 0, i32 0), i8* getelementptr inbounds ([41 x i8], [41 x i8]* @1, i32 0, i32 0), !dbg !71
-  %126 = call i32 (i8*, ...) @printf(i8* %.), !dbg !71
-  %127 = load i32, i32* %err, align 4, !dbg !72
-  ret i32 %127, !dbg !72
+  %113 = load i32, ptr %err, align 4, !dbg !70
+  %114 = icmp eq i32 %113, 0, !dbg !70
+  %. = select i1 %114, ptr @0, ptr @1, !dbg !71
+  %115 = call i32 (ptr, ...) @printf(ptr %.), !dbg !71
+  %116 = load i32, ptr %err, align 4, !dbg !72
+  ret i32 %116, !dbg !72
 }
-
-; Function Attrs: nofree nosync nounwind readnone speculatable willreturn
-declare void @llvm.dbg.declare(metadata, metadata, metadata) #0
-
-attributes #0 = { nofree nosync nounwind readnone speculatable willreturn }
 
 !llvm.dbg.cu = !{!0}
 

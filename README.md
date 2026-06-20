@@ -1,6 +1,6 @@
 # `lcc`: Learn C Compiler
 
-A teaching C compiler built with **flex**, **bison**, and **LLVM 14**. It uses **bottom-up LALR** parsing (not recursive descent) so the grammar stays small enough to study and modify.
+A teaching C compiler built with **flex**, **bison**, and **LLVM 20**. It uses **bottom-up LALR** parsing (not recursive descent) so the grammar stays small enough to study and modify.
 
 `lcc` compiles a `.c` translation unit to a `.o` object file. Link with `clang` or `gcc` to run the program.
 
@@ -10,7 +10,7 @@ A teaching C compiler built with **flex**, **bison**, and **LLVM 14**. It uses *
 git clone git@github.com:yanghuafang/lcc.git
 cd lcc/scripts
 
-# macOS: brew install flex bison llvm@14 argparse graphviz cmake
+# macOS: brew install flex bison llvm@20 argparse graphviz cmake
 # Ubuntu 24.04: ./install-deps-ubuntu.sh
 
 ./build-lcc.sh
@@ -27,7 +27,7 @@ Full regression suite:
 ./compile-tests.sh && ./link-tests.sh && ./run-tests.sh
 ```
 
-Build artifacts go to `../../lcc-build/` (sibling of the repo). AST and IR samples are under `lcc/debug/`.
+Build artifacts go to `../../lcc-build/` (sibling of the repo). Sample AST graphs and LLVM IR live under `lcc/debug/` (IR files use `.debug.ll`, `.release.ll`, or `.relwithdebinfo.ll` suffixes matching [compile modes](docs/Testing.md)).
 
 ## What it supports (summary)
 
@@ -52,7 +52,7 @@ Details: [docs/Language.md](docs/Language.md)
 
 ## Requirements
 
-LLVM **14**, flex, bison, argparse, graphviz, CMake **3.22+**, and a system linker (`clang` or `gcc`). Supported platforms: **macOS** (Homebrew) and **Ubuntu 24.04 LTS**. See [docs/Install.md](docs/Install.md).
+LLVM **20**, flex, bison, argparse, graphviz, CMake **3.22+**, **C++17**, and a system linker (`clang` or `gcc`). Supported platforms: **macOS** (Homebrew) and **Ubuntu 24.04 LTS**. See [docs/Install.md](docs/Install.md).
 
 ## Roadmap
 

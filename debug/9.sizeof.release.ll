@@ -1,18 +1,18 @@
 ; ModuleID = 'lcc'
 source_filename = "lcc"
-target datalayout = "e-m:o-i64:64-i128:128-n32:64-S128"
+target datalayout = "e-m:o-p270:32:32-p271:32:32-p272:64:64-i64:64-i128:128-n32:64-S128-Fn32"
 target triple = "arm64-apple-darwin25.5.0"
 
 @str = private unnamed_addr constant [16 x i8] c"9.sizeof.c PASS\00", align 1
 
 ; Function Attrs: nofree nounwind
-define i32 @main() local_unnamed_addr #0 {
+define noundef i32 @main() local_unnamed_addr #0 {
 entry:
-  %puts = tail call i32 @puts(i8* nonnull dereferenceable(1) getelementptr inbounds ([16 x i8], [16 x i8]* @str, i64 0, i64 0))
+  %puts = tail call i32 @puts(ptr nonnull dereferenceable(1) @str)
   ret i32 0
 }
 
 ; Function Attrs: nofree nounwind
-declare noundef i32 @puts(i8* nocapture noundef readonly) local_unnamed_addr #0
+declare noundef i32 @puts(ptr nocapture noundef readonly) local_unnamed_addr #0
 
 attributes #0 = { nofree nounwind }
