@@ -18,6 +18,7 @@
 #include <llvm/Target/TargetOptions.h>
 
 #include <iostream>
+#include <memory>
 
 #include "AbstractSyntaxTree.hpp"
 #include "DebugInfoBuilder.hpp"
@@ -35,7 +36,8 @@ CodeGenerator::CodeGenerator()
       currentFunc_(nullptr) {}
 
 CodeGenerator::~CodeGenerator() {
-  // popSymbolTable is not always paired on every exit path; drain both stacks.
+  // Scope stacks may be unbalanced after a failed lowering; drain owned tables
+  // and drop non-owning debug-scope metadata.
   while (!symbolTableStack_.empty()) {
     delete symbolTableStack_.back();
     symbolTableStack_.pop_back();
@@ -44,6 +46,8 @@ CodeGenerator::~CodeGenerator() {
     delete typedefTableStack_.back();
     typedefTableStack_.pop_back();
   }
+
+  debugScopeStack_.clear();
 
   delete structTypeTable_;
   structTypeTable_ = nullptr;
@@ -571,8 +575,9 @@ void CodeGenerator::genObjectCode(const std::string& fileName) {
   std::string features;
   llvm::TargetOptions options;
   auto optionalModel = llvm::Optional<llvm::Reloc::Model>();
-  llvm::TargetMachine* targetMachine = target->createTargetMachine(
-      targetTriple, cpu, features, options, optionalModel);
+  std::unique_ptr<llvm::TargetMachine> targetMachine(
+      target->createTargetMachine(targetTriple, cpu, features, options,
+                                  optionalModel));
 
   module_->setDataLayout(targetMachine->createDataLayout());
   module_->setTargetTriple(targetTriple);

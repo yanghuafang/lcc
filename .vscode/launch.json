@@ -16,7 +16,7 @@
                 "-o",
                 "${workspaceFolder}/../lcc-build/0.hello_world.o",
                 "-l",
-                "${workspaceFolder}/../lcc-build/0.hello_world.ll",
+                "${workspaceFolder}/../lcc-build/0.hello_world.debug.ll",
                 "-v",
                 "${workspaceFolder}/../lcc-build/0.hello_world.dot",
                 "-g",

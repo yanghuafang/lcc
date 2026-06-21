@@ -21,8 +21,8 @@ declare void @llvm.dbg.declare(metadata, metadata, metadata) #0
 
 define i32 @main() !dbg !10 {
 entry:
-  %const43 = bitcast i64 2596069104 to i64
-  %const = bitcast i64 305419896 to i64
+  %const43 = bitcast i64 -7296712171277459728 to i64
+  %const = bitcast i64 1311768465173141112 to i64
   %decB = alloca i32, align 4
   call void @llvm.dbg.declare(metadata i32* %decB, metadata !13, metadata !DIExpression()), !dbg !14
   %decA = alloca i32, align 4

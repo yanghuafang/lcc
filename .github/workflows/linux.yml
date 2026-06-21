@@ -2,9 +2,9 @@ name: Linux
 
 on:
   push:
-    branches: [main, master]
+    branches: [main, master, lcc-llvm-14]
   pull_request:
-    branches: [main, master]
+    branches: [main, master, lcc-llvm-14]
 
 jobs:
   ubuntu:

@@ -17,8 +17,8 @@ entry:
 
 define i32 @main() {
 entry:
-  %const43 = bitcast i64 2596069104 to i64
-  %const = bitcast i64 305419896 to i64
+  %const43 = bitcast i64 -7296712171277459728 to i64
+  %const = bitcast i64 1311768465173141112 to i64
   %decB = alloca i32, align 4
   %decA = alloca i32, align 4
   %incB = alloca i32, align 4

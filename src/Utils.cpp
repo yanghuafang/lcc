@@ -369,7 +369,7 @@ llvm::Value* Utils::createCmpEq(llvm::IRBuilder<>& builder, llvm::Value* lhs,
         builder.CreatePtrToInt(rhs, builder.getInt64Ty()));
   }
 
-  throw std::domain_error("Unsupported types for \"==\" comparision!");
+  throw std::domain_error("Unsupported types for \"==\" comparison!");
 }
 
 // lhs is a pointer from genCodePtr(); load the pointee (arrays decay to element ptr).

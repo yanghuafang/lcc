@@ -188,110 +188,107 @@ entry:
   %16 = getelementptr i32, i32* %15, i32 5, !dbg !72
   store i32 5, i32* %16, align 4, !dbg !72
   %17 = load i32, i32* %16, align 4, !dbg !72
-  %18 = bitcast [6 x i32]* %arr to i32*, !dbg !59
-  %19 = bitcast i32* %18 to i32*, !dbg !59
-  %20 = load i32, i32* %19, align 4, !dbg !59
   store i32 6, i32* %n, align 4, !dbg !59
-  %21 = bitcast [6 x i32]* %arr to i32*, !dbg !73
-  %22 = load i32, i32* %n, align 4, !dbg !73
-  %23 = sub i32 %22, 1, !dbg !73
-  call void @quickSort(i32* %21, i32 0, i32 %23), !dbg !73
-  %24 = bitcast [6 x i32]* %arr to i32*, !dbg !74
-  %25 = bitcast i32* %24 to i32*, !dbg !74
-  %26 = load i32, i32* %25, align 4, !dbg !74
-  %27 = icmp ne i32 %26, 1, !dbg !74
-  br i1 %27, label %then, label %if.end, !dbg !74
+  %18 = bitcast [6 x i32]* %arr to i32*, !dbg !73
+  %19 = load i32, i32* %n, align 4, !dbg !73
+  %20 = sub i32 %19, 1, !dbg !73
+  call void @quickSort(i32* %18, i32 0, i32 %20), !dbg !73
+  %21 = bitcast [6 x i32]* %arr to i32*, !dbg !74
+  %22 = bitcast i32* %21 to i32*, !dbg !74
+  %23 = load i32, i32* %22, align 4, !dbg !74
+  %24 = icmp ne i32 %23, 1, !dbg !74
+  br i1 %24, label %then, label %if.end, !dbg !74
 
 then:                                             ; preds = %entry
   store i32 1, i32* %err, align 4, !dbg !75
-  %28 = load i32, i32* %err, align 4, !dbg !75
+  %25 = load i32, i32* %err, align 4, !dbg !75
   br label %if.end, !dbg !75
 
 if.end:                                           ; preds = %entry, %then
-  %29 = bitcast [6 x i32]* %arr to i32*, !dbg !76
-  %30 = getelementptr i32, i32* %29, i32 1, !dbg !76
-  %31 = load i32, i32* %30, align 4, !dbg !76
-  %32 = icmp ne i32 %31, 5, !dbg !76
-  br i1 %32, label %then1, label %if.end3, !dbg !76
+  %26 = bitcast [6 x i32]* %arr to i32*, !dbg !76
+  %27 = getelementptr i32, i32* %26, i32 1, !dbg !76
+  %28 = load i32, i32* %27, align 4, !dbg !76
+  %29 = icmp ne i32 %28, 5, !dbg !76
+  br i1 %29, label %then1, label %if.end3, !dbg !76
 
 then1:                                            ; preds = %if.end
   store i32 1, i32* %err, align 4, !dbg !77
-  %33 = load i32, i32* %err, align 4, !dbg !77
+  %30 = load i32, i32* %err, align 4, !dbg !77
   br label %if.end3, !dbg !77
 
 if.end3:                                          ; preds = %if.end, %then1
-  %34 = bitcast [6 x i32]* %arr to i32*, !dbg !78
-  %35 = getelementptr i32, i32* %34, i32 2, !dbg !78
-  %36 = load i32, i32* %35, align 4, !dbg !78
-  %37 = icmp ne i32 %36, 7, !dbg !78
-  br i1 %37, label %then4, label %if.end6, !dbg !78
+  %31 = bitcast [6 x i32]* %arr to i32*, !dbg !78
+  %32 = getelementptr i32, i32* %31, i32 2, !dbg !78
+  %33 = load i32, i32* %32, align 4, !dbg !78
+  %34 = icmp ne i32 %33, 7, !dbg !78
+  br i1 %34, label %then4, label %if.end6, !dbg !78
 
 then4:                                            ; preds = %if.end3
   store i32 1, i32* %err, align 4, !dbg !79
-  %38 = load i32, i32* %err, align 4, !dbg !79
+  %35 = load i32, i32* %err, align 4, !dbg !79
   br label %if.end6, !dbg !79
 
 if.end6:                                          ; preds = %if.end3, %then4
-  %39 = bitcast [6 x i32]* %arr to i32*, !dbg !80
-  %40 = getelementptr i32, i32* %39, i32 3, !dbg !80
-  %41 = load i32, i32* %40, align 4, !dbg !80
-  %42 = icmp ne i32 %41, 8, !dbg !80
-  br i1 %42, label %then7, label %if.end9, !dbg !80
+  %36 = bitcast [6 x i32]* %arr to i32*, !dbg !80
+  %37 = getelementptr i32, i32* %36, i32 3, !dbg !80
+  %38 = load i32, i32* %37, align 4, !dbg !80
+  %39 = icmp ne i32 %38, 8, !dbg !80
+  br i1 %39, label %then7, label %if.end9, !dbg !80
 
 then7:                                            ; preds = %if.end6
   store i32 1, i32* %err, align 4, !dbg !81
-  %43 = load i32, i32* %err, align 4, !dbg !81
+  %40 = load i32, i32* %err, align 4, !dbg !81
   br label %if.end9, !dbg !81
 
 if.end9:                                          ; preds = %if.end6, %then7
-  %44 = bitcast [6 x i32]* %arr to i32*, !dbg !82
-  %45 = getelementptr i32, i32* %44, i32 4, !dbg !82
-  %46 = load i32, i32* %45, align 4, !dbg !82
-  %47 = icmp ne i32 %46, 9, !dbg !82
-  br i1 %47, label %then10, label %if.end12, !dbg !82
+  %41 = bitcast [6 x i32]* %arr to i32*, !dbg !82
+  %42 = getelementptr i32, i32* %41, i32 4, !dbg !82
+  %43 = load i32, i32* %42, align 4, !dbg !82
+  %44 = icmp ne i32 %43, 9, !dbg !82
+  br i1 %44, label %then10, label %if.end12, !dbg !82
 
 then10:                                           ; preds = %if.end9
   store i32 1, i32* %err, align 4, !dbg !83
-  %48 = load i32, i32* %err, align 4, !dbg !83
+  %45 = load i32, i32* %err, align 4, !dbg !83
   br label %if.end12, !dbg !83
 
 if.end12:                                         ; preds = %if.end9, %then10
-  %49 = bitcast [6 x i32]* %arr to i32*, !dbg !84
-  %50 = getelementptr i32, i32* %49, i32 5, !dbg !84
-  %51 = load i32, i32* %50, align 4, !dbg !84
-  %52 = icmp ne i32 %51, 10, !dbg !84
-  br i1 %52, label %then13, label %if.end15, !dbg !84
+  %46 = bitcast [6 x i32]* %arr to i32*, !dbg !84
+  %47 = getelementptr i32, i32* %46, i32 5, !dbg !84
+  %48 = load i32, i32* %47, align 4, !dbg !84
+  %49 = icmp ne i32 %48, 10, !dbg !84
+  br i1 %49, label %then13, label %if.end15, !dbg !84
 
 then13:                                           ; preds = %if.end12
   store i32 1, i32* %err, align 4, !dbg !85
-  %53 = load i32, i32* %err, align 4, !dbg !85
+  %50 = load i32, i32* %err, align 4, !dbg !85
   br label %if.end15, !dbg !85
 
 if.end15:                                         ; preds = %if.end12, %then13
-  %54 = bitcast [1 x i32]* %single to i32*, !dbg !86
-  %55 = bitcast i32* %54 to i32*, !dbg !86
-  store i32 42, i32* %55, align 4, !dbg !86
-  %56 = load i32, i32* %55, align 4, !dbg !86
-  %57 = bitcast [1 x i32]* %single to i32*, !dbg !87
-  call void @quickSort(i32* %57, i32 0, i32 0), !dbg !87
-  %58 = bitcast [1 x i32]* %single to i32*, !dbg !88
-  %59 = bitcast i32* %58 to i32*, !dbg !88
-  %60 = load i32, i32* %59, align 4, !dbg !88
-  %61 = icmp ne i32 %60, 42, !dbg !88
-  br i1 %61, label %then16, label %if.end18, !dbg !88
+  %51 = bitcast [1 x i32]* %single to i32*, !dbg !86
+  %52 = bitcast i32* %51 to i32*, !dbg !86
+  store i32 42, i32* %52, align 4, !dbg !86
+  %53 = load i32, i32* %52, align 4, !dbg !86
+  %54 = bitcast [1 x i32]* %single to i32*, !dbg !87
+  call void @quickSort(i32* %54, i32 0, i32 0), !dbg !87
+  %55 = bitcast [1 x i32]* %single to i32*, !dbg !88
+  %56 = bitcast i32* %55 to i32*, !dbg !88
+  %57 = load i32, i32* %56, align 4, !dbg !88
+  %58 = icmp ne i32 %57, 42, !dbg !88
+  br i1 %58, label %then16, label %if.end18, !dbg !88
 
 then16:                                           ; preds = %if.end15
   store i32 1, i32* %err, align 4, !dbg !89
-  %62 = load i32, i32* %err, align 4, !dbg !89
+  %59 = load i32, i32* %err, align 4, !dbg !89
   br label %if.end18, !dbg !89
 
 if.end18:                                         ; preds = %if.end15, %then16
-  %63 = load i32, i32* %err, align 4, !dbg !90
-  %64 = icmp eq i32 %63, 0, !dbg !90
-  %. = select i1 %64, i8* getelementptr inbounds ([22 x i8], [22 x i8]* @0, i32 0, i32 0), i8* getelementptr inbounds ([22 x i8], [22 x i8]* @1, i32 0, i32 0), !dbg !91
-  %65 = call i32 (i8*, ...) @printf(i8* %.), !dbg !91
-  %66 = load i32, i32* %err, align 4, !dbg !92
-  ret i32 %66, !dbg !92
+  %60 = load i32, i32* %err, align 4, !dbg !90
+  %61 = icmp eq i32 %60, 0, !dbg !90
+  %. = select i1 %61, i8* getelementptr inbounds ([22 x i8], [22 x i8]* @0, i32 0, i32 0), i8* getelementptr inbounds ([22 x i8], [22 x i8]* @1, i32 0, i32 0), !dbg !91
+  %62 = call i32 (i8*, ...) @printf(i8* %.), !dbg !91
+  %63 = load i32, i32* %err, align 4, !dbg !92
+  ret i32 %63, !dbg !92
 }
 
 attributes #0 = { nofree nosync nounwind readnone speculatable willreturn }

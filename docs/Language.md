@@ -27,6 +27,7 @@ Unlike industrial compilers (clang, gcc) that use recursive-descent parsing, `lc
 - C operator precedence: https://en.cppreference.com/w/c/language/operator_precedence
 - `(Expr)` modifies precedence in expression, such as `(a + b) * c`.
 - Assign: `=`
+- Integer literals: decimal and `0x` hex; optional `u`, `l`, or `ul` suffixes. Unsuffixed hex picks the narrowest fitting type (`int` through `unsigned long`).
 - Arithmetic: `+`, `-`, `*`, `/`, `%`
 - Arithmetic Assign: `+=`, `-=`, `*=`, `/=`, `%=`
 - Prefix and postfix inc/dec operators: `++`, `--`
