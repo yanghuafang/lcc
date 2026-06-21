@@ -1,12 +1,14 @@
+#include "Visualizer.hpp"
+
 #include <stdio.h>
 
+#include <algorithm>
 #include <fstream>
 #include <iostream>
 #include <string>
 #include <utility>
 
 #include "AbstractSyntaxTree.hpp"
-#include "Visualizer.hpp"
 
 namespace AST {
 
@@ -249,8 +251,8 @@ std::pair<std::string, std::string> TypeDecl::genGraph() {
 std::pair<std::string, std::string> TypedefDecl::genGraph() {
   std::string id = getId();
   std::string root = "TypedefDecl_" + id;
-  std::string tree = root + " [label = TypedefDecl, alias = \"" + aliasName_ +
-                     "\"]\n";
+  std::string tree =
+      root + " [label = TypedefDecl, alias = \"" + aliasName_ + "\"]\n";
 
   if (underlyingType_ != nullptr) {
     std::pair<std::string, std::string> varTypeGraph =
