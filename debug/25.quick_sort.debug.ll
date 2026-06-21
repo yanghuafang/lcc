@@ -179,99 +179,97 @@ entry:
   %10 = getelementptr i32, ptr %arr, i32 5, !dbg !72
   store i32 5, ptr %10, align 4, !dbg !72
   %11 = load i32, ptr %10, align 4, !dbg !72
-  %12 = bitcast ptr %arr to ptr, !dbg !59
-  %13 = load i32, ptr %12, align 4, !dbg !59
   store i32 6, ptr %n, align 4, !dbg !59
-  %14 = load i32, ptr %n, align 4, !dbg !73
-  %15 = sub i32 %14, 1, !dbg !73
-  call void @quickSort(ptr %arr, i32 0, i32 %15), !dbg !73
-  %16 = bitcast ptr %arr to ptr, !dbg !74
-  %17 = load i32, ptr %16, align 4, !dbg !74
-  %18 = icmp ne i32 %17, 1, !dbg !74
-  br i1 %18, label %then, label %if.end, !dbg !74
+  %12 = load i32, ptr %n, align 4, !dbg !73
+  %13 = sub i32 %12, 1, !dbg !73
+  call void @quickSort(ptr %arr, i32 0, i32 %13), !dbg !73
+  %14 = bitcast ptr %arr to ptr, !dbg !74
+  %15 = load i32, ptr %14, align 4, !dbg !74
+  %16 = icmp ne i32 %15, 1, !dbg !74
+  br i1 %16, label %then, label %if.end, !dbg !74
 
 then:                                             ; preds = %entry
   store i32 1, ptr %err, align 4, !dbg !75
-  %19 = load i32, ptr %err, align 4, !dbg !75
+  %17 = load i32, ptr %err, align 4, !dbg !75
   br label %if.end, !dbg !75
 
 if.end:                                           ; preds = %entry, %then
-  %20 = getelementptr i32, ptr %arr, i32 1, !dbg !76
-  %21 = load i32, ptr %20, align 4, !dbg !76
-  %22 = icmp ne i32 %21, 5, !dbg !76
-  br i1 %22, label %then1, label %if.end3, !dbg !76
+  %18 = getelementptr i32, ptr %arr, i32 1, !dbg !76
+  %19 = load i32, ptr %18, align 4, !dbg !76
+  %20 = icmp ne i32 %19, 5, !dbg !76
+  br i1 %20, label %then1, label %if.end3, !dbg !76
 
 then1:                                            ; preds = %if.end
   store i32 1, ptr %err, align 4, !dbg !77
-  %23 = load i32, ptr %err, align 4, !dbg !77
+  %21 = load i32, ptr %err, align 4, !dbg !77
   br label %if.end3, !dbg !77
 
 if.end3:                                          ; preds = %if.end, %then1
-  %24 = getelementptr i32, ptr %arr, i32 2, !dbg !78
-  %25 = load i32, ptr %24, align 4, !dbg !78
-  %26 = icmp ne i32 %25, 7, !dbg !78
-  br i1 %26, label %then4, label %if.end6, !dbg !78
+  %22 = getelementptr i32, ptr %arr, i32 2, !dbg !78
+  %23 = load i32, ptr %22, align 4, !dbg !78
+  %24 = icmp ne i32 %23, 7, !dbg !78
+  br i1 %24, label %then4, label %if.end6, !dbg !78
 
 then4:                                            ; preds = %if.end3
   store i32 1, ptr %err, align 4, !dbg !79
-  %27 = load i32, ptr %err, align 4, !dbg !79
+  %25 = load i32, ptr %err, align 4, !dbg !79
   br label %if.end6, !dbg !79
 
 if.end6:                                          ; preds = %if.end3, %then4
-  %28 = getelementptr i32, ptr %arr, i32 3, !dbg !80
-  %29 = load i32, ptr %28, align 4, !dbg !80
-  %30 = icmp ne i32 %29, 8, !dbg !80
-  br i1 %30, label %then7, label %if.end9, !dbg !80
+  %26 = getelementptr i32, ptr %arr, i32 3, !dbg !80
+  %27 = load i32, ptr %26, align 4, !dbg !80
+  %28 = icmp ne i32 %27, 8, !dbg !80
+  br i1 %28, label %then7, label %if.end9, !dbg !80
 
 then7:                                            ; preds = %if.end6
   store i32 1, ptr %err, align 4, !dbg !81
-  %31 = load i32, ptr %err, align 4, !dbg !81
+  %29 = load i32, ptr %err, align 4, !dbg !81
   br label %if.end9, !dbg !81
 
 if.end9:                                          ; preds = %if.end6, %then7
-  %32 = getelementptr i32, ptr %arr, i32 4, !dbg !82
-  %33 = load i32, ptr %32, align 4, !dbg !82
-  %34 = icmp ne i32 %33, 9, !dbg !82
-  br i1 %34, label %then10, label %if.end12, !dbg !82
+  %30 = getelementptr i32, ptr %arr, i32 4, !dbg !82
+  %31 = load i32, ptr %30, align 4, !dbg !82
+  %32 = icmp ne i32 %31, 9, !dbg !82
+  br i1 %32, label %then10, label %if.end12, !dbg !82
 
 then10:                                           ; preds = %if.end9
   store i32 1, ptr %err, align 4, !dbg !83
-  %35 = load i32, ptr %err, align 4, !dbg !83
+  %33 = load i32, ptr %err, align 4, !dbg !83
   br label %if.end12, !dbg !83
 
 if.end12:                                         ; preds = %if.end9, %then10
-  %36 = getelementptr i32, ptr %arr, i32 5, !dbg !84
-  %37 = load i32, ptr %36, align 4, !dbg !84
-  %38 = icmp ne i32 %37, 10, !dbg !84
-  br i1 %38, label %then13, label %if.end15, !dbg !84
+  %34 = getelementptr i32, ptr %arr, i32 5, !dbg !84
+  %35 = load i32, ptr %34, align 4, !dbg !84
+  %36 = icmp ne i32 %35, 10, !dbg !84
+  br i1 %36, label %then13, label %if.end15, !dbg !84
 
 then13:                                           ; preds = %if.end12
   store i32 1, ptr %err, align 4, !dbg !85
-  %39 = load i32, ptr %err, align 4, !dbg !85
+  %37 = load i32, ptr %err, align 4, !dbg !85
   br label %if.end15, !dbg !85
 
 if.end15:                                         ; preds = %if.end12, %then13
-  %40 = bitcast ptr %single to ptr, !dbg !86
-  store i32 42, ptr %40, align 4, !dbg !86
-  %41 = load i32, ptr %40, align 4, !dbg !86
+  %38 = bitcast ptr %single to ptr, !dbg !86
+  store i32 42, ptr %38, align 4, !dbg !86
+  %39 = load i32, ptr %38, align 4, !dbg !86
   call void @quickSort(ptr %single, i32 0, i32 0), !dbg !87
-  %42 = bitcast ptr %single to ptr, !dbg !88
-  %43 = load i32, ptr %42, align 4, !dbg !88
-  %44 = icmp ne i32 %43, 42, !dbg !88
-  br i1 %44, label %then16, label %if.end18, !dbg !88
+  %40 = bitcast ptr %single to ptr, !dbg !88
+  %41 = load i32, ptr %40, align 4, !dbg !88
+  %42 = icmp ne i32 %41, 42, !dbg !88
+  br i1 %42, label %then16, label %if.end18, !dbg !88
 
 then16:                                           ; preds = %if.end15
   store i32 1, ptr %err, align 4, !dbg !89
-  %45 = load i32, ptr %err, align 4, !dbg !89
+  %43 = load i32, ptr %err, align 4, !dbg !89
   br label %if.end18, !dbg !89
 
 if.end18:                                         ; preds = %if.end15, %then16
-  %46 = load i32, ptr %err, align 4, !dbg !90
-  %47 = icmp eq i32 %46, 0, !dbg !90
-  %. = select i1 %47, ptr @0, ptr @1, !dbg !91
-  %48 = call i32 (ptr, ...) @printf(ptr %.), !dbg !91
-  %49 = load i32, ptr %err, align 4, !dbg !92
-  ret i32 %49, !dbg !92
+  %44 = load i32, ptr %err, align 4, !dbg !90
+  %45 = icmp eq i32 %44, 0, !dbg !90
+  %. = select i1 %45, ptr @0, ptr @1, !dbg !91
+  %46 = call i32 (ptr, ...) @printf(ptr %.), !dbg !91
+  %47 = load i32, ptr %err, align 4, !dbg !92
+  ret i32 %47, !dbg !92
 }
 
 !llvm.dbg.cu = !{!0}

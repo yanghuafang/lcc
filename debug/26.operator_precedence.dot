@@ -78,8 +78,8 @@ a_21 [label = a]
 VarInit_21 -> a_21
 VarInit_21 -> Constant_22
 Constant_22 [label = Constant]
-uint_22 [label = "305419896"]
-Constant_22 -> uint_22
+long_22 [label = "1311768465173141112"]
+Constant_22 -> long_22
 FuncBody_14 -> VarDecl_23
 VarDecl_23 [label = VarDecl]
 VarDecl_23 -> BuiltinType_24
@@ -92,8 +92,8 @@ b_25 [label = b]
 VarInit_25 -> b_25
 VarInit_25 -> Constant_26
 Constant_26 [label = Constant]
-uint_26 [label = "2596069104"]
-Constant_26 -> uint_26
+ulong_26 [label = "11150031902432091888"]
+Constant_26 -> ulong_26
 FuncBody_14 -> VarDecl_27
 VarDecl_27 [label = VarDecl]
 VarDecl_27 -> BuiltinType_28
@@ -160,8 +160,8 @@ a_47 [label = a]
 Variable_47 -> a_47
 LogicNotEq_46 -> Constant_48
 Constant_48 [label = Constant]
-uint_48 [label = "305419896"]
-Constant_48 -> uint_48
+long_48 [label = "1311768465173141112"]
+Constant_48 -> long_48
 IfStmt_45 -> Assign_49
 Assign_49 [label = Assign]
 Assign_49 -> Variable_50
@@ -182,8 +182,8 @@ b_54 [label = b]
 Variable_54 -> b_54
 LogicNotEq_53 -> Constant_55
 Constant_55 [label = Constant]
-uint_55 [label = "2596069104"]
-Constant_55 -> uint_55
+ulong_55 [label = "11150031902432091888"]
+Constant_55 -> ulong_55
 IfStmt_52 -> Assign_56
 Assign_56 [label = Assign]
 Assign_56 -> Variable_57

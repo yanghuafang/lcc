@@ -7,15 +7,21 @@ set(CMAKE_CXX_STANDARD 17)
 message(STATUS "C Compiler: ${CMAKE_C_COMPILER}")
 message(STATUS "CXX Compiler: ${CMAKE_CXX_COMPILER}")
 
-# Generate lexer
+# Generate lexer and parser (fail configure if either tool errors).
 
 execute_process(WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/src
-    COMMAND flex Lexer.l)
-
-# Generate syntax parser
+    COMMAND flex Lexer.l
+    RESULT_VARIABLE FLEX_RESULT)
+if(NOT FLEX_RESULT EQUAL 0)
+    message(FATAL_ERROR "flex Lexer.l failed (exit ${FLEX_RESULT})")
+endif()
 
 execute_process(WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/src
-    COMMAND bison -d Parser.y -v)
+    COMMAND bison -d Parser.y -v
+    RESULT_VARIABLE BISON_RESULT)
+if(NOT BISON_RESULT EQUAL 0)
+    message(FATAL_ERROR "bison Parser.y failed (exit ${BISON_RESULT})")
+endif()
 
 # argparse: prefer libargparse-dev (Ubuntu 24.04 apt); FetchContent fallback otherwise.
 find_package(argparse QUIET)

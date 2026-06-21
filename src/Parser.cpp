@@ -636,24 +636,24 @@ static const yytype_int8 yytranslate[] =
 /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_int16 yyrline[] =
 {
-       0,   230,   230,   233,   234,   237,   238,   239,   240,   245,
-     247,   250,   255,   259,   263,   266,   271,   274,   277,   282,
-     287,   288,   291,   292,   294,   295,   297,   298,   300,   301,
-     302,   308,   310,   311,   316,   318,   320,   323,   331,   333,
-     338,   340,   348,   350,   352,   355,   357,   363,   365,   367,
-     368,   369,   375,   376,   380,   381,   382,   383,   384,   385,
-     386,   387,   388,   389,   390,   391,   392,   397,   399,   402,
-     404,   409,   411,   412,   417,   419,   420,   423,   424,   430,
-     431,   434,   435,   436,   437,   438,   439,   440,   441,   442,
-     443,   444,   445,   446,   449,   452,   459,   465,   467,   470,
-     473,   478,   481,   484,   489,   494,   500,   504,   508,   510,
-     515,   523,   524,   525,   527,   528,   530,   532,   534,   536,
-     538,   540,   542,   544,   546,   548,   550,   552,   553,   555,
-     557,   559,   560,   561,   563,   565,   567,   569,   570,   571,
-     572,   573,   574,   576,   577,   578,   579,   580,   581,   582,
-     583,   584,   585,   586,   587,   588,   589,   590,   591,   592,
-     593,   594,   595,   599,   601,   602,   605,   606,   607,   608,
-     609,   610,   611,   612,   613,   614
+       0,   243,   243,   246,   247,   250,   251,   252,   253,   258,
+     260,   263,   268,   272,   276,   279,   284,   287,   290,   295,
+     300,   301,   304,   305,   307,   308,   310,   311,   313,   314,
+     315,   321,   323,   324,   329,   331,   333,   336,   344,   346,
+     351,   353,   361,   363,   365,   368,   370,   376,   378,   380,
+     381,   382,   388,   389,   393,   394,   395,   396,   397,   398,
+     399,   400,   401,   402,   403,   404,   405,   410,   412,   415,
+     417,   422,   424,   425,   430,   432,   433,   436,   437,   443,
+     444,   447,   448,   449,   450,   451,   452,   453,   454,   455,
+     456,   457,   458,   459,   462,   465,   472,   478,   480,   483,
+     486,   491,   494,   497,   502,   507,   513,   517,   521,   523,
+     528,   536,   537,   538,   540,   541,   543,   545,   547,   549,
+     551,   553,   555,   557,   559,   561,   563,   565,   566,   568,
+     570,   572,   573,   574,   576,   578,   580,   582,   583,   584,
+     585,   586,   587,   589,   590,   591,   592,   593,   594,   595,
+     596,   597,   598,   599,   600,   601,   602,   603,   604,   605,
+     606,   607,   608,   612,   614,   615,   618,   619,   620,   621,
+     622,   623,   624,   625,   626,   627
 };
 #endif
 
@@ -1934,6 +1934,234 @@ yydestruct (const char *yymsg,
 #line 1935 "Parser.cpp"
         break;
 
+    case YYSYMBOL_Decls: /* Decls  */
+#line 139 "Parser.y"
+            { delete ((*yyvaluep).decls); }
+#line 1941 "Parser.cpp"
+        break;
+
+    case YYSYMBOL_Decl: /* Decl  */
+#line 139 "Parser.y"
+            { delete ((*yyvaluep).decl); }
+#line 1947 "Parser.cpp"
+        break;
+
+    case YYSYMBOL_TypedefDecl: /* TypedefDecl  */
+#line 139 "Parser.y"
+            { delete ((*yyvaluep).typedefDecl); }
+#line 1953 "Parser.cpp"
+        break;
+
+    case YYSYMBOL_FuncDecl: /* FuncDecl  */
+#line 140 "Parser.y"
+            { delete ((*yyvaluep).funcDecl); }
+#line 1959 "Parser.cpp"
+        break;
+
+    case YYSYMBOL_FuncBody: /* FuncBody  */
+#line 140 "Parser.y"
+            { delete ((*yyvaluep).funcBody); }
+#line 1965 "Parser.cpp"
+        break;
+
+    case YYSYMBOL_VarDecl: /* VarDecl  */
+#line 140 "Parser.y"
+            { delete ((*yyvaluep).varDecl); }
+#line 1971 "Parser.cpp"
+        break;
+
+    case YYSYMBOL_TypeDecl: /* TypeDecl  */
+#line 139 "Parser.y"
+            { delete ((*yyvaluep).typeDecl); }
+#line 1977 "Parser.cpp"
+        break;
+
+    case YYSYMBOL_VarType: /* VarType  */
+#line 140 "Parser.y"
+            { delete ((*yyvaluep).varType); }
+#line 1983 "Parser.cpp"
+        break;
+
+    case YYSYMBOL__VarType: /* _VarType  */
+#line 140 "Parser.y"
+            { delete ((*yyvaluep).varType); }
+#line 1989 "Parser.cpp"
+        break;
+
+    case YYSYMBOL_VarList: /* VarList  */
+#line 141 "Parser.y"
+            { delete ((*yyvaluep).varList); }
+#line 1995 "Parser.cpp"
+        break;
+
+    case YYSYMBOL_VarInit: /* VarInit  */
+#line 141 "Parser.y"
+            { delete ((*yyvaluep).varInit); }
+#line 2001 "Parser.cpp"
+        break;
+
+    case YYSYMBOL_InitList: /* InitList  */
+#line 143 "Parser.y"
+            { delete ((*yyvaluep).initList); }
+#line 2007 "Parser.cpp"
+        break;
+
+    case YYSYMBOL_InitItem: /* InitItem  */
+#line 143 "Parser.y"
+            { delete ((*yyvaluep).initElement); }
+#line 2013 "Parser.cpp"
+        break;
+
+    case YYSYMBOL_ArrayBoundList: /* ArrayBoundList  */
+#line 141 "Parser.y"
+            { delete ((*yyvaluep).arrayBoundList); }
+#line 2019 "Parser.cpp"
+        break;
+
+    case YYSYMBOL_ParamList: /* ParamList  */
+#line 141 "Parser.y"
+            { delete ((*yyvaluep).paramList); }
+#line 2025 "Parser.cpp"
+        break;
+
+    case YYSYMBOL_Param: /* Param  */
+#line 141 "Parser.y"
+            { delete ((*yyvaluep).param); }
+#line 2031 "Parser.cpp"
+        break;
+
+    case YYSYMBOL_BuiltinType: /* BuiltinType  */
+#line 142 "Parser.y"
+            { delete ((*yyvaluep).builtinType); }
+#line 2037 "Parser.cpp"
+        break;
+
+    case YYSYMBOL_FieldDecls: /* FieldDecls  */
+#line 142 "Parser.y"
+            { delete ((*yyvaluep).fieldDecls); }
+#line 2043 "Parser.cpp"
+        break;
+
+    case YYSYMBOL_FieldDecl: /* FieldDecl  */
+#line 142 "Parser.y"
+            { delete ((*yyvaluep).fieldDecl); }
+#line 2049 "Parser.cpp"
+        break;
+
+    case YYSYMBOL_MemberList: /* MemberList  */
+#line 142 "Parser.y"
+            { delete ((*yyvaluep).memberList); }
+#line 2055 "Parser.cpp"
+        break;
+
+    case YYSYMBOL_EnumList: /* EnumList  */
+#line 147 "Parser.y"
+            { delete ((*yyvaluep).enumList); }
+#line 2061 "Parser.cpp"
+        break;
+
+    case YYSYMBOL_Enum: /* Enum  */
+#line 147 "Parser.y"
+            { delete ((*yyvaluep).enumeration); }
+#line 2067 "Parser.cpp"
+        break;
+
+    case YYSYMBOL_Stmts: /* Stmts  */
+#line 144 "Parser.y"
+            { delete ((*yyvaluep).stmts); }
+#line 2073 "Parser.cpp"
+        break;
+
+    case YYSYMBOL_Stmt: /* Stmt  */
+#line 144 "Parser.y"
+            { delete ((*yyvaluep).stmt); }
+#line 2079 "Parser.cpp"
+        break;
+
+    case YYSYMBOL_IfStmt: /* IfStmt  */
+#line 144 "Parser.y"
+            { delete ((*yyvaluep).ifStmt); }
+#line 2085 "Parser.cpp"
+        break;
+
+    case YYSYMBOL_SwitchStmt: /* SwitchStmt  */
+#line 144 "Parser.y"
+            { delete ((*yyvaluep).switchStmt); }
+#line 2091 "Parser.cpp"
+        break;
+
+    case YYSYMBOL_CaseStmtList: /* CaseStmtList  */
+#line 144 "Parser.y"
+            { delete ((*yyvaluep).caseStmtList); }
+#line 2097 "Parser.cpp"
+        break;
+
+    case YYSYMBOL_CaseStmt: /* CaseStmt  */
+#line 145 "Parser.y"
+            { delete ((*yyvaluep).caseStmt); }
+#line 2103 "Parser.cpp"
+        break;
+
+    case YYSYMBOL_ForStmt: /* ForStmt  */
+#line 145 "Parser.y"
+            { delete ((*yyvaluep).forStmt); }
+#line 2109 "Parser.cpp"
+        break;
+
+    case YYSYMBOL_DoStmt: /* DoStmt  */
+#line 145 "Parser.y"
+            { delete ((*yyvaluep).doStmt); }
+#line 2115 "Parser.cpp"
+        break;
+
+    case YYSYMBOL_WhileStmt: /* WhileStmt  */
+#line 145 "Parser.y"
+            { delete ((*yyvaluep).whileStmt); }
+#line 2121 "Parser.cpp"
+        break;
+
+    case YYSYMBOL_ContinueStmt: /* ContinueStmt  */
+#line 146 "Parser.y"
+            { delete ((*yyvaluep).continueStmt); }
+#line 2127 "Parser.cpp"
+        break;
+
+    case YYSYMBOL_BreakStmt: /* BreakStmt  */
+#line 146 "Parser.y"
+            { delete ((*yyvaluep).breakStmt); }
+#line 2133 "Parser.cpp"
+        break;
+
+    case YYSYMBOL_ReturnStmt: /* ReturnStmt  */
+#line 146 "Parser.y"
+            { delete ((*yyvaluep).returnStmt); }
+#line 2139 "Parser.cpp"
+        break;
+
+    case YYSYMBOL_Block: /* Block  */
+#line 140 "Parser.y"
+            { delete ((*yyvaluep).block); }
+#line 2145 "Parser.cpp"
+        break;
+
+    case YYSYMBOL_Expr: /* Expr  */
+#line 143 "Parser.y"
+            { delete ((*yyvaluep).expr); }
+#line 2151 "Parser.cpp"
+        break;
+
+    case YYSYMBOL_ExprList: /* ExprList  */
+#line 143 "Parser.y"
+            { delete ((*yyvaluep).exprList); }
+#line 2157 "Parser.cpp"
+        break;
+
+    case YYSYMBOL_Constant: /* Constant  */
+#line 143 "Parser.y"
+            { delete ((*yyvaluep).constant); }
+#line 2163 "Parser.cpp"
+        break;
+
       default:
         break;
     }
@@ -2227,1079 +2455,1079 @@ yyreduce:
   switch (yyn)
     {
   case 2: /* Program: Decls  */
-#line 230 "Parser.y"
+#line 243 "Parser.y"
                                 { (yyval.program) = new AST::Program((yyvsp[0].decls)); g_root = (yyval.program); }
-#line 2233 "Parser.cpp"
+#line 2461 "Parser.cpp"
     break;
 
   case 3: /* Decls: Decls Decl  */
-#line 233 "Parser.y"
+#line 246 "Parser.y"
                                 { (yyval.decls) = (yyvsp[-1].decls); (yyval.decls)->push_back((yyvsp[0].decl)); }
-#line 2239 "Parser.cpp"
+#line 2467 "Parser.cpp"
     break;
 
   case 4: /* Decls: %empty  */
-#line 234 "Parser.y"
+#line 247 "Parser.y"
                                 { (yyval.decls) = new AST::Decls(); }
-#line 2245 "Parser.cpp"
+#line 2473 "Parser.cpp"
     break;
 
   case 5: /* Decl: FuncDecl  */
-#line 237 "Parser.y"
+#line 250 "Parser.y"
                                 { (yyval.decl) = (yyvsp[0].funcDecl); }
-#line 2251 "Parser.cpp"
+#line 2479 "Parser.cpp"
     break;
 
   case 6: /* Decl: VarDecl  */
-#line 238 "Parser.y"
+#line 251 "Parser.y"
                                 { (yyval.decl) = (yyvsp[0].varDecl); }
-#line 2257 "Parser.cpp"
+#line 2485 "Parser.cpp"
     break;
 
   case 7: /* Decl: TypeDecl  */
-#line 239 "Parser.y"
+#line 252 "Parser.y"
                                 { (yyval.decl) = (yyvsp[0].typeDecl); }
-#line 2263 "Parser.cpp"
+#line 2491 "Parser.cpp"
     break;
 
   case 8: /* Decl: TypedefDecl  */
-#line 240 "Parser.y"
+#line 253 "Parser.y"
                                 { (yyval.decl) = (yyvsp[0].typedefDecl); }
-#line 2269 "Parser.cpp"
+#line 2497 "Parser.cpp"
     break;
 
   case 9: /* TypedefDecl: TYPEDEF VarType IDENTIFIER SEMICOLON  */
-#line 246 "Parser.y"
+#line 259 "Parser.y"
                                 { (yyval.typedefDecl) = new AST::TypedefDecl((yyvsp[-2].varType), *(yyvsp[-1].idVal)); }
-#line 2275 "Parser.cpp"
+#line 2503 "Parser.cpp"
     break;
 
   case 10: /* TypedefDecl: TYPEDEF STRUCT IDENTIFIER LBRACE FieldDecls RBRACE IDENTIFIER SEMICOLON  */
-#line 248 "Parser.y"
+#line 261 "Parser.y"
                                 { (yyval.typedefDecl) = new AST::TypedefDecl(
                                       new AST::StructType((yyvsp[-3].fieldDecls), *(yyvsp[-5].idVal)), *(yyvsp[-1].idVal)); }
-#line 2282 "Parser.cpp"
-    break;
-
-  case 11: /* TypedefDecl: TYPEDEF UNION IDENTIFIER LBRACE FieldDecls RBRACE IDENTIFIER SEMICOLON  */
-#line 251 "Parser.y"
-                                { (yyval.typedefDecl) = new AST::TypedefDecl(
-                                      new AST::UnionType((yyvsp[-3].fieldDecls), *(yyvsp[-5].idVal)), *(yyvsp[-1].idVal)); }
-#line 2289 "Parser.cpp"
-    break;
-
-  case 12: /* FuncDecl: STATIC VarType IDENTIFIER LPARENTHESES ParamList RPARENTHESES SEMICOLON  */
-#line 256 "Parser.y"
-                                { (yyval.funcDecl) = new AST::FuncDecl((yyvsp[-5].varType), *(yyvsp[-4].idVal), (yyvsp[-2].paramList));
-                                  (yyval.funcDecl)->isStatic_ = true;
-                                  (yyval.funcDecl)->setLoc((yylsp[-4]).first_line, (yylsp[-4]).first_column); }
-#line 2297 "Parser.cpp"
-    break;
-
-  case 13: /* FuncDecl: STATIC VarType IDENTIFIER LPARENTHESES ParamList RPARENTHESES FuncBody  */
-#line 260 "Parser.y"
-                                { (yyval.funcDecl) = new AST::FuncDecl((yyvsp[-5].varType), *(yyvsp[-4].idVal), (yyvsp[-2].paramList), (yyvsp[0].funcBody));
-                                  (yyval.funcDecl)->isStatic_ = true;
-                                  (yyval.funcDecl)->setLoc((yylsp[-4]).first_line, (yylsp[-4]).first_column); }
-#line 2305 "Parser.cpp"
-    break;
-
-  case 14: /* FuncDecl: VarType IDENTIFIER LPARENTHESES ParamList RPARENTHESES SEMICOLON  */
-#line 264 "Parser.y"
-                                { (yyval.funcDecl) = new AST::FuncDecl((yyvsp[-5].varType), *(yyvsp[-4].idVal), (yyvsp[-2].paramList));
-                                  (yyval.funcDecl)->setLoc((yylsp[-4]).first_line, (yylsp[-4]).first_column); }
-#line 2312 "Parser.cpp"
-    break;
-
-  case 15: /* FuncDecl: VarType IDENTIFIER LPARENTHESES ParamList RPARENTHESES FuncBody  */
-#line 267 "Parser.y"
-                                { (yyval.funcDecl) = new AST::FuncDecl((yyvsp[-5].varType), *(yyvsp[-4].idVal), (yyvsp[-2].paramList), (yyvsp[0].funcBody));
-                                  (yyval.funcDecl)->setLoc((yylsp[-4]).first_line, (yylsp[-4]).first_column); }
-#line 2319 "Parser.cpp"
-    break;
-
-  case 16: /* FuncBody: LBRACE Stmts RBRACE  */
-#line 271 "Parser.y"
-                                { (yyval.funcBody) = new AST::FuncBody((yyvsp[-1].stmts)); }
-#line 2325 "Parser.cpp"
-    break;
-
-  case 17: /* VarDecl: STATIC VarType VarList SEMICOLON  */
-#line 275 "Parser.y"
-                                { (yyval.varDecl) = new AST::VarDecl((yyvsp[-2].varType), (yyvsp[-1].varList)); (yyval.varDecl)->isStatic_ = true;
-                                  (yyval.varDecl)->setLoc((yylsp[-2]).first_line, (yylsp[-2]).first_column); }
-#line 2332 "Parser.cpp"
-    break;
-
-  case 18: /* VarDecl: VarType VarList SEMICOLON  */
-#line 278 "Parser.y"
-                                { (yyval.varDecl) = new AST::VarDecl((yyvsp[-2].varType), (yyvsp[-1].varList));
-                                  (yyval.varDecl)->setLoc((yylsp[-2]).first_line, (yylsp[-2]).first_column); }
-#line 2339 "Parser.cpp"
-    break;
-
-  case 19: /* TypeDecl: _VarType SEMICOLON  */
-#line 282 "Parser.y"
-                                { (yyval.typeDecl) = new AST::TypeDecl((yyvsp[-1].varType)); }
-#line 2345 "Parser.cpp"
-    break;
-
-  case 20: /* VarType: _VarType  */
-#line 287 "Parser.y"
-                                { (yyval.varType) = (yyvsp[0].varType); }
-#line 2351 "Parser.cpp"
-    break;
-
-  case 21: /* VarType: CONST _VarType  */
-#line 288 "Parser.y"
-                                { (yyval.varType) = (yyvsp[0].varType); (yyval.varType)->setConst(); }
-#line 2357 "Parser.cpp"
-    break;
-
-  case 22: /* _VarType: BuiltinType  */
-#line 291 "Parser.y"
-                                { (yyval.varType) = (yyvsp[0].builtinType); }
-#line 2363 "Parser.cpp"
-    break;
-
-  case 23: /* _VarType: STRUCT IDENTIFIER LBRACE FieldDecls RBRACE  */
-#line 293 "Parser.y"
-                                { (yyval.varType) = new AST::StructType((yyvsp[-1].fieldDecls), *(yyvsp[-3].idVal)); }
-#line 2369 "Parser.cpp"
-    break;
-
-  case 24: /* _VarType: STRUCT IDENTIFIER  */
-#line 294 "Parser.y"
-                                { (yyval.varType) = new AST::DefinedType(*(yyvsp[0].idVal)); }
-#line 2375 "Parser.cpp"
-    break;
-
-  case 25: /* _VarType: UNION IDENTIFIER LBRACE FieldDecls RBRACE  */
-#line 296 "Parser.y"
-                                { (yyval.varType) = new AST::UnionType((yyvsp[-1].fieldDecls), *(yyvsp[-3].idVal)); }
-#line 2381 "Parser.cpp"
-    break;
-
-  case 26: /* _VarType: UNION IDENTIFIER  */
-#line 297 "Parser.y"
-                                { (yyval.varType) = new AST::DefinedType(*(yyvsp[0].idVal)); }
-#line 2387 "Parser.cpp"
-    break;
-
-  case 27: /* _VarType: ENUM IDENTIFIER LBRACE EnumList RBRACE  */
-#line 299 "Parser.y"
-                                { (yyval.varType) = new AST::EnumType((yyvsp[-1].enumList), *(yyvsp[-3].idVal)); }
-#line 2393 "Parser.cpp"
-    break;
-
-  case 28: /* _VarType: ENUM IDENTIFIER  */
-#line 300 "Parser.y"
-                                { (yyval.varType) = new AST::DefinedType(*(yyvsp[0].idVal)); }
-#line 2399 "Parser.cpp"
-    break;
-
-  case 29: /* _VarType: _VarType ASTERISK  */
-#line 301 "Parser.y"
-                                { (yyval.varType) = new AST::PointerType((yyvsp[-1].varType)); }
-#line 2405 "Parser.cpp"
-    break;
-
-  case 30: /* _VarType: IDENTIFIER  */
-#line 302 "Parser.y"
-                                { (yyval.varType) = new AST::DefinedType(*(yyvsp[0].idVal)); }
-#line 2411 "Parser.cpp"
-    break;
-
-  case 31: /* VarList: VarList COMMA VarInit  */
-#line 309 "Parser.y"
-                                { (yyval.varList) = (yyvsp[-2].varList); (yyval.varList)->push_back((yyvsp[0].varInit)); }
-#line 2417 "Parser.cpp"
-    break;
-
-  case 32: /* VarList: VarInit  */
-#line 310 "Parser.y"
-                                { (yyval.varList) = new AST::VarList(); (yyval.varList)->push_back((yyvsp[0].varInit)); }
-#line 2423 "Parser.cpp"
-    break;
-
-  case 33: /* VarList: %empty  */
-#line 311 "Parser.y"
-                                { (yyval.varList) = new AST::VarList(); }
-#line 2429 "Parser.cpp"
-    break;
-
-  case 34: /* VarInit: IDENTIFIER ArrayBoundList  */
-#line 317 "Parser.y"
-                                { (yyval.varInit) = new AST::VarInit(*(yyvsp[-1].idVal), *(yyvsp[0].arrayBoundList)); delete (yyvsp[0].arrayBoundList); }
-#line 2435 "Parser.cpp"
-    break;
-
-  case 35: /* VarInit: IDENTIFIER ArrayBoundList ASSIGN Expr  */
-#line 319 "Parser.y"
-                                { (yyval.varInit) = new AST::VarInit(*(yyvsp[-3].idVal), *(yyvsp[-2].arrayBoundList), (yyvsp[0].expr)); delete (yyvsp[-2].arrayBoundList); }
-#line 2441 "Parser.cpp"
-    break;
-
-  case 36: /* VarInit: IDENTIFIER ArrayBoundList ASSIGN LBRACE InitList RBRACE  */
-#line 321 "Parser.y"
-                                { (yyval.varInit) = new AST::VarInit(*(yyvsp[-5].idVal), *(yyvsp[-4].arrayBoundList), nullptr, (yyvsp[-1].initList));
-                                  delete (yyvsp[-4].arrayBoundList); }
-#line 2448 "Parser.cpp"
-    break;
-
-  case 37: /* VarInit: IDENTIFIER ArrayBoundList ASSIGN LBRACE RBRACE  */
-#line 324 "Parser.y"
-                                { (yyval.varInit) = new AST::VarInit(*(yyvsp[-4].idVal), *(yyvsp[-3].arrayBoundList), nullptr,
-                                                        new AST::InitList());
-                                  delete (yyvsp[-3].arrayBoundList); }
-#line 2456 "Parser.cpp"
-    break;
-
-  case 38: /* InitList: InitList COMMA InitItem  */
-#line 332 "Parser.y"
-                                { (yyval.initList) = (yyvsp[-2].initList); (yyval.initList)->push_back((yyvsp[0].initElement)); }
-#line 2462 "Parser.cpp"
-    break;
-
-  case 39: /* InitList: InitItem  */
-#line 334 "Parser.y"
-                                { (yyval.initList) = new AST::InitList(); (yyval.initList)->push_back((yyvsp[0].initElement)); }
-#line 2468 "Parser.cpp"
-    break;
-
-  case 40: /* InitItem: Expr  */
-#line 339 "Parser.y"
-                                { (yyval.initElement) = new AST::InitElement((yyvsp[0].expr)); }
-#line 2474 "Parser.cpp"
-    break;
-
-  case 41: /* InitItem: LBRACE InitList RBRACE  */
-#line 341 "Parser.y"
-                                { (yyval.initElement) = new AST::InitElement((yyvsp[-1].initList)); }
-#line 2480 "Parser.cpp"
-    break;
-
-  case 42: /* ArrayBoundList: ArrayBoundList ArrayBound  */
-#line 349 "Parser.y"
-                                { (yyval.arrayBoundList) = (yyvsp[-1].arrayBoundList); (yyval.arrayBoundList)->push_back((yyvsp[0].sizeVal)); }
-#line 2486 "Parser.cpp"
-    break;
-
-  case 43: /* ArrayBoundList: ArrayBound  */
-#line 351 "Parser.y"
-                                { (yyval.arrayBoundList) = new std::vector<size_t>(); (yyval.arrayBoundList)->push_back((yyvsp[0].sizeVal)); }
-#line 2492 "Parser.cpp"
-    break;
-
-  case 44: /* ArrayBoundList: %empty  */
-#line 352 "Parser.y"
-                                { (yyval.arrayBoundList) = new std::vector<size_t>(); }
-#line 2498 "Parser.cpp"
-    break;
-
-  case 45: /* ArrayBound: LBRACKET INTEGER RBRACKET  */
-#line 356 "Parser.y"
-                                { (yyval.sizeVal) = static_cast<size_t>((yyvsp[-1].intVal)); }
-#line 2504 "Parser.cpp"
-    break;
-
-  case 46: /* ArrayBound: LBRACKET RBRACKET  */
-#line 358 "Parser.y"
-                                { (yyval.sizeVal) = AST::kInferredArrayBound; }
 #line 2510 "Parser.cpp"
     break;
 
-  case 47: /* ParamList: ParamList COMMA Param  */
-#line 364 "Parser.y"
-                                { (yyval.paramList) = (yyvsp[-2].paramList); (yyval.paramList)->push_back((yyvsp[0].param)); }
-#line 2516 "Parser.cpp"
+  case 11: /* TypedefDecl: TYPEDEF UNION IDENTIFIER LBRACE FieldDecls RBRACE IDENTIFIER SEMICOLON  */
+#line 264 "Parser.y"
+                                { (yyval.typedefDecl) = new AST::TypedefDecl(
+                                      new AST::UnionType((yyvsp[-3].fieldDecls), *(yyvsp[-5].idVal)), *(yyvsp[-1].idVal)); }
+#line 2517 "Parser.cpp"
     break;
 
-  case 48: /* ParamList: ParamList COMMA ELLIPSES  */
-#line 366 "Parser.y"
-                                { (yyval.paramList) = (yyvsp[-2].paramList); (yyval.paramList)->setVariant(); }
-#line 2522 "Parser.cpp"
+  case 12: /* FuncDecl: STATIC VarType IDENTIFIER LPARENTHESES ParamList RPARENTHESES SEMICOLON  */
+#line 269 "Parser.y"
+                                { (yyval.funcDecl) = new AST::FuncDecl((yyvsp[-5].varType), *(yyvsp[-4].idVal), (yyvsp[-2].paramList));
+                                  (yyval.funcDecl)->isStatic_ = true;
+                                  (yyval.funcDecl)->setLoc((yylsp[-4]).first_line, (yylsp[-4]).first_column); }
+#line 2525 "Parser.cpp"
     break;
 
-  case 49: /* ParamList: Param  */
-#line 367 "Parser.y"
-                                { (yyval.paramList) = new AST::ParamList(); (yyval.paramList)->push_back((yyvsp[0].param)); }
-#line 2528 "Parser.cpp"
+  case 13: /* FuncDecl: STATIC VarType IDENTIFIER LPARENTHESES ParamList RPARENTHESES FuncBody  */
+#line 273 "Parser.y"
+                                { (yyval.funcDecl) = new AST::FuncDecl((yyvsp[-5].varType), *(yyvsp[-4].idVal), (yyvsp[-2].paramList), (yyvsp[0].funcBody));
+                                  (yyval.funcDecl)->isStatic_ = true;
+                                  (yyval.funcDecl)->setLoc((yylsp[-4]).first_line, (yylsp[-4]).first_column); }
+#line 2533 "Parser.cpp"
     break;
 
-  case 50: /* ParamList: ELLIPSES  */
-#line 368 "Parser.y"
-                                { (yyval.paramList) = new AST::ParamList(); (yyval.paramList)->setVariant(); }
-#line 2534 "Parser.cpp"
-    break;
-
-  case 51: /* ParamList: %empty  */
-#line 369 "Parser.y"
-                                { (yyval.paramList) = new AST::ParamList(); }
+  case 14: /* FuncDecl: VarType IDENTIFIER LPARENTHESES ParamList RPARENTHESES SEMICOLON  */
+#line 277 "Parser.y"
+                                { (yyval.funcDecl) = new AST::FuncDecl((yyvsp[-5].varType), *(yyvsp[-4].idVal), (yyvsp[-2].paramList));
+                                  (yyval.funcDecl)->setLoc((yylsp[-4]).first_line, (yylsp[-4]).first_column); }
 #line 2540 "Parser.cpp"
     break;
 
-  case 52: /* Param: VarType IDENTIFIER  */
-#line 375 "Parser.y"
-                                { (yyval.param) = new AST::Param((yyvsp[-1].varType), *(yyvsp[0].idVal)); }
-#line 2546 "Parser.cpp"
+  case 15: /* FuncDecl: VarType IDENTIFIER LPARENTHESES ParamList RPARENTHESES FuncBody  */
+#line 280 "Parser.y"
+                                { (yyval.funcDecl) = new AST::FuncDecl((yyvsp[-5].varType), *(yyvsp[-4].idVal), (yyvsp[-2].paramList), (yyvsp[0].funcBody));
+                                  (yyval.funcDecl)->setLoc((yylsp[-4]).first_line, (yylsp[-4]).first_column); }
+#line 2547 "Parser.cpp"
     break;
 
-  case 53: /* Param: VarType  */
-#line 376 "Parser.y"
-                                { (yyval.param) = new AST::Param((yyvsp[0].varType)); }
-#line 2552 "Parser.cpp"
+  case 16: /* FuncBody: LBRACE Stmts RBRACE  */
+#line 284 "Parser.y"
+                                { (yyval.funcBody) = new AST::FuncBody((yyvsp[-1].stmts)); }
+#line 2553 "Parser.cpp"
     break;
 
-  case 54: /* BuiltinType: CHAR  */
-#line 380 "Parser.y"
-                                { (yyval.builtinType) = new AST::BuiltinType(AST::BuiltinType::TypeId::CHAR, "char"); }
-#line 2558 "Parser.cpp"
+  case 17: /* VarDecl: STATIC VarType VarList SEMICOLON  */
+#line 288 "Parser.y"
+                                { (yyval.varDecl) = new AST::VarDecl((yyvsp[-2].varType), (yyvsp[-1].varList)); (yyval.varDecl)->isStatic_ = true;
+                                  (yyval.varDecl)->setLoc((yylsp[-2]).first_line, (yylsp[-2]).first_column); }
+#line 2560 "Parser.cpp"
     break;
 
-  case 55: /* BuiltinType: SHORT  */
-#line 381 "Parser.y"
-                                { (yyval.builtinType) = new AST::BuiltinType(AST::BuiltinType::TypeId::SHORT, "short"); }
-#line 2564 "Parser.cpp"
+  case 18: /* VarDecl: VarType VarList SEMICOLON  */
+#line 291 "Parser.y"
+                                { (yyval.varDecl) = new AST::VarDecl((yyvsp[-2].varType), (yyvsp[-1].varList));
+                                  (yyval.varDecl)->setLoc((yylsp[-2]).first_line, (yylsp[-2]).first_column); }
+#line 2567 "Parser.cpp"
     break;
 
-  case 56: /* BuiltinType: INT  */
-#line 382 "Parser.y"
-                                { (yyval.builtinType) = new AST::BuiltinType(AST::BuiltinType::TypeId::INT, "int"); }
-#line 2570 "Parser.cpp"
+  case 19: /* TypeDecl: _VarType SEMICOLON  */
+#line 295 "Parser.y"
+                                { (yyval.typeDecl) = new AST::TypeDecl((yyvsp[-1].varType)); }
+#line 2573 "Parser.cpp"
     break;
 
-  case 57: /* BuiltinType: LONG  */
-#line 383 "Parser.y"
-                                { (yyval.builtinType) = new AST::BuiltinType(AST::BuiltinType::TypeId::LONG, "long"); }
-#line 2576 "Parser.cpp"
+  case 20: /* VarType: _VarType  */
+#line 300 "Parser.y"
+                                { (yyval.varType) = (yyvsp[0].varType); }
+#line 2579 "Parser.cpp"
     break;
 
-  case 58: /* BuiltinType: UNSIGNED  */
-#line 384 "Parser.y"
-                                { (yyval.builtinType) = new AST::BuiltinType(AST::BuiltinType::TypeId::UINT, "uint"); }
-#line 2582 "Parser.cpp"
+  case 21: /* VarType: CONST _VarType  */
+#line 301 "Parser.y"
+                                { (yyval.varType) = (yyvsp[0].varType); (yyval.varType)->setConst(); }
+#line 2585 "Parser.cpp"
     break;
 
-  case 59: /* BuiltinType: UNSIGNED CHAR  */
-#line 385 "Parser.y"
-                                { (yyval.builtinType) = new AST::BuiltinType(AST::BuiltinType::TypeId::UCHAR, "uchar"); }
-#line 2588 "Parser.cpp"
+  case 22: /* _VarType: BuiltinType  */
+#line 304 "Parser.y"
+                                { (yyval.varType) = (yyvsp[0].builtinType); }
+#line 2591 "Parser.cpp"
     break;
 
-  case 60: /* BuiltinType: UNSIGNED SHORT  */
-#line 386 "Parser.y"
-                                { (yyval.builtinType) = new AST::BuiltinType(AST::BuiltinType::TypeId::USHORT, "ushort"); }
-#line 2594 "Parser.cpp"
+  case 23: /* _VarType: STRUCT IDENTIFIER LBRACE FieldDecls RBRACE  */
+#line 306 "Parser.y"
+                                { (yyval.varType) = new AST::StructType((yyvsp[-1].fieldDecls), *(yyvsp[-3].idVal)); }
+#line 2597 "Parser.cpp"
     break;
 
-  case 61: /* BuiltinType: UNSIGNED INT  */
-#line 387 "Parser.y"
-                                { (yyval.builtinType) = new AST::BuiltinType(AST::BuiltinType::TypeId::UINT, "uint"); }
-#line 2600 "Parser.cpp"
+  case 24: /* _VarType: STRUCT IDENTIFIER  */
+#line 307 "Parser.y"
+                                { (yyval.varType) = new AST::DefinedType(*(yyvsp[0].idVal)); }
+#line 2603 "Parser.cpp"
     break;
 
-  case 62: /* BuiltinType: UNSIGNED LONG  */
-#line 388 "Parser.y"
-                                { (yyval.builtinType) = new AST::BuiltinType(AST::BuiltinType::TypeId::ULONG, "ulong"); }
-#line 2606 "Parser.cpp"
+  case 25: /* _VarType: UNION IDENTIFIER LBRACE FieldDecls RBRACE  */
+#line 309 "Parser.y"
+                                { (yyval.varType) = new AST::UnionType((yyvsp[-1].fieldDecls), *(yyvsp[-3].idVal)); }
+#line 2609 "Parser.cpp"
     break;
 
-  case 63: /* BuiltinType: FLOAT  */
-#line 389 "Parser.y"
-                                { (yyval.builtinType) = new AST::BuiltinType(AST::BuiltinType::TypeId::FLOAT, "float"); }
-#line 2612 "Parser.cpp"
+  case 26: /* _VarType: UNION IDENTIFIER  */
+#line 310 "Parser.y"
+                                { (yyval.varType) = new AST::DefinedType(*(yyvsp[0].idVal)); }
+#line 2615 "Parser.cpp"
     break;
 
-  case 64: /* BuiltinType: DOUBLE  */
-#line 390 "Parser.y"
-                                { (yyval.builtinType) = new AST::BuiltinType(AST::BuiltinType::TypeId::DOUBLE, "double"); }
-#line 2618 "Parser.cpp"
+  case 27: /* _VarType: ENUM IDENTIFIER LBRACE EnumList RBRACE  */
+#line 312 "Parser.y"
+                                { (yyval.varType) = new AST::EnumType((yyvsp[-1].enumList), *(yyvsp[-3].idVal)); }
+#line 2621 "Parser.cpp"
     break;
 
-  case 65: /* BuiltinType: BOOL  */
-#line 391 "Parser.y"
-                                { (yyval.builtinType) = new AST::BuiltinType(AST::BuiltinType::TypeId::BOOL, "bool"); }
-#line 2624 "Parser.cpp"
+  case 28: /* _VarType: ENUM IDENTIFIER  */
+#line 313 "Parser.y"
+                                { (yyval.varType) = new AST::DefinedType(*(yyvsp[0].idVal)); }
+#line 2627 "Parser.cpp"
     break;
 
-  case 66: /* BuiltinType: VOID  */
-#line 392 "Parser.y"
-                                { (yyval.builtinType) = new AST::BuiltinType(AST::BuiltinType::TypeId::VOID, "void"); }
-#line 2630 "Parser.cpp"
+  case 29: /* _VarType: _VarType ASTERISK  */
+#line 314 "Parser.y"
+                                { (yyval.varType) = new AST::PointerType((yyvsp[-1].varType)); }
+#line 2633 "Parser.cpp"
     break;
 
-  case 67: /* FieldDecls: FieldDecls FieldDecl  */
-#line 398 "Parser.y"
-                                { (yyval.fieldDecls) = (yyvsp[-1].fieldDecls); if ((yyvsp[0].fieldDecl) != NULL) (yyval.fieldDecls)->push_back((yyvsp[0].fieldDecl)); }
-#line 2636 "Parser.cpp"
+  case 30: /* _VarType: IDENTIFIER  */
+#line 315 "Parser.y"
+                                { (yyval.varType) = new AST::DefinedType(*(yyvsp[0].idVal)); }
+#line 2639 "Parser.cpp"
     break;
 
-  case 68: /* FieldDecls: %empty  */
-#line 399 "Parser.y"
-                                { (yyval.fieldDecls) = new AST::FieldDecls(); }
-#line 2642 "Parser.cpp"
+  case 31: /* VarList: VarList COMMA VarInit  */
+#line 322 "Parser.y"
+                                { (yyval.varList) = (yyvsp[-2].varList); (yyval.varList)->push_back((yyvsp[0].varInit)); }
+#line 2645 "Parser.cpp"
     break;
 
-  case 69: /* FieldDecl: VarType MemberList SEMICOLON  */
-#line 403 "Parser.y"
-                                { (yyval.fieldDecl) = new AST::FieldDecl((yyvsp[-2].varType), (yyvsp[-1].memberList)); }
-#line 2648 "Parser.cpp"
+  case 32: /* VarList: VarInit  */
+#line 323 "Parser.y"
+                                { (yyval.varList) = new AST::VarList(); (yyval.varList)->push_back((yyvsp[0].varInit)); }
+#line 2651 "Parser.cpp"
     break;
 
-  case 70: /* FieldDecl: SEMICOLON  */
-#line 404 "Parser.y"
-                                { (yyval.fieldDecl) = NULL; }
-#line 2654 "Parser.cpp"
+  case 33: /* VarList: %empty  */
+#line 324 "Parser.y"
+                                { (yyval.varList) = new AST::VarList(); }
+#line 2657 "Parser.cpp"
     break;
 
-  case 71: /* MemberList: MemberList COMMA IDENTIFIER  */
-#line 410 "Parser.y"
-                                { (yyval.memberList) = (yyvsp[-2].memberList); (yyval.memberList)->push_back(*(yyvsp[0].idVal)); }
-#line 2660 "Parser.cpp"
+  case 34: /* VarInit: IDENTIFIER ArrayBoundList  */
+#line 330 "Parser.y"
+                                { (yyval.varInit) = new AST::VarInit(*(yyvsp[-1].idVal), *(yyvsp[0].arrayBoundList)); delete (yyvsp[0].arrayBoundList); }
+#line 2663 "Parser.cpp"
     break;
 
-  case 72: /* MemberList: IDENTIFIER  */
-#line 411 "Parser.y"
-                                { (yyval.memberList) = new AST::MemberList(); (yyval.memberList)->push_back(*(yyvsp[0].idVal)); }
-#line 2666 "Parser.cpp"
+  case 35: /* VarInit: IDENTIFIER ArrayBoundList ASSIGN Expr  */
+#line 332 "Parser.y"
+                                { (yyval.varInit) = new AST::VarInit(*(yyvsp[-3].idVal), *(yyvsp[-2].arrayBoundList), (yyvsp[0].expr)); delete (yyvsp[-2].arrayBoundList); }
+#line 2669 "Parser.cpp"
     break;
 
-  case 73: /* MemberList: %empty  */
-#line 412 "Parser.y"
-                                { (yyval.memberList) = new AST::MemberList(); }
-#line 2672 "Parser.cpp"
+  case 36: /* VarInit: IDENTIFIER ArrayBoundList ASSIGN LBRACE InitList RBRACE  */
+#line 334 "Parser.y"
+                                { (yyval.varInit) = new AST::VarInit(*(yyvsp[-5].idVal), *(yyvsp[-4].arrayBoundList), nullptr, (yyvsp[-1].initList));
+                                  delete (yyvsp[-4].arrayBoundList); }
+#line 2676 "Parser.cpp"
     break;
 
-  case 74: /* EnumList: EnumList COMMA Enum  */
-#line 418 "Parser.y"
-                                { (yyval.enumList) = (yyvsp[-2].enumList); (yyval.enumList)->push_back((yyvsp[0].enumeration)); }
-#line 2678 "Parser.cpp"
-    break;
-
-  case 75: /* EnumList: Enum  */
-#line 419 "Parser.y"
-                                { (yyval.enumList) = new AST::EnumList(); (yyval.enumList)->push_back((yyvsp[0].enumeration)); }
+  case 37: /* VarInit: IDENTIFIER ArrayBoundList ASSIGN LBRACE RBRACE  */
+#line 337 "Parser.y"
+                                { (yyval.varInit) = new AST::VarInit(*(yyvsp[-4].idVal), *(yyvsp[-3].arrayBoundList), nullptr,
+                                                        new AST::InitList());
+                                  delete (yyvsp[-3].arrayBoundList); }
 #line 2684 "Parser.cpp"
     break;
 
-  case 76: /* EnumList: %empty  */
-#line 420 "Parser.y"
-                                { (yyval.enumList) = new AST::EnumList(); }
+  case 38: /* InitList: InitList COMMA InitItem  */
+#line 345 "Parser.y"
+                                { (yyval.initList) = (yyvsp[-2].initList); (yyval.initList)->push_back((yyvsp[0].initElement)); }
 #line 2690 "Parser.cpp"
     break;
 
-  case 77: /* Enum: IDENTIFIER  */
-#line 423 "Parser.y"
-                                { (yyval.enumeration) = new AST::Enum(*(yyvsp[0].idVal)); }
+  case 39: /* InitList: InitItem  */
+#line 347 "Parser.y"
+                                { (yyval.initList) = new AST::InitList(); (yyval.initList)->push_back((yyvsp[0].initElement)); }
 #line 2696 "Parser.cpp"
     break;
 
-  case 78: /* Enum: IDENTIFIER ASSIGN INTEGER  */
-#line 425 "Parser.y"
-                                { (yyval.enumeration) = new AST::Enum(*(yyvsp[-2].idVal), true, (yyvsp[0].intVal)); }
+  case 40: /* InitItem: Expr  */
+#line 352 "Parser.y"
+                                { (yyval.initElement) = new AST::InitElement((yyvsp[0].expr)); }
 #line 2702 "Parser.cpp"
     break;
 
-  case 79: /* Stmts: Stmts Stmt  */
-#line 430 "Parser.y"
-                                { (yyval.stmts) = (yyvsp[-1].stmts); if ((yyvsp[0].stmt) != NULL) (yyval.stmts)->push_back((yyvsp[0].stmt)); }
+  case 41: /* InitItem: LBRACE InitList RBRACE  */
+#line 354 "Parser.y"
+                                { (yyval.initElement) = new AST::InitElement((yyvsp[-1].initList)); }
 #line 2708 "Parser.cpp"
     break;
 
-  case 80: /* Stmts: %empty  */
-#line 431 "Parser.y"
-                                { (yyval.stmts) = new AST::Stmts(); }
+  case 42: /* ArrayBoundList: ArrayBoundList ArrayBound  */
+#line 362 "Parser.y"
+                                { (yyval.arrayBoundList) = (yyvsp[-1].arrayBoundList); (yyval.arrayBoundList)->push_back((yyvsp[0].sizeVal)); }
 #line 2714 "Parser.cpp"
     break;
 
-  case 81: /* Stmt: Expr SEMICOLON  */
-#line 434 "Parser.y"
-                                { (yyval.stmt) = (yyvsp[-1].expr); (yyval.stmt)->setLoc((yylsp[-1]).first_line, (yylsp[-1]).first_column); }
+  case 43: /* ArrayBoundList: ArrayBound  */
+#line 364 "Parser.y"
+                                { (yyval.arrayBoundList) = new std::vector<size_t>(); (yyval.arrayBoundList)->push_back((yyvsp[0].sizeVal)); }
 #line 2720 "Parser.cpp"
     break;
 
-  case 82: /* Stmt: IfStmt  */
-#line 435 "Parser.y"
-                                { (yyval.stmt) = (yyvsp[0].ifStmt); }
+  case 44: /* ArrayBoundList: %empty  */
+#line 365 "Parser.y"
+                                { (yyval.arrayBoundList) = new std::vector<size_t>(); }
 #line 2726 "Parser.cpp"
     break;
 
-  case 83: /* Stmt: SwitchStmt  */
-#line 436 "Parser.y"
-                                { (yyval.stmt) = (yyvsp[0].switchStmt); }
+  case 45: /* ArrayBound: LBRACKET INTEGER RBRACKET  */
+#line 369 "Parser.y"
+                                { (yyval.sizeVal) = static_cast<size_t>((yyvsp[-1].intVal)); }
 #line 2732 "Parser.cpp"
     break;
 
-  case 84: /* Stmt: ForStmt  */
-#line 437 "Parser.y"
-                                { (yyval.stmt) = (yyvsp[0].forStmt); }
+  case 46: /* ArrayBound: LBRACKET RBRACKET  */
+#line 371 "Parser.y"
+                                { (yyval.sizeVal) = AST::kInferredArrayBound; }
 #line 2738 "Parser.cpp"
     break;
 
-  case 85: /* Stmt: DoStmt  */
-#line 438 "Parser.y"
-                                { (yyval.stmt) = (yyvsp[0].doStmt); }
+  case 47: /* ParamList: ParamList COMMA Param  */
+#line 377 "Parser.y"
+                                { (yyval.paramList) = (yyvsp[-2].paramList); (yyval.paramList)->push_back((yyvsp[0].param)); }
 #line 2744 "Parser.cpp"
     break;
 
-  case 86: /* Stmt: WhileStmt  */
-#line 439 "Parser.y"
-                                { (yyval.stmt) = (yyvsp[0].whileStmt); }
+  case 48: /* ParamList: ParamList COMMA ELLIPSES  */
+#line 379 "Parser.y"
+                                { (yyval.paramList) = (yyvsp[-2].paramList); (yyval.paramList)->setVariant(); }
 #line 2750 "Parser.cpp"
     break;
 
-  case 87: /* Stmt: ContinueStmt  */
-#line 440 "Parser.y"
-                                { (yyval.stmt) = (yyvsp[0].continueStmt); }
+  case 49: /* ParamList: Param  */
+#line 380 "Parser.y"
+                                { (yyval.paramList) = new AST::ParamList(); (yyval.paramList)->push_back((yyvsp[0].param)); }
 #line 2756 "Parser.cpp"
     break;
 
-  case 88: /* Stmt: BreakStmt  */
-#line 441 "Parser.y"
-                                { (yyval.stmt) = (yyvsp[0].breakStmt); }
+  case 50: /* ParamList: ELLIPSES  */
+#line 381 "Parser.y"
+                                { (yyval.paramList) = new AST::ParamList(); (yyval.paramList)->setVariant(); }
 #line 2762 "Parser.cpp"
     break;
 
-  case 89: /* Stmt: ReturnStmt  */
-#line 442 "Parser.y"
-                                { (yyval.stmt) = (yyvsp[0].returnStmt); }
+  case 51: /* ParamList: %empty  */
+#line 382 "Parser.y"
+                                { (yyval.paramList) = new AST::ParamList(); }
 #line 2768 "Parser.cpp"
     break;
 
-  case 90: /* Stmt: Block  */
-#line 443 "Parser.y"
-                                { (yyval.stmt) = (yyvsp[0].block); }
+  case 52: /* Param: VarType IDENTIFIER  */
+#line 388 "Parser.y"
+                                { (yyval.param) = new AST::Param((yyvsp[-1].varType), *(yyvsp[0].idVal)); }
 #line 2774 "Parser.cpp"
     break;
 
-  case 91: /* Stmt: TypeDecl  */
-#line 444 "Parser.y"
-                                { (yyval.stmt) = (yyvsp[0].typeDecl); }
+  case 53: /* Param: VarType  */
+#line 389 "Parser.y"
+                                { (yyval.param) = new AST::Param((yyvsp[0].varType)); }
 #line 2780 "Parser.cpp"
     break;
 
-  case 92: /* Stmt: VarDecl  */
-#line 445 "Parser.y"
-                                { (yyval.stmt) = (yyvsp[0].varDecl); }
+  case 54: /* BuiltinType: CHAR  */
+#line 393 "Parser.y"
+                                { (yyval.builtinType) = new AST::BuiltinType(AST::BuiltinType::TypeId::CHAR, "char"); }
 #line 2786 "Parser.cpp"
     break;
 
-  case 93: /* Stmt: SEMICOLON  */
-#line 446 "Parser.y"
-                                { (yyval.stmt) = NULL; }
+  case 55: /* BuiltinType: SHORT  */
+#line 394 "Parser.y"
+                                { (yyval.builtinType) = new AST::BuiltinType(AST::BuiltinType::TypeId::SHORT, "short"); }
 #line 2792 "Parser.cpp"
     break;
 
-  case 94: /* IfStmt: IF LPARENTHESES Expr RPARENTHESES Stmt ELSE Stmt  */
-#line 450 "Parser.y"
-                                { (yyval.ifStmt) = new AST::IfStmt((yyvsp[-4].expr), (yyvsp[-2].stmt), (yyvsp[0].stmt));
-                                  (yyval.ifStmt)->setLoc((yylsp[-6]).first_line, (yylsp[-6]).first_column); }
-#line 2799 "Parser.cpp"
+  case 56: /* BuiltinType: INT  */
+#line 395 "Parser.y"
+                                { (yyval.builtinType) = new AST::BuiltinType(AST::BuiltinType::TypeId::INT, "int"); }
+#line 2798 "Parser.cpp"
     break;
 
-  case 95: /* IfStmt: IF LPARENTHESES Expr RPARENTHESES Stmt  */
-#line 453 "Parser.y"
-                                { (yyval.ifStmt) = new AST::IfStmt((yyvsp[-2].expr), (yyvsp[0].stmt));
-                                  (yyval.ifStmt)->setLoc((yylsp[-4]).first_line, (yylsp[-4]).first_column); }
-#line 2806 "Parser.cpp"
+  case 57: /* BuiltinType: LONG  */
+#line 396 "Parser.y"
+                                { (yyval.builtinType) = new AST::BuiltinType(AST::BuiltinType::TypeId::LONG, "long"); }
+#line 2804 "Parser.cpp"
     break;
 
-  case 96: /* SwitchStmt: SWITCH LPARENTHESES Expr RPARENTHESES LBRACE CaseStmtList RBRACE  */
-#line 460 "Parser.y"
-                                { (yyval.switchStmt) = new AST::SwitchStmt((yyvsp[-4].expr), (yyvsp[-1].caseStmtList));
-                                  (yyval.switchStmt)->setLoc((yylsp[-6]).first_line, (yylsp[-6]).first_column); }
-#line 2813 "Parser.cpp"
+  case 58: /* BuiltinType: UNSIGNED  */
+#line 397 "Parser.y"
+                                { (yyval.builtinType) = new AST::BuiltinType(AST::BuiltinType::TypeId::UINT, "uint"); }
+#line 2810 "Parser.cpp"
     break;
 
-  case 97: /* CaseStmtList: CaseStmtList CaseStmt  */
-#line 466 "Parser.y"
-                                { (yyval.caseStmtList) = (yyvsp[-1].caseStmtList); (yyval.caseStmtList)->push_back((yyvsp[0].caseStmt)); }
-#line 2819 "Parser.cpp"
+  case 59: /* BuiltinType: UNSIGNED CHAR  */
+#line 398 "Parser.y"
+                                { (yyval.builtinType) = new AST::BuiltinType(AST::BuiltinType::TypeId::UCHAR, "uchar"); }
+#line 2816 "Parser.cpp"
     break;
 
-  case 98: /* CaseStmtList: %empty  */
-#line 467 "Parser.y"
-                                { (yyval.caseStmtList) = new AST::CaseStmtList(); }
-#line 2825 "Parser.cpp"
+  case 60: /* BuiltinType: UNSIGNED SHORT  */
+#line 399 "Parser.y"
+                                { (yyval.builtinType) = new AST::BuiltinType(AST::BuiltinType::TypeId::USHORT, "ushort"); }
+#line 2822 "Parser.cpp"
     break;
 
-  case 99: /* CaseStmt: CASE Expr COLON Stmts  */
-#line 471 "Parser.y"
-                                { (yyval.caseStmt) = new AST::CaseStmt((yyvsp[-2].expr), (yyvsp[0].stmts));
-                                  (yyval.caseStmt)->setLoc((yylsp[-3]).first_line, (yylsp[-3]).first_column); }
-#line 2832 "Parser.cpp"
+  case 61: /* BuiltinType: UNSIGNED INT  */
+#line 400 "Parser.y"
+                                { (yyval.builtinType) = new AST::BuiltinType(AST::BuiltinType::TypeId::UINT, "uint"); }
+#line 2828 "Parser.cpp"
     break;
 
-  case 100: /* CaseStmt: DEFAULT COLON Stmts  */
-#line 474 "Parser.y"
-                                { (yyval.caseStmt) = new AST::CaseStmt(NULL, (yyvsp[0].stmts));
-                                  (yyval.caseStmt)->setLoc((yylsp[-2]).first_line, (yylsp[-2]).first_column); }
-#line 2839 "Parser.cpp"
+  case 62: /* BuiltinType: UNSIGNED LONG  */
+#line 401 "Parser.y"
+                                { (yyval.builtinType) = new AST::BuiltinType(AST::BuiltinType::TypeId::ULONG, "ulong"); }
+#line 2834 "Parser.cpp"
     break;
 
-  case 101: /* ForStmt: FOR LPARENTHESES Expr SEMICOLON Expr SEMICOLON Expr RPARENTHESES Stmt  */
-#line 479 "Parser.y"
-                                { (yyval.forStmt) = new AST::ForStmt((yyvsp[-6].expr), (yyvsp[-4].expr), (yyvsp[-2].expr), (yyvsp[0].stmt));
-                                  (yyval.forStmt)->setLoc((yylsp[-8]).first_line, (yylsp[-8]).first_column); }
+  case 63: /* BuiltinType: FLOAT  */
+#line 402 "Parser.y"
+                                { (yyval.builtinType) = new AST::BuiltinType(AST::BuiltinType::TypeId::FLOAT, "float"); }
+#line 2840 "Parser.cpp"
+    break;
+
+  case 64: /* BuiltinType: DOUBLE  */
+#line 403 "Parser.y"
+                                { (yyval.builtinType) = new AST::BuiltinType(AST::BuiltinType::TypeId::DOUBLE, "double"); }
 #line 2846 "Parser.cpp"
     break;
 
-  case 102: /* ForStmt: FOR LPARENTHESES SEMICOLON Expr SEMICOLON Expr RPARENTHESES Stmt  */
-#line 482 "Parser.y"
-                                { (yyval.forStmt) = new AST::ForStmt(NULL, (yyvsp[-4].expr), (yyvsp[-2].expr), (yyvsp[0].stmt));
-                                  (yyval.forStmt)->setLoc((yylsp[-7]).first_line, (yylsp[-7]).first_column); }
-#line 2853 "Parser.cpp"
+  case 65: /* BuiltinType: BOOL  */
+#line 404 "Parser.y"
+                                { (yyval.builtinType) = new AST::BuiltinType(AST::BuiltinType::TypeId::BOOL, "bool"); }
+#line 2852 "Parser.cpp"
     break;
 
-  case 103: /* ForStmt: FOR LPARENTHESES VarDecl Expr SEMICOLON Expr RPARENTHESES Stmt  */
-#line 485 "Parser.y"
-                                { (yyval.forStmt) = new AST::ForStmt((yyvsp[-5].varDecl), (yyvsp[-4].expr), (yyvsp[-2].expr), (yyvsp[0].stmt));
-                                  (yyval.forStmt)->setLoc((yylsp[-7]).first_line, (yylsp[-7]).first_column); }
-#line 2860 "Parser.cpp"
+  case 66: /* BuiltinType: VOID  */
+#line 405 "Parser.y"
+                                { (yyval.builtinType) = new AST::BuiltinType(AST::BuiltinType::TypeId::VOID, "void"); }
+#line 2858 "Parser.cpp"
     break;
 
-  case 104: /* DoStmt: DO Stmt WHILE LPARENTHESES Expr RPARENTHESES SEMICOLON  */
-#line 490 "Parser.y"
-                                { (yyval.doStmt) = new AST::DoStmt((yyvsp[-5].stmt), (yyvsp[-2].expr));
-                                  (yyval.doStmt)->setLoc((yylsp[-6]).first_line, (yylsp[-6]).first_column); }
-#line 2867 "Parser.cpp"
+  case 67: /* FieldDecls: FieldDecls FieldDecl  */
+#line 411 "Parser.y"
+                                { (yyval.fieldDecls) = (yyvsp[-1].fieldDecls); if ((yyvsp[0].fieldDecl) != NULL) (yyval.fieldDecls)->push_back((yyvsp[0].fieldDecl)); }
+#line 2864 "Parser.cpp"
     break;
 
-  case 105: /* WhileStmt: WHILE LPARENTHESES Expr RPARENTHESES Stmt  */
-#line 495 "Parser.y"
-                                { (yyval.whileStmt) = new AST::WhileStmt((yyvsp[-2].expr), (yyvsp[0].stmt));
-                                  (yyval.whileStmt)->setLoc((yylsp[-4]).first_line, (yylsp[-4]).first_column); }
-#line 2874 "Parser.cpp"
+  case 68: /* FieldDecls: %empty  */
+#line 412 "Parser.y"
+                                { (yyval.fieldDecls) = new AST::FieldDecls(); }
+#line 2870 "Parser.cpp"
     break;
 
-  case 106: /* ContinueStmt: CONTINUE SEMICOLON  */
-#line 500 "Parser.y"
-                                { (yyval.continueStmt) = new AST::ContinueStmt();
-                                  (yyval.continueStmt)->setLoc((yylsp[-1]).first_line, (yylsp[-1]).first_column); }
-#line 2881 "Parser.cpp"
+  case 69: /* FieldDecl: VarType MemberList SEMICOLON  */
+#line 416 "Parser.y"
+                                { (yyval.fieldDecl) = new AST::FieldDecl((yyvsp[-2].varType), (yyvsp[-1].memberList)); }
+#line 2876 "Parser.cpp"
     break;
 
-  case 107: /* BreakStmt: BREAK SEMICOLON  */
-#line 504 "Parser.y"
-                                { (yyval.breakStmt) = new AST::BreakStmt();
-                                  (yyval.breakStmt)->setLoc((yylsp[-1]).first_line, (yylsp[-1]).first_column); }
+  case 70: /* FieldDecl: SEMICOLON  */
+#line 417 "Parser.y"
+                                { (yyval.fieldDecl) = NULL; }
+#line 2882 "Parser.cpp"
+    break;
+
+  case 71: /* MemberList: MemberList COMMA IDENTIFIER  */
+#line 423 "Parser.y"
+                                { (yyval.memberList) = (yyvsp[-2].memberList); (yyval.memberList)->push_back(*(yyvsp[0].idVal)); }
 #line 2888 "Parser.cpp"
     break;
 
-  case 108: /* ReturnStmt: RETURN SEMICOLON  */
-#line 508 "Parser.y"
-                                { (yyval.returnStmt) = new AST::ReturnStmt();
-                                  (yyval.returnStmt)->setLoc((yylsp[-1]).first_line, (yylsp[-1]).first_column); }
-#line 2895 "Parser.cpp"
+  case 72: /* MemberList: IDENTIFIER  */
+#line 424 "Parser.y"
+                                { (yyval.memberList) = new AST::MemberList(); (yyval.memberList)->push_back(*(yyvsp[0].idVal)); }
+#line 2894 "Parser.cpp"
     break;
 
-  case 109: /* ReturnStmt: RETURN Expr SEMICOLON  */
-#line 511 "Parser.y"
-                                { (yyval.returnStmt) = new AST::ReturnStmt((yyvsp[-1].expr));
-                                  (yyval.returnStmt)->setLoc((yylsp[-2]).first_line, (yylsp[-2]).first_column); }
-#line 2902 "Parser.cpp"
+  case 73: /* MemberList: %empty  */
+#line 425 "Parser.y"
+                                { (yyval.memberList) = new AST::MemberList(); }
+#line 2900 "Parser.cpp"
     break;
 
-  case 110: /* Block: LBRACE Stmts RBRACE  */
-#line 515 "Parser.y"
-                                { (yyval.block) = new AST::Block((yyvsp[-1].stmts));
-                                  (yyval.block)->setLoc((yylsp[-2]).first_line, (yylsp[-2]).first_column); }
-#line 2909 "Parser.cpp"
+  case 74: /* EnumList: EnumList COMMA Enum  */
+#line 431 "Parser.y"
+                                { (yyval.enumList) = (yyvsp[-2].enumList); (yyval.enumList)->push_back((yyvsp[0].enumeration)); }
+#line 2906 "Parser.cpp"
     break;
 
-  case 111: /* Expr: IDENTIFIER  */
-#line 523 "Parser.y"
-                                { (yyval.expr) = new AST::Variable(*(yyvsp[0].idVal)); }
-#line 2915 "Parser.cpp"
+  case 75: /* EnumList: Enum  */
+#line 432 "Parser.y"
+                                { (yyval.enumList) = new AST::EnumList(); (yyval.enumList)->push_back((yyvsp[0].enumeration)); }
+#line 2912 "Parser.cpp"
     break;
 
-  case 112: /* Expr: Constant  */
-#line 524 "Parser.y"
-                                { (yyval.expr) = (yyvsp[0].constant); }
-#line 2921 "Parser.cpp"
+  case 76: /* EnumList: %empty  */
+#line 433 "Parser.y"
+                                { (yyval.enumList) = new AST::EnumList(); }
+#line 2918 "Parser.cpp"
     break;
 
-  case 113: /* Expr: LPARENTHESES Expr RPARENTHESES  */
-#line 526 "Parser.y"
-                                { (yyval.expr) = (yyvsp[-1].expr); }
-#line 2927 "Parser.cpp"
+  case 77: /* Enum: IDENTIFIER  */
+#line 436 "Parser.y"
+                                { (yyval.enumeration) = new AST::Enum(*(yyvsp[0].idVal)); }
+#line 2924 "Parser.cpp"
     break;
 
-  case 114: /* Expr: Expr COMMA Expr  */
-#line 527 "Parser.y"
-                                { (yyval.expr) = new AST::CommaExpr((yyvsp[-2].expr), (yyvsp[0].expr)); }
-#line 2933 "Parser.cpp"
+  case 78: /* Enum: IDENTIFIER ASSIGN INTEGER  */
+#line 438 "Parser.y"
+                                { (yyval.enumeration) = new AST::Enum(*(yyvsp[-2].idVal), true, (yyvsp[0].intVal)); }
+#line 2930 "Parser.cpp"
     break;
 
-  case 115: /* Expr: IDENTIFIER LPARENTHESES ExprList RPARENTHESES  */
-#line 529 "Parser.y"
-                                { (yyval.expr) = new AST::FuncCall(*(yyvsp[-3].idVal), (yyvsp[-1].exprList)); }
-#line 2939 "Parser.cpp"
+  case 79: /* Stmts: Stmts Stmt  */
+#line 443 "Parser.y"
+                                { (yyval.stmts) = (yyvsp[-1].stmts); if ((yyvsp[0].stmt) != NULL) (yyval.stmts)->push_back((yyvsp[0].stmt)); }
+#line 2936 "Parser.cpp"
     break;
 
-  case 116: /* Expr: Expr DOT IDENTIFIER  */
-#line 531 "Parser.y"
-                                { (yyval.expr) = new AST::StructRef((yyvsp[-2].expr), *(yyvsp[0].idVal)); }
-#line 2945 "Parser.cpp"
+  case 80: /* Stmts: %empty  */
+#line 444 "Parser.y"
+                                { (yyval.stmts) = new AST::Stmts(); }
+#line 2942 "Parser.cpp"
     break;
 
-  case 117: /* Expr: Expr ARROW IDENTIFIER  */
-#line 533 "Parser.y"
-                                { (yyval.expr) = new AST::StructDeref((yyvsp[-2].expr), *(yyvsp[0].idVal)); }
-#line 2951 "Parser.cpp"
+  case 81: /* Stmt: Expr SEMICOLON  */
+#line 447 "Parser.y"
+                                { (yyval.stmt) = (yyvsp[-1].expr); (yyval.stmt)->setLoc((yylsp[-1]).first_line, (yylsp[-1]).first_column); }
+#line 2948 "Parser.cpp"
     break;
 
-  case 118: /* Expr: Expr LBRACKET Expr RBRACKET  */
-#line 535 "Parser.y"
-                                { (yyval.expr) = new AST::Subscript((yyvsp[-3].expr), (yyvsp[-1].expr)); }
-#line 2957 "Parser.cpp"
+  case 82: /* Stmt: IfStmt  */
+#line 448 "Parser.y"
+                                { (yyval.stmt) = (yyvsp[0].ifStmt); }
+#line 2954 "Parser.cpp"
     break;
 
-  case 119: /* Expr: LPARENTHESES VarType RPARENTHESES Expr  */
-#line 537 "Parser.y"
-                                { (yyval.expr) = new AST::TypeCast((yyvsp[-2].varType), (yyvsp[0].expr)); }
-#line 2963 "Parser.cpp"
+  case 83: /* Stmt: SwitchStmt  */
+#line 449 "Parser.y"
+                                { (yyval.stmt) = (yyvsp[0].switchStmt); }
+#line 2960 "Parser.cpp"
     break;
 
-  case 120: /* Expr: SIZEOF LPARENTHESES VarType RPARENTHESES  */
-#line 539 "Parser.y"
-                                { (yyval.expr) = new AST::SizeOf((yyvsp[-1].varType)); }
-#line 2969 "Parser.cpp"
+  case 84: /* Stmt: ForStmt  */
+#line 450 "Parser.y"
+                                { (yyval.stmt) = (yyvsp[0].forStmt); }
+#line 2966 "Parser.cpp"
     break;
 
-  case 121: /* Expr: SIZEOF LPARENTHESES Expr RPARENTHESES  */
-#line 541 "Parser.y"
-                                { (yyval.expr) = new AST::SizeOf((yyvsp[-1].expr)); }
-#line 2975 "Parser.cpp"
+  case 85: /* Stmt: DoStmt  */
+#line 451 "Parser.y"
+                                { (yyval.stmt) = (yyvsp[0].doStmt); }
+#line 2972 "Parser.cpp"
     break;
 
-  case 122: /* Expr: SIZEOF LPARENTHESES IDENTIFIER RPARENTHESES  */
-#line 543 "Parser.y"
-                                { (yyval.expr) = new AST::SizeOf(*(yyvsp[-1].idVal)); }
-#line 2981 "Parser.cpp"
+  case 86: /* Stmt: WhileStmt  */
+#line 452 "Parser.y"
+                                { (yyval.stmt) = (yyvsp[0].whileStmt); }
+#line 2978 "Parser.cpp"
     break;
 
-  case 123: /* Expr: ADD Expr  */
-#line 545 "Parser.y"
-                                { (yyval.expr) = new AST::UnaryPlus((yyvsp[0].expr)); }
-#line 2987 "Parser.cpp"
+  case 87: /* Stmt: ContinueStmt  */
+#line 453 "Parser.y"
+                                { (yyval.stmt) = (yyvsp[0].continueStmt); }
+#line 2984 "Parser.cpp"
     break;
 
-  case 124: /* Expr: SUB Expr  */
-#line 547 "Parser.y"
-                                { (yyval.expr) = new AST::UnaryMinus((yyvsp[0].expr)); }
-#line 2993 "Parser.cpp"
+  case 88: /* Stmt: BreakStmt  */
+#line 454 "Parser.y"
+                                { (yyval.stmt) = (yyvsp[0].breakStmt); }
+#line 2990 "Parser.cpp"
     break;
 
-  case 125: /* Expr: ASTERISK Expr  */
-#line 549 "Parser.y"
-                                { (yyval.expr) = new AST::PointerDeref((yyvsp[0].expr)); }
-#line 2999 "Parser.cpp"
+  case 89: /* Stmt: ReturnStmt  */
+#line 455 "Parser.y"
+                                { (yyval.stmt) = (yyvsp[0].returnStmt); }
+#line 2996 "Parser.cpp"
     break;
 
-  case 126: /* Expr: AMPERSAND Expr  */
-#line 551 "Parser.y"
-                                { (yyval.expr) = new AST::AddressOf((yyvsp[0].expr)); }
-#line 3005 "Parser.cpp"
+  case 90: /* Stmt: Block  */
+#line 456 "Parser.y"
+                                { (yyval.stmt) = (yyvsp[0].block); }
+#line 3002 "Parser.cpp"
     break;
 
-  case 127: /* Expr: Expr ASSIGN Expr  */
-#line 552 "Parser.y"
-                                { (yyval.expr) = new AST::Assign((yyvsp[-2].expr), (yyvsp[0].expr)); }
-#line 3011 "Parser.cpp"
+  case 91: /* Stmt: TypeDecl  */
+#line 457 "Parser.y"
+                                { (yyval.stmt) = (yyvsp[0].typeDecl); }
+#line 3008 "Parser.cpp"
     break;
 
-  case 128: /* Expr: Expr ADD Expr  */
-#line 554 "Parser.y"
-                                { (yyval.expr) = new AST::Add((yyvsp[-2].expr), (yyvsp[0].expr)); }
-#line 3017 "Parser.cpp"
+  case 92: /* Stmt: VarDecl  */
+#line 458 "Parser.y"
+                                { (yyval.stmt) = (yyvsp[0].varDecl); }
+#line 3014 "Parser.cpp"
     break;
 
-  case 129: /* Expr: Expr SUB Expr  */
-#line 556 "Parser.y"
-                                { (yyval.expr) = new AST::Sub((yyvsp[-2].expr), (yyvsp[0].expr)); }
-#line 3023 "Parser.cpp"
+  case 93: /* Stmt: SEMICOLON  */
+#line 459 "Parser.y"
+                                { (yyval.stmt) = NULL; }
+#line 3020 "Parser.cpp"
     break;
 
-  case 130: /* Expr: Expr ASTERISK Expr  */
-#line 558 "Parser.y"
-                                { (yyval.expr) = new AST::Mul((yyvsp[-2].expr), (yyvsp[0].expr)); }
-#line 3029 "Parser.cpp"
+  case 94: /* IfStmt: IF LPARENTHESES Expr RPARENTHESES Stmt ELSE Stmt  */
+#line 463 "Parser.y"
+                                { (yyval.ifStmt) = new AST::IfStmt((yyvsp[-4].expr), (yyvsp[-2].stmt), (yyvsp[0].stmt));
+                                  (yyval.ifStmt)->setLoc((yylsp[-6]).first_line, (yylsp[-6]).first_column); }
+#line 3027 "Parser.cpp"
     break;
 
-  case 131: /* Expr: Expr DIV Expr  */
-#line 559 "Parser.y"
-                                { (yyval.expr) = new AST::Div((yyvsp[-2].expr), (yyvsp[0].expr)); }
-#line 3035 "Parser.cpp"
+  case 95: /* IfStmt: IF LPARENTHESES Expr RPARENTHESES Stmt  */
+#line 466 "Parser.y"
+                                { (yyval.ifStmt) = new AST::IfStmt((yyvsp[-2].expr), (yyvsp[0].stmt));
+                                  (yyval.ifStmt)->setLoc((yylsp[-4]).first_line, (yylsp[-4]).first_column); }
+#line 3034 "Parser.cpp"
     break;
 
-  case 132: /* Expr: Expr MOD Expr  */
-#line 560 "Parser.y"
-                                { (yyval.expr) = new AST::Mod((yyvsp[-2].expr), (yyvsp[0].expr)); }
+  case 96: /* SwitchStmt: SWITCH LPARENTHESES Expr RPARENTHESES LBRACE CaseStmtList RBRACE  */
+#line 473 "Parser.y"
+                                { (yyval.switchStmt) = new AST::SwitchStmt((yyvsp[-4].expr), (yyvsp[-1].caseStmtList));
+                                  (yyval.switchStmt)->setLoc((yylsp[-6]).first_line, (yylsp[-6]).first_column); }
 #line 3041 "Parser.cpp"
     break;
 
-  case 133: /* Expr: Expr DADD  */
-#line 562 "Parser.y"
-                                { (yyval.expr) = new AST::PostfixInc((yyvsp[-1].expr)); }
+  case 97: /* CaseStmtList: CaseStmtList CaseStmt  */
+#line 479 "Parser.y"
+                                { (yyval.caseStmtList) = (yyvsp[-1].caseStmtList); (yyval.caseStmtList)->push_back((yyvsp[0].caseStmt)); }
 #line 3047 "Parser.cpp"
     break;
 
-  case 134: /* Expr: Expr DSUB  */
-#line 564 "Parser.y"
-                                { (yyval.expr) = new AST::PostfixDec((yyvsp[-1].expr)); }
+  case 98: /* CaseStmtList: %empty  */
+#line 480 "Parser.y"
+                                { (yyval.caseStmtList) = new AST::CaseStmtList(); }
 #line 3053 "Parser.cpp"
     break;
 
-  case 135: /* Expr: DADD Expr  */
-#line 566 "Parser.y"
-                                { (yyval.expr) = new AST::PrefixInc((yyvsp[0].expr)); }
-#line 3059 "Parser.cpp"
+  case 99: /* CaseStmt: CASE Expr COLON Stmts  */
+#line 484 "Parser.y"
+                                { (yyval.caseStmt) = new AST::CaseStmt((yyvsp[-2].expr), (yyvsp[0].stmts));
+                                  (yyval.caseStmt)->setLoc((yylsp[-3]).first_line, (yylsp[-3]).first_column); }
+#line 3060 "Parser.cpp"
     break;
 
-  case 136: /* Expr: DSUB Expr  */
-#line 568 "Parser.y"
-                                { (yyval.expr) = new AST::PrefixDec((yyvsp[0].expr)); }
-#line 3065 "Parser.cpp"
+  case 100: /* CaseStmt: DEFAULT COLON Stmts  */
+#line 487 "Parser.y"
+                                { (yyval.caseStmt) = new AST::CaseStmt(NULL, (yyvsp[0].stmts));
+                                  (yyval.caseStmt)->setLoc((yylsp[-2]).first_line, (yylsp[-2]).first_column); }
+#line 3067 "Parser.cpp"
     break;
 
-  case 137: /* Expr: Expr ADDEQ Expr  */
-#line 569 "Parser.y"
-                                { (yyval.expr) = new AST::AddAssign((yyvsp[-2].expr), (yyvsp[0].expr)); }
-#line 3071 "Parser.cpp"
+  case 101: /* ForStmt: FOR LPARENTHESES Expr SEMICOLON Expr SEMICOLON Expr RPARENTHESES Stmt  */
+#line 492 "Parser.y"
+                                { (yyval.forStmt) = new AST::ForStmt((yyvsp[-6].expr), (yyvsp[-4].expr), (yyvsp[-2].expr), (yyvsp[0].stmt));
+                                  (yyval.forStmt)->setLoc((yylsp[-8]).first_line, (yylsp[-8]).first_column); }
+#line 3074 "Parser.cpp"
     break;
 
-  case 138: /* Expr: Expr SUBEQ Expr  */
-#line 570 "Parser.y"
-                                { (yyval.expr) = new AST::SubAssign((yyvsp[-2].expr), (yyvsp[0].expr)); }
-#line 3077 "Parser.cpp"
+  case 102: /* ForStmt: FOR LPARENTHESES SEMICOLON Expr SEMICOLON Expr RPARENTHESES Stmt  */
+#line 495 "Parser.y"
+                                { (yyval.forStmt) = new AST::ForStmt(NULL, (yyvsp[-4].expr), (yyvsp[-2].expr), (yyvsp[0].stmt));
+                                  (yyval.forStmt)->setLoc((yylsp[-7]).first_line, (yylsp[-7]).first_column); }
+#line 3081 "Parser.cpp"
     break;
 
-  case 139: /* Expr: Expr MULEQ Expr  */
-#line 571 "Parser.y"
-                                { (yyval.expr) = new AST::MulAssign((yyvsp[-2].expr), (yyvsp[0].expr)); }
-#line 3083 "Parser.cpp"
+  case 103: /* ForStmt: FOR LPARENTHESES VarDecl Expr SEMICOLON Expr RPARENTHESES Stmt  */
+#line 498 "Parser.y"
+                                { (yyval.forStmt) = new AST::ForStmt((yyvsp[-5].varDecl), (yyvsp[-4].expr), (yyvsp[-2].expr), (yyvsp[0].stmt));
+                                  (yyval.forStmt)->setLoc((yylsp[-7]).first_line, (yylsp[-7]).first_column); }
+#line 3088 "Parser.cpp"
     break;
 
-  case 140: /* Expr: Expr DIVEQ Expr  */
-#line 572 "Parser.y"
-                                { (yyval.expr) = new AST::DivAssign((yyvsp[-2].expr), (yyvsp[0].expr)); }
-#line 3089 "Parser.cpp"
-    break;
-
-  case 141: /* Expr: Expr MODEQ Expr  */
-#line 573 "Parser.y"
-                                { (yyval.expr) = new AST::ModAssign((yyvsp[-2].expr), (yyvsp[0].expr)); }
+  case 104: /* DoStmt: DO Stmt WHILE LPARENTHESES Expr RPARENTHESES SEMICOLON  */
+#line 503 "Parser.y"
+                                { (yyval.doStmt) = new AST::DoStmt((yyvsp[-5].stmt), (yyvsp[-2].expr));
+                                  (yyval.doStmt)->setLoc((yylsp[-6]).first_line, (yylsp[-6]).first_column); }
 #line 3095 "Parser.cpp"
     break;
 
-  case 142: /* Expr: Expr AMPERSAND Expr  */
-#line 575 "Parser.y"
-                                { (yyval.expr) = new AST::BitwiseAnd((yyvsp[-2].expr), (yyvsp[0].expr)); }
-#line 3101 "Parser.cpp"
+  case 105: /* WhileStmt: WHILE LPARENTHESES Expr RPARENTHESES Stmt  */
+#line 508 "Parser.y"
+                                { (yyval.whileStmt) = new AST::WhileStmt((yyvsp[-2].expr), (yyvsp[0].stmt));
+                                  (yyval.whileStmt)->setLoc((yylsp[-4]).first_line, (yylsp[-4]).first_column); }
+#line 3102 "Parser.cpp"
     break;
 
-  case 143: /* Expr: Expr BOR Expr  */
-#line 576 "Parser.y"
-                                { (yyval.expr) = new AST::BitwiseOr((yyvsp[-2].expr), (yyvsp[0].expr)); }
-#line 3107 "Parser.cpp"
+  case 106: /* ContinueStmt: CONTINUE SEMICOLON  */
+#line 513 "Parser.y"
+                                { (yyval.continueStmt) = new AST::ContinueStmt();
+                                  (yyval.continueStmt)->setLoc((yylsp[-1]).first_line, (yylsp[-1]).first_column); }
+#line 3109 "Parser.cpp"
     break;
 
-  case 144: /* Expr: Expr BXOR Expr  */
-#line 577 "Parser.y"
-                                { (yyval.expr) = new AST::BitwiseXor((yyvsp[-2].expr), (yyvsp[0].expr)); }
-#line 3113 "Parser.cpp"
+  case 107: /* BreakStmt: BREAK SEMICOLON  */
+#line 517 "Parser.y"
+                                { (yyval.breakStmt) = new AST::BreakStmt();
+                                  (yyval.breakStmt)->setLoc((yylsp[-1]).first_line, (yylsp[-1]).first_column); }
+#line 3116 "Parser.cpp"
     break;
 
-  case 145: /* Expr: BNOT Expr  */
-#line 578 "Parser.y"
-                                { (yyval.expr) = new AST::BitwiseNot((yyvsp[0].expr)); }
-#line 3119 "Parser.cpp"
+  case 108: /* ReturnStmt: RETURN SEMICOLON  */
+#line 521 "Parser.y"
+                                { (yyval.returnStmt) = new AST::ReturnStmt();
+                                  (yyval.returnStmt)->setLoc((yylsp[-1]).first_line, (yylsp[-1]).first_column); }
+#line 3123 "Parser.cpp"
     break;
 
-  case 146: /* Expr: Expr BANDEQ Expr  */
-#line 579 "Parser.y"
-                                { (yyval.expr) = new AST::BitwiseAndAssign((yyvsp[-2].expr), (yyvsp[0].expr)); }
-#line 3125 "Parser.cpp"
+  case 109: /* ReturnStmt: RETURN Expr SEMICOLON  */
+#line 524 "Parser.y"
+                                { (yyval.returnStmt) = new AST::ReturnStmt((yyvsp[-1].expr));
+                                  (yyval.returnStmt)->setLoc((yylsp[-2]).first_line, (yylsp[-2]).first_column); }
+#line 3130 "Parser.cpp"
     break;
 
-  case 147: /* Expr: Expr BOREQ Expr  */
-#line 580 "Parser.y"
-                                { (yyval.expr) = new AST::BitwiseOrAssign((yyvsp[-2].expr), (yyvsp[0].expr)); }
-#line 3131 "Parser.cpp"
-    break;
-
-  case 148: /* Expr: Expr BXOREQ Expr  */
-#line 581 "Parser.y"
-                                { (yyval.expr) = new AST::BitwiseXorAssign((yyvsp[-2].expr), (yyvsp[0].expr)); }
+  case 110: /* Block: LBRACE Stmts RBRACE  */
+#line 528 "Parser.y"
+                                { (yyval.block) = new AST::Block((yyvsp[-1].stmts));
+                                  (yyval.block)->setLoc((yylsp[-2]).first_line, (yylsp[-2]).first_column); }
 #line 3137 "Parser.cpp"
     break;
 
-  case 149: /* Expr: Expr SHL Expr  */
-#line 582 "Parser.y"
-                                { (yyval.expr) = new AST::LeftShift((yyvsp[-2].expr), (yyvsp[0].expr)); }
+  case 111: /* Expr: IDENTIFIER  */
+#line 536 "Parser.y"
+                                { (yyval.expr) = new AST::Variable(*(yyvsp[0].idVal)); }
 #line 3143 "Parser.cpp"
     break;
 
-  case 150: /* Expr: Expr SHR Expr  */
-#line 583 "Parser.y"
-                                { (yyval.expr) = new AST::RightShift((yyvsp[-2].expr), (yyvsp[0].expr)); }
+  case 112: /* Expr: Constant  */
+#line 537 "Parser.y"
+                                { (yyval.expr) = (yyvsp[0].constant); }
 #line 3149 "Parser.cpp"
     break;
 
-  case 151: /* Expr: Expr SHLEQ Expr  */
-#line 584 "Parser.y"
-                                { (yyval.expr) = new AST::LeftShiftAssign((yyvsp[-2].expr), (yyvsp[0].expr)); }
+  case 113: /* Expr: LPARENTHESES Expr RPARENTHESES  */
+#line 539 "Parser.y"
+                                { (yyval.expr) = (yyvsp[-1].expr); }
 #line 3155 "Parser.cpp"
     break;
 
-  case 152: /* Expr: Expr SHREQ Expr  */
-#line 585 "Parser.y"
-                                { (yyval.expr) = new AST::RightShiftAssign((yyvsp[-2].expr), (yyvsp[0].expr)); }
+  case 114: /* Expr: Expr COMMA Expr  */
+#line 540 "Parser.y"
+                                { (yyval.expr) = new AST::CommaExpr((yyvsp[-2].expr), (yyvsp[0].expr)); }
 #line 3161 "Parser.cpp"
     break;
 
-  case 153: /* Expr: Expr AND Expr  */
-#line 586 "Parser.y"
-                                { (yyval.expr) = new AST::LogicAnd((yyvsp[-2].expr), (yyvsp[0].expr)); }
+  case 115: /* Expr: IDENTIFIER LPARENTHESES ExprList RPARENTHESES  */
+#line 542 "Parser.y"
+                                { (yyval.expr) = new AST::FuncCall(*(yyvsp[-3].idVal), (yyvsp[-1].exprList)); }
 #line 3167 "Parser.cpp"
     break;
 
-  case 154: /* Expr: Expr OR Expr  */
-#line 587 "Parser.y"
-                                { (yyval.expr) = new AST::LogicOr((yyvsp[-2].expr), (yyvsp[0].expr)); }
+  case 116: /* Expr: Expr DOT IDENTIFIER  */
+#line 544 "Parser.y"
+                                { (yyval.expr) = new AST::StructRef((yyvsp[-2].expr), *(yyvsp[0].idVal)); }
 #line 3173 "Parser.cpp"
     break;
 
-  case 155: /* Expr: NOT Expr  */
-#line 588 "Parser.y"
-                                { (yyval.expr) = new AST::LogicNot((yyvsp[0].expr)); }
+  case 117: /* Expr: Expr ARROW IDENTIFIER  */
+#line 546 "Parser.y"
+                                { (yyval.expr) = new AST::StructDeref((yyvsp[-2].expr), *(yyvsp[0].idVal)); }
 #line 3179 "Parser.cpp"
     break;
 
-  case 156: /* Expr: Expr EQ Expr  */
-#line 589 "Parser.y"
-                                { (yyval.expr) = new AST::LogicEq((yyvsp[-2].expr), (yyvsp[0].expr)); }
+  case 118: /* Expr: Expr LBRACKET Expr RBRACKET  */
+#line 548 "Parser.y"
+                                { (yyval.expr) = new AST::Subscript((yyvsp[-3].expr), (yyvsp[-1].expr)); }
 #line 3185 "Parser.cpp"
     break;
 
-  case 157: /* Expr: Expr NEQ Expr  */
-#line 590 "Parser.y"
-                                { (yyval.expr) = new AST::LogicNotEq((yyvsp[-2].expr), (yyvsp[0].expr)); }
+  case 119: /* Expr: LPARENTHESES VarType RPARENTHESES Expr  */
+#line 550 "Parser.y"
+                                { (yyval.expr) = new AST::TypeCast((yyvsp[-2].varType), (yyvsp[0].expr)); }
 #line 3191 "Parser.cpp"
     break;
 
-  case 158: /* Expr: Expr LT Expr  */
-#line 591 "Parser.y"
-                                { (yyval.expr) = new AST::LogicLessThan((yyvsp[-2].expr), (yyvsp[0].expr)); }
+  case 120: /* Expr: SIZEOF LPARENTHESES VarType RPARENTHESES  */
+#line 552 "Parser.y"
+                                { (yyval.expr) = new AST::SizeOf((yyvsp[-1].varType)); }
 #line 3197 "Parser.cpp"
     break;
 
-  case 159: /* Expr: Expr LE Expr  */
-#line 592 "Parser.y"
-                                { (yyval.expr) = new AST::LogicLessEq((yyvsp[-2].expr), (yyvsp[0].expr)); }
+  case 121: /* Expr: SIZEOF LPARENTHESES Expr RPARENTHESES  */
+#line 554 "Parser.y"
+                                { (yyval.expr) = new AST::SizeOf((yyvsp[-1].expr)); }
 #line 3203 "Parser.cpp"
     break;
 
-  case 160: /* Expr: Expr GT Expr  */
-#line 593 "Parser.y"
-                                { (yyval.expr) = new AST::LogicGreaterThan((yyvsp[-2].expr), (yyvsp[0].expr)); }
+  case 122: /* Expr: SIZEOF LPARENTHESES IDENTIFIER RPARENTHESES  */
+#line 556 "Parser.y"
+                                { (yyval.expr) = new AST::SizeOf(*(yyvsp[-1].idVal)); }
 #line 3209 "Parser.cpp"
     break;
 
-  case 161: /* Expr: Expr GE Expr  */
-#line 594 "Parser.y"
-                                { (yyval.expr) = new AST::LogicGreaterEq((yyvsp[-2].expr), (yyvsp[0].expr)); }
+  case 123: /* Expr: ADD Expr  */
+#line 558 "Parser.y"
+                                { (yyval.expr) = new AST::UnaryPlus((yyvsp[0].expr)); }
 #line 3215 "Parser.cpp"
     break;
 
-  case 162: /* Expr: Expr QUESTION Expr COLON Expr  */
-#line 596 "Parser.y"
-                                { (yyval.expr) = new AST::TernaryCondition((yyvsp[-4].expr), (yyvsp[-2].expr), (yyvsp[0].expr)); }
+  case 124: /* Expr: SUB Expr  */
+#line 560 "Parser.y"
+                                { (yyval.expr) = new AST::UnaryMinus((yyvsp[0].expr)); }
 #line 3221 "Parser.cpp"
     break;
 
-  case 163: /* ExprList: ExprList COMMA Expr  */
-#line 600 "Parser.y"
-                                { (yyval.exprList) = (yyvsp[-2].exprList); (yyval.exprList)->push_back((yyvsp[0].expr)); }
+  case 125: /* Expr: ASTERISK Expr  */
+#line 562 "Parser.y"
+                                { (yyval.expr) = new AST::PointerDeref((yyvsp[0].expr)); }
 #line 3227 "Parser.cpp"
     break;
 
-  case 164: /* ExprList: Expr  */
-#line 601 "Parser.y"
-                                { (yyval.exprList) = new AST::ExprList(); (yyval.exprList)->push_back((yyvsp[0].expr)); }
+  case 126: /* Expr: AMPERSAND Expr  */
+#line 564 "Parser.y"
+                                { (yyval.expr) = new AST::AddressOf((yyvsp[0].expr)); }
 #line 3233 "Parser.cpp"
     break;
 
-  case 165: /* ExprList: %empty  */
-#line 602 "Parser.y"
-                                { (yyval.exprList) = new AST::ExprList(); }
+  case 127: /* Expr: Expr ASSIGN Expr  */
+#line 565 "Parser.y"
+                                { (yyval.expr) = new AST::Assign((yyvsp[-2].expr), (yyvsp[0].expr)); }
 #line 3239 "Parser.cpp"
     break;
 
-  case 166: /* Constant: CHARACTER  */
-#line 605 "Parser.y"
-                                { (yyval.constant) = new AST::Constant((yyvsp[0].charVal)); }
+  case 128: /* Expr: Expr ADD Expr  */
+#line 567 "Parser.y"
+                                { (yyval.expr) = new AST::Add((yyvsp[-2].expr), (yyvsp[0].expr)); }
 #line 3245 "Parser.cpp"
     break;
 
-  case 167: /* Constant: INTEGER  */
-#line 606 "Parser.y"
-                                { (yyval.constant) = new AST::Constant((yyvsp[0].intVal)); }
+  case 129: /* Expr: Expr SUB Expr  */
+#line 569 "Parser.y"
+                                { (yyval.expr) = new AST::Sub((yyvsp[-2].expr), (yyvsp[0].expr)); }
 #line 3251 "Parser.cpp"
     break;
 
-  case 168: /* Constant: UINTEGER  */
-#line 607 "Parser.y"
-                                { (yyval.constant) = new AST::Constant((yyvsp[0].uintVal)); }
+  case 130: /* Expr: Expr ASTERISK Expr  */
+#line 571 "Parser.y"
+                                { (yyval.expr) = new AST::Mul((yyvsp[-2].expr), (yyvsp[0].expr)); }
 #line 3257 "Parser.cpp"
     break;
 
-  case 169: /* Constant: LONGVAL  */
-#line 608 "Parser.y"
-                                { (yyval.constant) = new AST::Constant((yyvsp[0].longVal)); }
+  case 131: /* Expr: Expr DIV Expr  */
+#line 572 "Parser.y"
+                                { (yyval.expr) = new AST::Div((yyvsp[-2].expr), (yyvsp[0].expr)); }
 #line 3263 "Parser.cpp"
     break;
 
-  case 170: /* Constant: ULONGVAL  */
-#line 609 "Parser.y"
-                                { (yyval.constant) = new AST::Constant((yyvsp[0].ulongVal)); }
+  case 132: /* Expr: Expr MOD Expr  */
+#line 573 "Parser.y"
+                                { (yyval.expr) = new AST::Mod((yyvsp[-2].expr), (yyvsp[0].expr)); }
 #line 3269 "Parser.cpp"
     break;
 
-  case 171: /* Constant: FLOATVAL  */
-#line 610 "Parser.y"
-                                { (yyval.constant) = new AST::Constant((yyvsp[0].floatVal)); }
+  case 133: /* Expr: Expr DADD  */
+#line 575 "Parser.y"
+                                { (yyval.expr) = new AST::PostfixInc((yyvsp[-1].expr)); }
 #line 3275 "Parser.cpp"
     break;
 
-  case 172: /* Constant: DOUBLEVAL  */
-#line 611 "Parser.y"
-                                { (yyval.constant) = new AST::Constant((yyvsp[0].doubleVal)); }
+  case 134: /* Expr: Expr DSUB  */
+#line 577 "Parser.y"
+                                { (yyval.expr) = new AST::PostfixDec((yyvsp[-1].expr)); }
 #line 3281 "Parser.cpp"
     break;
 
-  case 173: /* Constant: STRING  */
-#line 612 "Parser.y"
-                                { (yyval.constant) = new AST::ConstStr(*(yyvsp[0].strVal)); }
+  case 135: /* Expr: DADD Expr  */
+#line 579 "Parser.y"
+                                { (yyval.expr) = new AST::PrefixInc((yyvsp[0].expr)); }
 #line 3287 "Parser.cpp"
     break;
 
-  case 174: /* Constant: TRUE  */
-#line 613 "Parser.y"
-                                { (yyval.constant) = new AST::Constant(true); }
+  case 136: /* Expr: DSUB Expr  */
+#line 581 "Parser.y"
+                                { (yyval.expr) = new AST::PrefixDec((yyvsp[0].expr)); }
 #line 3293 "Parser.cpp"
     break;
 
-  case 175: /* Constant: FALSE  */
-#line 614 "Parser.y"
-                                { (yyval.constant) = new AST::Constant(false); }
+  case 137: /* Expr: Expr ADDEQ Expr  */
+#line 582 "Parser.y"
+                                { (yyval.expr) = new AST::AddAssign((yyvsp[-2].expr), (yyvsp[0].expr)); }
 #line 3299 "Parser.cpp"
     break;
 
+  case 138: /* Expr: Expr SUBEQ Expr  */
+#line 583 "Parser.y"
+                                { (yyval.expr) = new AST::SubAssign((yyvsp[-2].expr), (yyvsp[0].expr)); }
+#line 3305 "Parser.cpp"
+    break;
 
-#line 3303 "Parser.cpp"
+  case 139: /* Expr: Expr MULEQ Expr  */
+#line 584 "Parser.y"
+                                { (yyval.expr) = new AST::MulAssign((yyvsp[-2].expr), (yyvsp[0].expr)); }
+#line 3311 "Parser.cpp"
+    break;
+
+  case 140: /* Expr: Expr DIVEQ Expr  */
+#line 585 "Parser.y"
+                                { (yyval.expr) = new AST::DivAssign((yyvsp[-2].expr), (yyvsp[0].expr)); }
+#line 3317 "Parser.cpp"
+    break;
+
+  case 141: /* Expr: Expr MODEQ Expr  */
+#line 586 "Parser.y"
+                                { (yyval.expr) = new AST::ModAssign((yyvsp[-2].expr), (yyvsp[0].expr)); }
+#line 3323 "Parser.cpp"
+    break;
+
+  case 142: /* Expr: Expr AMPERSAND Expr  */
+#line 588 "Parser.y"
+                                { (yyval.expr) = new AST::BitwiseAnd((yyvsp[-2].expr), (yyvsp[0].expr)); }
+#line 3329 "Parser.cpp"
+    break;
+
+  case 143: /* Expr: Expr BOR Expr  */
+#line 589 "Parser.y"
+                                { (yyval.expr) = new AST::BitwiseOr((yyvsp[-2].expr), (yyvsp[0].expr)); }
+#line 3335 "Parser.cpp"
+    break;
+
+  case 144: /* Expr: Expr BXOR Expr  */
+#line 590 "Parser.y"
+                                { (yyval.expr) = new AST::BitwiseXor((yyvsp[-2].expr), (yyvsp[0].expr)); }
+#line 3341 "Parser.cpp"
+    break;
+
+  case 145: /* Expr: BNOT Expr  */
+#line 591 "Parser.y"
+                                { (yyval.expr) = new AST::BitwiseNot((yyvsp[0].expr)); }
+#line 3347 "Parser.cpp"
+    break;
+
+  case 146: /* Expr: Expr BANDEQ Expr  */
+#line 592 "Parser.y"
+                                { (yyval.expr) = new AST::BitwiseAndAssign((yyvsp[-2].expr), (yyvsp[0].expr)); }
+#line 3353 "Parser.cpp"
+    break;
+
+  case 147: /* Expr: Expr BOREQ Expr  */
+#line 593 "Parser.y"
+                                { (yyval.expr) = new AST::BitwiseOrAssign((yyvsp[-2].expr), (yyvsp[0].expr)); }
+#line 3359 "Parser.cpp"
+    break;
+
+  case 148: /* Expr: Expr BXOREQ Expr  */
+#line 594 "Parser.y"
+                                { (yyval.expr) = new AST::BitwiseXorAssign((yyvsp[-2].expr), (yyvsp[0].expr)); }
+#line 3365 "Parser.cpp"
+    break;
+
+  case 149: /* Expr: Expr SHL Expr  */
+#line 595 "Parser.y"
+                                { (yyval.expr) = new AST::LeftShift((yyvsp[-2].expr), (yyvsp[0].expr)); }
+#line 3371 "Parser.cpp"
+    break;
+
+  case 150: /* Expr: Expr SHR Expr  */
+#line 596 "Parser.y"
+                                { (yyval.expr) = new AST::RightShift((yyvsp[-2].expr), (yyvsp[0].expr)); }
+#line 3377 "Parser.cpp"
+    break;
+
+  case 151: /* Expr: Expr SHLEQ Expr  */
+#line 597 "Parser.y"
+                                { (yyval.expr) = new AST::LeftShiftAssign((yyvsp[-2].expr), (yyvsp[0].expr)); }
+#line 3383 "Parser.cpp"
+    break;
+
+  case 152: /* Expr: Expr SHREQ Expr  */
+#line 598 "Parser.y"
+                                { (yyval.expr) = new AST::RightShiftAssign((yyvsp[-2].expr), (yyvsp[0].expr)); }
+#line 3389 "Parser.cpp"
+    break;
+
+  case 153: /* Expr: Expr AND Expr  */
+#line 599 "Parser.y"
+                                { (yyval.expr) = new AST::LogicAnd((yyvsp[-2].expr), (yyvsp[0].expr)); }
+#line 3395 "Parser.cpp"
+    break;
+
+  case 154: /* Expr: Expr OR Expr  */
+#line 600 "Parser.y"
+                                { (yyval.expr) = new AST::LogicOr((yyvsp[-2].expr), (yyvsp[0].expr)); }
+#line 3401 "Parser.cpp"
+    break;
+
+  case 155: /* Expr: NOT Expr  */
+#line 601 "Parser.y"
+                                { (yyval.expr) = new AST::LogicNot((yyvsp[0].expr)); }
+#line 3407 "Parser.cpp"
+    break;
+
+  case 156: /* Expr: Expr EQ Expr  */
+#line 602 "Parser.y"
+                                { (yyval.expr) = new AST::LogicEq((yyvsp[-2].expr), (yyvsp[0].expr)); }
+#line 3413 "Parser.cpp"
+    break;
+
+  case 157: /* Expr: Expr NEQ Expr  */
+#line 603 "Parser.y"
+                                { (yyval.expr) = new AST::LogicNotEq((yyvsp[-2].expr), (yyvsp[0].expr)); }
+#line 3419 "Parser.cpp"
+    break;
+
+  case 158: /* Expr: Expr LT Expr  */
+#line 604 "Parser.y"
+                                { (yyval.expr) = new AST::LogicLessThan((yyvsp[-2].expr), (yyvsp[0].expr)); }
+#line 3425 "Parser.cpp"
+    break;
+
+  case 159: /* Expr: Expr LE Expr  */
+#line 605 "Parser.y"
+                                { (yyval.expr) = new AST::LogicLessEq((yyvsp[-2].expr), (yyvsp[0].expr)); }
+#line 3431 "Parser.cpp"
+    break;
+
+  case 160: /* Expr: Expr GT Expr  */
+#line 606 "Parser.y"
+                                { (yyval.expr) = new AST::LogicGreaterThan((yyvsp[-2].expr), (yyvsp[0].expr)); }
+#line 3437 "Parser.cpp"
+    break;
+
+  case 161: /* Expr: Expr GE Expr  */
+#line 607 "Parser.y"
+                                { (yyval.expr) = new AST::LogicGreaterEq((yyvsp[-2].expr), (yyvsp[0].expr)); }
+#line 3443 "Parser.cpp"
+    break;
+
+  case 162: /* Expr: Expr QUESTION Expr COLON Expr  */
+#line 609 "Parser.y"
+                                { (yyval.expr) = new AST::TernaryCondition((yyvsp[-4].expr), (yyvsp[-2].expr), (yyvsp[0].expr)); }
+#line 3449 "Parser.cpp"
+    break;
+
+  case 163: /* ExprList: ExprList COMMA Expr  */
+#line 613 "Parser.y"
+                                { (yyval.exprList) = (yyvsp[-2].exprList); (yyval.exprList)->push_back((yyvsp[0].expr)); }
+#line 3455 "Parser.cpp"
+    break;
+
+  case 164: /* ExprList: Expr  */
+#line 614 "Parser.y"
+                                { (yyval.exprList) = new AST::ExprList(); (yyval.exprList)->push_back((yyvsp[0].expr)); }
+#line 3461 "Parser.cpp"
+    break;
+
+  case 165: /* ExprList: %empty  */
+#line 615 "Parser.y"
+                                { (yyval.exprList) = new AST::ExprList(); }
+#line 3467 "Parser.cpp"
+    break;
+
+  case 166: /* Constant: CHARACTER  */
+#line 618 "Parser.y"
+                                { (yyval.constant) = new AST::Constant((yyvsp[0].charVal)); }
+#line 3473 "Parser.cpp"
+    break;
+
+  case 167: /* Constant: INTEGER  */
+#line 619 "Parser.y"
+                                { (yyval.constant) = new AST::Constant((yyvsp[0].intVal)); }
+#line 3479 "Parser.cpp"
+    break;
+
+  case 168: /* Constant: UINTEGER  */
+#line 620 "Parser.y"
+                                { (yyval.constant) = new AST::Constant((yyvsp[0].uintVal)); }
+#line 3485 "Parser.cpp"
+    break;
+
+  case 169: /* Constant: LONGVAL  */
+#line 621 "Parser.y"
+                                { (yyval.constant) = new AST::Constant((yyvsp[0].longVal)); }
+#line 3491 "Parser.cpp"
+    break;
+
+  case 170: /* Constant: ULONGVAL  */
+#line 622 "Parser.y"
+                                { (yyval.constant) = new AST::Constant((yyvsp[0].ulongVal)); }
+#line 3497 "Parser.cpp"
+    break;
+
+  case 171: /* Constant: FLOATVAL  */
+#line 623 "Parser.y"
+                                { (yyval.constant) = new AST::Constant((yyvsp[0].floatVal)); }
+#line 3503 "Parser.cpp"
+    break;
+
+  case 172: /* Constant: DOUBLEVAL  */
+#line 624 "Parser.y"
+                                { (yyval.constant) = new AST::Constant((yyvsp[0].doubleVal)); }
+#line 3509 "Parser.cpp"
+    break;
+
+  case 173: /* Constant: STRING  */
+#line 625 "Parser.y"
+                                { (yyval.constant) = new AST::ConstStr(*(yyvsp[0].strVal)); }
+#line 3515 "Parser.cpp"
+    break;
+
+  case 174: /* Constant: TRUE  */
+#line 626 "Parser.y"
+                                { (yyval.constant) = new AST::Constant(true); }
+#line 3521 "Parser.cpp"
+    break;
+
+  case 175: /* Constant: FALSE  */
+#line 627 "Parser.y"
+                                { (yyval.constant) = new AST::Constant(false); }
+#line 3527 "Parser.cpp"
+    break;
+
+
+#line 3531 "Parser.cpp"
 
       default: break;
     }
@@ -3528,7 +3756,7 @@ yyreturnlab:
   return yyresult;
 }
 
-#line 617 "Parser.y"
+#line 630 "Parser.y"
 
 
  /* Subroutines Section */

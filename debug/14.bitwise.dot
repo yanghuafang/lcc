@@ -58,8 +58,8 @@ a_15 [label = a]
 VarInit_15 -> a_15
 VarInit_15 -> Constant_16
 Constant_16 [label = Constant]
-uint_16 [label = "305419896"]
-Constant_16 -> uint_16
+int_16 [label = "305419896"]
+Constant_16 -> int_16
 FuncBody_8 -> VarDecl_17
 VarDecl_17 [label = VarDecl]
 VarDecl_17 -> BuiltinType_18
@@ -308,8 +308,8 @@ andVal_90 [label = andVal]
 Variable_90 -> andVal_90
 LogicNotEq_89 -> Constant_91
 Constant_91 [label = Constant]
-uint_91 [label = "35930656"]
-Constant_91 -> uint_91
+int_91 [label = "35930656"]
+Constant_91 -> int_91
 IfStmt_88 -> Assign_92
 Assign_92 [label = Assign]
 Assign_92 -> Variable_93
@@ -396,8 +396,8 @@ notVal2_118 [label = notVal2]
 Variable_118 -> notVal2_118
 LogicNotEq_117 -> Constant_119
 Constant_119 [label = Constant]
-uint_119 [label = "2023406814"]
-Constant_119 -> uint_119
+int_119 [label = "2023406814"]
+Constant_119 -> int_119
 IfStmt_116 -> Assign_120
 Assign_120 [label = Assign]
 Assign_120 -> Variable_121
@@ -418,8 +418,8 @@ andeqVal_125 [label = andeqVal]
 Variable_125 -> andeqVal_125
 LogicNotEq_124 -> Constant_126
 Constant_126 [label = Constant]
-uint_126 [label = "35930656"]
-Constant_126 -> uint_126
+int_126 [label = "35930656"]
+Constant_126 -> int_126
 IfStmt_123 -> Assign_127
 Assign_127 [label = Assign]
 Assign_127 -> Variable_128
@@ -484,8 +484,8 @@ leftShiftVal_146 [label = leftShiftVal]
 Variable_146 -> leftShiftVal_146
 LogicNotEq_145 -> Constant_147
 Constant_147 [label = Constant]
-uint_147 [label = "1450704896"]
-Constant_147 -> uint_147
+int_147 [label = "1450704896"]
+Constant_147 -> int_147
 IfStmt_144 -> Assign_148
 Assign_148 [label = Assign]
 Assign_148 -> Variable_149
@@ -506,8 +506,8 @@ rightShiftVal_153 [label = rightShiftVal]
 Variable_153 -> rightShiftVal_153
 LogicNotEq_152 -> Constant_154
 Constant_154 [label = Constant]
-uint_154 [label = "34661"]
-Constant_154 -> uint_154
+int_154 [label = "34661"]
+Constant_154 -> int_154
 IfStmt_151 -> Assign_155
 Assign_155 [label = Assign]
 Assign_155 -> Variable_156
@@ -548,8 +548,8 @@ int_166 [label = "1"]
 Constant_166 -> int_166
 LogicNotEq_163 -> Constant_167
 Constant_167 [label = Constant]
-uint_167 [label = "1073741824"]
-Constant_167 -> uint_167
+int_167 [label = "1073741824"]
+Constant_167 -> int_167
 IfStmt_162 -> Assign_168
 Assign_168 [label = Assign]
 Assign_168 -> Variable_169

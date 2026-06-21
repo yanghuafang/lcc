@@ -10,6 +10,7 @@
 #include <llvm/IR/Value.h>
 
 #include <exception>
+#include <memory>
 
 #include "CodeGenerator.hpp"
 #include "DebugInfoBuilder.hpp"
@@ -24,6 +25,51 @@ llvm::Value* generateStmt(CodeGenerator& generator, AST::Stmt* stmt) {
   }
   generator.setDebugLocation(stmt->loc());
   return stmt->genCode(generator);
+}
+
+// Pop symbol/debug scopes on exception so CodeGenerator stacks stay balanced.
+class ScopedSymbolTable {
+ public:
+  explicit ScopedSymbolTable(CodeGenerator& generator)
+      : generator_(generator) {
+    generator_.pushSymbolTable();
+  }
+  ~ScopedSymbolTable() { generator_.popSymbolTable(); }
+
+  ScopedSymbolTable(const ScopedSymbolTable&) = delete;
+  ScopedSymbolTable& operator=(const ScopedSymbolTable&) = delete;
+
+ private:
+  CodeGenerator& generator_;
+};
+
+class ScopedDebugLexicalBlock {
+ public:
+  ScopedDebugLexicalBlock(CodeGenerator& generator, const AST::SourceLoc& loc)
+      : generator_(generator) {
+    generator_.pushDebugLexicalBlock(loc);
+  }
+  ~ScopedDebugLexicalBlock() { generator_.popDebugLexicalBlock(); }
+
+  ScopedDebugLexicalBlock(const ScopedDebugLexicalBlock&) = delete;
+  ScopedDebugLexicalBlock& operator=(const ScopedDebugLexicalBlock&) = delete;
+
+ private:
+  CodeGenerator& generator_;
+};
+
+// sizeof(expr) must use the expression's AST type (e.g. array before decay), not
+// the decayed pointer type used for IR loads.
+llvm::Type* sizeofTypeForExpr(AST::Expr* expr, CodeGenerator& generator) {
+  if (AST::VarType* lvalueType = expr->getLValueVarType(generator)) {
+    return Utils::memoryAccessType(lvalueType, generator);
+  }
+
+  AST::VarType* exprType = expr->getExprVarType(generator);
+  if (exprType == nullptr) {
+    throw std::logic_error("sizeof requires a known expression type.");
+  }
+  return exprType->getType(generator);
 }
 
 // Resolve struct/union VarType through typedef aliases and struct tag names
@@ -1139,7 +1185,7 @@ llvm::Value* FuncDecl::genCode(CodeGenerator& generator) {
   // and a later definition therefore share one llvm::Function; we detect that
   // here to implement C-style prototype + body linking.
   if (func->getName() != funcName_) {
-    // Remove the function just made, use the exiting function.
+    // Remove the function just made, use the existing function.
     func->eraseFromParent();
     func = generator.getModule().getFunction(funcName_);
 
@@ -1185,7 +1231,7 @@ llvm::Value* FuncDecl::genCode(CodeGenerator& generator) {
     }
 
     // Allocate symbol table for function parameters.
-    generator.pushSymbolTable();
+    ScopedSymbolTable paramScope(generator);
 
     size_t index = 0;
     for (auto paramIter = func->arg_begin(); paramIter < func->arg_end();
@@ -1205,11 +1251,11 @@ llvm::Value* FuncDecl::genCode(CodeGenerator& generator) {
     }
 
     // Generate code of the function body.
-    generator.pushSymbolTable();
-    funcBody_->genCode(generator);
-    generator.popSymbolTable();
+    {
+      ScopedSymbolTable bodyScope(generator);
+      funcBody_->genCode(generator);
+    }
     generator.leaveFunction();
-    generator.popSymbolTable();
   }
 
   return nullptr;
@@ -1714,9 +1760,8 @@ llvm::Value* IfStmt::genCode(CodeGenerator& generator) {
   func->insert(func->end(), thenBlock);
   generator.getBuilder().SetInsertPoint(thenBlock);
   if (thenStmt_ != nullptr) {
-    generator.pushSymbolTable();
+    ScopedSymbolTable thenScope(generator);
     generateStmt(generator, thenStmt_);
-    generator.popSymbolTable();
   }
   Utils::terminateBlockByBr(generator.getBuilder(), endBlock);
 
@@ -1724,9 +1769,8 @@ llvm::Value* IfStmt::genCode(CodeGenerator& generator) {
   func->insert(func->end(),elseBlock);
   generator.getBuilder().SetInsertPoint(elseBlock);
   if (elseStmt_ != nullptr) {
-    generator.pushSymbolTable();
+    ScopedSymbolTable elseScope(generator);
     generateStmt(generator, elseStmt_);
-    generator.popSymbolTable();
   }
   Utils::terminateBlockByBr(generator.getBuilder(), endBlock);
 
@@ -1756,9 +1800,9 @@ llvm::Value* SwitchStmt::genCode(CodeGenerator& generator) {
   // Create one block after switch statement.
   caseBlocks.push_back(llvm::BasicBlock::Create(generator.getContext(), "switch.end"));
 
-  // Create one block for each comparision.
+  // Create one block for each comparison.
   std::vector<llvm::BasicBlock*> comparisionBlocks;
-  // The first comparision code should be in current insertion block.
+  // The first comparison code should be in current insertion block.
   comparisionBlocks.push_back(generator.getBuilder().GetInsertBlock());
   // Add block for switch expression evaluation.
   for (size_t i = 0; i < caseStmtList_->size(); ++i) {
@@ -1770,12 +1814,12 @@ llvm::Value* SwitchStmt::genCode(CodeGenerator& generator) {
   // statement.
   comparisionBlocks.push_back(caseBlocks.back());
 
-  // Generate branches for comparision and cases.
+  // Generate branches for comparison and cases.
   for (size_t i = 0; i < caseStmtList_->size(); ++i) {
     if (i > 0) {
-      // The first comparision is already in current insertion block.
+      // The first comparison is already in current insertion block.
       // So only set insertion block and insertion point since the second
-      // comparision.
+      // comparison.
       func->insert(func->end(),comparisionBlocks[i]);
       generator.getBuilder().SetInsertPoint(comparisionBlocks[i]);
     }
@@ -1793,7 +1837,7 @@ llvm::Value* SwitchStmt::genCode(CodeGenerator& generator) {
   }
 
   // Generate code for each case statement.
-  generator.pushSymbolTable();
+  ScopedSymbolTable switchScope(generator);
   for (size_t i = 0; i < caseStmtList_->size(); ++i) {
     func->insert(func->end(),caseBlocks[i]);
     generator.getBuilder().SetInsertPoint(caseBlocks[i]);
@@ -1803,7 +1847,6 @@ llvm::Value* SwitchStmt::genCode(CodeGenerator& generator) {
     caseStmtList_->at(i)->genCode(generator);
     generator.leaveSwitch();
   }
-  generator.popSymbolTable();
 
   // Handle the block after switch statement.
   if (caseBlocks.back()->hasNPredecessorsOrMore(1)) {
@@ -1847,8 +1890,9 @@ llvm::Value* ForStmt::genCode(CodeGenerator& generator) {
   llvm::BasicBlock* endBlock = llvm::BasicBlock::Create(generator.getContext(), "for.end");
   llvm::BasicBlock* loopBlock = llvm::BasicBlock::Create(generator.getContext(), "for.loop");
 
+  std::unique_ptr<ScopedSymbolTable> initScope;
   if (initial_ != nullptr) {
-    generator.pushSymbolTable();
+    initScope = std::make_unique<ScopedSymbolTable>(generator);
     generateStmt(generator, initial_);
   }
 
@@ -1876,9 +1920,8 @@ llvm::Value* ForStmt::genCode(CodeGenerator& generator) {
   generator.getBuilder().SetInsertPoint(loopBlock);
   if (loopBody_ != nullptr) {
     generator.enterLoop(updateBlock, endBlock);
-    generator.pushSymbolTable();
+    ScopedSymbolTable loopScope(generator);
     generateStmt(generator, loopBody_);
-    generator.popSymbolTable();
     generator.leaveLoop();
   }
 
@@ -1899,10 +1942,6 @@ llvm::Value* ForStmt::genCode(CodeGenerator& generator) {
   func->insert(func->end(),endBlock);
   generator.getBuilder().SetInsertPoint(endBlock);
 
-  if (initial_ != nullptr) {
-    generator.popSymbolTable();
-  }
-
   return nullptr;
 }
 
@@ -1922,9 +1961,8 @@ llvm::Value* DoStmt::genCode(CodeGenerator& generator) {
   generator.getBuilder().SetInsertPoint(loopBlock);
   if (loopBody_ != nullptr) {
     generator.enterLoop(conditionBlock, endBlock);
-    generator.pushSymbolTable();
+    ScopedSymbolTable loopScope(generator);
     generateStmt(generator, loopBody_);
-    generator.popSymbolTable();
     generator.leaveLoop();
   }
 
@@ -1979,9 +2017,8 @@ llvm::Value* WhileStmt::genCode(CodeGenerator& generator) {
   generator.getBuilder().SetInsertPoint(loopBlock);
   if (loopBody_ != nullptr) {
     generator.enterLoop(conditionBlock, endBlock);
-    generator.pushSymbolTable();
+    ScopedSymbolTable loopScope(generator);
     generateStmt(generator, loopBody_);
-    generator.popSymbolTable();
     generator.leaveLoop();
   }
 
@@ -2047,8 +2084,8 @@ llvm::Value* ReturnStmt::genCode(CodeGenerator& generator) {
 }
 
 llvm::Value* Block::genCode(CodeGenerator& generator) {
-  generator.pushDebugLexicalBlock(loc());
-  generator.pushSymbolTable();
+  ScopedDebugLexicalBlock debugScope(generator, loc());
+  ScopedSymbolTable symScope(generator);
   // Generate code for statements one by one in block.
   for (Stmt* stmt : *content_) {
     if (generator.getBuilder().GetInsertBlock()->getTerminator() != nullptr) {
@@ -2058,8 +2095,6 @@ llvm::Value* Block::genCode(CodeGenerator& generator) {
       generateStmt(generator, stmt);
     }
   }
-  generator.popSymbolTable();
-  generator.popDebugLexicalBlock();
   return nullptr;
 }
 
@@ -2304,18 +2339,15 @@ llvm::Value* SizeOf::genCode(CodeGenerator& generator) {
         generator.getTypeSize(varType_->getType(generator)));
   } else if (expr_ != nullptr) {
     return generator.getBuilder().getInt64(
-        generator.getTypeSize(expr_->genCode(generator)->getType()));
+        generator.getTypeSize(sizeofTypeForExpr(expr_, generator)));
   } else if (!identifier_.empty()) {
     llvm::Type* type = generator.findType(identifier_);
     if (type != nullptr) {
-      varType_ = new DefinedType(identifier_);
       return generator.getBuilder().getInt64(generator.getTypeSize(type));
     }
 
-    llvm::Value* var = generator.findVariable(identifier_);
-    if (var != nullptr) {
+    if (generator.findVariable(identifier_) != nullptr) {
       AST::VarType* varType = generator.findVariableType(identifier_);
-      expr_ = new Variable(identifier_);
       return generator.getBuilder().getInt64(
           generator.getTypeSize(Utils::memoryAccessType(varType, generator)));
     }

@@ -133,6 +133,19 @@ AST::Program* g_root;
 %destructor { delete $$; } <idVal>
 %destructor { delete $$; } <strVal>
 
+// On syntax error, discard partial AST nodes still on the parse stack.
+// Program is excluded: on success Bison pops the start symbol and would delete
+// g_root before codegen; main/AstRootOwner owns the completed tree.
+%destructor { delete $$; } <decl> <decls> <typeDecl> <typedefDecl>
+%destructor { delete $$; } <varDecl> <varType> <funcDecl> <funcBody> <block>
+%destructor { delete $$; } <param> <paramList> <varInit> <varList> <arrayBoundList>
+%destructor { delete $$; } <builtinType> <fieldDecl> <fieldDecls> <memberList>
+%destructor { delete $$; } <constant> <expr> <exprList> <initList> <initElement>
+%destructor { delete $$; } <stmt> <stmts> <ifStmt> <switchStmt> <caseStmtList>
+%destructor { delete $$; } <caseStmt> <forStmt> <doStmt> <whileStmt>
+%destructor { delete $$; } <continueStmt> <breakStmt> <returnStmt>
+%destructor { delete $$; } <enumeration> <enumList>
+
  /* Define non-terminal symbols */
 
 %type<program>                  Program
