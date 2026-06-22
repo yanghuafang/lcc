@@ -39,15 +39,19 @@ Details: [docs/Language.md](docs/Language.md)
 
 ## Documentation
 
+Full index (grouped by learning path, how-to, and reference): [docs/README.md](docs/README.md).
+
 | Guide | Topics |
 |-------|--------|
-| [docs/README.md](docs/README.md) | Documentation index |
+| [docs/LearningPlan.md](docs/LearningPlan.md) | **Start here** — full learning path (M0–M18) |
+| [docs/MiddleBackendRoadmap.md](docs/MiddleBackendRoadmap.md) | Middle/back-end implementation detail |
 | [docs/Install.md](docs/Install.md) | Dependencies, build `lcc`, CMake options |
 | [docs/Usage.md](docs/Usage.md) | CLI flags, link, debug compiled programs |
-| [docs/Language.md](docs/Language.md) | Full feature list and limitations |
 | [docs/Testing.md](docs/Testing.md) | Scripts, unit tests, compile modes |
 | [docs/Development.md](docs/Development.md) | Debug `lcc` in VS Code / LLDB |
-| [docs/Roadmap.md](docs/Roadmap.md) | Extension plan and future work |
+| [docs/Language.md](docs/Language.md) | Full feature list and limitations |
+| [docs/Roadmap.md](docs/Roadmap.md) | Front-end language features (complete) |
+| [docs/Pipeline.md](docs/Pipeline.md) | Pipeline overview & LLVM tools (stub until M18) |
 | [docs/Conflicts.md](docs/Conflicts.md) | Bison parser conflicts |
 
 ## Requirements
@@ -56,4 +60,4 @@ LLVM **20**, flex, bison, argparse, graphviz, CMake **3.22+**, **C++17**, and a 
 
 ## Roadmap
 
-Array work through 2D and typedef are done; 3D arrays are deferred. `-g` debug info is complete for `-g`/`-O0`-style builds. See [docs/Roadmap.md](docs/Roadmap.md) for the prioritized extension plan.
+Front-end language work (arrays through `-g` debug info) is **complete**; see [docs/Roadmap.md](docs/Roadmap.md). Next: middle-end IR, optimization, and backend — follow [docs/LearningPlan.md](docs/LearningPlan.md) milestone by milestone.

@@ -56,7 +56,7 @@ Unlike industrial compilers (clang, gcc) that use recursive-descent parsing, `lc
 - Expression/type disambiguation (State 133 in `Parser.output`; see [Conflicts.md](Conflicts.md)): typedef names in expression positions may still parse as types; lcc rejects typedef names used as variables in the same scope.
 - `extern`: `lcc` requires function declaration for linkage; extern variables are not allowed.
 
-For planned extensions and test coverage per feature, see [Roadmap.md](Roadmap.md).
+For front-end feature history and test coverage per language item, see [Roadmap.md](Roadmap.md). For the active middle-end, optimization, and back-end track, see [LearningPlan.md](LearningPlan.md).
 
 ## Manual linkage declarations
 

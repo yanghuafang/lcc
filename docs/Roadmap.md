@@ -1,6 +1,10 @@
-# lcc extension roadmap
+# lcc extension roadmap (front-end & language)
 
-This document prioritizes future language and codegen work for lcc. The order follows **dependencies**, **learning value**, and **risk**.
+This document covers **C language and front-end** extensions for lcc. The order follows **dependencies**, **learning value**, and **risk**.
+
+**Status:** priorities 1–5 below are **complete** (arrays through `-g` debug info). Deferred language work (3D arrays, preprocessor, `extern`) stays under [Explicitly out of scope](#explicitly-out-of-scope-for-now).
+
+**Next track — middle-end, optimization, back-end:** follow the numbered milestones in [LearningPlan.md](LearningPlan.md) (implementation details in [MiddleBackendRoadmap.md](MiddleBackendRoadmap.md)). That plan covers IR dumps, custom New PM passes, backend/asm flags, vectorization study, and optional benchmarks — on your **host** target (x86_64 / ARM64), no new hardware required.
 
 lcc is a teaching compiler: each step should add one clear idea (grammar, AST, codegen, or LLVM metadata) without rewriting the whole pipeline.
 
@@ -354,6 +358,8 @@ For each roadmap item:
 
 ## Related docs
 
+- [LearningPlan.md](LearningPlan.md) — master plan: front-end study + middle/back-end milestones (M0–M18)
+- [MiddleBackendRoadmap.md](MiddleBackendRoadmap.md) — IR opt, custom passes, backend, vectorization, benchmarks
 - [README.md](../README.md) — project overview and quick start
 - [Language.md](Language.md) — supported C subset and limitations
 - [Install.md](Install.md), [Testing.md](Testing.md) — build and test commands
