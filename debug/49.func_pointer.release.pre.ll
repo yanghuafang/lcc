@@ -3,6 +3,9 @@ source_filename = "lcc"
 target datalayout = "e-m:o-p270:32:32-p271:32:32-p272:64:64-i64:64-i128:128-n32:64-S128-Fn32"
 target triple = "arm64-apple-darwin25.6.0"
 
+%union.Slot = type { ptr }
+%struct.Rec = type { i32, ptr }
+
 @chosen = global ptr null
 @0 = private unnamed_addr constant [24 x i8] c"49.func_pointer.c PASS\0A\00", align 1
 @1 = private unnamed_addr constant [24 x i8] c"49.func_pointer.c FAIL\0A\00", align 1
@@ -52,6 +55,36 @@ entry:
   ret i32 %4
 }
 
+define i32 @applyAlias(ptr %0, i32 %1) {
+entry:
+  %n = alloca i32, align 4
+  %fn = alloca ptr, align 8
+  store ptr %0, ptr %fn, align 8
+  store i32 %1, ptr %n, align 4
+  %2 = load ptr, ptr %fn, align 8
+  %3 = load i32, ptr %n, align 4
+  %4 = call i32 %2(i32 %3)
+  ret i32 %4
+}
+
+define ptr @pickOp(i32 %0) {
+entry:
+  %which = alloca i32, align 4
+  store i32 %0, ptr %which, align 4
+  %1 = load i32, ptr %which, align 4
+  %2 = icmp eq i32 %1, 0
+  br i1 %2, label %then, label %else
+
+then:                                             ; preds = %entry
+  ret ptr @addOne
+
+else:                                             ; preds = %entry
+  br label %if.end
+
+if.end:                                           ; preds = %else
+  ret ptr @square
+}
+
 define i32 @sumWith(ptr %0, i32 %1, i32 %2) {
 entry:
   %i = alloca i32, align 4
@@ -94,6 +127,15 @@ while.end:                                        ; preds = %while.cond
 
 define i32 @main() {
 entry:
+  %total = alloca i32, align 4
+  %i = alloca i32, align 4
+  %fromMember = alloca ptr, align 8
+  %table = alloca [3 x ptr], align 8
+  %slot = alloca %union.Slot, align 8
+  %rec = alloca %struct.Rec, align 8
+  %chain = alloca ptr, align 8
+  %twoArgs = alloca ptr, align 8
+  %viaAlias = alloca ptr, align 8
   %r = alloca i32, align 4
   %q = alloca ptr, align 8
   %p = alloca ptr, align 8
@@ -236,19 +278,279 @@ else23:                                           ; preds = %if.end21
   br label %if.end24
 
 if.end24:                                         ; preds = %else23, %then22
-  %41 = load i32, ptr %failed, align 4
-  %42 = icmp eq i32 %41, 0
-  br i1 %42, label %then25, label %else26
+  store ptr @addOne, ptr %viaAlias, align 8
+  %41 = load ptr, ptr %viaAlias, align 8
+  %42 = load ptr, ptr %viaAlias, align 8
+  %43 = call i32 %42(i32 10)
+  %44 = icmp ne i32 %43, 11
+  br i1 %44, label %then25, label %else26
 
 then25:                                           ; preds = %if.end24
-  %43 = call i32 (ptr, ...) @printf(ptr @0)
-  ret i32 0
+  store i32 1, ptr %failed, align 4
+  %45 = load i32, ptr %failed, align 4
+  br label %if.end27
 
 else26:                                           ; preds = %if.end24
   br label %if.end27
 
-if.end27:                                         ; preds = %else26
-  %44 = call i32 (ptr, ...) @printf(ptr @1)
+if.end27:                                         ; preds = %else26, %then25
+  store ptr @square, ptr %viaAlias, align 8
+  %46 = load ptr, ptr %viaAlias, align 8
+  %47 = load ptr, ptr %viaAlias, align 8
+  %48 = call i32 %47(i32 6)
+  %49 = icmp ne i32 %48, 36
+  br i1 %49, label %then28, label %else29
+
+then28:                                           ; preds = %if.end27
+  store i32 1, ptr %failed, align 4
+  %50 = load i32, ptr %failed, align 4
+  br label %if.end30
+
+else29:                                           ; preds = %if.end27
+  br label %if.end30
+
+if.end30:                                         ; preds = %else29, %then28
+  store ptr @addTwo, ptr %twoArgs, align 8
+  %51 = load ptr, ptr %twoArgs, align 8
+  %52 = load ptr, ptr %twoArgs, align 8
+  %53 = call i32 %52(i32 3, i32 4)
+  %54 = icmp ne i32 %53, 7
+  br i1 %54, label %then31, label %else32
+
+then31:                                           ; preds = %if.end30
+  store i32 1, ptr %failed, align 4
+  %55 = load i32, ptr %failed, align 4
+  br label %if.end33
+
+else32:                                           ; preds = %if.end30
+  br label %if.end33
+
+if.end33:                                         ; preds = %else32, %then31
+  store ptr @square, ptr %chain, align 8
+  %56 = load ptr, ptr %chain, align 8
+  %57 = load ptr, ptr %chain, align 8
+  %58 = call i32 %57(i32 9)
+  %59 = icmp ne i32 %58, 81
+  br i1 %59, label %then34, label %else35
+
+then34:                                           ; preds = %if.end33
+  store i32 1, ptr %failed, align 4
+  %60 = load i32, ptr %failed, align 4
+  br label %if.end36
+
+else35:                                           ; preds = %if.end33
+  br label %if.end36
+
+if.end36:                                         ; preds = %else35, %then34
+  %61 = call i32 @applyAlias(ptr @addOne, i32 41)
+  %62 = icmp ne i32 %61, 42
+  br i1 %62, label %then37, label %else38
+
+then37:                                           ; preds = %if.end36
+  store i32 1, ptr %failed, align 4
+  %63 = load i32, ptr %failed, align 4
+  br label %if.end39
+
+else38:                                           ; preds = %if.end36
+  br label %if.end39
+
+if.end39:                                         ; preds = %else38, %then37
+  br i1 false, label %then40, label %else41
+
+then40:                                           ; preds = %if.end39
+  store i32 1, ptr %failed, align 4
+  %64 = load i32, ptr %failed, align 4
+  br label %if.end42
+
+else41:                                           ; preds = %if.end39
+  br label %if.end42
+
+if.end42:                                         ; preds = %else41, %then40
+  %65 = getelementptr %struct.Rec, ptr %rec, i32 0, i32 0
+  store i32 5, ptr %65, align 4
+  %66 = load i32, ptr %65, align 4
+  %67 = getelementptr %struct.Rec, ptr %rec, i32 0, i32 1
+  store ptr @square, ptr %67, align 8
+  %68 = load ptr, ptr %67, align 8
+  %69 = getelementptr %struct.Rec, ptr %rec, i32 0, i32 1
+  %70 = load ptr, ptr %69, align 8
+  store ptr %70, ptr %fromMember, align 8
+  %71 = load ptr, ptr %fromMember, align 8
+  %72 = getelementptr %struct.Rec, ptr %rec, i32 0, i32 0
+  %73 = load i32, ptr %72, align 4
+  %74 = icmp ne i32 %73, 5
+  br i1 %74, label %lor.end, label %lor.rhs
+
+lor.rhs:                                          ; preds = %if.end42
+  %75 = load ptr, ptr %fromMember, align 8
+  %76 = call i32 %75(i32 7)
+  %77 = icmp ne i32 %76, 49
+  br label %lor.end
+
+lor.end:                                          ; preds = %lor.rhs, %if.end42
+  %78 = phi i1 [ true, %if.end42 ], [ %77, %lor.rhs ]
+  br i1 %78, label %then43, label %else44
+
+then43:                                           ; preds = %lor.end
+  store i32 1, ptr %failed, align 4
+  %79 = load i32, ptr %failed, align 4
+  br label %if.end45
+
+else44:                                           ; preds = %lor.end
+  br label %if.end45
+
+if.end45:                                         ; preds = %else44, %then43
+  %80 = getelementptr %struct.Rec, ptr %rec, i32 0, i32 1
+  store ptr @addOne, ptr %80, align 8
+  %81 = load ptr, ptr %80, align 8
+  %82 = getelementptr %struct.Rec, ptr %rec, i32 0, i32 1
+  %83 = load ptr, ptr %82, align 8
+  store ptr %83, ptr %fromMember, align 8
+  %84 = load ptr, ptr %fromMember, align 8
+  %85 = getelementptr %struct.Rec, ptr %rec, i32 0, i32 0
+  %86 = load i32, ptr %85, align 4
+  %87 = icmp ne i32 %86, 5
+  br i1 %87, label %lor.end47, label %lor.rhs46
+
+lor.rhs46:                                        ; preds = %if.end45
+  %88 = load ptr, ptr %fromMember, align 8
+  %89 = call i32 %88(i32 7)
+  %90 = icmp ne i32 %89, 8
+  br label %lor.end47
+
+lor.end47:                                        ; preds = %lor.rhs46, %if.end45
+  %91 = phi i1 [ true, %if.end45 ], [ %90, %lor.rhs46 ]
+  br i1 %91, label %then48, label %else49
+
+then48:                                           ; preds = %lor.end47
+  store i32 1, ptr %failed, align 4
+  %92 = load i32, ptr %failed, align 4
+  br label %if.end50
+
+else49:                                           ; preds = %lor.end47
+  br label %if.end50
+
+if.end50:                                         ; preds = %else49, %then48
+  store ptr @addOne, ptr %slot, align 8
+  %93 = load ptr, ptr %slot, align 8
+  %94 = load ptr, ptr %slot, align 8
+  store ptr %94, ptr %fromMember, align 8
+  %95 = load ptr, ptr %fromMember, align 8
+  %96 = load ptr, ptr %fromMember, align 8
+  %97 = call i32 %96(i32 41)
+  %98 = icmp ne i32 %97, 42
+  br i1 %98, label %then51, label %else52
+
+then51:                                           ; preds = %if.end50
+  store i32 1, ptr %failed, align 4
+  %99 = load i32, ptr %failed, align 4
+  br label %if.end53
+
+else52:                                           ; preds = %if.end50
+  br label %if.end53
+
+if.end53:                                         ; preds = %else52, %then51
+  %100 = getelementptr ptr, ptr %table, i32 0
+  store ptr @addOne, ptr %100, align 8
+  %101 = load ptr, ptr %100, align 8
+  %102 = getelementptr ptr, ptr %table, i32 1
+  store ptr @square, ptr %102, align 8
+  %103 = load ptr, ptr %102, align 8
+  %104 = getelementptr ptr, ptr %table, i32 2
+  store ptr @addOne, ptr %104, align 8
+  %105 = load ptr, ptr %104, align 8
+  store i32 0, ptr %total, align 4
+  %106 = load i32, ptr %total, align 4
+  store i32 0, ptr %i, align 4
+  %107 = load i32, ptr %i, align 4
+  br label %while.cond
+
+while.cond:                                       ; preds = %while.loop, %if.end53
+  %108 = load i32, ptr %i, align 4
+  %109 = icmp slt i32 %108, 3
+  br i1 %109, label %while.loop, label %while.end
+
+while.loop:                                       ; preds = %while.cond
+  %110 = load i32, ptr %i, align 4
+  %111 = getelementptr ptr, ptr %table, i32 %110
+  %112 = load ptr, ptr %111, align 8
+  store ptr %112, ptr %fromMember, align 8
+  %113 = load ptr, ptr %fromMember, align 8
+  %114 = load i32, ptr %total, align 4
+  %115 = load ptr, ptr %fromMember, align 8
+  %116 = load i32, ptr %i, align 4
+  %117 = add i32 %116, 1
+  %118 = call i32 %115(i32 %117)
+  %119 = add i32 %114, %118
+  store i32 %119, ptr %total, align 4
+  %120 = load i32, ptr %total, align 4
+  %121 = load i32, ptr %i, align 4
+  %122 = add i32 %121, 1
+  store i32 %122, ptr %i, align 4
+  %123 = load i32, ptr %i, align 4
+  br label %while.cond
+
+while.end:                                        ; preds = %while.cond
+  %124 = load i32, ptr %total, align 4
+  %125 = icmp ne i32 %124, 10
+  br i1 %125, label %then54, label %else55
+
+then54:                                           ; preds = %while.end
+  store i32 1, ptr %failed, align 4
+  %126 = load i32, ptr %failed, align 4
+  br label %if.end56
+
+else55:                                           ; preds = %while.end
+  br label %if.end56
+
+if.end56:                                         ; preds = %else55, %then54
+  %127 = call ptr @pickOp(i32 0)
+  store ptr %127, ptr %fromMember, align 8
+  %128 = load ptr, ptr %fromMember, align 8
+  %129 = load ptr, ptr %fromMember, align 8
+  %130 = call i32 %129(i32 10)
+  %131 = icmp ne i32 %130, 11
+  br i1 %131, label %then57, label %else58
+
+then57:                                           ; preds = %if.end56
+  store i32 1, ptr %failed, align 4
+  %132 = load i32, ptr %failed, align 4
+  br label %if.end59
+
+else58:                                           ; preds = %if.end56
+  br label %if.end59
+
+if.end59:                                         ; preds = %else58, %then57
+  %133 = call ptr @pickOp(i32 1)
+  store ptr %133, ptr %fromMember, align 8
+  %134 = load ptr, ptr %fromMember, align 8
+  %135 = load ptr, ptr %fromMember, align 8
+  %136 = call i32 %135(i32 10)
+  %137 = icmp ne i32 %136, 100
+  br i1 %137, label %then60, label %else61
+
+then60:                                           ; preds = %if.end59
+  store i32 1, ptr %failed, align 4
+  %138 = load i32, ptr %failed, align 4
+  br label %if.end62
+
+else61:                                           ; preds = %if.end59
+  br label %if.end62
+
+if.end62:                                         ; preds = %else61, %then60
+  %139 = load i32, ptr %failed, align 4
+  %140 = icmp eq i32 %139, 0
+  br i1 %140, label %then63, label %else64
+
+then63:                                           ; preds = %if.end62
+  %141 = call i32 (ptr, ...) @printf(ptr @0)
+  ret i32 0
+
+else64:                                           ; preds = %if.end62
+  br label %if.end65
+
+if.end65:                                         ; preds = %else64
+  %142 = call i32 (ptr, ...) @printf(ptr @1)
   ret i32 1
 }
 

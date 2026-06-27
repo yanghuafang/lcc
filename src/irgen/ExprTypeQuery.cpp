@@ -119,8 +119,10 @@ VarType* FuncCall::getExprVarType(CodeGenerator& generator) const {
   }
 
   // A call through a function pointer: the return type is on the pointer's own
-  // type, since no function of this name was ever declared.
-  VarType* varType = generator.symbols().findVariableType(funcName_);
+  // type, since no function of this name was ever declared. Resolved through
+  // any typedef alias, the same way the call itself finds the signature.
+  VarType* varType = vartype::resolveTypedefVarType(
+      generator.symbols().findVariableType(funcName_), generator);
   if (varType != nullptr && varType->isFuncPointerType()) {
     return static_cast<FuncPointerType*>(varType)->returnType_;
   }

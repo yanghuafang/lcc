@@ -14,7 +14,7 @@ entry:
 }
 
 ; Function Attrs: mustprogress nofree norecurse nosync nounwind willreturn memory(none)
-define i32 @square(i32 %0) local_unnamed_addr #0 {
+define i32 @square(i32 %0) #0 {
 entry:
   %1 = mul i32 %0, %0
   ret i32 %1
@@ -31,6 +31,20 @@ define i32 @apply(ptr nocapture readonly %0, i32 %1) local_unnamed_addr {
 entry:
   %2 = tail call i32 %0(i32 %1)
   ret i32 %2
+}
+
+define i32 @applyAlias(ptr nocapture readonly %0, i32 %1) local_unnamed_addr {
+entry:
+  %2 = tail call i32 %0(i32 %1)
+  ret i32 %2
+}
+
+; Function Attrs: mustprogress nofree norecurse nosync nounwind willreturn memory(none)
+define nonnull ptr @pickOp(i32 %0) local_unnamed_addr #0 {
+entry:
+  %1 = icmp eq i32 %0, 0
+  %spec.select = select i1 %1, ptr @addOne, ptr @square
+  ret ptr %spec.select
 }
 
 define i32 @sumWith(ptr nocapture readonly %0, i32 %1, i32 %2) local_unnamed_addr {
@@ -57,9 +71,9 @@ while.end:                                        ; preds = %while.loop, %entry
 
 ; Function Attrs: nofree nounwind
 define noundef range(i32 0, 2) i32 @main() local_unnamed_addr #1 {
-common.ret:
+entry:
   store ptr @addOne, ptr @chosen, align 8
-  %puts53 = tail call i32 @puts(ptr nonnull dereferenceable(1) @str.1)
+  %puts = tail call i32 @puts(ptr nonnull dereferenceable(1) @str.1)
   ret i32 0
 }
 

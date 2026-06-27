@@ -366,6 +366,10 @@ Shadowing became reachable for the first time, and `sizeof` got it wrong — 4 w
 
 `tests/49.func_pointer.c`.
 
+`typedef int (*Op)(int);` is how C names a callback type, and it reaches the pointer by a different route than the declarator does: `Op p;` leaves `p` with a `DefinedType` naming `Op`, so the call and its result-type query resolve through the alias table.
+
+Through an alias a function pointer can be a struct or union member, an array element or a return type; the `(*name)` declarator itself is what stays limited to variables, parameters and `typedef`. Calling still needs a bare name, so `s.op(3)`, `a[0](3)` and `pick(0)(3)` do not compile — copy the pointer to a local first.
+
 ---
 
 ## Explicitly out of scope (for now)

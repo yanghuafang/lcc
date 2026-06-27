@@ -167,7 +167,10 @@ llvm::Value* emitCall(CodeGenerator& generator, llvm::FunctionType* funcType,
 /// not a variable of that type. Shared by the call and its type query.
 FuncPointerType* findFuncPointerVarType(CodeGenerator& generator,
                                         const std::string& name) {
-  VarType* varType = generator.symbols().findVariableType(name);
+  // Through the alias, because `typedef int (*Op)(int); Op p;` leaves p with a
+  // DefinedType naming Op rather than the FuncPointerType itself.
+  VarType* varType = vartype::resolveTypedefVarType(
+      generator.symbols().findVariableType(name), generator);
   if (varType == nullptr || !varType->isFuncPointerType()) {
     return nullptr;
   }

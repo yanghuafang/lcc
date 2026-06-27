@@ -266,6 +266,13 @@ Decl:       FuncDecl            { $$ = $1; }
  /* e.g. typedef unsigned long size_t;  e.g. typedef struct S { … } S; */
 TypedefDecl: TYPEDEF VarType IDENTIFIER SEMICOLON
                                 { $$ = new AST::TypedefDecl($2, *$3); }
+ /* `typedef int (*Op)(int);` -- the alias name sits inside the declarator
+    rather than after the type, so the rule above cannot reach it. This is
+    the spelling idiomatic C uses for a callback type. */
+            | TYPEDEF VarType LPARENTHESES ASTERISK IDENTIFIER RPARENTHESES
+              LPARENTHESES ParamList RPARENTHESES SEMICOLON
+                                { $$ = new AST::TypedefDecl(
+                                      new AST::FuncPointerType($2, $8), *$5); }
             | TYPEDEF STRUCT IDENTIFIER LBRACE FieldDecls RBRACE IDENTIFIER SEMICOLON
                                 { $$ = new AST::TypedefDecl(
                                       new AST::StructType($5, *$3), *$7); }

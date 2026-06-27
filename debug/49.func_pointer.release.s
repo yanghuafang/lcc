@@ -27,6 +27,32 @@ _apply:
 	br	x2
 	.cfi_endproc
 
+	.globl	_applyAlias
+	.p2align	2
+_applyAlias:
+	.cfi_startproc
+	mov	x2, x0
+	mov	w0, w1
+	br	x2
+	.cfi_endproc
+
+	.globl	_pickOp
+	.p2align	2
+_pickOp:
+Lloh0:
+	adrp	x8, _square@PAGE
+Lloh1:
+	add	x8, x8, _square@PAGEOFF
+	cmp	w0, #0
+Lloh2:
+	adrp	x9, _addOne@PAGE
+Lloh3:
+	add	x9, x9, _addOne@PAGEOFF
+	csel	x0, x9, x8, eq
+	ret
+	.loh AdrpAdd	Lloh2, Lloh3
+	.loh AdrpAdd	Lloh0, Lloh1
+
 	.globl	_sumWith
 	.p2align	2
 _sumWith:
@@ -42,22 +68,22 @@ _sumWith:
 	.cfi_offset w21, -40
 	.cfi_offset w22, -48
 	cmp	w1, w2
-	b.le	LBB4_2
+	b.le	LBB6_2
 	mov	w22, wzr
-	b	LBB4_4
-LBB4_2:
+	b	LBB6_4
+LBB6_2:
 	mov	w19, w2
 	mov	w20, w1
 	mov	x21, x0
 	mov	w22, wzr
-LBB4_3:
+LBB6_3:
 	mov	w0, w20
 	blr	x21
 	add	w20, w20, #1
 	add	w22, w0, w22
 	cmp	w20, w19
-	b.le	LBB4_3
-LBB4_4:
+	b.le	LBB6_3
+LBB6_4:
 	ldp	x29, x30, [sp, #32]
 	mov	w0, w22
 	ldp	x20, x19, [sp, #16]
@@ -70,21 +96,21 @@ LBB4_4:
 _main:
 	stp	x29, x30, [sp, #-16]!
 	adrp	x8, _chosen@PAGE
-Lloh0:
+Lloh4:
 	adrp	x9, _addOne@PAGE
-Lloh1:
+Lloh5:
 	add	x9, x9, _addOne@PAGEOFF
-Lloh2:
+Lloh6:
 	adrp	x0, l_str.1@PAGE
-Lloh3:
+Lloh7:
 	add	x0, x0, l_str.1@PAGEOFF
 	str	x9, [x8, _chosen@PAGEOFF]
 	bl	_puts
 	mov	w0, wzr
 	ldp	x29, x30, [sp], #16
 	ret
-	.loh AdrpAdd	Lloh2, Lloh3
-	.loh AdrpAdd	Lloh0, Lloh1
+	.loh AdrpAdd	Lloh6, Lloh7
+	.loh AdrpAdd	Lloh4, Lloh5
 
 	.globl	_chosen
 .zerofill __DATA,__common,_chosen,8,3

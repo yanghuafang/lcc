@@ -17,7 +17,7 @@ Unlike industrial compilers (clang, gcc) that use recursive-descent parsing, `lc
 ### Declarations and initialization
 
 - Functions: declaration, definition and call, including variadic parameters (`...`)
-- Function pointers: `int (*p)(int);` at file or block scope, assigned from a function name (`p = f` and `p = &f` are the same value), called through (`p(3)`), and passed as a parameter so a callback works (`int apply(int (*fn)(int), int n)`)
+- Function pointers: `int (*p)(int);` at file or block scope, assigned from a function name (`p = f` and `p = &f` are the same value), called through (`p(3)`), and passed as a parameter so a callback works (`int apply(int (*fn)(int), int n)`). Also spelled through a typedef, which is how C usually names a callback type: `typedef int (*Op)(int);` then `Op p;` or `int apply(Op fn, int n)`. The alias is an ordinary type name, so it also works as a struct or union member, an array element, and a function's return type
 - Variable lists: `a = 1, b, c = 3`
 - One-dimensional arrays: `Type arrayName[INTEGER];`, including mixed lists such as `int a[4], b;` (bounds on each name via `VarInit`)
 - One-dimensional brace initialization: `int a[4] = {1, 2, 3};` and empty `{}` (zero-fill), global and local
@@ -75,8 +75,10 @@ Unlike industrial compilers (clang, gcc) that use recursive-descent parsing, `lc
 
   Drop the parentheses, reorder the operands, or assign to a temporary. This is C's own ambiguity: telling `(a) + 1` from `(T) + 1` requires knowing whether `a` names a type, and `lcc` has no symbol table while parsing. See [ParserConflicts.md](ParserConflicts.md#4-identifier-type-name-or-expression).
 - Mixing nested and flat forms inside one array initializer: `int a[2][3] = {{1,2,3},4,5,6};` and `int a[2][3] = {1,{2,3}};` are valid C but rejected — use all-nested or all-flat. Excess elements are rejected too (`int a[2][3] = {1,2,3,4,5,6,7};`), where C drops them with a warning
+- **The `(*name)` declarator outside a variable, parameter, or `typedef`.** Written directly, `struct S { int (*op)(int); };`, `int (*a[2])(int);` and `int (*pick(void))(int)` are all syntax errors, because each declarator position in `Parser.y` spells its own form and only those three have the function-pointer one. Naming the type first lifts it: after `typedef int (*Op)(int);`, `Op` works in every one of those positions.
+- **Calling through anything but a name.** The only call production is `IDENTIFIER ( … )`, and `FuncCall` stores a name rather than an expression, so `s.op(3)`, `a[0](3)` and `pick(0)(3)` are syntax errors even where the pointer itself is fine. Copy it out first — `Op fn = s.op; fn(3);`
 - **A function-pointer declarator whose return type is a typedef name.** `int (*p)(int);` parses, but `MyInt (*p)(int);` does not: at `MyInt •` with `(` ahead, the parser cannot tell the declarator from a call to `MyInt`, and resolves it as a call. Same root cause as the entry below — lcc has no symbol table while parsing. Spell the return type with a builtin keyword.
-- Typedef names used as variables in the same scope: after `typedef unsigned long Foo;`, a file-scope `int Foo;` is rejected. This is a deliberate check rather than a parser limitation — `lcc` reports it during IR generation, naming the alias. Only the same scope is affected: because `typedef` is file-scope only, `int Foo;` inside a function compiles.
+- Typedef names used as variables in the same scope: after `typedef unsigned long Foo;`, a file-scope `int Foo;` is rejected. This is a deliberate check rather than a parser limitation — `lcc` reports it during IR generation, naming the alias. Only the same scope is affected: under a file-scope alias, `int Foo;` inside a function compiles, while a `typedef` and a variable of one name in a single block do not.
 - `extern`: `lcc` requires function declaration for linkage; extern variables are not allowed. Supporting them means a linkage and multi-translation-unit model, and manual declarations cover what the tests need.
 - **Unsuffixed decimal literals wider than `int`.** Unsuffixed *hex* promotes to
   the narrowest type that fits, but decimal does not: `3000000000` and
