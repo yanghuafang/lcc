@@ -657,6 +657,36 @@ std::pair<std::string, std::string> BreakStmt::genGraph() const {
   return std::make_pair(root, tree);
 }
 
+std::pair<std::string, std::string> GotoStmt::genGraph() const {
+  const std::string id = getId();
+  const std::string root = "GotoStmt_" + id;
+  std::string tree = root + " [label = GotoStmt]\n";
+
+  const std::string labelNode = "\"" + labelName_ + "_" + id + "\"";
+  tree += labelNode + " [label = \"" + labelName_ + "\"]\n";
+  tree += root + " -> " + labelNode + "\n";
+
+  return std::make_pair(root, tree);
+}
+
+std::pair<std::string, std::string> LabelStmt::genGraph() const {
+  const std::string id = getId();
+  const std::string root = "LabelStmt_" + id;
+  std::string tree = root + " [label = LabelStmt]\n";
+
+  const std::string labelNode = "\"" + labelName_ + "_" + id + "\"";
+  tree += labelNode + " [label = \"" + labelName_ + "\"]\n";
+  tree += root + " -> " + labelNode + "\n";
+
+  if (stmt_ != nullptr) {
+    const std::pair<std::string, std::string> graph = stmt_->genGraph();
+    tree += root + " -> " + graph.first + "\n";
+    tree += graph.second;
+  }
+
+  return std::make_pair(root, tree);
+}
+
 std::pair<std::string, std::string> ReturnStmt::genGraph() const {
   const std::string id = getId();
   const std::string root = "ReturnStmt_" + id;

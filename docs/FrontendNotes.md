@@ -35,6 +35,7 @@ Before extending, it helps to know what the current codebase already supports:
 | Parenthesized names | `(a)` reads as an expression rather than a cast (`tests/47.paren_expr.c`) |
 | `typedef` inside a block | Aliases at statement scope, shadowing an outer name (`tests/48.block_typedef.c`) |
 | Function pointers | Variable, parameter and `typedef` forms, and calls through the pointer (`tests/49.func_pointer.c`) |
+| `goto` and labels | Forward and backward jumps inside a function (`tests/50.goto_label.c`) |
 
 See [ParserConflicts.md](ParserConflicts.md) for parser ambiguities that several of these steps had to work around (especially `typedef`).
 
@@ -369,6 +370,16 @@ Shadowing became reachable for the first time, and `sizeof` got it wrong — 4 w
 `typedef int (*Op)(int);` is how C names a callback type, and it reaches the pointer by a different route than the declarator does: `Op p;` leaves `p` with a `DefinedType` naming `Op`, so the call and its result-type query resolve through the alias table.
 
 Through an alias a function pointer can be a struct or union member, an array element or a return type; the `(*name)` declarator itself is what stays limited to variables, parameters and `typedef`. Calling still needs a bare name, so `s.op(3)`, `a[0](3)` and `pick(0)(3)` do not compile — copy the pointer to a local first.
+
+### `goto` and labels (done)
+
+**Goal:** forward and backward jumps inside a function.
+
+`break` and `continue` take their target from `ControlFlowContext`, a stack, because each jumps to a block its own statement built. A label is reachable from anywhere in its function, so `CodeGenerator` holds a per-function table instead, and a forward `goto`'s block stays detached until the label is reached.
+
+The three statement loops stopped at the first terminator, which was right while every terminator ended its block for good. A label after one starts a new block, so the walk continues.
+
+`tests/50.goto_label.c`.
 
 ---
 

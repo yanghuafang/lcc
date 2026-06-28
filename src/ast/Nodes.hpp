@@ -123,6 +123,8 @@ class WhileStmt;
 class ContinueStmt;
 class BreakStmt;
 class ReturnStmt;
+class GotoStmt;
+class LabelStmt;
 
 class Block;
 
@@ -870,6 +872,37 @@ class BreakStmt final : public Stmt {
  public:
   BreakStmt() = default;
   ~BreakStmt() override = default;
+
+  llvm::Value* genCode(CodeGenerator& generator) override;
+  std::pair<std::string, std::string> genGraph() const override;
+};
+
+/// `goto name;` — the one jump that is not to a block the same statement built,
+/// so unlike break and continue its target cannot come from ControlFlowContext.
+/// CodeGenerator holds the label table instead, because a label is reachable
+/// from anywhere in its function and from nowhere outside it.
+class GotoStmt final : public Stmt {
+ public:
+  std::string labelName_;
+
+  explicit GotoStmt(const std::string& labelName) : labelName_(labelName) {}
+  ~GotoStmt() override = default;
+
+  llvm::Value* genCode(CodeGenerator& generator) override;
+  std::pair<std::string, std::string> genGraph() const override;
+};
+
+/// `name: stmt` — owns the statement it labels, the way C's grammar does. That
+/// is what makes a label at the end of a block a syntax error rather than a
+/// label with nothing to run.
+class LabelStmt final : public Stmt {
+ public:
+  std::string labelName_;
+  Stmt* stmt_;
+
+  LabelStmt(const std::string& labelName, Stmt* stmt)
+      : labelName_(labelName), stmt_(stmt) {}
+  ~LabelStmt() override;
 
   llvm::Value* genCode(CodeGenerator& generator) override;
   std::pair<std::string, std::string> genGraph() const override;

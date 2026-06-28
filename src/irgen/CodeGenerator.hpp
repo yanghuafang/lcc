@@ -3,6 +3,7 @@
 #include <llvm/IR/IRBuilder.h>
 #include <llvm/IR/LLVMContext.h>
 
+#include <map>
 #include <memory>
 #include <string>
 #include <string_view>
@@ -138,6 +139,18 @@ class CodeGenerator final : public TypeEnv {
 
   [[nodiscard]] llvm::Function* getCurrentFunction() const noexcept;
 
+  /// The block a label names, created detached on first mention so a `goto`
+  /// can name a label that appears later in the function.
+  llvm::BasicBlock* labelBlock(const std::string& labelName);
+
+  /// Attach the label's block to the current function and mark it defined.
+  /// False when this function already defined that label.
+  bool defineLabelBlock(const std::string& labelName);
+
+  /// A label some `goto` named but no label statement defined, or empty when
+  /// every one resolved. Read once the body is walked.
+  [[nodiscard]] std::string firstUndefinedLabel() const;
+
   void enterFunction(llvm::Function* func);
 
   void leaveFunction();
@@ -202,6 +215,21 @@ class CodeGenerator final : public TypeEnv {
   /// Be used to switch insert point back to local current block.
   llvm::BasicBlock* currentBlock_ = nullptr;
   llvm::Function* currentFunc_ = nullptr;
+
+  /// One entry per label named in the function being emitted, cleared by
+  /// leaveFunction because a label is not visible outside its own function.
+  ///
+  /// The block is owned here while detached, for the reason DetachedBlocks
+  /// gives in irgen/StmtToIr.cpp: a block with no parent belongs to nothing in
+  /// LLVM, and the walk between a forward `goto` and its label throws in a
+  /// dozen places. It cannot use that pool, which is scope-local to one
+  /// lowering — this block has to outlive the statement that created it.
+  struct Label {
+    std::unique_ptr<llvm::BasicBlock> detached;
+    llvm::BasicBlock* block = nullptr;
+    bool defined = false;
+  };
+  std::map<std::string, Label> labels_;
 
   std::unique_ptr<DebugInfoBuilder> debugInfo_;
   std::vector<llvm::DIScope*> debugScopeStack_;

@@ -53,11 +53,11 @@ Unlike industrial compilers (clang, gcc) that use recursive-descent parsing, `lc
 - In a loop: `continue`, `break`, `return`
 - In a `switch`: `break`, `return`
 - In a function: `return`
+- `goto` and labels: `goto name;` and `name: stmt`, jumping forward or backward anywhere in the same function — including out of nested loops, which `break` cannot do
 
 ## Not supported (yet)
 
 - Preprocessing: such as `#include`, and macro definition `#define` and expansion. A separate pipeline stage, and a large one.
-- `goto` and labels
 - Struct bit-fields: `struct S { int a : 3; };`
 - Designated initializers: `{ .x = 1, [2] = 3 }`
 - Scalar types beyond the builtin set: `signed`, `long long`, `long double`
@@ -75,6 +75,7 @@ Unlike industrial compilers (clang, gcc) that use recursive-descent parsing, `lc
 
   Drop the parentheses, reorder the operands, or assign to a temporary. This is C's own ambiguity: telling `(a) + 1` from `(T) + 1` requires knowing whether `a` names a type, and `lcc` has no symbol table while parsing. See [ParserConflicts.md](ParserConflicts.md#4-identifier-type-name-or-expression).
 - Mixing nested and flat forms inside one array initializer: `int a[2][3] = {{1,2,3},4,5,6};` and `int a[2][3] = {1,{2,3}};` are valid C but rejected — use all-nested or all-flat. Excess elements are rejected too (`int a[2][3] = {1,2,3,4,5,6,7};`), where C drops them with a warning
+- **`goto` into a compound statement.** Jumping to a label nested inside an `if`, loop or block that follows a terminated statement does not reach it: the walk resumes at a label only when it is the next statement at the same level, so `goto deep; return 1; if (x) { deep: … }` is rejected as an undefined label. Jumping out of a block, or between labels at one level, is fine.
 - **The `(*name)` declarator outside a variable, parameter, or `typedef`.** Written directly, `struct S { int (*op)(int); };`, `int (*a[2])(int);` and `int (*pick(void))(int)` are all syntax errors, because each declarator position in `Parser.y` spells its own form and only those three have the function-pointer one. Naming the type first lifts it: after `typedef int (*Op)(int);`, `Op` works in every one of those positions.
 - **Calling through anything but a name.** The only call production is `IDENTIFIER ( … )`, and `FuncCall` stores a name rather than an expression, so `s.op(3)`, `a[0](3)` and `pick(0)(3)` are syntax errors even where the pointer itself is fine. Copy it out first — `Op fn = s.op; fn(3);`
 - **A function-pointer declarator whose return type is a typedef name.** `int (*p)(int);` parses, but `MyInt (*p)(int);` does not: at `MyInt •` with `(` ahead, the parser cannot tell the declarator from a call to `MyInt`, and resolves it as a call. Same root cause as the entry below — lcc has no symbol table while parsing. Spell the return type with a builtin keyword.

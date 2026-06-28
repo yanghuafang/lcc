@@ -368,6 +368,7 @@ const char* strayCharacterMessage(char c) {
 "continue"          { return CONTINUE; }
 "break"             { return BREAK; }
 "return"            { return RETURN; }
+"goto"              { return GOTO; }
 
 "struct"            { return STRUCT; }
 "union"             { return UNION; }

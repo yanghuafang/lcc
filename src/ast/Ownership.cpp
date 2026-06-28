@@ -174,6 +174,8 @@ IfStmt::~IfStmt() {
   delete elseStmt_;
 }
 
+LabelStmt::~LabelStmt() { delete stmt_; }
+
 SwitchStmt::~SwitchStmt() {
   delete matcher_;
   if (caseStmtList_ != nullptr) {

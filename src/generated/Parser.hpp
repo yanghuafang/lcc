@@ -132,20 +132,21 @@ extern int yydebug;
     CONTINUE = 325,                /* CONTINUE  */
     BREAK = 326,                   /* BREAK  */
     RETURN = 327,                  /* RETURN  */
-    STRUCT = 328,                  /* STRUCT  */
-    UNION = 329,                   /* UNION  */
-    ENUM = 330,                    /* ENUM  */
-    TYPEDEF = 331,                 /* TYPEDEF  */
-    SIZEOF = 332,                  /* SIZEOF  */
-    IDENTIFIER = 333,              /* IDENTIFIER  */
-    CHARACTER = 334,               /* CHARACTER  */
-    INTEGER = 335,                 /* INTEGER  */
-    UINTEGER = 336,                /* UINTEGER  */
-    LONGVAL = 337,                 /* LONGVAL  */
-    ULONGVAL = 338,                /* ULONGVAL  */
-    FLOATVAL = 339,                /* FLOATVAL  */
-    DOUBLEVAL = 340,               /* DOUBLEVAL  */
-    STRING = 341                   /* STRING  */
+    GOTO = 328,                    /* GOTO  */
+    STRUCT = 329,                  /* STRUCT  */
+    UNION = 330,                   /* UNION  */
+    ENUM = 331,                    /* ENUM  */
+    TYPEDEF = 332,                 /* TYPEDEF  */
+    SIZEOF = 333,                  /* SIZEOF  */
+    IDENTIFIER = 334,              /* IDENTIFIER  */
+    CHARACTER = 335,               /* CHARACTER  */
+    INTEGER = 336,                 /* INTEGER  */
+    UINTEGER = 337,                /* UINTEGER  */
+    LONGVAL = 338,                 /* LONGVAL  */
+    ULONGVAL = 339,                /* ULONGVAL  */
+    FLOATVAL = 340,                /* FLOATVAL  */
+    DOUBLEVAL = 341,               /* DOUBLEVAL  */
+    STRING = 342                   /* STRING  */
   };
   typedef enum yytokentype yytoken_kind_t;
 #endif
@@ -226,7 +227,7 @@ union YYSTYPE
     AST::Enum* enumeration;
     AST::EnumList* enumList;
 
-#line 230 "generated/Parser.hpp"
+#line 231 "generated/Parser.hpp"
 
 };
 typedef union YYSTYPE YYSTYPE;

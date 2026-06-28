@@ -193,6 +193,16 @@ llvm::Value* FuncDecl::genCode(CodeGenerator& generator) {
       ScopedSymbolTable bodyScope(generator.symbols());
       funcBody_->genCode(generator);
     }
+
+    // A goto may name a label that has not been seen yet, so an unresolved one
+    // can only be detected once the whole body is walked. Its block is still
+    // detached at this point, and branches already point at it, so this has to
+    // throw rather than let the module reach the verifier.
+    const std::string undefinedLabel = generator.firstUndefinedLabel();
+    if (!undefinedLabel.empty()) {
+      throw std::logic_error("Label " + undefinedLabel + " used by goto in " +
+                             funcName_ + " is never defined!");
+    }
   }
 
   return nullptr;

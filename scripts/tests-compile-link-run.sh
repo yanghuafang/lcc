@@ -68,6 +68,7 @@ tests=(
   "47.paren_expr.c"
   "48.block_typedef.c"
   "49.func_pointer.c"
+  "50.goto_label.c"
 )
 
 # AST graphs come from tests/graphs/, not from the suite above.

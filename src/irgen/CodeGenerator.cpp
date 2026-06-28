@@ -80,7 +80,53 @@ void CodeGenerator::enterFunction(llvm::Function* func) { currentFunc_ = func; }
 void CodeGenerator::leaveFunction() {
   // Lexical scopes are per-function; do not carry into the next DISubprogram.
   debugScopeStack_.clear();
+  // Labels likewise. Any block still detached here belongs to a label that was
+  // named but never defined, on the throwing path or the reporting one; the
+  // unique_ptr frees it either way.
+  labels_.clear();
   currentFunc_ = nullptr;
+}
+
+llvm::BasicBlock* CodeGenerator::labelBlock(const std::string& labelName) {
+  Label& label = labels_[labelName];
+  if (label.block == nullptr) {
+    // Detached on purpose: attaching here would place a forward-referenced
+    // label wherever the goto happened to be, not where the label is written.
+    label.detached = std::unique_ptr<llvm::BasicBlock>(
+        llvm::BasicBlock::Create(context_, "label." + labelName));
+    label.block = label.detached.get();
+  }
+  return label.block;
+}
+
+bool CodeGenerator::defineLabelBlock(const std::string& labelName) {
+  if (currentFunc_ == nullptr) {
+    throw std::logic_error("Label " + labelName +
+                           " is outside a function body!");
+  }
+
+  Label& label = labels_[labelName];
+  if (label.defined) {
+    return false;
+  }
+  if (label.block == nullptr) {
+    (void)labelBlock(labelName);
+  }
+
+  // release() before the insert only because ilist splicing cannot throw, the
+  // same reasoning DetachedBlocks::attach records.
+  currentFunc_->insert(currentFunc_->end(), label.detached.release());
+  label.defined = true;
+  return true;
+}
+
+std::string CodeGenerator::firstUndefinedLabel() const {
+  for (const auto& [name, label] : labels_) {
+    if (!label.defined) {
+      return name;
+    }
+  }
+  return {};
 }
 
 void CodeGenerator::switchInsertPointToGlobalBlock() {

@@ -114,7 +114,7 @@ AST::Program* g_root;
        IF ELSE
        SWITCH CASE DEFAULT
        FOR DO WHILE
-       CONTINUE BREAK RETURN
+       CONTINUE BREAK RETURN GOTO
        STRUCT UNION ENUM TYPEDEF
        SIZEOF
 
@@ -496,6 +496,16 @@ Stmt:       Expr SEMICOLON      { $$ = $1; $$->setLoc(@1.first_line, @1.first_co
             | TypeDecl          { $$ = $1; }
             | TypedefDecl       { $$ = $1; }
             | VarDecl           { $$ = $1; }
+ /* A label owns the statement it labels, as C's grammar does, so `end:` with
+    nothing after it is a syntax error rather than a jump target that runs
+    nothing. Neither form needs its own non-terminal: both are built inline
+    like `Expr SEMICOLON` above, and Stmt already takes any Stmt subclass. */
+            | GOTO IDENTIFIER SEMICOLON
+                                { $$ = new AST::GotoStmt(*$2);
+                                  $$->setLoc(@1.first_line, @1.first_column); }
+            | IDENTIFIER COLON Stmt
+                                { $$ = new AST::LabelStmt(*$1, $3);
+                                  $$->setLoc(@1.first_line, @1.first_column); }
             | SEMICOLON         { $$ = nullptr; }
             ;
 

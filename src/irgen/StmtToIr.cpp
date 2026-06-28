@@ -30,6 +30,25 @@ namespace AST {
 namespace {
 
 // -g: stamp the statement's parser line on the IRBuilder before lowering it.
+// True when stmt is a label, which is the one thing that can be reached after
+// the current block was closed by a return, break, continue or goto.
+//
+// The insert point is left on a fresh block in that case, so the label has an
+// unterminated block to fall out of and LabelStmt's own branch is a no-op. Only
+// a label at this level is caught: one nested inside a compound statement that
+// follows a terminator stays unreachable, which is the `goto` into a block that
+// docs/Language.md records as unsupported.
+bool openBlockForLabel(CodeGenerator& generator, Stmt* stmt) {
+  if (dynamic_cast<LabelStmt*>(stmt) == nullptr) {
+    return false;
+  }
+
+  llvm::BasicBlock* deadBlock = llvm::BasicBlock::Create(
+      generator.getContext(), "label.pred", generator.getCurrentFunction());
+  generator.getBuilder().SetInsertPoint(deadBlock);
+  return true;
+}
+
 llvm::Value* generateStmt(CodeGenerator& generator, Stmt* stmt) {
   if (stmt == nullptr) {
     return nullptr;
@@ -119,10 +138,12 @@ class DetachedBlocks final {
 
 llvm::Value* FuncBody::genCode(CodeGenerator& generator) {
   for (Stmt* stmt : *content_) {
-    // If current block already has a terminator instruction, such as "return",
-    // stop generating.
-    if (generator.getBuilder().GetInsertBlock()->getTerminator() != nullptr) {
-      break;
+    // A terminated block used to end generation here, because nothing could
+    // reach what followed. A label can, so the walk continues and only skips
+    // what is genuinely unreachable -- see openBlockForLabel.
+    if (generator.getBuilder().GetInsertBlock()->getTerminator() != nullptr &&
+        !openBlockForLabel(generator, stmt)) {
+      continue;
     }
     generateStmt(generator, stmt);
   }
@@ -310,9 +331,10 @@ llvm::Value* SwitchStmt::genCode(CodeGenerator& generator) {
 llvm::Value* CaseStmt::genCode(CodeGenerator& generator) {
   generator.setDebugLocation(loc());
   for (Stmt* stmt : *content_) {
-    if (generator.getBuilder().GetInsertBlock()->getTerminator() != nullptr) {
-      // Stop code generation if encounter a terminator, such as "break".
-      break;
+    if (generator.getBuilder().GetInsertBlock()->getTerminator() != nullptr &&
+        !openBlockForLabel(generator, stmt)) {
+      // Unreachable and unlabelled: nothing can branch back into it.
+      continue;
     }
     if (stmt != nullptr) {
       generateStmt(generator, stmt);
@@ -488,6 +510,35 @@ llvm::Value* BreakStmt::genCode(CodeGenerator& generator) {
   return nullptr;
 }
 
+llvm::Value* GotoStmt::genCode(CodeGenerator& generator) {
+  generator.setDebugLocation(loc());
+  generator.getBuilder().CreateBr(generator.labelBlock(labelName_));
+
+  // Whatever follows the goto needs somewhere to go: a block holds one
+  // terminator, and the block this just closed has it. The new one is
+  // unreachable until a label makes it live again, which is the case a goto
+  // exists to create.
+  llvm::BasicBlock* afterGoto = llvm::BasicBlock::Create(
+      generator.getContext(), "goto.cont", generator.getCurrentFunction());
+  generator.getBuilder().SetInsertPoint(afterGoto);
+  return nullptr;
+}
+
+llvm::Value* LabelStmt::genCode(CodeGenerator& generator) {
+  generator.setDebugLocation(loc());
+  if (!generator.defineLabelBlock(labelName_)) {
+    throw std::logic_error("Label " + labelName_ +
+                           " is defined more than once in this function!");
+  }
+
+  // Fall in from the statement above, unless that already returned or branched.
+  llvm::BasicBlock* block = generator.labelBlock(labelName_);
+  iridiom::terminateBlockByBr(generator.getBuilder(), block);
+  generator.getBuilder().SetInsertPoint(block);
+
+  return generateStmt(generator, stmt_);
+}
+
 llvm::Value* ReturnStmt::genCode(CodeGenerator& generator) {
   generator.setDebugLocation(loc());
   llvm::Function* func = generator.getCurrentFunction();
@@ -522,9 +573,10 @@ llvm::Value* Block::genCode(CodeGenerator& generator) {
   ScopedDebugLexicalBlock debugScope(generator, loc());
   ScopedSymbolTable symScope(generator.symbols());
   for (Stmt* stmt : *content_) {
-    if (generator.getBuilder().GetInsertBlock()->getTerminator() != nullptr) {
-      // Stop code generation if encounter a terminator, such as "break".
-      break;
+    if (generator.getBuilder().GetInsertBlock()->getTerminator() != nullptr &&
+        !openBlockForLabel(generator, stmt)) {
+      // Unreachable and unlabelled: nothing can branch back into it.
+      continue;
     }
     if (stmt != nullptr) {
       generateStmt(generator, stmt);

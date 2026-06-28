@@ -8,14 +8,14 @@ lcc's grammar is intentionally compact: declarations, statements, and expression
 
 | Kind | Count | Bison default |
 |------|------:|---------------|
-| Shift/reduce | 57 | Prefer **shift** |
-| Reduce/reduce | 7 | Prefer the **first** grammar rule |
+| Shift/reduce | 58 | Prefer **shift** |
+| Reduce/reduce | 10 | Prefer the **first** grammar rule |
 
 As of the current grammar, `./build-lcc.sh` (which runs `bison -d frontend/Parser.y -v` via CMake) prints:
 
 ```
-Parser.y: warning: 57 shift/reduce conflicts [-Wconflicts-sr]
-Parser.y: warning: 7 reduce/reduce conflicts [-Wconflicts-rr]
+Parser.y: warning: 58 shift/reduce conflicts [-Wconflicts-sr]
+Parser.y: warning: 10 reduce/reduce conflicts [-Wconflicts-rr]
 ```
 
 State numbers in `Parser.output` **change when the grammar grows** (new rules insert states). Regenerate with `bison -d frontend/Parser.y -v` and search for `conflicts:` rather than relying on fixed state IDs from an older report.
@@ -70,7 +70,7 @@ You can override defaults with precedence (`%left`, `%right`, `%nonassoc`) or ex
 ## Conflict map (high level)
 
 ```
-57 shift/reduce
+58 shift/reduce
 ├── 41  Expr • [ subscript ]     (subscript vs completed unary/binary operand)
 ├──  6  ( id ) • x               (parenthesized name vs cast — state 194)
 ├──  3  IDENTIFIER • [           (ArrayBoundList ε vs `[`; FuncDecl `(` vs array declarator)
@@ -78,16 +78,16 @@ You can override defaults with precedence (`%left`, `%right`, `%nonassoc`) or ex
 ├──  1  ( id • )                 (shift `)` rather than commit to _VarType — state 134)
 ├──  1  _VarType • ;             (TypeDecl vs VarDecl with empty VarList)
 ├──  1  sizeof ( id • )          (three sizeof productions — shift on `)`)
-├──  1  IDENTIFIER • (           (call vs a `T (*p)(...)` declarator — shift keeps the call)
+├──  2  IDENTIFIER • (           (call vs a `T (*p)(...)` declarator — shift keeps the call)
 └──  1  if (...) stmt • else     (dangling else — resolved by the shift default)
 
- 7 reduce/reduce
-├──  3  IDENTIFIER •             (typedef name as _VarType vs variable as Expr — state 254)
+10 reduce/reduce
+├──  6  IDENTIFIER •             (typedef name as _VarType vs variable as Expr — states 272 and 324)
 ├──  2  ( id • )                 (same pair inside parentheses — state 134, outranked by the shift)
 └──  2  sizeof ( id • )          (_VarType vs Expr inside sizeof — state 200)
 ```
 
-The newest one arrives with the function-pointer declarator: after a name, `(` could open a call or the `(*p)` of `MyInt (*p)(int);`, and the shift default keeps it a call — which is why only a builtin keyword can spell that return type. Eight more arrive with the two `( IDENTIFIER )` productions that make `(a)` an expression: six in state 194, where the token after `)` decides between a parenthesized name and a cast, and one each in states 134 and 200. Section 4 works through them. The **array bounds** and **typedef struct/union** groups came earlier, with 2D arrays and `typedef` support.
+The `IDENTIFIER •` group is counted twice over because labels split its state: `name:` is only a statement where a statement may start, so the parser now has one state that offers the label production (272) and one that does not (324), each carrying the same typedef-name-versus-variable pair. The label itself is unambiguous — `COLON` shifts, and no conflict names that token. The one before it arrives with the function-pointer declarator: after a name, `(` could open a call or the `(*p)` of `MyInt (*p)(int);`, and the shift default keeps it a call — which is why only a builtin keyword can spell that return type. Eight more arrive with the two `( IDENTIFIER )` productions that make `(a)` an expression: six in state 194, where the token after `)` decides between a parenthesized name and a cast, and one each in states 134 and 200. Section 4 works through them. The **array bounds** and **typedef struct/union** groups came earlier, with 2D arrays and `typedef` support.
 
 The sections below walk through each group.
 
@@ -226,7 +226,7 @@ State 310 conflicts: 1 shift/reduce
 1. The conflict is **counted** — it is one of the 56 reported by bison. A conflict resolved by precedence is silently resolved and never reported.
 2. The discarded reduce is **bracketed** (`[reduce using rule 94 …]`), which is how Bison marks an action dropped by a default resolution.
 
-Delete `%nonassoc ELSE`, rerun bison, and the counts stay at 57/7 with a byte-identical automaton in `Parser.output`. That is the experiment to trust over the comment.
+Delete `%nonassoc ELSE`, rerun bison, and the counts stay at 58/10 with a byte-identical automaton in `Parser.output`. That is the experiment to trust over the comment.
 
 ### Where to look — dangling else
 
