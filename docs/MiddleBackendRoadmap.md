@@ -175,16 +175,20 @@ Start smaller than LLVM’s `instcombine`.
 
 ## M9: Classical opts study
 
-**No lcc code required.** Acceptance = written notes or comments:
+**Status:** done
 
-- [ ] Listed passes that run at `-O2` on `25.quick_sort.c`
-- [ ] Identified mem2reg / SSA on one function in pre/post dump
-- [ ] Explained one optimization (e.g. GVN or DCE) with IR snippet
+**No lcc code required** beyond notes. Acceptance:
 
-**Commands**
+- [x] Listed passes that run at `-O2` on `25.quick_sort.c` ([Pipeline.md](Pipeline.md))
+- [x] Identified mem2reg / SSA on `@partition` in pre/post dumps
+- [x] Explained instcombine + DCE on `@swap` with IR snippets
+
+**Commands** (LLVM 20; see [Pipeline.md](Pipeline.md) for full recipes):
 
 ```bash
-opt -passes='default<O2>' -debug-pass=structure pre.ll -S -o /dev/null 2>&1 | less
+../../lcc-build/lcc -O2 -i ../tests/25.quick_sort.c -o /tmp/q.o \
+  -l-pre-opt /tmp/q-pre.ll -l-post-opt /tmp/q-post.ll
+opt --print-pipeline-passes -passes='default<O2>' /tmp/q-pre.ll -disable-output
 ```
 
 ---

@@ -81,6 +81,7 @@ void IrOptimizer::run(llvm::Module& module,
   if (wantOpts) {
     const llvm::OptimizationLevel* level =
         resolveOptimizationLevel(optimizationLevel);
+    // Same default pipelines as `opt -passes='default<O*>'`; see docs/Pipeline.md (M9).
     mpm.addPass(pb.buildPerModuleDefaultPipeline(*level));
   }
 

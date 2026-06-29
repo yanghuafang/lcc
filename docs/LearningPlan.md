@@ -227,14 +227,16 @@ Skip if M6 satisfies your learning goals.
 
 ## M9: Classical opts study (LLVM)
 
+**Status:** done
+
 **Goal:** Know what `-O2` does without reimplementing it.
 
 | Step | Action |
 |------|--------|
-| Study | Run `opt -passes='default<O2>' -debug-pass=structure` (or `-print-pipeline`) on `.debug.ll` |
+| Study | Run `opt --print-pipeline-passes -passes='default<O2>'` on pre-opt IR |
 | Study | Identify mem2reg, instcombine, GVN, loop passes on `25.quick_sort.c` |
-| Implement | Notes doc or comments in `IrOptimizer.cpp` listing observed passes |
-| Verify | Can explain SSA formation (mem2reg) on one function in pre/post IR |
+| Implement | Notes in [Pipeline.md](Pipeline.md); pointer comment in `IrOptimizer.cpp` |
+| Verify | Explain SSA formation (`mem2reg`) on `@partition` in pre/post IR dumps |
 
 ---
 
@@ -376,7 +378,7 @@ Optional future **language** work (preprocessor, 3D arrays, `extern`) stays in [
 |------|-----|
 | `lcc -l-pre-opt` / `-l-post-opt` | Raw vs middle-end IR (see [Usage.md](Usage.md)) |
 | `lcc -ir-stats <file>` | Load/store/call counts on raw IR (`-` = stderr) |
-| `opt -passes='…'` | Experiment with pass pipelines |
+| `opt --print-pipeline-passes -passes='default<O2>'` | List O2 passes (LLVM 20) — see [Pipeline.md](Pipeline.md) |
 | `llc` | IR → asm; MIR dumps with stop flags |
 | `llvm-objdump -d` | Disassemble `.o` |
 | `llvm-mca` | Analyze asm throughput (vectorization) |
@@ -417,4 +419,4 @@ Optional future **language** work (preprocessor, 3D arrays, `extern`) stays in [
 | [Roadmap.md](Roadmap.md) | Front-end language features (done) |
 | [Testing.md](Testing.md) | Scripts and compile modes |
 | [Development.md](Development.md) | Debug lcc in LLDB |
-| [Pipeline.md](Pipeline.md) | Tool cookbook (stub; expand at M18) |
+| [Pipeline.md](Pipeline.md) | Tool cookbook + classical opt study (M9); expand at M18 |

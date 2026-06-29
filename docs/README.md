@@ -11,7 +11,7 @@ Start with the [README](../README.md) for a quick clone-and-run path.
 | [LearningPlan.md](LearningPlan.md) | **Start here** — milestones M0–M18 (front-end study, IR, opts, backend) |
 | [MiddleBackendRoadmap.md](MiddleBackendRoadmap.md) | Implementation details for middle-end & back-end milestones |
 | [Roadmap.md](Roadmap.md) | Front-end & language extension plan (complete; deferrals listed) |
-| [Pipeline.md](Pipeline.md) | Compiler pipeline & LLVM tool recipes (stub until M18) |
+| [Pipeline.md](Pipeline.md) | Compiler pipeline, LLVM tools, classical opt study (M9) |
 
 ## How-to
 
