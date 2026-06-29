@@ -39,13 +39,16 @@ src/
 
 ## M4: Pre/post IR dumps
 
+**Status:** done
+
 **Acceptance criteria**
 
-- [ ] New flags documented in [Usage.md](Usage.md)
-- [ ] Pre-opt dump equals former `-g`/no-opt raw module output
-- [ ] Post-opt dump matches current `-O2` behavior when opts run
-- [ ] `-g` still skips optimization; only one post-opt dump (unchanged semantics)
-- [ ] Full `./compile-tests.sh && ./link-tests.sh && ./run-tests.sh` PASS
+- [x] New flags documented in [Usage.md](Usage.md)
+- [x] Pre-opt dump equals former raw module output (after codegen, before opts)
+- [x] Post-opt dump matches current `-O2` behavior when opts run
+- [x] `-g` still skips optimization; pre/post dumps reflect finalize-only path
+- [x] `-l` unchanged (dumps after object emission for test script compatibility)
+- [x] Full `./compile-tests.sh && ./link-tests.sh && ./run-tests.sh` PASS
 
 **Suggested CLI**
 

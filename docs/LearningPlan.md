@@ -155,6 +155,8 @@ Track progress here. Do not start the next milestone until **Verify** passes for
 
 ## M4: Pre/post IR dumps in lcc
 
+**Status:** done
+
 **Goal:** See exactly what lcc emits vs what LLVM optimizes.
 
 | Step | Action |

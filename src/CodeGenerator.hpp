@@ -158,10 +158,13 @@ class CodeGenerator {
   // Switch insert point back to current local block.
   void switchInsertPointToCurrentBlock();
 
-  // Take AST as input to generate IR code.
+  // Take AST as input to generate IR code. Optional preOptIrPath /
+  // postOptIrPath capture IR before and after the middle-end (see genIrCode).
   void genIrCode(AST::Program* root, const std::string& optimizationLevel = "",
                  bool generateDebugInfo = false,
-                 const std::string& sourcePath = "");
+                 const std::string& sourcePath = "",
+                 const std::string& preOptIrPath = "",
+                 const std::string& postOptIrPath = "");
 
   bool isDebugInfoEnabled() const { return debugInfo_ != nullptr; }
   DebugInfoBuilder* debugInfo() { return debugInfo_.get(); }

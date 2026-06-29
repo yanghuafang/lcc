@@ -41,7 +41,13 @@ int main(int argc, char* argv[]) {
       .help("output AST graph file.");
   parser.add_argument("-l", "--output-llvm-ir-file")
       .default_value("")
-      .help("output LLVM IR file.");
+      .help("output LLVM IR file (after object emission; test scripts use this).");
+  parser.add_argument("-l-pre-opt", "--output-llvm-ir-pre-opt-file")
+      .default_value("")
+      .help("output LLVM IR immediately after codegen, before optimization.");
+  parser.add_argument("-l-post-opt", "--output-llvm-ir-post-opt-file")
+      .default_value("")
+      .help("output LLVM IR after optimization (or after debug info when -g).");
   parser.add_argument("-g", "--generate-debug-info")
       .default_value(false)
       .implicit_value(true)
@@ -145,10 +151,20 @@ int main(int argc, char* argv[]) {
   // (getExprTypeId / getExprVarType) happen on demand while emitting IR.
   CodeGenerator generator;
   try {
-    generator.genIrCode(g_root, optimizationLevel,
-                      parser.get<bool>("-g"),
-                      parser.get<std::string>("-i"));
+    generator.genIrCode(
+        g_root, optimizationLevel, parser.get<bool>("-g"),
+        parser.get<std::string>("-i"),
+        parser.get<std::string>("-l-pre-opt"),
+        parser.get<std::string>("-l-post-opt"));
     std::cout << "Generated IR code successfully!" << std::endl;
+    if (!parser.get<std::string>("-l-pre-opt").empty()) {
+      std::cout << "Dumped pre-optimization IR to "
+                << parser.get<std::string>("-l-pre-opt") << std::endl;
+    }
+    if (!parser.get<std::string>("-l-post-opt").empty()) {
+      std::cout << "Dumped post-optimization IR to "
+                << parser.get<std::string>("-l-post-opt") << std::endl;
+    }
   } catch (std::exception& e) {
     std::cerr << "Failed to generate IR code!" << std::endl;
     std::cerr << e.what() << std::endl;
@@ -165,7 +181,8 @@ int main(int argc, char* argv[]) {
     return 7;
   }
 
-  // Generate LLVM IR file.
+  // Final LLVM IR dump (-l): after object emission so target triple/data layout
+  // match committed debug/*.ll artifacts used by compile-tests.sh.
   try {
     if (!parser.get<std::string>("-l").empty()) {
       generator.dumpIrCode(parser.get<std::string>("-l"));

@@ -514,7 +514,9 @@ void CodeGenerator::declareDebugAlloca(llvm::AllocaInst* alloca,
 void CodeGenerator::genIrCode(AST::Program* root,
                               const std::string& optimizationLevel,
                               bool generateDebugInfo,
-                              const std::string& sourcePath) {
+                              const std::string& sourcePath,
+                              const std::string& preOptIrPath,
+                              const std::string& postOptIrPath) {
   if (root == nullptr) {
     std::cerr << "AST root is nullptr!" << std::endl;
     return;
@@ -545,6 +547,13 @@ void CodeGenerator::genIrCode(AST::Program* root,
   // Pop top level symbol table, and destroy it.
   popSymbolTable();
 
+  // Middle-end snapshots: raw frontend IR, then the module after optimizeCode()
+  // or debug finalization (-g). main's -l dumps later (post-genObjectCode) with
+  // target triple/data layout for compile-tests.sh golden files.
+  if (!preOptIrPath.empty()) {
+    dumpIrCode(preOptIrPath);
+  }
+
   // -g skips LLVM optimizations so dbg.declare allocas survive; dbg.value salvage
   // for -O1+ is out of scope for this teaching compiler.
   if (generateDebugInfo) {
@@ -556,6 +565,10 @@ void CodeGenerator::genIrCode(AST::Program* root,
     debugInfo_->finalize();
   } else {
     optimizeCode(optimizationLevel);
+  }
+
+  if (!postOptIrPath.empty()) {
+    dumpIrCode(postOptIrPath);
   }
 }
 
