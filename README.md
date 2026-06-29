@@ -27,7 +27,7 @@ Full regression suite:
 ./compile-tests.sh && ./link-tests.sh && ./run-tests.sh
 ```
 
-Build artifacts go to `../../lcc-build/` (sibling of the repo). Sample AST graphs and LLVM IR live under `lcc/debug/` (IR files use `.debug.ll`, `.release.ll`, or `.relwithdebinfo.ll` suffixes matching [compile modes](docs/Testing.md)).
+Build artifacts go to `../../lcc-build/` (sibling of the repo). Sample AST graphs and LLVM IR live under `lcc/debug/` (IR files use `.debug.ll` or `.release.ll` suffixes matching [compile modes](docs/Testing.md)).
 
 ## What it supports (summary)
 

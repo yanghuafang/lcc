@@ -52,19 +52,15 @@ Optional compile mode (at most one; applies to all tests or the single named tes
 | *(none)* | `-g -O0` | `.debug.ll` / `.debug.s` (same as `--debug`) |
 | `--debug` | `-g -O0` | `.debug.ll` / `.debug.s` |
 | `--release` | `-O2` | `.release.ll` / `.release.s` |
-| `--relwithdebinfo` | `-g -O2`¹ | `.relwithdebinfo.ll` / `.relwithdebinfo.s` |
-
-¹ `-g` disables LLVM optimization in `lcc`; `-O2` is passed but ignored (warning printed). DWARF is still emitted; IR differs from `--debug` mainly in the checked-in snapshot name.
 
 Examples:
 
 ```bash
 ./compile-tests.sh --debug
 ./compile-tests.sh --release 25.quick_sort.c
-./compile-tests.sh --relwithdebinfo
 ```
 
-`compile-tests.sh` always passes `-v`, `-l`, and `-S` so AST (`.dot`, `.png`), IR, and assembly land in `lcc/debug/`. The repo keeps reference IR for all three modes: `*.debug.ll`, `*.release.ll`, and `*.relwithdebinfo.ll` (40 tests × 3 modes). Assembly uses the same basename and mode suffix with `.s` instead of `.ll`.
+`compile-tests.sh` always passes `-v`, `-l`, and `-S` so AST (`.dot`, `.png`), IR, and assembly land in `lcc/debug/`. The repo keeps reference IR for both modes: `*.debug.ll` and `*.release.ll` (40 tests × 2 modes). Assembly uses the same basename and mode suffix with `.s` instead of `.ll`.
 
 ### Debug-info smoke test
 

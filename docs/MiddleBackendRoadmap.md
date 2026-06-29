@@ -14,7 +14,7 @@ Implementation details for [LearningPlan.md](LearningPlan.md) milestones **M4–
 | Object emission | `TargetBackend::emitObject` via `CodeGenerator::genObjectCode` | Default host triple, `cpu=generic`, legacy PM → `.o` |
 | Assembly emission | `TargetBackend::emitAssembly` via `-S` | `CodeGenFileType::AssemblyFile` |
 | Debug info | `DebugInfoBuilder` | `-g` skips IR opts |
-| Reference IR | `debug/*.debug.ll`, `*.release.ll` | 40 tests × 3 modes |
+| Reference IR | `debug/*.debug.ll`, `*.release.ll` | 40 tests × 2 modes |
 
 Target refactor layout (introduce incrementally):
 
