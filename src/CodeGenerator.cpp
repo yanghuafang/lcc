@@ -513,7 +513,8 @@ void CodeGenerator::genIrCode(AST::Program* root,
                               bool generateDebugInfo,
                               const std::string& sourcePath,
                               const std::string& preOptIrPath,
-                              const std::string& postOptIrPath) {
+                              const std::string& postOptIrPath,
+                              const std::string& irStatsPath) {
   if (root == nullptr) {
     std::cerr << "AST root is nullptr!" << std::endl;
     return;
@@ -544,8 +545,8 @@ void CodeGenerator::genIrCode(AST::Program* root,
   // Pop top level symbol table, and destroy it.
   popSymbolTable();
 
-  // Middle-end snapshots: raw frontend IR, then the module after optimizeCode()
-  // or debug finalization (-g). main's -l dumps later (post-genObjectCode) with
+  // Middle-end snapshots: raw frontend IR, then the module after IrOptimizer
+  // and debug finalization (-g). main's -l dumps later (post-genObjectCode) with
   // target triple/data layout for compile-tests.sh golden files.
   if (!preOptIrPath.empty()) {
     dumpIrCode(preOptIrPath);
@@ -553,6 +554,9 @@ void CodeGenerator::genIrCode(AST::Program* root,
 
   // -g skips LLVM optimizations so dbg.declare allocas survive; dbg.value salvage
   // for -O1+ is out of scope for this teaching compiler.
+  const std::string optLevel =
+      generateDebugInfo ? std::string{} : optimizationLevel;
+  IrOptimizer{}.run(*module_, optLevel, {.irStatsPath = irStatsPath});
   if (generateDebugInfo) {
     if (!optimizationLevel.empty() && optimizationLevel != "O0") {
       std::cerr << "Warning: -g disables LLVM optimizations (ignoring -"
@@ -560,8 +564,6 @@ void CodeGenerator::genIrCode(AST::Program* root,
                 << "); use -g without -O for debuggable output." << std::endl;
     }
     debugInfo_->finalize();
-  } else {
-    IrOptimizer{}.run(*module_, optimizationLevel);
   }
 
   if (!postOptIrPath.empty()) {

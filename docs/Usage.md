@@ -3,7 +3,7 @@
 ## Compile a `.c` file
 
 ```text
-lcc -i <input.c> -o <output.o> [-v <ast.dot>] [-l <ir.ll>] [-l-pre-opt <pre.ll>] [-l-post-opt <post.ll>] [-g] [-O0|-O1|-O2|-O3|-Os|-Oz]
+lcc -i <input.c> -o <output.o> [-v <ast.dot>] [-l <ir.ll>] [-l-pre-opt <pre.ll>] [-l-post-opt <post.ll>] [-ir-stats <file>] [-g] [-O0|-O1|-O2|-O3|-Os|-Oz]
 ```
 
 | Flag | Required | Description |
@@ -12,8 +12,9 @@ lcc -i <input.c> -o <output.o> [-v <ast.dot>] [-l <ir.ll>] [-l-pre-opt <pre.ll>]
 | `-o` | yes | Output object file (`.o`) |
 | `-v` | no | AST graph (GraphViz `.dot`) |
 | `-l` | no | LLVM IR after object emission (includes `target triple` / `datalayout`; used by test scripts) |
-| `-l-pre-opt` | no | LLVM IR right after codegen, **before** optimization or debug finalization |
+| `-l-pre-opt` | no | LLVM IR right after codegen, before `IrOptimizer` and debug finalization |
 | `-l-post-opt` | no | LLVM IR right after optimization, or after debug finalization when `-g` |
+| `-ir-stats` | no | Write load/store/call counts to `file` (`-` = stderr); counts raw IR before LLVM opts |
 | `-g` | no | Embed DWARF in the object file (use without `-O` for reliable stepping and variables) |
 | `-O0` … `-Oz` | no | LLVM optimization level (mutually exclusive) |
 
@@ -21,11 +22,11 @@ lcc -i <input.c> -o <output.o> [-v <ast.dot>] [-l <ir.ll>] [-l-pre-opt <pre.ll>]
 
 | Flag | When IR is captured | Typical use |
 |------|---------------------|-------------|
-| `-l-pre-opt` | After `genCode()`, before LLVM opts | Raw frontend IR (allocas, unoptimized structure) |
-| `-l-post-opt` | After `optimizeCode()` or `debugInfo` finalize | Optimized IR (no target metadata yet) |
+| `-l-pre-opt` | After `genCode()`, before `IrOptimizer` / debug finalization | Raw frontend IR (allocas, unoptimized structure) |
+| `-l-post-opt` | After `IrOptimizer::run()` and debug finalization (`-g`) | Optimized or finalized IR (no target metadata yet) |
 | `-l` | After `genObjectCode()` | Same as test `debug/*.ll` snapshots (with target metadata) |
 
-With `-g`, LLVM optimization is skipped; `-l-pre-opt` and `-l-post-opt` are usually identical. With `-O2` and no `-g`, pre and post differ.
+With `-g`, LLVM optimization is skipped; `-l-pre-opt` and `-l-post-opt` still differ because `debugInfo_->finalize()` runs between them. With `-O2` and no `-g`, pre and post differ from LLVM opts.
 
 Example (compare raw vs optimized IR), from `lcc/scripts`:
 
@@ -33,6 +34,13 @@ Example (compare raw vs optimized IR), from `lcc/scripts`:
 ../../lcc-build/lcc -O2 -i ../tests/25.quick_sort.c -o /tmp/q.o \
   -l-pre-opt /tmp/pre.ll -l-post-opt /tmp/post.ll
 diff -u /tmp/pre.ll /tmp/post.ll | head
+```
+
+Example (IR instruction stats), from `lcc/scripts`:
+
+```bash
+../../lcc-build/lcc -O2 -i ../tests/25.quick_sort.c -o /tmp/q.o -ir-stats /tmp/stats.txt
+cat /tmp/stats.txt
 ```
 
 ### Defaults when flags are omitted

@@ -52,6 +52,9 @@ int main(int argc, char* argv[]) {
       .default_value(false)
       .implicit_value(true)
       .help("generate debug info with object file.");
+  parser.add_argument("-ir-stats", "--ir-instruction-stats-file")
+      .default_value("")
+      .help("write load/store/call counts to FILE (use - for stderr); omit to disable.");
 
   auto& optimizationGroup = parser.add_mutually_exclusive_group();
   optimizationGroup.add_argument("-O0")
@@ -155,7 +158,8 @@ int main(int argc, char* argv[]) {
         g_root, optimizationLevel, parser.get<bool>("-g"),
         parser.get<std::string>("-i"),
         parser.get<std::string>("-l-pre-opt"),
-        parser.get<std::string>("-l-post-opt"));
+        parser.get<std::string>("-l-post-opt"),
+        parser.get<std::string>("-ir-stats"));
     std::cout << "Generated IR code successfully!" << std::endl;
     if (!parser.get<std::string>("-l-pre-opt").empty()) {
       std::cout << "Dumped pre-optimization IR to "

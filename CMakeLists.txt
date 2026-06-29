@@ -53,7 +53,11 @@ add_definitions(${LLVM_DEFINITIONS_LIST})
 
 include_directories(${CMAKE_SOURCE_DIR}/src)
 
-file(GLOB SOURCES ${CMAKE_SOURCE_DIR}/src/*.hpp ${CMAKE_SOURCE_DIR}/src/*.cpp)
+file(GLOB SOURCES
+  ${CMAKE_SOURCE_DIR}/src/*.hpp
+  ${CMAKE_SOURCE_DIR}/src/*.cpp
+  ${CMAKE_SOURCE_DIR}/src/passes/*.hpp
+  ${CMAKE_SOURCE_DIR}/src/passes/*.cpp)
 
 add_executable(${CMAKE_PROJECT_NAME} ${SOURCES})
 

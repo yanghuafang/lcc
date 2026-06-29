@@ -9,7 +9,8 @@ Implementation details for [LearningPlan.md](LearningPlan.md) milestones **M4–
 | Component | File | Behavior |
 |-----------|------|----------|
 | IR emission | `CodeGenerator::genIrCode`, `AbstractSyntaxTree.cpp`, `Utils.cpp` | AST walk → raw `llvm::Module` |
-| IR optimization | `CodeGenerator::optimizeCode` | `PassBuilder::buildPerModuleDefaultPipeline` |
+| IR optimization | `IrOptimizer::run` | `PassBuilder::buildPerModuleDefaultPipeline` |
+| IR instrumentation | `IrInstructionStatsPass` (`-ir-stats`) | New PM function pass; no IR change |
 | Object emission | `CodeGenerator::genObjectCode` | Default host triple, `cpu=generic`, legacy PM → `.o` |
 | Debug info | `DebugInfoBuilder` | `-g` skips IR opts |
 | Reference IR | `debug/*.debug.ll`, `*.release.ll` | 40 tests × 3 modes |
@@ -21,7 +22,7 @@ src/
   IrOptimizer.hpp / IrOptimizer.cpp      ← M5 (done)
   TargetBackend.hpp / TargetBackend.cpp   ← M10
   passes/
-    CountLoadsPass.cpp                    ← M6 (example)
+    IrInstructionStatsPass.cpp              ← M6 (done)
 ```
 
 ---
@@ -55,17 +56,29 @@ src/
 | Flag | Content |
 |------|---------|
 | `-l-pre-opt <file>` | IR immediately after `root->genCode()` |
-| `-l-post-opt <file>` | IR after `IrOptimizer::run()` (or no-op if skipped) |
-| `-l <file>` | Keep as alias for post-opt or pre-opt (document choice) |
+| `-l-post-opt <file>` | IR after `IrOptimizer::run()` and debug finalization (`-g`) |
+| `-l <file>` | After `genObjectCode()` in `main` (includes target metadata; test goldens) |
 
-**Suggested hook** (in `genIrCode` after AST walk, before optimize):
+**Hook in `genIrCode`** (after AST walk; reflects M5/M6):
 
 ```cpp
-if (!preOptPath.empty()) dumpModule(preOptPath);
-if (!generateDebugInfo) irOptimizer.run(module, optimizationLevel);
-else debugInfo_->finalize();
-if (!postOptPath.empty()) dumpModule(postOptPath);
+if (!preOptIrPath.empty()) {
+  dumpIrCode(preOptIrPath);
+}
+
+const std::string optLevel =
+    generateDebugInfo ? std::string{} : optimizationLevel;
+IrOptimizer{}.run(*module_, optLevel, {.irStatsPath = irStatsPath});
+if (generateDebugInfo) {
+  debugInfo_->finalize();
+}
+
+if (!postOptIrPath.empty()) {
+  dumpIrCode(postOptIrPath);
+}
 ```
+
+`genIrCode` always calls `IrOptimizer::run`; it no-ops unless `-O` or `-ir-stats` is set. With `-g`, `optLevel` is empty (LLVM opts skipped) but `-ir-stats` still runs. `-l` is dumped from `main` after `genObjectCode()`, not here.
 
 **Verify**
 
@@ -87,13 +100,17 @@ diff -u /tmp/pre.ll /tmp/post.ll | head
 - [x] `CodeGenerator.cpp` shrinks; IR opt logic in `IrOptimizer.cpp`
 - [x] Full test suite PASS
 
-**API sketch**
+**API** (current; M8 may add `runWithPasses`):
 
 ```cpp
+struct IrOptimizerOptions {
+  std::string irStatsPath;  // non-empty enables IrInstructionStatsPass; "-" = stderr
+};
+
 class IrOptimizer {
  public:
-  void run(llvm::Module& module, const std::string& optimizationLevel);
-  void runWithPasses(llvm::Module& module, llvm::StringRef pipeline);  // M8
+  void run(llvm::Module& module, const std::string& optimizationLevel,
+           const IrOptimizerOptions& options = {});
 };
 ```
 
@@ -101,22 +118,25 @@ class IrOptimizer {
 
 ## M6: Custom New PM pass — instrumentation
 
+**Status:** done
+
 **Acceptance criteria**
 
-- [ ] Pass linked into `lcc` binary (CMake may need extra LLVM components)
-- [ ] Pass prints stats to stderr or `-pass-stats` file
-- [ ] **No** change to program semantics — all 40 tests PASS
-- [ ] Pass runs on every compilation (or behind `-enable-count-pass`)
+- [x] Pass linked into `lcc` binary
+- [x] Stats via `-ir-stats <file>` (`-` = stderr)
+- [x] No change to program semantics — all 40 tests PASS
+- [x] Pass behind `-ir-stats` (disabled by default for compile-tests.sh)
 
-**Example: `CountLoadsPass` (FunctionPass)**
+**Implementation:** `IrInstructionStatsPass` (`src/passes/`)
 
-- Count `load`, `store`, `call` instructions per function
-- Print summary after pass runs
+- Counts `load`, `store`, `call`/`invoke` per function; aggregates module totals
+- Enabled only when `-ir-stats <file>` is passed (`-` writes to stderr)
+- Inserted **before** `buildPerModuleDefaultPipeline` via `createModuleToFunctionPassAdaptor`
 
 **Learning goals**
 
 - `PassInfoMixin`, `PreservedAnalyses`
-- Register with `PassBuilder::registerPipelineParsingCallback` or insert into default pipeline extension point
+- Composing a custom pass with LLVM’s default pipeline in `ModulePassManager`
 
 **Not in scope:** changing IR.
 

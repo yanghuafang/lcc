@@ -5,7 +5,7 @@ This is the **master plan** for studying and extending **lcc** across the full c
 | Layer | lcc today | This plan |
 |-------|-----------|-----------|
 | **Front-end** | flex/bison, AST, single-pass `genCode()` | Study track (complete); optional language deferrals in [Roadmap.md](Roadmap.md) |
-| **Middle-end (IR)** | Raw IR via `IRBuilder`; `-O` via `PassBuilder` | Observability, custom New PM passes, pipeline control |
+| **Middle-end (IR)** | Raw IR via `IRBuilder`; `-O` via `IrOptimizer` | Observability, custom New PM passes, pipeline control |
 | **Back-end** | `TargetMachine` → `.o` (host triple) | Asm emission, target flags, MIR inspection |
 | **Optimization** | LLVM default pipelines | Study classical opts, vectorization, optional benchmarks |
 
@@ -27,23 +27,24 @@ flowchart LR
     Parse --> AST["AST genCode"]
   end
 
-  subgraph mid [Middle-end — LLVM IR]
+  subgraph mid [Middle-end — IrOptimizer]
     Raw["Raw Module"]
-    Opt["IR opts New PM"]
-    Custom["Custom IR passes"]
+    Stats["IrInstructionStatsPass optional"]
+    Opt["LLVM default pipeline"]
   end
 
-  subgraph be [Back-end — LLVM codegen]
-    ISel["Instruction selection"]
-    MIR["MIR"]
-    RA["Register allocation"]
-    Out[".s / .o"]
+  subgraph meta [Debug metadata]
+    Dbg["DebugInfoBuilder finalize if -g"]
   end
 
-  AST --> Raw --> Opt --> Custom --> ISel --> MIR --> RA --> Out
+  subgraph be [Back-end — genObjectCode]
+    Obj[".o via TargetMachine"]
+  end
+
+  AST --> Raw --> Stats --> Opt --> Dbg --> Obj
 ```
 
-**Key idea:** IR **generation** in lcc is **not** an LLVM pass — it is `AbstractSyntaxTree.cpp` + `Utils.cpp` calling `IRBuilder`. LLVM **passes** start after the module is built.
+**Key idea:** IR **generation** is `genCode()` + `IRBuilder`. `IrOptimizer` runs optional instrumentation (`-ir-stats`) then LLVM `-O` passes. `-g` finalizes DWARF after the middle-end. `-l-pre-opt` / `-l-post-opt` bracket that sequence; `-l` in `main` dumps after `genObjectCode()` (with target metadata).
 
 ---
 
@@ -162,7 +163,7 @@ Track progress here. Do not start the next milestone until **Verify** passes for
 | Step | Action |
 |------|--------|
 | Implement | CLI flags, e.g. `-l-pre-opt` and `-l-post-opt` (or extend `-l` naming) |
-| Implement | Dump raw IR **before** `optimizeCode()`; dump **after** |
+| Implement | Dump raw IR **before** `IrOptimizer::run()`; dump **after** `IrOptimizer` and debug finalization (`-g`) |
 | Verify | Full test suite PASS; two `.ll` files differ for `-O2` on `25.quick_sort.c` |
 
 Details: [MiddleBackendRoadmap.md § M4](MiddleBackendRoadmap.md#m4-prepost-ir-dumps).
@@ -185,14 +186,16 @@ Details: [MiddleBackendRoadmap.md § M4](MiddleBackendRoadmap.md#m4-prepost-ir-d
 
 ## M6: Custom New PM pass — instrumentation
 
+**Status:** done
+
 **Goal:** Learn pass registration and the New Pass Manager.
 
 | Step | Action |
 |------|--------|
 | Study | LLVM docs: Writing an LLVM Pass (New PM) |
-| Implement | e.g. `CountLoadsPass` — print load/call counts per function |
-| Implement | Register in pipeline **before or after** default opts (document choice) |
-| Verify | Pass runs on all tests; no IR behavior change; suite PASS |
+| Implement | `IrInstructionStatsPass` in `src/passes/`; enable with `-ir-stats` |
+| Implement | Register via `createModuleToFunctionPassAdaptor` **before** the default LLVM pipeline |
+| Verify | Stats appear with `-ir-stats`; full suite PASS with flag omitted (no stderr noise) |
 
 **Purpose:** microscope, not replacement optimizer.
 
@@ -371,7 +374,8 @@ Optional future **language** work (preprocessor, 3D arrays, `extern`) stays in [
 
 | Tool | Use |
 |------|-----|
-| `lcc -l-pre-opt` / `-l-post-opt` | Raw vs optimized IR (after M4) |
+| `lcc -l-pre-opt` / `-l-post-opt` | Raw vs middle-end IR (see [Usage.md](Usage.md)) |
+| `lcc -ir-stats <file>` | Load/store/call counts on raw IR (`-` = stderr) |
 | `opt -passes='…'` | Experiment with pass pipelines |
 | `llc` | IR → asm; MIR dumps with stop flags |
 | `llvm-objdump -d` | Disassemble `.o` |

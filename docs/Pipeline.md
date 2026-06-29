@@ -8,10 +8,13 @@ Until M18 lands, use the **Tools reference** and milestone study steps in [Learn
 
 ```text
 .c  →  Lexer / Parser  →  AST genCode  →  raw LLVM IR
-     →  IR optimization (New PM)  →  TargetMachine  →  .o / .s
+     →  [-l-pre-opt]  →  IrOptimizer (-ir-stats?, -O pipeline)  →  [-g finalize]
+     →  [-l-post-opt]  →  genObjectCode  →  .o  →  [-l in main]
 ```
 
-IR **generation** is lcc code (`AbstractSyntaxTree.cpp`, `Utils.cpp`). LLVM **passes** run after the module is built.
+`lcc` emits **`.o` only** today (M10 will add `-S`). Use external `llc` on dumped `.ll` files for assembly.
+
+IR **generation** is lcc code (`AbstractSyntaxTree.cpp`, `Utils.cpp`). LLVM **passes** run inside `IrOptimizer` after the module is built.
 
 ## Quick tool recipes
 
