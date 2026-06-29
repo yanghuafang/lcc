@@ -189,10 +189,6 @@ class CodeGenerator {
   void dumpIrCode(const std::string& fileName);
 
  private:
-  // Optimize by option -O0, -O1, -O2, -O3, -Os, -Oz
-  void optimizeCode(const std::string& optimizationLevel);
-
-  // Must be declared before module_. C++ initializes members in declaration
   // order; llvm::Module and llvm::IRBuilder require a live LLVMContext.
   llvm::LLVMContext context_;
   llvm::IRBuilder<> builder_;

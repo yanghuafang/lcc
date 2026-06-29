@@ -18,7 +18,7 @@ Target refactor layout (introduce incrementally):
 
 ```
 src/
-  IrOptimizer.hpp / IrOptimizer.cpp      ← M5
+  IrOptimizer.hpp / IrOptimizer.cpp      ← M5 (done)
   TargetBackend.hpp / TargetBackend.cpp   ← M10
   passes/
     CountLoadsPass.cpp                    ← M6 (example)
@@ -79,11 +79,13 @@ diff -u /tmp/pre.ll /tmp/post.ll | head
 
 ## M5: Extract `IrOptimizer`
 
+**Status:** done
+
 **Acceptance criteria**
 
-- [ ] No behavior change vs current `optimizeCode()`
-- [ ] `CodeGenerator.cpp` shrinks; IR opt logic in one place
-- [ ] Full test suite PASS
+- [x] No behavior change vs former `optimizeCode()`
+- [x] `CodeGenerator.cpp` shrinks; IR opt logic in `IrOptimizer.cpp`
+- [x] Full test suite PASS
 
 **API sketch**
 

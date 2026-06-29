@@ -171,6 +171,8 @@ Details: [MiddleBackendRoadmap.md § M4](MiddleBackendRoadmap.md#m4-prepost-ir-d
 
 ## M5: Extract `IrOptimizer`
 
+**Status:** done
+
 **Goal:** Separate middle-end from `CodeGenerator`.
 
 | Step | Action |
