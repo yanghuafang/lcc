@@ -3,13 +3,14 @@
 ## Compile a `.c` file
 
 ```text
-lcc -i <input.c> -o <output.o> [-v <ast.dot>] [-l <ir.ll>] [-l-pre-opt <pre.ll>] [-l-post-opt <post.ll>] [-ir-stats <file>] [-g] [-O0|-O1|-O2|-O3|-Os|-Oz]
+lcc -i <input.c> -o <output.o> [-S <asm.s>] [-v <ast.dot>] [-l <ir.ll>] [-l-pre-opt <pre.ll>] [-l-post-opt <post.ll>] [-ir-stats <file>] [-g] [-O0|-O1|-O2|-O3|-Os|-Oz]
 ```
 
 | Flag | Required | Description |
 |------|----------|-------------|
 | `-i` | yes | Input C source file |
 | `-o` | yes | Output object file (`.o`) |
+| `-S` | no | Write machine assembly to `FILE` (host target; optional second `TargetBackend` pass after `-l`) |
 | `-v` | no | AST graph (GraphViz `.dot`) |
 | `-l` | no | LLVM IR after object emission (includes `target triple` / `datalayout`; used by test scripts) |
 | `-l-pre-opt` | no | LLVM IR right after codegen, before `IrOptimizer` and debug finalization |
@@ -24,7 +25,7 @@ lcc -i <input.c> -o <output.o> [-v <ast.dot>] [-l <ir.ll>] [-l-pre-opt <pre.ll>]
 |------|---------------------|-------------|
 | `-l-pre-opt` | After `genCode()`, before `IrOptimizer` / debug finalization | Raw frontend IR (allocas, unoptimized structure) |
 | `-l-post-opt` | After `IrOptimizer::run()` and debug finalization (`-g`) | Optimized or finalized IR (no target metadata yet) |
-| `-l` | After `genObjectCode()` | Same as test `debug/*.ll` snapshots (with target metadata) |
+| `-l` | Immediately after `genObjectCode()` (before optional `-S`) | Same as test `debug/*.ll` snapshots (with target metadata) |
 
 With `-g`, LLVM optimization is skipped; `-l-pre-opt` and `-l-post-opt` still differ because `debugInfo_->finalize()` runs between them. With `-O2` and no `-g`, pre and post differ from LLVM opts.
 
@@ -41,6 +42,13 @@ Example (IR instruction stats), from `lcc/scripts`:
 ```bash
 ../../lcc-build/lcc -O2 -i ../tests/25.quick_sort.c -o /tmp/q.o -ir-stats /tmp/stats.txt
 cat /tmp/stats.txt
+```
+
+Example (assembly output), from `lcc/scripts`:
+
+```bash
+../../lcc-build/lcc -O2 -i ../tests/12.arithmetic.c -o /tmp/a.o -S /tmp/a.s
+head /tmp/a.s
 ```
 
 ### Defaults when flags are omitted

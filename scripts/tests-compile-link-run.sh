@@ -80,11 +80,12 @@ compileC2Obj() {
   local obj=$2
   local ir=$3
   local graph=$4
+  local asm=$5
   if ! ../../lcc-build/lcc ${lcc_debug_flags} ${lcc_opt_flags} \
     -i ../tests/${source} -o ../../lcc-build/${obj} \
-    -l ../debug/${ir} -v ../debug/${graph}; then
+    -l ../debug/${ir} -v ../debug/${graph} -S ../debug/${asm}; then
     echo "Failed to compile ${source}" >&2
-    rm -f ../../lcc-build/${obj}
+    rm -f ../../lcc-build/${obj} ../debug/${asm}
     return 1
   fi
 }
@@ -100,7 +101,7 @@ compile() {
   local source=$1
   local base=${source%.c}
   local obj=${base}.o
-  # IR suffix matches compile mode (.debug.ll, .release.ll, .relwithdebinfo.ll).
+  # IR/asm suffix matches compile mode (.debug, .release, .relwithdebinfo).
   local ir_suffix=".debug.ll"
   case "$compile_mode" in
     --debug)
@@ -114,8 +115,9 @@ compile() {
       ;;
   esac
   local ir="${base}${ir_suffix}"
+  local asm="${base}${ir_suffix%.ll}.s"
   local graph=${base}.dot
-  compileC2Obj ${source} ${obj} ${ir} ${graph}
+  compileC2Obj ${source} ${obj} ${ir} ${graph} ${asm}
   graph2Image ${source}
 }
 

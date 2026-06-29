@@ -11,7 +11,8 @@ Implementation details for [LearningPlan.md](LearningPlan.md) milestones **M4–
 | IR emission | `CodeGenerator::genIrCode`, `AbstractSyntaxTree.cpp`, `Utils.cpp` | AST walk → raw `llvm::Module` |
 | IR optimization | `IrOptimizer::run` | `PassBuilder::buildPerModuleDefaultPipeline` |
 | IR instrumentation | `IrInstructionStatsPass` (`-ir-stats`) | New PM function pass; no IR change |
-| Object emission | `CodeGenerator::genObjectCode` | Default host triple, `cpu=generic`, legacy PM → `.o` |
+| Object emission | `TargetBackend::emitObject` via `CodeGenerator::genObjectCode` | Default host triple, `cpu=generic`, legacy PM → `.o` |
+| Assembly emission | `TargetBackend::emitAssembly` via `-S` | `CodeGenFileType::AssemblyFile` |
 | Debug info | `DebugInfoBuilder` | `-g` skips IR opts |
 | Reference IR | `debug/*.debug.ll`, `*.release.ll` | 40 tests × 3 modes |
 
@@ -20,7 +21,7 @@ Target refactor layout (introduce incrementally):
 ```
 src/
   IrOptimizer.hpp / IrOptimizer.cpp      ← M5 (done)
-  TargetBackend.hpp / TargetBackend.cpp   ← M10
+  TargetBackend.hpp / TargetBackend.cpp   ← M10 (done)
   passes/
     IrInstructionStatsPass.cpp              ← M6 (done)
 ```
@@ -57,7 +58,7 @@ src/
 |------|---------|
 | `-l-pre-opt <file>` | IR immediately after `root->genCode()` |
 | `-l-post-opt <file>` | IR after `IrOptimizer::run()` and debug finalization (`-g`) |
-| `-l <file>` | After `genObjectCode()` in `main` (includes target metadata; test goldens) |
+| `-l <file>` | Immediately after `genObjectCode()` in `main` (before optional `-S`; includes target metadata; test goldens) |
 
 **Hook in `genIrCode`** (after AST walk; reflects M5/M6):
 
@@ -78,7 +79,7 @@ if (!postOptIrPath.empty()) {
 }
 ```
 
-`genIrCode` always calls `IrOptimizer::run`; it no-ops unless `-O` or `-ir-stats` is set. With `-g`, `optLevel` is empty (LLVM opts skipped) but `-ir-stats` still runs. `-l` is dumped from `main` after `genObjectCode()`, not here.
+`genIrCode` always calls `IrOptimizer::run`; it no-ops unless `-O` or `-ir-stats` is set. With `-g`, `optLevel` is empty (LLVM opts skipped) but `-ir-stats` still runs. `-l` is dumped from `main` right after `genObjectCode()` (before optional `-S`), not here.
 
 **Verify**
 
@@ -195,21 +196,29 @@ opt --print-pipeline-passes -passes='default<O2>' /tmp/q-pre.ll -disable-output
 
 ## M10: Extract `TargetBackend`; emit asm
 
+**Status:** done
+
 **Acceptance criteria**
 
-- [ ] `-S <file>` writes assembly
-- [ ] `-o` still writes object (existing behavior)
-- [ ] Full test suite PASS
+- [x] `-S <file>` writes assembly
+- [x] `-o` still writes object (existing behavior)
+- [x] Full test suite PASS
 
-**API sketch**
+**API sketch** (current; M11 wires CLI into `TargetBackendOptions`):
 
 ```cpp
+struct TargetBackendOptions {
+  std::string triple;  // empty = host default
+  std::string cpu = "generic";
+  std::string features;
+};
+
 class TargetBackend {
  public:
-  void emitObject(llvm::Module& module, llvm::StringRef path,
-                  const TargetOptions& opts);
-  void emitAssembly(llvm::Module& module, llvm::StringRef path,
-                    const TargetOptions& opts);
+  void emitObject(llvm::Module& module, const std::string& path,
+                  const TargetBackendOptions& options = {});
+  void emitAssembly(llvm::Module& module, const std::string& path,
+                    const TargetBackendOptions& options = {});
 };
 ```
 
@@ -230,7 +239,7 @@ Use `llvm::CodeGenFileType::AssemblyFile` in `addPassesToEmitFile`.
 
 ```bash
 # x86 example — adjust for your platform
-lcc -O2 -i ../tests/12.arithmetic.c -o /tmp/a.o -S /tmp/a.s -mattr=+avx2
+../../lcc-build/lcc -O2 -i ../tests/12.arithmetic.c -o /tmp/a.o -S /tmp/a.s -mattr=+avx2
 ```
 
 ---
@@ -358,6 +367,6 @@ M10 can start after M4 (parallel with M5–M9 if IR dumps exist).
 
 - [LearningPlan.md](LearningPlan.md) — master milestone list
 - [Roadmap.md](Roadmap.md) — front-end language features (done)
-- [Pipeline.md](Pipeline.md) — pipeline & LLVM tools (stub until M18)
+- [Pipeline.md](Pipeline.md) — pipeline & LLVM tools (M9 classical opt study; M18 may add CI recipes)
 - [Testing.md](Testing.md) — regression scripts
 - [Usage.md](Usage.md) — CLI reference

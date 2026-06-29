@@ -186,6 +186,9 @@ class CodeGenerator {
   // Generate object code for target architecture.
   void genObjectCode(const std::string& fileName);
 
+  // Generate assembly for target architecture (-S).
+  void genAssemblyCode(const std::string& fileName);
+
   // Dump LLVM IR to file.
   void dumpIrCode(const std::string& fileName);
 

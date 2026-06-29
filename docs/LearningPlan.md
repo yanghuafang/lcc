@@ -6,7 +6,7 @@ This is the **master plan** for studying and extending **lcc** across the full c
 |-------|-----------|-----------|
 | **Front-end** | flex/bison, AST, single-pass `genCode()` | Study track (complete); optional language deferrals in [Roadmap.md](Roadmap.md) |
 | **Middle-end (IR)** | Raw IR via `IRBuilder`; `-O` via `IrOptimizer` | Observability, custom New PM passes, pipeline control |
-| **Back-end** | `TargetMachine` → `.o` (host triple) | Asm emission, target flags, MIR inspection |
+| **Back-end** | `TargetBackend` → `.o` (host triple) | Asm via `-S`, target flags, MIR inspection |
 | **Optimization** | LLVM default pipelines | Study classical opts, vectorization, optional benchmarks |
 
 **How to use:** work through milestones **M0 → M18** in order. Each milestone has **Study**, **Implement**, and **Verify** steps. Skip optional milestones unless you want that depth.
@@ -37,14 +37,16 @@ flowchart LR
     Dbg["DebugInfoBuilder finalize if -g"]
   end
 
-  subgraph be [Back-end — genObjectCode]
-    Obj[".o via TargetMachine"]
+  subgraph be [Back-end — TargetBackend]
+    Obj[".o via -o"]
+    Asm[".s via -S optional"]
   end
 
   AST --> Raw --> Stats --> Opt --> Dbg --> Obj
+  Obj --> Asm
 ```
 
-**Key idea:** IR **generation** is `genCode()` + `IRBuilder`. `IrOptimizer` runs optional instrumentation (`-ir-stats`) then LLVM `-O` passes. `-g` finalizes DWARF after the middle-end. `-l-pre-opt` / `-l-post-opt` bracket that sequence; `-l` in `main` dumps after `genObjectCode()` (with target metadata).
+**Key idea:** IR **generation** is `genCode()` + `IRBuilder`. `IrOptimizer` runs optional instrumentation (`-ir-stats`) then LLVM `-O` passes. `-g` finalizes DWARF after the middle-end. `-l-pre-opt` / `-l-post-opt` bracket that sequence; `-l` in `main` dumps right after `genObjectCode()` (with target metadata; before optional `-S`).
 
 ---
 
@@ -242,6 +244,8 @@ Skip if M6 satisfies your learning goals.
 
 ## M10: Extract `TargetBackend`; emit asm
 
+**Status:** done
+
 **Goal:** See machine code from lcc.
 
 | Step | Action |
@@ -377,6 +381,7 @@ Optional future **language** work (preprocessor, 3D arrays, `extern`) stays in [
 | Tool | Use |
 |------|-----|
 | `lcc -l-pre-opt` / `-l-post-opt` | Raw vs middle-end IR (see [Usage.md](Usage.md)) |
+| `lcc -S <file>` | Machine assembly (host target; independent codegen pass) |
 | `lcc -ir-stats <file>` | Load/store/call counts on raw IR (`-` = stderr) |
 | `opt --print-pipeline-passes -passes='default<O2>'` | List O2 passes (LLVM 20) — see [Pipeline.md](Pipeline.md) |
 | `llc` | IR → asm; MIR dumps with stop flags |

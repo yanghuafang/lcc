@@ -2,7 +2,7 @@
 
 A teaching C compiler built with **flex**, **bison**, and **LLVM 20**. It uses **bottom-up LALR** parsing (not recursive descent) so the grammar stays small enough to study and modify.
 
-`lcc` compiles a `.c` translation unit to a `.o` object file. Link with `clang` or `gcc` to run the program.
+`lcc` compiles a `.c` translation unit to a `.o` object file (required `-o`). Optionally emit assembly with `-S`. Link with `clang` or `gcc` to run the program.
 
 ## Quick start
 

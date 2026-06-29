@@ -9,10 +9,10 @@ Middle/back-end implementation milestones: [MiddleBackendRoadmap.md](MiddleBacke
 ```text
 .c  →  Lexer / Parser  →  AST genCode  →  raw LLVM IR
      →  [-l-pre-opt]  →  IrOptimizer (-ir-stats?, -O pipeline)  →  [-g finalize]
-     →  [-l-post-opt]  →  genObjectCode  →  .o  →  [-l in main]
+     →  [-l-post-opt]  →  genObjectCode  →  .o  →  [-l in main]  →  [-S optional]
 ```
 
-`lcc` emits **`.o` only** today (M10 will add `-S`). Use external `llc` on dumped `.ll` files for assembly.
+`lcc` can emit **`.o`** (always via `-o`) and **`.s`** (optional `-S`). External `llc` on dumped `.ll` still works for study.
 
 IR **generation** is lcc code (`AbstractSyntaxTree.cpp`, `Utils.cpp`). LLVM **passes** run inside `IrOptimizer` via `PassBuilder::buildPerModuleDefaultPipeline`.
 
@@ -31,6 +31,7 @@ diff ../debug/25.quick_sort.debug.ll ../debug/25.quick_sort.release.ll | head
   -l-pre-opt /tmp/q-pre.ll -l-post-opt /tmp/q-post.ll
 
 # Same middle-end as lcc -O2 on a pre-opt module (no target metadata required)
+# Note: opt -S emits LLVM IR text, not machine asm; lcc -S is machine assembly.
 opt -passes='default<O2>' /tmp/q-pre.ll -S -o /tmp/q-opt.ll
 
 # Print the O2 pipeline string LLVM 20 uses (best-effort)
@@ -149,6 +150,6 @@ This is a compact example of **mem2reg** (remove allocas), **instcombine** (simp
 ## Related docs
 
 - [LearningPlan.md](LearningPlan.md) — full learning path (M0–M18)
-- [Usage.md](Usage.md) — `lcc` CLI flags (`-l-pre-opt`, `-l-post-opt`, `-ir-stats`, `-O2`)
+- [Usage.md](Usage.md) — `lcc` CLI flags (`-l-pre-opt`, `-l-post-opt`, `-ir-stats`, `-S`, `-O2`)
 - [Testing.md](Testing.md) — compile modes and `debug/*.ll` artifacts
 - [MiddleBackendRoadmap.md](MiddleBackendRoadmap.md) — M9 acceptance criteria

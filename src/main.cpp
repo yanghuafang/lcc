@@ -55,6 +55,9 @@ int main(int argc, char* argv[]) {
   parser.add_argument("-ir-stats", "--ir-instruction-stats-file")
       .default_value("")
       .help("write load/store/call counts to FILE (use - for stderr); omit to disable.");
+  parser.add_argument("-S", "--emit-assembly")
+      .default_value("")
+      .help("write assembly to FILE.");
 
   auto& optimizationGroup = parser.add_mutually_exclusive_group();
   optimizationGroup.add_argument("-O0")
@@ -185,8 +188,9 @@ int main(int argc, char* argv[]) {
     return 7;
   }
 
-  // Final LLVM IR dump (-l): after object emission so target triple/data layout
-  // match committed debug/*.ll artifacts used by compile-tests.sh.
+  // Final LLVM IR dump (-l): immediately after object emission so target
+  // triple/data layout match committed debug/*.ll artifacts. Must run before
+  // optional -S; legacy PM codegen mutates the in-memory module.
   try {
     if (!parser.get<std::string>("-l").empty()) {
       generator.dumpIrCode(parser.get<std::string>("-l"));
@@ -196,6 +200,17 @@ int main(int argc, char* argv[]) {
     std::cerr << "Failed to dump IR code!" << std::endl;
     std::cerr << e.what() << std::endl;
     return 8;
+  }
+
+  try {
+    if (!parser.get<std::string>("-S").empty()) {
+      generator.genAssemblyCode(parser.get<std::string>("-S"));
+      std::cout << "Generated assembly successfully!" << std::endl;
+    }
+  } catch (std::exception& e) {
+    std::cerr << "Failed to generate assembly!" << std::endl;
+    std::cerr << e.what() << std::endl;
+    return 9;
   }
 
   std::cout << "lcc compiled " << parser.get<std::string>("-i")

@@ -1,26 +1,18 @@
 #include "CodeGenerator.hpp"
 
-#include <llvm/IR/LegacyPassManager.h>
 #include <llvm/IR/Instructions.h>
 #include <llvm/IR/DebugInfoMetadata.h>
 #include <llvm/IR/Function.h>
 #include <llvm/IR/Verifier.h>
-#include <llvm/MC/TargetRegistry.h>
-#include <llvm/Support/CodeGen.h>
-#include <llvm/Support/FileSystem.h>
-#include <llvm/TargetParser/Host.h>
-#include <llvm/Support/TargetSelect.h>
 #include <llvm/Support/raw_ostream.h>
-#include <llvm/Target/TargetMachine.h>
-#include <llvm/Target/TargetOptions.h>
 
 #include <iostream>
 #include <memory>
-#include <optional>
 
 #include "AbstractSyntaxTree.hpp"
 #include "DebugInfoBuilder.hpp"
 #include "IrOptimizer.hpp"
+#include "TargetBackend.hpp"
 
 CodeGenerator::CodeGenerator()
     : context_(),
@@ -572,46 +564,11 @@ void CodeGenerator::genIrCode(AST::Program* root,
 }
 
 void CodeGenerator::genObjectCode(const std::string& fileName) {
-  llvm::InitializeAllTargetInfos();
-  llvm::InitializeAllTargets();
-  llvm::InitializeAllTargetMCs();
-  llvm::InitializeAllAsmParsers();
-  llvm::InitializeAllAsmPrinters();
+  TargetBackend{}.emitObject(*module_, fileName);
+}
 
-  std::string error;
-  std::string targetTriple = llvm::sys::getDefaultTargetTriple();
-  const llvm::Target* target =
-      llvm::TargetRegistry::lookupTarget(targetTriple, error);
-  if (target == nullptr) {
-    throw std::runtime_error(error);
-  }
-
-  std::string cpu = "generic";
-  std::string features;
-  llvm::TargetOptions options;
-  std::optional<llvm::Reloc::Model> optionalModel;
-  std::unique_ptr<llvm::TargetMachine> targetMachine(
-      target->createTargetMachine(targetTriple, cpu, features, options,
-                                  optionalModel));
-
-  module_->setDataLayout(targetMachine->createDataLayout());
-  module_->setTargetTriple(targetTriple);
-
-  std::error_code errCode;
-  llvm::raw_fd_ostream objFileStream(fileName, errCode, llvm::sys::fs::OF_None);
-  if (errCode.value() != 0) {
-    throw std::runtime_error("Failed to open file " + fileName + " errCode " +
-                             errCode.message());
-  }
-
-  llvm::legacy::PassManager pm;
-  if (targetMachine->addPassesToEmitFile(pm, objFileStream, nullptr,
-                                         llvm::CodeGenFileType::ObjectFile)) {
-    throw std::runtime_error("Failed to emit object file!");
-  }
-
-  pm.run(*module_);
-  objFileStream.flush();
+void CodeGenerator::genAssemblyCode(const std::string& fileName) {
+  TargetBackend{}.emitAssembly(*module_, fileName);
 }
 
 void CodeGenerator::dumpIrCode(const std::string& fileName) {
