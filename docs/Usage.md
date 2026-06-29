@@ -25,17 +25,20 @@ lcc -i <input.c> -o <output.o> [-S <asm.s>] [-v <ast.dot>] [-l <ir.ll>] [-l-pre-
 |------|---------------------|-------------|
 | `-l-pre-opt` | After `genCode()`, before `IrOptimizer` / debug finalization | Raw frontend IR (allocas, unoptimized structure) |
 | `-l-post-opt` | After `IrOptimizer::run()` and debug finalization (`-g`) | Optimized or finalized IR (no target metadata yet) |
-| `-l` | Immediately after `genObjectCode()` (before optional `-S`) | Same as test `debug/*.ll` snapshots (with target metadata) |
+| `-l` | Immediately after `genObjectCode()` (before optional `-S`) | Final IR with `target triple` / `datalayout` (test `debug/*.debug.ll` goldens) |
 
-With `-g`, LLVM optimization is skipped; `-l-pre-opt` and `-l-post-opt` still differ because `debugInfo_->finalize()` runs between them. With `-O2` and no `-g`, pre and post differ from LLVM opts.
+`compile-tests.sh` writes middle-end snapshots as `debug/<test>.debug.pre.ll` and `.debug.post.ll` (or `.release.*` in release mode). The plain `debug/<test>.debug.ll` file is the **final** `-l` dump after object emission — not the same as `.post.ll`.
 
 Example (compare raw vs optimized IR), from `lcc/scripts`:
 
 ```bash
 ../../lcc-build/lcc -O2 -i ../tests/25.quick_sort.c -o /tmp/q.o \
-  -l-pre-opt /tmp/pre.ll -l-post-opt /tmp/post.ll
-diff -u /tmp/pre.ll /tmp/post.ll | head
+  -l-pre-opt ../debug/25.quick_sort.release.pre.ll \
+  -l-post-opt ../debug/25.quick_sort.release.post.ll
+diff -u ../debug/25.quick_sort.release.pre.ll ../debug/25.quick_sort.release.post.ll | head
 ```
+
+With `-g`, LLVM optimization is skipped; `-l-pre-opt` and `-l-post-opt` still differ because `debugInfo_->finalize()` runs between them. With `-O2` and no `-g`, pre and post differ from LLVM opts.
 
 Example (IR instruction stats), from `lcc/scripts`:
 

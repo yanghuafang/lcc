@@ -1,0 +1,38 @@
+; ModuleID = 'lcc'
+source_filename = "lcc"
+
+@ga = local_unnamed_addr global [4 x i32] [i32 1, i32 2, i32 3, i32 0]
+@gb = local_unnamed_addr global [2 x i32] [i32 10, i32 20]
+@str = private unnamed_addr constant [30 x i8] c"31.array_1d_brace_init.c FAIL\00", align 1
+@str.1 = private unnamed_addr constant [30 x i8] c"31.array_1d_brace_init.c PASS\00", align 1
+
+; Function Attrs: nofree nounwind
+define range(i32 0, 2) i32 @main() local_unnamed_addr #0 {
+entry:
+  %0 = load i32, ptr @ga, align 4
+  %.not = icmp ne i32 %0, 1
+  %1 = load i32, ptr getelementptr inbounds nuw (i8, ptr @ga, i64 4), align 4
+  %.not62 = icmp ne i32 %1, 2
+  %2 = load i32, ptr getelementptr inbounds nuw (i8, ptr @ga, i64 8), align 4
+  %.not63 = icmp ne i32 %2, 3
+  %3 = load i32, ptr getelementptr inbounds nuw (i8, ptr @ga, i64 12), align 4
+  %.not64 = icmp ne i32 %3, 0
+  %4 = load i32, ptr @gb, align 4
+  %.not65 = icmp ne i32 %4, 10
+  %5 = load i32, ptr getelementptr inbounds nuw (i8, ptr @gb, i64 4), align 4
+  %.not66 = icmp ne i32 %5, 20
+  %6 = select i1 %.not66, i1 true, i1 %.not65
+  %7 = select i1 %6, i1 true, i1 %.not64
+  %8 = select i1 %7, i1 true, i1 %.not63
+  %9 = select i1 %8, i1 true, i1 %.not62
+  %narrow = select i1 %9, i1 true, i1 %.not
+  %str.str.1 = select i1 %narrow, ptr @str, ptr @str.1
+  %puts = tail call i32 @puts(ptr nonnull dereferenceable(1) %str.str.1)
+  %err.14 = zext i1 %narrow to i32
+  ret i32 %err.14
+}
+
+; Function Attrs: nofree nounwind
+declare noundef i32 @puts(ptr nocapture noundef readonly) local_unnamed_addr #0
+
+attributes #0 = { nofree nounwind }

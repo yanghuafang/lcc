@@ -26,9 +26,15 @@ Adjust paths for your checkout. Run from `lcc/scripts` (after `source ./build-en
 # Compare committed reference IR (debug = -g -O0; release = -O2)
 diff ../debug/25.quick_sort.debug.ll ../debug/25.quick_sort.release.ll | head
 
+# Middle-end pre/post (no target metadata) vs final IR (after object emission)
+diff ../debug/25.quick_sort.release.pre.ll ../debug/25.quick_sort.release.post.ll | head
+diff ../debug/25.quick_sort.release.post.ll ../debug/25.quick_sort.release.ll | head
+
 # Fresh pre/post dumps from lcc (matches IrOptimizer hook points)
 ../../lcc-build/lcc -O2 -i ../tests/25.quick_sort.c -o /tmp/q.o \
-  -l-pre-opt /tmp/q-pre.ll -l-post-opt /tmp/q-post.ll
+  -l-pre-opt ../debug/25.quick_sort.release.pre.ll \
+  -l-post-opt ../debug/25.quick_sort.release.post.ll \
+  -l ../debug/25.quick_sort.release.ll
 
 # Same middle-end as lcc -O2 on a pre-opt module (no target metadata required)
 # Note: opt -S emits LLVM IR text, not machine asm; lcc -S is machine assembly.
@@ -72,14 +78,15 @@ Generate fresh IR:
 
 ```bash
 ../../lcc-build/lcc -O2 -i ../tests/25.quick_sort.c -o /tmp/q.o \
-  -l-pre-opt /tmp/q-pre.ll -l-post-opt /tmp/q-post.ll
+  -l-pre-opt ../debug/25.quick_sort.release.pre.ll \
+  -l-post-opt ../debug/25.quick_sort.release.post.ll
 ```
 
-Line counts on a typical host: pre ≈ 294, post ≈ 174 (same order as `debug/25.quick_sort.release.ll` modulo target metadata).
+Line counts on a typical host: pre ≈ 294, post ≈ 174 (same order as `debug/25.quick_sort.release.post.ll` modulo target metadata on the final `-l` file).
 
 #### 1. SSA formation (`mem2reg`) — `@partition`
 
-**Pre-opt** (`-l-pre-opt`): stack slots and load/store chains for locals:
+**Pre-opt** (`debug/25.quick_sort.release.pre.ll`): stack slots and load/store chains for locals:
 
 ```llvm
 define i32 @partition(ptr %0, i32 %1, i32 %2) {
@@ -94,7 +101,7 @@ for.cond:
   ...
 ```
 
-**Post-opt** (`-l-post-opt`): parameters used directly; loop indices are SSA values with `phi`:
+**Post-opt** (`debug/25.quick_sort.release.post.ll`): parameters used directly; loop indices are SSA values with `phi`:
 
 ```llvm
 define i32 @partition(ptr nocapture %0, i32 %1, i32 %2) local_unnamed_addr #1 {
@@ -142,8 +149,8 @@ This is a compact example of **mem2reg** (remove allocas), **instcombine** (simp
 
 1. Run the pre/post dump commands above.
 2. Run `opt --print-pipeline-passes -passes='default<O2>' /tmp/q-pre.ll -disable-output` and locate `mem2reg`, `instcombine`, `gvn`, and `licm`.
-3. Diff `@partition` and `@swap` between `/tmp/q-pre.ll` and `/tmp/q-post.ll`.
-4. Confirm `/tmp/q-post.ll` is very close to `opt -passes='default<O2>' /tmp/q-pre.ll` output (lcc’s `-O2` uses the same pipeline).
+3. Diff `@partition` and `@swap` between `25.quick_sort.release.pre.ll` and `.post.ll`.
+4. Confirm `.post.ll` is very close to `opt -passes='default<O2>'` on `.pre.ll` output (lcc’s `-O2` uses the same pipeline).
 
 ---
 

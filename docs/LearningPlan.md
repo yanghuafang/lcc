@@ -166,7 +166,7 @@ Track progress here. Do not start the next milestone until **Verify** passes for
 |------|--------|
 | Implement | CLI flags, e.g. `-l-pre-opt` and `-l-post-opt` (or extend `-l` naming) |
 | Implement | Dump raw IR **before** `IrOptimizer::run()`; dump **after** `IrOptimizer` and debug finalization (`-g`) |
-| Verify | Full test suite PASS; two `.ll` files differ for `-O2` on `25.quick_sort.c` |
+| Verify | Full test suite PASS; `debug/<test>.<mode>.pre.ll` and `.post.ll` differ for `-O2` on `25.quick_sort.c` |
 
 Details: [MiddleBackendRoadmap.md § M4](MiddleBackendRoadmap.md#m4-prepost-ir-dumps).
 

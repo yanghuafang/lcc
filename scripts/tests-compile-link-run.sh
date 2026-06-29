@@ -74,14 +74,18 @@ setCompileMode() {
 compileC2Obj() {
   local source=$1
   local obj=$2
-  local ir=$3
-  local graph=$4
-  local asm=$5
+  local ir_pre=$3
+  local ir_post=$4
+  local ir=$5
+  local graph=$6
+  local asm=$7
   if ! ../../lcc-build/lcc ${lcc_debug_flags} ${lcc_opt_flags} \
     -i ../tests/${source} -o ../../lcc-build/${obj} \
+    -l-pre-opt ../debug/${ir_pre} -l-post-opt ../debug/${ir_post} \
     -l ../debug/${ir} -v ../debug/${graph} -S ../debug/${asm}; then
     echo "Failed to compile ${source}" >&2
-    rm -f ../../lcc-build/${obj} ../debug/${asm}
+    rm -f ../../lcc-build/${obj} ../debug/${ir_pre} ../debug/${ir_post} \
+      ../debug/${asm}
     return 1
   fi
 }
@@ -97,20 +101,21 @@ compile() {
   local source=$1
   local base=${source%.c}
   local obj=${base}.o
-  # IR/asm suffix matches compile mode (.debug or .release).
-  local ir_suffix=".debug.ll"
+  local mode_suffix=".debug"
   case "$compile_mode" in
     --debug)
-      ir_suffix=".debug.ll"
+      mode_suffix=".debug"
       ;;
     --release)
-      ir_suffix=".release.ll"
+      mode_suffix=".release"
       ;;
   esac
-  local ir="${base}${ir_suffix}"
-  local asm="${base}${ir_suffix%.ll}.s"
+  local ir_pre="${base}${mode_suffix}.pre.ll"
+  local ir_post="${base}${mode_suffix}.post.ll"
+  local ir="${base}${mode_suffix}.ll"
+  local asm="${base}${mode_suffix}.s"
   local graph=${base}.dot
-  compileC2Obj ${source} ${obj} ${ir} ${graph} ${asm}
+  compileC2Obj ${source} ${obj} ${ir_pre} ${ir_post} ${ir} ${graph} ${asm}
   graph2Image ${source}
 }
 

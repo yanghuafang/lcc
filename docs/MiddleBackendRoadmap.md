@@ -14,7 +14,7 @@ Implementation details for [LearningPlan.md](LearningPlan.md) milestones **M4–
 | Object emission | `TargetBackend::emitObject` via `CodeGenerator::genObjectCode` | Default host triple, `cpu=generic`, legacy PM → `.o` |
 | Assembly emission | `TargetBackend::emitAssembly` via `-S` | `CodeGenFileType::AssemblyFile` |
 | Debug info | `DebugInfoBuilder` | `-g` skips IR opts |
-| Reference IR | `debug/*.debug.ll`, `*.release.ll` | 40 tests × 2 modes |
+| Reference IR | `debug/*.{debug,release}.{pre,post}.ll`, `*.debug.ll`, `*.release.ll` | 40 tests × 2 modes |
 
 Target refactor layout (introduce incrementally):
 
@@ -52,13 +52,13 @@ src/
 - [x] `-l` unchanged (dumps after object emission for test script compatibility)
 - [x] Full `./compile-tests.sh && ./link-tests.sh && ./run-tests.sh` PASS
 
-**Suggested CLI**
+**Suggested CLI** (test scripts use `debug/<test>.<mode>.pre.ll` / `.post.ll`)
 
 | Flag | Content |
 |------|---------|
 | `-l-pre-opt <file>` | IR immediately after `root->genCode()` |
 | `-l-post-opt <file>` | IR after `IrOptimizer::run()` and debug finalization (`-g`) |
-| `-l <file>` | Immediately after `genObjectCode()` in `main` (before optional `-S`; includes target metadata; test goldens) |
+| `-l <file>` | After `genObjectCode()` in `main` (before optional `-S`; includes target metadata; test goldens) |
 
 **Hook in `genIrCode`** (after AST walk; reflects M5/M6):
 
