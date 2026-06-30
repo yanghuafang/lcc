@@ -6,7 +6,7 @@ This is the **master plan** for studying and extending **lcc** across the full c
 |-------|-----------|-----------|
 | **Front-end** | flex/bison, AST, single-pass `genCode()` | Study track (complete); optional language deferrals in [Roadmap.md](Roadmap.md) |
 | **Middle-end (IR)** | Raw IR via `IRBuilder`; `-O` via `IrOptimizer` | Observability, custom New PM passes, pipeline control |
-| **Back-end** | `TargetBackend` → `.o` (host triple) | Asm via `-S`, target flags, MIR inspection |
+| **Back-end** | `TargetBackend` → `.o` (host triple) | Asm via `-S`, target flags (M11 done), MIR inspection |
 | **Optimization** | LLVM default pipelines | Study classical opts, vectorization, optional benchmarks |
 
 **How to use:** work through milestones **M0 → M18** in order. Each milestone has **Study**, **Implement**, and **Verify** steps. Skip optional milestones unless you want that depth.
@@ -258,11 +258,13 @@ Skip if M6 satisfies your learning goals.
 
 ## M11: Target CLI flags
 
+**Status:** done
+
 **Goal:** Control triple, CPU, features on **host** target.
 
 | Step | Action |
 |------|--------|
-| Implement | `--target=`, `-mcpu=`, `-mattr=+…` wired to `TargetMachine` |
+| Implement | `--target`, `-mcpu`, `-mattr` wired to `TargetMachine` |
 | Verify | Asm changes when attrs change; suite PASS |
 
 ---
@@ -301,7 +303,7 @@ Skip if M6 satisfies your learning goals.
 | Step | Action |
 |------|--------|
 | Study | Add or use loop-heavy test (e.g. array sum); compile `-O3` |
-| Study | Compare asm with/without SIMD attrs (`-mattr=+avx2` on x86; NEON default on ARM64) |
+| Study | Compare asm with/without SIMD attrs (`-mattr +avx2` on x86; NEON default on ARM64) |
 | Study | Optional: `llvm-mca` on hot loop asm |
 | Verify | Document whether LLVM vectorized and why/why not |
 
@@ -382,6 +384,7 @@ Optional future **language** work (preprocessor, 3D arrays, `extern`) stays in [
 |------|-----|
 | `lcc -l-pre-opt` / `-l-post-opt` | Raw vs middle-end IR (see [Usage.md](Usage.md)) |
 | `lcc -S <file>` | Machine assembly (host target; independent codegen pass) |
+| `lcc --target`, `-mcpu`, `-mattr` | `TargetMachine` triple/CPU/features (see [Usage.md](Usage.md)) |
 | `lcc -ir-stats <file>` | Load/store/call counts on raw IR (`-` = stderr) |
 | `opt --print-pipeline-passes -passes='default<O2>'` | List O2 passes (LLVM 20) — see [Pipeline.md](Pipeline.md) |
 | `llc` | IR → asm; MIR dumps with stop flags |

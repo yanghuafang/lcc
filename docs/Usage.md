@@ -3,7 +3,7 @@
 ## Compile a `.c` file
 
 ```text
-lcc -i <input.c> -o <output.o> [-S <asm.s>] [-v <ast.dot>] [-l <ir.ll>] [-l-pre-opt <pre.ll>] [-l-post-opt <post.ll>] [-ir-stats <file>] [-g] [-O0|-O1|-O2|-O3|-Os|-Oz]
+lcc -i <input.c> -o <output.o> [-S <asm.s>] [-v <ast.dot>] [-l <ir.ll>] [-l-pre-opt <pre.ll>] [-l-post-opt <post.ll>] [-ir-stats <file>] [--target <triple>] [-mcpu <cpu>] [-mattr <features>] [-g] [-O0|-O1|-O2|-O3|-Os|-Oz]
 ```
 
 | Flag | Required | Description |
@@ -18,6 +18,21 @@ lcc -i <input.c> -o <output.o> [-S <asm.s>] [-v <ast.dot>] [-l <ir.ll>] [-l-pre-
 | `-ir-stats` | no | Write load/store/call counts to `file` (`-` = stderr); counts raw IR before LLVM opts |
 | `-g` | no | Embed DWARF in the object file (use without `-O` for reliable stepping and variables) |
 | `-O0` … `-Oz` | no | LLVM optimization level (mutually exclusive) |
+| `--target` | no | LLVM target triple (default: host) |
+| `-mcpu` | no | Target CPU for codegen (default: `generic`) |
+| `-mattr` | no | Target features, e.g. `+avx2,-sse4.1` (default: none) |
+
+### Target flags
+
+Passed to `TargetMachine` for `-o` and `-S` emission. Defaults match pre-M11 behavior (host triple, `cpu=generic`, no extra features).
+
+Example (assembly with CPU/features), from `lcc/scripts`:
+
+```bash
+# x86_64 Linux/macOS cross-host examples — adjust for your platform
+../../lcc-build/lcc -O2 -i ../tests/12.arithmetic.c -o /tmp/a.o -S /tmp/a.s -mattr +avx2
+../../lcc-build/lcc -O2 -i ../tests/25.quick_sort.c -o /tmp/q.o -S /tmp/q.s -mcpu apple-m1
+```
 
 ### IR dump flags
 

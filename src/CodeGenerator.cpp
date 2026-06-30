@@ -563,12 +563,16 @@ void CodeGenerator::genIrCode(AST::Program* root,
   }
 }
 
+void CodeGenerator::setTargetBackendOptions(const TargetBackendOptions& options) {
+  targetBackendOptions_ = options;
+}
+
 void CodeGenerator::genObjectCode(const std::string& fileName) {
-  TargetBackend{}.emitObject(*module_, fileName);
+  TargetBackend{}.emitObject(*module_, fileName, targetBackendOptions_);
 }
 
 void CodeGenerator::genAssemblyCode(const std::string& fileName) {
-  TargetBackend{}.emitAssembly(*module_, fileName);
+  TargetBackend{}.emitAssembly(*module_, fileName, targetBackendOptions_);
 }
 
 void CodeGenerator::dumpIrCode(const std::string& fileName) {

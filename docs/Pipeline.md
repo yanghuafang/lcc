@@ -157,6 +157,6 @@ This is a compact example of **mem2reg** (remove allocas), **instcombine** (simp
 ## Related docs
 
 - [LearningPlan.md](LearningPlan.md) — full learning path (M0–M18)
-- [Usage.md](Usage.md) — `lcc` CLI flags (`-l-pre-opt`, `-l-post-opt`, `-ir-stats`, `-S`, `-O2`)
+- [Usage.md](Usage.md) — `lcc` CLI flags (`-l-pre-opt`, `-l-post-opt`, `-ir-stats`, `-S`, `--target`, `-mcpu`, `-mattr`, `-O2`)
 - [Testing.md](Testing.md) — compile modes and `debug/*.ll` artifacts
 - [MiddleBackendRoadmap.md](MiddleBackendRoadmap.md) — M9 acceptance criteria

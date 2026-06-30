@@ -11,8 +11,8 @@ Implementation details for [LearningPlan.md](LearningPlan.md) milestones **M4–
 | IR emission | `CodeGenerator::genIrCode`, `AbstractSyntaxTree.cpp`, `Utils.cpp` | AST walk → raw `llvm::Module` |
 | IR optimization | `IrOptimizer::run` | `PassBuilder::buildPerModuleDefaultPipeline` |
 | IR instrumentation | `IrInstructionStatsPass` (`-ir-stats`) | New PM function pass; no IR change |
-| Object emission | `TargetBackend::emitObject` via `CodeGenerator::genObjectCode` | Default host triple, `cpu=generic`, legacy PM → `.o` |
-| Assembly emission | `TargetBackend::emitAssembly` via `-S` | `CodeGenFileType::AssemblyFile` |
+| Object emission | `TargetBackend::emitObject` via `CodeGenerator::genObjectCode` | Host triple (or `--target`), `-mcpu`/`-mattr`, legacy PM → `.o` |
+| Assembly emission | `TargetBackend::emitAssembly` via `-S` | Same `TargetBackendOptions` as object emission |
 | Debug info | `DebugInfoBuilder` | `-g` skips IR opts |
 | Reference IR | `debug/*.{debug,release}.{pre,post}.ll`, `*.debug.ll`, `*.release.ll` | 40 tests × 2 modes |
 
@@ -228,18 +228,20 @@ Use `llvm::CodeGenFileType::AssemblyFile` in `addPassesToEmitFile`.
 
 ## M11: Target CLI flags
 
+**Status:** done
+
 **Acceptance criteria**
 
-- [ ] `--target=<triple>` (default: host)
-- [ ] `-mcpu=<cpu>` (default: `generic`)
-- [ ] `-mattr=+feat,-feat` parsed into `TargetMachine` features
-- [ ] Documented in Usage.md; suite PASS on host target
+- [x] `--target <triple>` (default: host)
+- [x] `-mcpu <cpu>` (default: `generic`)
+- [x] `-mattr <features>` passed to `TargetMachine` (e.g. `+avx2,-sse4.1`)
+- [x] Documented in Usage.md; suite PASS on host target
 
 **Verify asm change**
 
 ```bash
 # x86 example — adjust for your platform
-../../lcc-build/lcc -O2 -i ../tests/12.arithmetic.c -o /tmp/a.o -S /tmp/a.s -mattr=+avx2
+../../lcc-build/lcc -O2 -i ../tests/12.arithmetic.c -o /tmp/a.o -S /tmp/a.s -mattr +avx2
 ```
 
 ---
@@ -292,7 +294,7 @@ llc -stop-before=registerizer -print-machineinstrs post.ll -o /dev/null 2>&1 | l
 |---------|---------|
 | `-O0` vs `-O2` | LLVM opt impact |
 | With vs without M7 pass | Custom transform impact |
-| `-mcpu=native` vs `generic` | Backend impact |
+| `-mcpu native` vs `generic` | Backend impact |
 
 **Metrics**
 

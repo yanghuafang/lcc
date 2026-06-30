@@ -5,6 +5,7 @@
 
 #include "AbstractSyntaxTree.hpp"
 #include "CodeGenerator.hpp"
+#include "TargetBackend.hpp"
 #include "Utils.hpp"
 #include "Visualizer.hpp"
 
@@ -58,6 +59,15 @@ int main(int argc, char* argv[]) {
   parser.add_argument("-S", "--emit-assembly")
       .default_value("")
       .help("write assembly to FILE.");
+  parser.add_argument("--target")
+      .default_value("")
+      .help("LLVM target triple (default: host).");
+  parser.add_argument("-mcpu")
+      .default_value("generic")
+      .help("target CPU for codegen (default: generic).");
+  parser.add_argument("-mattr")
+      .default_value("")
+      .help("target features for codegen, e.g. +avx2,-sse4.1");
 
   auto& optimizationGroup = parser.add_mutually_exclusive_group();
   optimizationGroup.add_argument("-O0")
@@ -177,6 +187,12 @@ int main(int argc, char* argv[]) {
     std::cerr << e.what() << std::endl;
     return 6;
   }
+
+  TargetBackendOptions backendOptions;
+  backendOptions.triple = parser.get<std::string>("--target");
+  backendOptions.cpu = parser.get<std::string>("-mcpu");
+  backendOptions.features = parser.get<std::string>("-mattr");
+  generator.setTargetBackendOptions(backendOptions);
 
   // Generate object file.
   try {
