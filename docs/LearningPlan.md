@@ -300,6 +300,8 @@ Skip if M6 satisfies your learning goals.
 
 ## M14: Vectorization study (LLVM)
 
+**Status:** done
+
 **Goal:** Study **auto-vectorization** via LLVM — not a custom vector pass in the base plan.
 
 | Step | Action |

@@ -292,12 +292,14 @@ llc -stop-before=registerizer -print-machineinstrs post.ll -o /dev/null 2>&1 | l
 
 ## M14: Vectorization study
 
-**Acceptance**
+**Status:** done
 
-- [ ] Loop-heavy test compiled at `-O3`
-- [ ] Asm inspected for SIMD ops (platform-dependent)
-- [ ] Short write-up: vectorized or not, and LLVM reason (trip count, alias, etc.)
-- [ ] Optional: `llvm-mca` on inner loop
+**Acceptance criteria**
+
+- [x] Loop-heavy test compiled at `-O3` (`tests/40.array_sum.c`; study-only, not in compile-tests.sh)
+- [x] Asm inspected for SIMD ops (platform-dependent; see [Pipeline.md § M14](Pipeline.md#auto-vectorization-study-m14))
+- [x] Short write-up: vectorized or not, and LLVM reason (cost model without TM in IrOptimizer; quick_sort control flow)
+- [x] Optional: `llvm-mca` recipe on scalar loop asm in Pipeline.md
 
 **Not required:** custom vectorization pass. LLVM `LoopVectorizer` / `SLPVectorizer` run via `-O3` pipeline.
 

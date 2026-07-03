@@ -43,6 +43,12 @@ Single test:
 
 Each test prints `PASS` or `FAIL` on stdout. Scripts exit non-zero on the first compile, link, or run failure.
 
+### Study fixtures (not in the 40-test suite)
+
+| File | Purpose |
+|------|---------|
+| `tests/40.array_sum.c` | M14 vectorization study — compile manually with `-O3`; see [Pipeline.md](Pipeline.md#auto-vectorization-study-m14) |
+
 ### `compile-tests.sh` modes
 
 Optional compile mode (at most one; applies to all tests or the single named test):

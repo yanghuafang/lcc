@@ -1,6 +1,6 @@
 # Compiler pipeline & LLVM tools
 
-**Status:** M9 classical-optimization study notes and M12 codegen/asm diff live here; M18 may add CI recipes and more examples.
+**Status:** M9 classical-optimization study notes, M12 codegen/asm diff, and M14 vectorization study live here; M18 may add CI recipes and more examples.
 
 Middle/back-end implementation milestones: [MiddleBackendRoadmap.md](MiddleBackendRoadmap.md). Full learning path: [LearningPlan.md](LearningPlan.md).
 
@@ -215,6 +215,128 @@ llvm-objdump -d ../../lcc-build/25.quick_sort.o   # after --release compile
 1. Run `./compile-tests.sh --debug 25.quick_sort.c && ./compile-tests.sh --release 25.quick_sort.c`.
 2. Confirm `@partition` in `.release.s` is shorter and avoids stack spills / `@swap` calls in the loop.
 3. Full suite: `./compile-tests.sh && ./link-tests.sh && ./run-tests.sh`.
+
+---
+
+## Auto-vectorization study (M14)
+
+LLVM **`loop-vectorizer`** and **`slp-vectorizer`** run at `-O3` inside `IrOptimizer` (same as `opt -passes='default<O3>'`). lcc does **not** implement a custom vector pass — you observe LLVM’s on real loops.
+
+### Study fixture
+
+`tests/40.array_sum.c` — a simple `sum_array` reduction. **Not** in `compile-tests.sh` (study-only; avoids expanding the 40-test suite). For element-wise loops (often easier to vectorize), use the `add_arrays` snippet in the commands below.
+
+### How lcc runs the vectorizers today
+
+`IrOptimizer` builds a `PassBuilder` **without** a `TargetMachine`. The loop vectorizer’s **cost model** therefore uses generic defaults during `-l-post-opt` emission. CLI **`-mcpu` / `-mattr` / `--target`** apply only in `TargetBackend` (codegen), **after** IR opts — they do **not** steer `loop-vectorizer` inside lcc.
+
+Practical effect on this host: `lcc -O3` often leaves loops **scalar in IR and asm**, even with `-mcpu native` or `-mattr +avx2`.
+
+### Case study A: `sum_array` — lcc `-O3` (scalar)
+
+From `lcc/scripts`:
+
+```bash
+../../lcc-build/lcc -O3 -i ../tests/40.array_sum.c -o /tmp/sum.o \
+  -l-pre-opt /tmp/sum.pre.ll -l-post-opt /tmp/sum.post.ll -S /tmp/sum.s
+
+# Post-opt IR: plain i32 phi/add loop — no <N x i32>
+grep '<.* x ' /tmp/sum.post.ll || echo "no vector types"
+
+# Asm (ARM64 example): scalar ldr/add reduction
+grep -E 'ldr|add' /tmp/sum.s | head
+```
+
+**Post-opt IR** (abbreviated): a counted loop with `load i32` / `add i32` / `phi` — no `<4 x i32>`.
+
+**Why no vector IR from lcc:** `opt` pass remarks on the same pre-opt module report *“the cost-model indicates that vectorization is not beneficial”* when no target triple is supplied (matching lcc’s `IrOptimizer` setup).
+
+### Case study B: same IR, target-aware `opt` (vectorized)
+
+Feed lcc’s **pre-opt** IR to `opt` with an explicit triple — vectorizers use a real cost model:
+
+```bash
+# ARM64: 4-wide i32 vectors
+opt -passes='default<O3>' -mtriple=arm64-apple-darwin /tmp/sum.pre.ll -S -o /tmp/sum.arm.ll
+grep '<4 x i32>' /tmp/sum.arm.ll | head
+
+# x86_64 + AVX2: 8-wide i32 vectors (study on any host)
+opt -passes='default<O3>' -mtriple=x86_64-apple-darwin -mcpu=core-avx2 \
+  /tmp/sum.pre.ll -S -o /tmp/sum.avx.ll
+grep '<8 x i32>' /tmp/sum.avx.ll | head
+```
+
+Then lower to asm with `llc` and look for SIMD opcodes:
+
+```bash
+llc -O3 -mtriple=arm64-apple-darwin /tmp/sum.arm.ll -o /tmp/sum.arm.s
+grep -E 'add\.4s|ld1|st1' /tmp/sum.arm.s | head
+
+llc -O3 -mtriple=x86_64-apple-darwin -mattr=+avx2 /tmp/sum.avx.ll -o /tmp/sum.avx.s
+grep -E 'vpaddd|ymm|vmovdqu' /tmp/sum.avx.s | head
+```
+
+On ARM64, vectorized `@sum_array` uses **`add.4s`** (NEON 4×i32). On x86 with AVX2, **`vpaddd`** on **`ymm`** registers (8×i32).
+
+### Case study C: element-wise `add_arrays` (1024 elements)
+
+Copy to `/tmp/add_arrays.c` (or paste into a scratch file):
+
+```c
+int add_arrays(int* c, int* a, int* b, int n) {
+  for (int i = 0; i < n; i += 1) c[i] = a[i] + b[i];
+  return 0;
+}
+/* main initializes a[1024], b[1024] and calls add_arrays(c,a,b,1024) */
+```
+
+| Step | `lcc -O3` | `opt -O3 -mtriple=…` on `-l-pre-opt` |
+|------|-----------|----------------------------------------|
+| Post-opt IR | scalar load/store/add | `<4 x i32>` (ARM) or `<8 x i32>` (AVX2) |
+| Asm | scalar `ldr`/`str` loop | `add.4s` / `vpaddd` |
+
+### Case study D: `25.quick_sort.c` — not vectorizable
+
+Even at `-O3`, quicksort’s `@partition` / `@quickSort` have **irregular control flow**, **in-loop calls** (`@swap`), and **data-dependent branches**. The vectorizers correctly no-op:
+
+```bash
+../../lcc-build/lcc -O3 -i ../tests/25.quick_sort.c -o /tmp/q.o -l-post-opt /tmp/q.post.ll
+grep '<.* x ' /tmp/q.post.ll || echo "no vectors (expected)"
+```
+
+This contrasts with regular stride-1 array loops in case studies A–C.
+
+### Pass remarks (why vectorize or not)
+
+```bash
+opt -passes='default<O3>' /tmp/sum.pre.ll -disable-output \
+  -pass-remarks-missed=loop-vectorize 2>&1 | head
+
+opt -passes='default<O3>' -mtriple=arm64-apple-darwin /tmp/sum.pre.ll -disable-output \
+  -pass-remarks-analysis=loop-vectorize 2>&1 | head
+```
+
+Common reasons LLVM skips vectorization: **cost model** (generic TM), **small trip count** (constant-folded in `main`), **reduction** profitability, **control flow**, **calls in loop**, **possible aliasing**.
+
+### Optional: `llvm-mca` on scalar asm
+
+Isolate a loop body in a `.s` snippet and profile throughput (teaching-only; not wired into lcc):
+
+```bash
+llvm-mca -mtriple=arm64-apple-darwin -mcpu=apple-m1 -iterations=100 /tmp/sum_scalar_mca.s
+```
+
+Use vectorized asm from case study B for a before/after comparison.
+
+### Verify M14 yourself
+
+1. Compile `tests/40.array_sum.c` at `-O3`; confirm post-opt IR and `-S` asm are **scalar**.
+2. Run `opt -passes='default<O3>' -mtriple=<host>` on `-l-pre-opt` IR; confirm **`<N x i32>`** appears.
+3. Inspect asm for **NEON** (`add.4s`, …) or **AVX2** (`vpaddd`, `ymm`, …) per platform.
+4. Confirm `25.quick_sort.c` at `-O3` has **no** vector IR.
+5. Read pass remarks for at least one loop.
+
+**Out of scope:** custom loop vectorizer in lcc; wiring `TargetMachine` into `IrOptimizer` (future enhancement, not required for M14).
 
 ---
 
