@@ -506,7 +506,8 @@ void CodeGenerator::genIrCode(AST::Program* root,
                               const std::string& sourcePath,
                               const std::string& preOptIrPath,
                               const std::string& postOptIrPath,
-                              const std::string& irStatsPath) {
+                              const std::string& irStatsPath,
+                              bool foldAddZero) {
   if (root == nullptr) {
     std::cerr << "AST root is nullptr!" << std::endl;
     return;
@@ -548,7 +549,8 @@ void CodeGenerator::genIrCode(AST::Program* root,
   // for -O1+ is out of scope for this teaching compiler.
   const std::string optLevel =
       generateDebugInfo ? std::string{} : optimizationLevel;
-  IrOptimizer{}.run(*module_, optLevel, {.irStatsPath = irStatsPath});
+  IrOptimizer{}.run(*module_, optLevel,
+                    {.irStatsPath = irStatsPath, .foldAddZero = foldAddZero});
   if (generateDebugInfo) {
     if (!optimizationLevel.empty() && optimizationLevel != "O0") {
       std::cerr << "Warning: -g disables LLVM optimizations (ignoring -"

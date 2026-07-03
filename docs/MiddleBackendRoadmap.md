@@ -11,6 +11,7 @@ Implementation details for [LearningPlan.md](LearningPlan.md) milestones **M4–
 | IR emission | `CodeGenerator::genIrCode`, `AbstractSyntaxTree.cpp`, `Utils.cpp` | AST walk → raw `llvm::Module` |
 | IR optimization | `IrOptimizer::run` | `PassBuilder::buildPerModuleDefaultPipeline` |
 | IR instrumentation | `IrInstructionStatsPass` (`-ir-stats`) | New PM function pass; no IR change |
+| IR transform (optional) | `FoldAddZeroPass` (`-fold-add-zero`) | New PM function pass; M7 teaching peephole |
 | Object emission | `TargetBackend::emitObject` via `CodeGenerator::genObjectCode` | Host triple (or `--target`), `-mcpu`/`-mattr`, CLI `-O` → `CodeGenOptLevel`, legacy PM → `.o` |
 | Assembly emission | `TargetBackend::emitAssembly` via `-S` | Same `TargetBackendOptions` as object emission |
 | Debug info | `DebugInfoBuilder` | `-g` skips IR opts |
@@ -24,6 +25,7 @@ src/
   TargetBackend.hpp / TargetBackend.cpp   ← M10 (done)
   passes/
     IrInstructionStatsPass.cpp              ← M6 (done)
+    FoldAddZeroPass.cpp                     ← M7 (done)
 ```
 
 ---
@@ -145,22 +147,16 @@ class IrOptimizer {
 
 ## M7: Custom New PM pass — simple transform (optional)
 
+**Status:** done
+
 **Acceptance criteria**
 
-- [ ] Pass removes or folds a narrow class of redundant IR
-- [ ] All tests PASS (behavior preserved)
-- [ ] Post-opt IR diff documented for `12.arithmetic.c`
+- [x] Pass removes or folds a narrow class of redundant IR (`FoldAddZeroPass`: `add iN %x, 0` → `%x`)
+- [x] All tests PASS (behavior preserved; flag disabled by default in `compile-tests.sh`)
+- [x] Post-opt IR diff documented for `12.arithmetic.c` ([Pipeline.md § M7](Pipeline.md#custom-transform-pass-m7))
 - [ ] Optional: M15 benchmark shows no regression (or improvement)
 
-**Example ideas**
-
-| Pass | Idea |
-|------|------|
-| `FoldAddZeroPass` | `add i32 %x, 0` → `%x` |
-| `EraseUnusedAllocaPass` | Remove allocas with no loads (careful with lifetimes) |
-| `StripLifetimePass` | Teaching-only metadata strip |
-
-Start smaller than LLVM’s `instcombine`.
+**Implementation:** `FoldAddZeroPass` (`src/passes/`), enabled with `-fold-add-zero` before the default LLVM pipeline.
 
 ---
 
@@ -254,7 +250,7 @@ Use `llvm::CodeGenFileType::AssemblyFile` in `addPassesToEmitFile`.
 
 - [x] `TargetMachine` codegen opt level matches CLI `-O` (see `CodeGenOptLevel` in `TargetBackend.cpp`)
 - [x] Saved asm for `25.quick_sort.c` at `-O0` and `-O2` under `debug/` (`*.debug.s` / `*.release.s` from `compile-tests.sh`)
-- [x] Written comparison: instruction count and loop structure in hot function ([Pipeline.md § M12](Pipeline.md#m12-codegen-opt-level--asm-diff))
+- [x] Written comparison: instruction count and loop structure in hot function ([Pipeline.md § M12](Pipeline.md#codegen-opt-level--asm-diff-m12))
 
 **Mapping** (LLVM 20 `CodeGenOptLevel`):
 

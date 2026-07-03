@@ -34,10 +34,11 @@ Start with the [README](../README.md) for a quick clone-and-run path, then [Lear
 | Milestone | Topic | Primary doc |
 |-----------|-------|-------------|
 | M0–M3 | Build, tour, IR generation study | [LearningPlan.md](LearningPlan.md), [Testing.md](Testing.md) |
-| M4–M6 | IR dumps, `IrOptimizer`, `-ir-stats` pass | [MiddleBackendRoadmap.md](MiddleBackendRoadmap.md), [Usage.md](Usage.md) |
+| M4–M5 | IR dumps, `IrOptimizer` | [MiddleBackendRoadmap.md](MiddleBackendRoadmap.md), [Usage.md](Usage.md) |
+| M6–M7 | `-ir-stats` pass, `-fold-add-zero` transform | [MiddleBackendRoadmap.md](MiddleBackendRoadmap.md), [Pipeline.md](Pipeline.md#custom-transform-pass-m7) |
 | M9 | Classical LLVM opts on `-O2` | [Pipeline.md](Pipeline.md#classical-optimization-study-m9) |
 | M10–M12 | `TargetBackend`, `-S`, codegen opt level | [MiddleBackendRoadmap.md](MiddleBackendRoadmap.md), [Pipeline.md](Pipeline.md#codegen-opt-level--asm-diff-m12) |
 | M14 | Auto-vectorization study | [Pipeline.md](Pipeline.md#auto-vectorization-study-m14) |
 | M18 | Tool recipes & CI smoke | [Pipeline.md](Pipeline.md#llvm-tool-reference), [Testing.md](Testing.md) |
 
-Optional milestones (M7, M8, M13, M15–M17) are documented in [LearningPlan.md](LearningPlan.md) and [MiddleBackendRoadmap.md](MiddleBackendRoadmap.md).
+Optional milestones (M8, M13, M15–M17) are documented in [LearningPlan.md](LearningPlan.md) and [MiddleBackendRoadmap.md](MiddleBackendRoadmap.md).

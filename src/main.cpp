@@ -56,6 +56,10 @@ int main(int argc, char* argv[]) {
   parser.add_argument("-ir-stats", "--ir-instruction-stats-file")
       .default_value("")
       .help("write load/store/call counts to FILE (use - for stderr); omit to disable.");
+  parser.add_argument("-fold-add-zero", "--fold-add-zero")
+      .default_value(false)
+      .implicit_value(true)
+      .help("fold add iN %x, 0 to %x before LLVM opts (M7 teaching pass).");
   parser.add_argument("-S", "--emit-assembly")
       .default_value("")
       .help("write assembly to FILE.");
@@ -172,7 +176,8 @@ int main(int argc, char* argv[]) {
         parser.get<std::string>("-i"),
         parser.get<std::string>("-l-pre-opt"),
         parser.get<std::string>("-l-post-opt"),
-        parser.get<std::string>("-ir-stats"));
+        parser.get<std::string>("-ir-stats"),
+        parser.get<bool>("-fold-add-zero"));
     std::cout << "Generated IR code successfully!" << std::endl;
     if (!parser.get<std::string>("-l-pre-opt").empty()) {
       std::cout << "Dumped pre-optimization IR to "

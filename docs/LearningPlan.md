@@ -61,19 +61,19 @@ Track progress here. Do not start the next milestone until **Verify** passes for
 | **M2** | [Pipeline map & LLVM tools](#m2-pipeline-map--llvm-tools) | All | Yes |
 | **M3** | [IR generation study](#m3-ir-generation-study) | Front-end / IR | Yes |
 | **M4** | [Pre/post IR dumps in lcc](#m4-prepost-ir-dumps-in-lcc) | Middle-end | Yes |
-| **M5** | [Extract `IrOptimizer`](#m5-extract-iropimizer) | Middle-end | Yes |
+| **M5** | [Extract `IrOptimizer`](#m5-extract-iroptimizer) | Middle-end | Yes |
 | **M6** | [Custom New PM pass — instrumentation](#m6-custom-new-pm-pass--instrumentation) | Middle-end | Yes |
-| **M7** | [Custom New PM pass — simple transform](#m7-custom-new-pm-pass--simple-transform) | Optimization | Optional |
-| **M8** | [Pipeline control & `-O-passes`](#m8-pipeline-control--o-passes) | Optimization | Optional |
+| **M7** | [Custom New PM pass — simple transform](#m7-custom-new-pm-pass--simple-transform-optional) | Optimization | Optional |
+| **M8** | [Pipeline control & `-O-passes`](#m8-pipeline-control---o-passes-optional) | Optimization | Optional |
 | **M9** | [Classical opts study (LLVM)](#m9-classical-opts-study-llvm) | Optimization | Yes |
 | **M10** | [Extract `TargetBackend`; emit asm](#m10-extract-targetbackend-emit-asm) | Back-end | Yes |
 | **M11** | [Target CLI flags](#m11-target-cli-flags) | Back-end | Yes |
 | **M12** | [Codegen opt level & asm diff](#m12-codegen-opt-level--asm-diff) | Back-end | Yes |
-| **M13** | [MIR inspection](#m13-mir-inspection) | Back-end | Optional |
+| **M13** | [MIR inspection](#m13-mir-inspection-optional) | Back-end | Optional |
 | **M14** | [Vectorization study (LLVM)](#m14-vectorization-study-llvm) | Optimization | Yes |
-| **M15** | [Benchmark harness](#m15-benchmark-harness) | Optimization | Optional |
-| **M16** | [IR opt regression script](#m16-ir-opt-regression-script) | Middle-end | Optional |
-| **M17** | [Machine pass (advanced)](#m17-machine-pass-advanced) | Back-end | Optional |
+| **M15** | [Benchmark harness](#m15-benchmark-harness-optional) | Optimization | Optional |
+| **M16** | [IR opt regression script](#m16-ir-opt-regression-script-optional) | Middle-end | Optional |
+| **M17** | [Machine pass (advanced)](#m17-machine-pass-advanced-optional) | Back-end | Optional |
 | **M18** | [Documentation & CI smoke](#m18-documentation--ci-smoke) | All | Yes |
 
 **Estimated pace:** ~1–2 weeks per required milestone if part-time; M0–M2 can be done in a few days.
@@ -204,6 +204,8 @@ Details: [MiddleBackendRoadmap.md § M4](MiddleBackendRoadmap.md#m4-prepost-ir-d
 ---
 
 ## M7: Custom New PM pass — simple transform (optional)
+
+**Status:** done
 
 **Goal:** Implement one classical idea on IR yourself.
 
@@ -392,6 +394,7 @@ Optional future **language** work (preprocessor, 3D arrays, `extern`) stays in [
 | `lcc -S <file>` | Machine assembly (host target; independent codegen pass) |
 | `lcc --target`, `-mcpu`, `-mattr` | `TargetMachine` triple/CPU/features (see [Usage.md](Usage.md)) |
 | `lcc -ir-stats <file>` | Load/store/call counts on raw IR (`-` = stderr) |
+| `lcc -fold-add-zero` | Fold `add iN %x, 0` before LLVM opts (M7) |
 | `opt --print-pipeline-passes -passes='default<O2>'` | List O2 passes (LLVM 20) — see [Pipeline.md](Pipeline.md) |
 | `llc` | IR → asm; MIR dumps with stop flags |
 | `llvm-objdump -d` | Disassemble `.o` |

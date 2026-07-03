@@ -12,6 +12,8 @@ class raw_ostream;
 struct IrOptimizerOptions {
   // When non-empty, run IrInstructionStatsPass before LLVM opts. Use "-" for stderr.
   std::string irStatsPath;
+  // Run FoldAddZeroPass before LLVM opts (M7 teaching transform).
+  bool foldAddZero = false;
 };
 
 // LLVM New Pass Manager middle-end for lcc. Runs on a completed Module after

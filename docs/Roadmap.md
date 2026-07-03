@@ -40,7 +40,7 @@ See [Conflicts.md](Conflicts.md) for parser ambiguities that some roadmap items 
 | Priority | Feature | Effort | Why this order |
 |----------|---------|--------|----------------|
 | **—** | [Array declarators](#array-extension-plan) (done) | Small | Unified `VarInit` + `ArrayBoundList`; foundation for init and multidim |
-| **1** | [1D array initialization](#1d-array-initialization) (done) | Medium | Brace init, inferred `[]`, string literals |
+| **1** | [1D array initialization](#1-1d-array-initialization) (done) | Medium | Brace init, inferred `[]`, string literals |
 | **2** | [2D arrays](#2-2d-and-3d-arrays) (done) | Medium | 2a declaration + 2b initialization; reuses 1D init helpers |
 | **3** | [`typedef` and `size_t`](#3-typedef-and-size_t) (done) | Medium–large | 4a + 4b complete; cleaner API-style tests after arrays |
 | **—** | [3D arrays](#3d-arrays-deferred) | — | Deferred; 2D covers teaching goals for now |

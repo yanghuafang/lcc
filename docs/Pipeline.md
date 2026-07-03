@@ -134,6 +134,53 @@ Local equivalents:
 
 `check-asm-smoke.sh` compiles `12.arithmetic.c` with `-O2 -S` and verifies non-empty asm containing `main`. `compile-tests.sh` already emits `debug/*.s` for all 40 tests; the smoke script is a fast explicit `-S` gate.
 
+`check-asm-smoke.sh` compiles `12.arithmetic.c` with `-O2 -S` and verifies non-empty asm containing `main`. `compile-tests.sh` already emits `debug/*.s` for all 40 tests; the smoke script is a fast explicit `-S` gate.
+
+---
+
+## Custom transform pass (M7)
+
+`FoldAddZeroPass` is a **New PM function pass** that rewrites integer `add` with a zero constant:
+
+| Before | After |
+|--------|-------|
+| `%t = add i32 %x, 0` | uses `%x` directly; `add` erased |
+| `%t = add i32 0, %x` | same |
+
+Enable with **`-fold-add-zero`** (disabled by default so `compile-tests.sh` goldens stay unchanged). Runs in `IrOptimizer` **before** optional `-ir-stats` output and before the LLVM default pipeline.
+
+### Case study: `tests/12.arithmetic.c`
+
+The test includes `if (a + 0 != 37) err = 1;` so raw IR contains a foldable `add`.
+
+```bash
+../../lcc-build/lcc -fold-add-zero -i ../tests/12.arithmetic.c -o /tmp/a.o \
+  -l-pre-opt /tmp/a.pre.ll -l-post-opt /tmp/a.post.ll
+```
+
+**Pre-opt** (`@main`):
+
+```llvm
+  %55 = load i32, ptr %a, align 4
+  %56 = add i32 %55, 0
+  %57 = icmp ne i32 %56, 37
+```
+
+**Post-opt** (after `FoldAddZeroPass` only — no `-O`):
+
+```llvm
+  %55 = load i32, ptr %a, align 4
+  %56 = icmp ne i32 %55, 37
+```
+
+With **`-O2 -fold-add-zero`**, LLVM’s `instcombine` would also fold this; use **`-fold-add-zero` alone** (no `-O`) to see only the custom pass effect. Semantics unchanged — full suite PASS.
+
+### Verify M7 yourself
+
+1. Run the commands above; confirm `add …, 0` disappears from post-opt IR.
+2. `./compile-tests.sh && ./link-tests.sh && ./run-tests.sh` (pass runs **off** by default).
+3. Read `src/passes/FoldAddZeroPass.cpp` — compare with `IrInstructionStatsPass` (M6).
+
 ---
 
 ## Classical optimization study (M9)

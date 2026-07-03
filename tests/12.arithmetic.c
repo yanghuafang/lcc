@@ -27,6 +27,7 @@ int main() {
   if (sub != 29) err = 1;
   if (sub2 != -29) err = 1;
   if (mul != 296) err = 1;
+  if (a + 0 != 37) err = 1;
   if (div != 4) err = 1;
   if (mod != 5) err = 1;
   if (sumeq != 53) err = 1;

@@ -3,7 +3,7 @@
 ## Compile a `.c` file
 
 ```text
-lcc -i <input.c> -o <output.o> [-S <asm.s>] [-v <ast.dot>] [-l <ir.ll>] [-l-pre-opt <pre.ll>] [-l-post-opt <post.ll>] [-ir-stats <file>] [--target <triple>] [-mcpu <cpu>] [-mattr <features>] [-g] [-O0|-O1|-O2|-O3|-Os|-Oz]
+lcc -i <input.c> -o <output.o> [-S <asm.s>] [-v <ast.dot>] [-l <ir.ll>] [-l-pre-opt <pre.ll>] [-l-post-opt <post.ll>] [-ir-stats <file>] [-fold-add-zero] [--target <triple>] [-mcpu <cpu>] [-mattr <features>] [-g] [-O0|-O1|-O2|-O3|-Os|-Oz]
 ```
 
 | Flag | Required | Description |
@@ -16,6 +16,7 @@ lcc -i <input.c> -o <output.o> [-S <asm.s>] [-v <ast.dot>] [-l <ir.ll>] [-l-pre-
 | `-l-pre-opt` | no | LLVM IR right after codegen, before `IrOptimizer` and debug finalization |
 | `-l-post-opt` | no | LLVM IR right after optimization, or after debug finalization when `-g` |
 | `-ir-stats` | no | Write load/store/call counts to `file` (`-` = stderr); counts raw IR before LLVM opts |
+| `-fold-add-zero` | no | Run `FoldAddZeroPass` before LLVM opts (`add iN %x, 0` → `%x`; M7) |
 | `-g` | no | Embed DWARF in the object file (use without `-O` for reliable stepping and variables) |
 | `-O0` … `-Oz` | no | LLVM optimization level (mutually exclusive); also sets backend `CodeGenOptLevel` for `-o`/`-S` |
 | `--target` | no | LLVM target triple (default: host) |
@@ -73,6 +74,15 @@ Example (IR instruction stats), from `lcc/scripts`:
 ```bash
 ../../lcc-build/lcc -O2 -i ../tests/25.quick_sort.c -o /tmp/q.o -ir-stats /tmp/stats.txt
 cat /tmp/stats.txt
+```
+
+Example (custom transform pass), from `lcc/scripts`:
+
+```bash
+../../lcc-build/lcc -fold-add-zero -i ../tests/12.arithmetic.c -o /tmp/a.o \
+  -l-pre-opt /tmp/a.pre.ll -l-post-opt /tmp/a.post.ll
+grep 'add i32.*, 0' /tmp/a.pre.ll    # present in raw IR
+grep 'add i32.*, 0' /tmp/a.post.ll || echo "folded in post-opt IR"
 ```
 
 Example (assembly output), from `lcc/scripts`:

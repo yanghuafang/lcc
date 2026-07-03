@@ -10,6 +10,7 @@
 #include <llvm/Support/FileSystem.h>
 #include <llvm/Support/raw_ostream.h>
 
+#include "passes/FoldAddZeroPass.hpp"
 #include "passes/IrInstructionStatsPass.hpp"
 
 namespace {
@@ -52,8 +53,9 @@ void IrOptimizer::run(llvm::Module& module,
                       const std::string& optimizationLevel,
                       const IrOptimizerOptions& options) {
   const bool wantStats = !options.irStatsPath.empty();
+  const bool wantFoldAddZero = options.foldAddZero;
   const bool wantOpts = !optimizationLevel.empty();
-  if (!wantStats && !wantOpts) {
+  if (!wantStats && !wantOpts && !wantFoldAddZero) {
     return;
   }
 
@@ -77,6 +79,10 @@ void IrOptimizer::run(llvm::Module& module,
   if (wantStats) {
     mpm.addPass(
         llvm::createModuleToFunctionPassAdaptor(IrInstructionStatsPass(stats)));
+  }
+  // Custom transform (M7): narrow peephole before the default pipeline.
+  if (wantFoldAddZero) {
+    mpm.addPass(llvm::createModuleToFunctionPassAdaptor(FoldAddZeroPass{}));
   }
   if (wantOpts) {
     const llvm::OptimizationLevel* level =
