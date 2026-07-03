@@ -289,14 +289,16 @@ Skip if M6 satisfies your learning goals.
 
 ## M13: MIR inspection (optional)
 
+**Status:** done
+
 **Goal:** See machine IR and register allocation stage.
 
 | Step | Action |
 |------|--------|
-| Study | `llc -stop-before=registerizer`, `-print-machineinstrs` on `.release.ll` |
-| Study | Identify virtual vs physical registers before/after regalloc |
+| Study | `llc --print-before=greedy`, `--stop-before=greedy` on `.release.post.ll` (LLVM 20) |
+| Study | Identify virtual (`%N:regbank`) vs physical (`$w9`) registers before/after regalloc |
 | Implement | None required in lcc |
-| Verify | Can point to regalloc in LLVM’s pipeline diagram |
+| Verify | Can point to regalloc (`greedy`) in LLVM’s codegen pipeline — see [Pipeline.md](Pipeline.md#mir-inspection-m13) |
 
 **Note:** MIR is used for **all** targets (x86_64, ARM64), not only “new hardware.”
 
@@ -399,7 +401,7 @@ Optional future **language** work (preprocessor, 3D arrays, `extern`) stays in [
 | `lcc -fold-add-zero` | Fold `add iN %x, 0` before LLVM opts (M7) |
 | `lcc -O-passes …` | Explicit New PM pipeline (`opt -passes` syntax; preset `O2-peephole`) |
 | `opt --print-pipeline-passes -passes='default<O2>'` | List O2 passes (LLVM 20) — see [Pipeline.md](Pipeline.md) |
-| `llc` | IR → asm; MIR dumps with stop flags |
+| `llc` | IR → asm; MIR via `--print-before=greedy`, `--stop-before=greedy` (M13) |
 | `llvm-objdump -d` | Disassemble `.o` |
 | `llvm-mca` | Analyze asm throughput (vectorization) |
 | `llvm-dwarfdump` | Debug info ([check-debug-info.sh](../scripts/check-debug-info.sh)) |

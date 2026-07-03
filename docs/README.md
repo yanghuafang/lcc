@@ -11,7 +11,7 @@ Start with the [README](../README.md) for a quick clone-and-run path, then [Lear
 | [LearningPlan.md](LearningPlan.md) | **Start here** — milestones M0–M18 (front-end study, IR, opts, backend, docs/CI) |
 | [MiddleBackendRoadmap.md](MiddleBackendRoadmap.md) | Implementation details & acceptance criteria for middle/back-end milestones (M4–M17) |
 | [Roadmap.md](Roadmap.md) | Front-end language extension plan (complete; deferrals listed) |
-| [Pipeline.md](Pipeline.md) | Compiler pipeline, LLVM tool reference (`opt`, `llc`, `objdump`, `mca`), study notes (M9, M12, M14) |
+| [Pipeline.md](Pipeline.md) | Compiler pipeline, LLVM tool reference (`opt`, `llc`, `objdump`, `mca`), study notes (M9, M12–M14) |
 
 ## How-to
 
@@ -38,7 +38,8 @@ Start with the [README](../README.md) for a quick clone-and-run path, then [Lear
 | M6–M8 | `-ir-stats`, `-fold-add-zero`, `-O-passes` | [MiddleBackendRoadmap.md](MiddleBackendRoadmap.md), [Pipeline.md](Pipeline.md#explicit-pipeline-control-m8) |
 | M9 | Classical LLVM opts on `-O2` | [Pipeline.md](Pipeline.md#classical-optimization-study-m9) |
 | M10–M12 | `TargetBackend`, `-S`, codegen opt level | [MiddleBackendRoadmap.md](MiddleBackendRoadmap.md), [Pipeline.md](Pipeline.md#codegen-opt-level--asm-diff-m12) |
+| M13 | MIR inspection (`llc`, `mir-study.sh`) | [Pipeline.md](Pipeline.md#mir-inspection-m13) |
 | M14 | Auto-vectorization study | [Pipeline.md](Pipeline.md#auto-vectorization-study-m14) |
 | M18 | Tool recipes & CI smoke | [Pipeline.md](Pipeline.md#llvm-tool-reference), [Testing.md](Testing.md) |
 
-Optional milestones (M13, M15–M17) are documented in [LearningPlan.md](LearningPlan.md) and [MiddleBackendRoadmap.md](MiddleBackendRoadmap.md).
+Optional milestones (M15–M17) are documented in [LearningPlan.md](LearningPlan.md) and [MiddleBackendRoadmap.md](MiddleBackendRoadmap.md).

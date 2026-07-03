@@ -280,16 +280,21 @@ diff -u ../debug/25.quick_sort.debug.s ../debug/25.quick_sort.release.s | head
 
 ## M13: MIR inspection (optional)
 
+**Status:** done
+
 **No lcc code required.**
 
 ```bash
-llc -stop-before=registerizer -print-machineinstrs post.ll -o /dev/null 2>&1 | less
+# From lcc/scripts (LLVM 20)
+source ./build-env.sh
+./mir-study.sh
+llc -O2 --stop-before=greedy ../debug/25.quick_sort.release.post.ll -o /tmp/q.pre-regalloc.mir
 ```
 
 **Acceptance**
 
-- [ ] Screenshot or notes: virtual registers before regalloc
-- [ ] Can name where MIR sits in pipeline (after ISel, before asm)
+- [x] Notes: virtual registers (`%15:gpr64common`) before `greedy`; physical (`$w9`) after `prologepilog` — [Pipeline.md § M13](Pipeline.md#mir-inspection-m13)
+- [x] Can name where MIR sits in pipeline (after ISel, before asm; regalloc = `greedy` pass)
 
 ---
 
