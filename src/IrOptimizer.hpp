@@ -14,6 +14,9 @@ struct IrOptimizerOptions {
   std::string irStatsPath;
   // Run FoldAddZeroPass before LLVM opts (M7 teaching transform).
   bool foldAddZero = false;
+  // When non-empty, run this New PM pipeline instead of default<O*> (M8).
+  // Mutually exclusive with optimizationLevel in main; presets: O2-peephole.
+  std::string customPipeline;
 };
 
 // LLVM New Pass Manager middle-end for lcc. Runs on a completed Module after

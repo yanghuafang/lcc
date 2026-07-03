@@ -168,7 +168,8 @@ class CodeGenerator {
                  const std::string& preOptIrPath = "",
                  const std::string& postOptIrPath = "",
                  const std::string& irStatsPath = "",
-                 bool foldAddZero = false);
+                 bool foldAddZero = false,
+                 const std::string& customPipeline = "");
 
   bool isDebugInfoEnabled() const { return debugInfo_ != nullptr; }
   DebugInfoBuilder* debugInfo() { return debugInfo_.get(); }

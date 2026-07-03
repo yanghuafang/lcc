@@ -3,8 +3,10 @@
 ## Compile a `.c` file
 
 ```text
-lcc -i <input.c> -o <output.o> [-S <asm.s>] [-v <ast.dot>] [-l <ir.ll>] [-l-pre-opt <pre.ll>] [-l-post-opt <post.ll>] [-ir-stats <file>] [-fold-add-zero] [--target <triple>] [-mcpu <cpu>] [-mattr <features>] [-g] [-O0|-O1|-O2|-O3|-Os|-Oz]
+lcc -i <input.c> -o <output.o> [-S <asm.s>] [-v <ast.dot>] [-l <ir.ll>] [-l-pre-opt <pre.ll>] [-l-post-opt <post.ll>] [-ir-stats <file>] [-fold-add-zero] [-O-passes <pipeline>] [--target <triple>] [-mcpu <cpu>] [-mattr <features>] [-g] [-O0|-O1|-O2|-O3|-Os|-Oz]
 ```
+
+`-O-passes` and `-O0`…`-Oz` are **mutually exclusive** (middle-end: custom pipeline vs `default<O*>`). With `-g`, both are skipped (same as `-O2` with debug). Backend `-O` codegen level follows the CLI `-O` flag only — when you use `-O-passes` alone, backend defaults to no codegen opts (`-O0` equivalent).
 
 | Flag | Required | Description |
 |------|----------|-------------|
@@ -17,6 +19,7 @@ lcc -i <input.c> -o <output.o> [-S <asm.s>] [-v <ast.dot>] [-l <ir.ll>] [-l-pre-
 | `-l-post-opt` | no | LLVM IR right after optimization, or after debug finalization when `-g` |
 | `-ir-stats` | no | Write load/store/call counts to `file` (`-` = stderr); counts raw IR before LLVM opts |
 | `-fold-add-zero` | no | Run `FoldAddZeroPass` before LLVM opts (`add iN %x, 0` → `%x`; M7) |
+| `-O-passes` | no | Explicit New PM pipeline (`opt -passes` syntax); **mutually exclusive** with `-O0`…`-Oz` |
 | `-g` | no | Embed DWARF in the object file (use without `-O` for reliable stepping and variables) |
 | `-O0` … `-Oz` | no | LLVM optimization level (mutually exclusive); also sets backend `CodeGenOptLevel` for `-o`/`-S` |
 | `--target` | no | LLVM target triple (default: host) |
@@ -34,7 +37,37 @@ lcc -i <input.c> -o <output.o> [-S <asm.s>] [-v <ast.dot>] [-l <ir.ll>] [-l-pre-
 | `-O3` | O3 pipeline (includes vectorizers) | Aggressive |
 | `-Os` / `-Oz` | Size-focused IR pipeline | Default |
 
-With **`-g`**, middle-end LLVM opts are **skipped** (DWARF `dbg.declare` allocas must survive); the CLI `-O` level is still passed to the back-end. See [Pipeline.md](Pipeline.md) for IR/asm study recipes (M9, M12, M14).
+With **`-g`**, middle-end LLVM opts are **skipped** (DWARF `dbg.declare` allocas must survive); the CLI `-O` level is still passed to the back-end. **`-O-passes`** is also skipped under `-g`. See [Pipeline.md](Pipeline.md) for IR/asm study recipes (M9, M12, M14).
+
+### Explicit pipeline (`-O-passes`)
+
+| Form | Example |
+|------|---------|
+| Comma-separated passes | `-O-passes mem2reg,instcombine,simplifycfg` |
+| Preset | `-O-passes O2-peephole` (same three passes as above) |
+
+Combine with `-fold-add-zero` or `-ir-stats`; do **not** combine with `-O2` (etc.) on the same command line.
+
+Example, from `lcc/scripts`:
+
+```bash
+# Explicit pass list
+../../lcc-build/lcc -O-passes mem2reg,instcombine,simplifycfg -i ../tests/25.quick_sort.c -o /tmp/q.o
+
+# Preset (same three passes)
+../../lcc-build/lcc -O-passes O2-peephole -i ../tests/25.quick_sort.c -o /tmp/q.o \
+  -l-pre-opt /tmp/q.pre.ll -l-post-opt /tmp/q.peephole.ll
+
+# Compare with full -O2
+../../lcc-build/lcc -O2 -i ../tests/25.quick_sort.c -o /tmp/q2.o -l-post-opt /tmp/q.o2.ll
+```
+
+Invalid pass names fail at compile time with a clear message:
+
+```bash
+../../lcc-build/lcc -O-passes not-a-real-pass -i ../tests/12.arithmetic.c -o /tmp/x.o
+# Invalid -O-passes pipeline "not-a-real-pass": unknown pass name 'not-a-real-pass'
+```
 
 ### Target flags
 

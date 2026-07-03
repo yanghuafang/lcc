@@ -60,6 +60,10 @@ int main(int argc, char* argv[]) {
       .default_value(false)
       .implicit_value(true)
       .help("fold add iN %x, 0 to %x before LLVM opts (M7 teaching pass).");
+  parser.add_argument("-O-passes", "--optimization-passes")
+      .default_value("")
+      .help("explicit LLVM New PM pipeline (mutually exclusive with -O0..Oz; "
+            "preset: O2-peephole = mem2reg,instcombine,simplifycfg).");
   parser.add_argument("-S", "--emit-assembly")
       .default_value("")
       .help("write assembly to FILE.");
@@ -128,6 +132,14 @@ int main(int argc, char* argv[]) {
     optimizationLevel = "";
   }
 
+  const std::string customPipeline =
+      parser.get<std::string>("-O-passes");
+  if (!customPipeline.empty() && !optimizationLevel.empty()) {
+    std::cerr << "Cannot use -O-passes with -O0..Oz (mutually exclusive)."
+              << std::endl;
+    return 2;
+  }
+
   // Compile: lex/parse -> AST, then single-pass codegen (types resolved during
   // genCode(), not in a separate semantic-analysis pass).
 
@@ -177,7 +189,8 @@ int main(int argc, char* argv[]) {
         parser.get<std::string>("-l-pre-opt"),
         parser.get<std::string>("-l-post-opt"),
         parser.get<std::string>("-ir-stats"),
-        parser.get<bool>("-fold-add-zero"));
+        parser.get<bool>("-fold-add-zero"),
+        customPipeline);
     std::cout << "Generated IR code successfully!" << std::endl;
     if (!parser.get<std::string>("-l-pre-opt").empty()) {
       std::cout << "Dumped pre-optimization IR to "

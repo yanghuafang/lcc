@@ -183,6 +183,48 @@ With **`-O2 -fold-add-zero`**, LLVM’s `instcombine` would also fold this; use 
 
 ---
 
+## Explicit pipeline control (M8)
+
+`-O-passes` uses LLVM **`PassBuilder::parsePassPipeline`** — the same pass names and comma syntax as `opt -passes='…'`. It replaces `default<O*>` for the middle-end; it does **not** change backend codegen unless you also pass a separate `-O` level (but `-O-passes` and `-O0`…`-Oz` cannot appear on the same command line).
+
+| Flag | Middle-end | Backend |
+|------|------------|---------|
+| `-O2` | `default<O2>` pipeline | `CodeGenOptLevel::Default` |
+| `-O-passes O2-peephole` | `mem2reg,instcombine,simplifycfg` only | `CodeGenOptLevel::None` (no `-O` on CLI) |
+| `-O-passes …` + `-O2` | **Error** (mutually exclusive) | — |
+
+Preset **`O2-peephole`** is a teaching subset of `-O2`: SSA formation (`mem2reg`), peephole cleanup (`instcombine`), and CFG cleanup (`simplifycfg`). It omits interprocedural, loop, and vector passes that full `-O2` runs afterward.
+
+### Case study: `25.quick_sort.c`
+
+From `lcc/scripts`:
+
+```bash
+# Explicit pass list
+../../lcc-build/lcc -O-passes mem2reg,instcombine,simplifycfg -i ../tests/25.quick_sort.c -o /tmp/q.o
+
+# Preset (same three passes)
+../../lcc-build/lcc -O-passes O2-peephole -i ../tests/25.quick_sort.c -o /tmp/q.o \
+  -l-pre-opt /tmp/q.pre.ll -l-post-opt /tmp/q.peephole.ll
+
+# Compare with full -O2
+../../lcc-build/lcc -O2 -i ../tests/25.quick_sort.c -o /tmp/q2.o -l-post-opt /tmp/q.o2.ll
+```
+
+Typical line counts: pre ≈ 294, **peephole ≈ 146**, full **O2 ≈ 174**. The preset removes most stack `alloca`s (mem2reg) and simplifies `@swap` / `@partition`, but does not run loop opts or inlining — so peephole IR can be **smaller** than full O2 on some tests while still doing less work.
+
+Verify SSA on `@partition`: peephole post-opt IR should show `phi` nodes for loop indices (same family of change as M9, but without later GVN/licm).
+
+### Verify M8 yourself
+
+1. `-O-passes mem2reg,instcombine,simplifycfg` on `25.quick_sort.c` — post-opt IR differs from pre-opt; program still runs correctly.
+2. `-O-passes O2-peephole` vs `-O2` — compare `-l-post-opt` line counts and `@partition` shape.
+3. `-O-passes not-a-real-pass` — expect clear error.
+4. `-O2 -O-passes mem2reg` — expect mutual-exclusivity error.
+5. Full suite without `-O-passes`: `./compile-tests.sh && ./link-tests.sh && ./run-tests.sh`.
+
+---
+
 ## Classical optimization study (M9)
 
 `IrOptimizer` calls the same **default module pipelines** as `opt -passes='default<O0>'` … `'default<O3>'`. You do not reimplement these passes in lcc; you **observe** them on real programs.

@@ -507,7 +507,8 @@ void CodeGenerator::genIrCode(AST::Program* root,
                               const std::string& preOptIrPath,
                               const std::string& postOptIrPath,
                               const std::string& irStatsPath,
-                              bool foldAddZero) {
+                              bool foldAddZero,
+                              const std::string& customPipeline) {
   if (root == nullptr) {
     std::cerr << "AST root is nullptr!" << std::endl;
     return;
@@ -545,17 +546,27 @@ void CodeGenerator::genIrCode(AST::Program* root,
     dumpIrCode(preOptIrPath);
   }
 
-  // -g skips LLVM optimizations so dbg.declare allocas survive; dbg.value salvage
-  // for -O1+ is out of scope for this teaching compiler.
+  // -g skips middle-end opts (-O and -O-passes) so dbg.declare allocas survive;
+  // dbg.value salvage for -O1+ is out of scope for this teaching compiler.
   const std::string optLevel =
       generateDebugInfo ? std::string{} : optimizationLevel;
+  const std::string pipeline =
+      generateDebugInfo ? std::string{} : customPipeline;
   IrOptimizer{}.run(*module_, optLevel,
-                    {.irStatsPath = irStatsPath, .foldAddZero = foldAddZero});
+                    {.irStatsPath = irStatsPath,
+                     .foldAddZero = foldAddZero,
+                     .customPipeline = pipeline});
   if (generateDebugInfo) {
     if (!optimizationLevel.empty() && optimizationLevel != "O0") {
       std::cerr << "Warning: -g disables LLVM optimizations (ignoring -"
                 << optimizationLevel
                 << "); use -g without -O for debuggable output." << std::endl;
+    }
+    if (!customPipeline.empty()) {
+      std::cerr << "Warning: -g disables -O-passes (ignoring \""
+                << customPipeline
+                << "\"); use -g without -O-passes for debuggable output."
+                << std::endl;
     }
     debugInfo_->finalize();
   }

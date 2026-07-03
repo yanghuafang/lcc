@@ -7,6 +7,7 @@
 #include <llvm/Analysis/LoopAnalysisManager.h>
 #include <llvm/IR/PassManager.h>
 #include <llvm/Passes/PassBuilder.h>
+#include <llvm/Support/Error.h>
 #include <llvm/Support/FileSystem.h>
 #include <llvm/Support/raw_ostream.h>
 
@@ -47,6 +48,24 @@ void writeIrInstructionStats(const IrInstructionStats& stats,
   out << "  calls:  " << stats.calls << '\n';
 }
 
+// Map lcc preset names to PassBuilder pipeline text (same syntax as opt -passes).
+std::string resolveCustomPipeline(const std::string& userPipeline) {
+  if (userPipeline == "O2-peephole") {
+    return "mem2reg,instcombine,simplifycfg";
+  }
+  return userPipeline;
+}
+
+void addCustomPipeline(llvm::PassBuilder& pb, llvm::ModulePassManager& mpm,
+                      const std::string& userPipeline) {
+  const std::string pipelineText = resolveCustomPipeline(userPipeline);
+  if (auto err = pb.parsePassPipeline(mpm, pipelineText)) {
+    std::string message = llvm::toString(std::move(err));
+    throw std::runtime_error("Invalid -O-passes pipeline \"" + userPipeline +
+                             "\": " + message);
+  }
+}
+
 }  // namespace
 
 void IrOptimizer::run(llvm::Module& module,
@@ -54,8 +73,11 @@ void IrOptimizer::run(llvm::Module& module,
                       const IrOptimizerOptions& options) {
   const bool wantStats = !options.irStatsPath.empty();
   const bool wantFoldAddZero = options.foldAddZero;
-  const bool wantOpts = !optimizationLevel.empty();
-  if (!wantStats && !wantOpts && !wantFoldAddZero) {
+  const bool wantCustomPipeline = !options.customPipeline.empty();
+  const bool wantDefaultOpts =
+      !optimizationLevel.empty() && !wantCustomPipeline;
+  if (!wantStats && !wantFoldAddZero && !wantCustomPipeline &&
+      !wantDefaultOpts) {
     return;
   }
 
@@ -84,7 +106,10 @@ void IrOptimizer::run(llvm::Module& module,
   if (wantFoldAddZero) {
     mpm.addPass(llvm::createModuleToFunctionPassAdaptor(FoldAddZeroPass{}));
   }
-  if (wantOpts) {
+  if (wantCustomPipeline) {
+    // User pipeline (opt -passes syntax) replaces default<O*>; see docs/Pipeline.md (M8).
+    addCustomPipeline(pb, mpm, options.customPipeline);
+  } else if (wantDefaultOpts) {
     const llvm::OptimizationLevel* level =
         resolveOptimizationLevel(optimizationLevel);
     // Same default pipelines as `opt -passes='default<O*>'`; see docs/Pipeline.md (M9).

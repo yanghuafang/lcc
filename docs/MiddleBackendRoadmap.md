@@ -103,11 +103,13 @@ diff -u /tmp/pre.ll /tmp/post.ll | head
 - [x] `CodeGenerator.cpp` shrinks; IR opt logic in `IrOptimizer.cpp`
 - [x] Full test suite PASS
 
-**API** (current; M8 may add `runWithPasses`):
+**API** (current):
 
 ```cpp
 struct IrOptimizerOptions {
-  std::string irStatsPath;  // non-empty enables IrInstructionStatsPass; "-" = stderr
+  std::string irStatsPath;     // non-empty enables IrInstructionStatsPass; "-" = stderr
+  bool foldAddZero = false;    // M7
+  std::string customPipeline;  // M8: PassBuilder pipeline text or preset (e.g. O2-peephole)
 };
 
 class IrOptimizer {
@@ -162,11 +164,16 @@ class IrOptimizer {
 
 ## M8: Pipeline control (optional)
 
+**Status:** done
+
 **Acceptance criteria**
 
-- [ ] `-O-passes=mem2reg,instcombine,simplifycfg` runs named pipeline
-- [ ] Invalid pass name → clear error
-- [ ] Document interaction with `-O0`…`-O3` (mutually exclusive or override rules)
+- [x] `-O-passes mem2reg,instcombine,simplifycfg` runs named pipeline via `PassBuilder::parsePassPipeline`
+- [x] Preset `O2-peephole` maps to the same three passes
+- [x] Invalid pass name → clear error (`Invalid -O-passes pipeline "…": unknown pass name …`)
+- [x] Documented interaction with `-O0`…`-O3` (mutually exclusive; `-g` skips both)
+
+**Implementation:** `IrOptimizerOptions::customPipeline`; `-O-passes` / `--optimization-passes` in `main.cpp`.
 
 ---
 

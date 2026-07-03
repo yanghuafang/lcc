@@ -220,11 +220,13 @@ Skip if M6 satisfies your learning goals.
 
 ## M8: Pipeline control & `-O-passes` (optional)
 
+**Status:** done
+
 **Goal:** Compose LLVM passes explicitly.
 
 | Step | Action |
 |------|--------|
-| Implement | `-O-passes=mem2reg,instcombine,simplifycfg` or named presets |
+| Implement | `-O-passes mem2reg,instcombine,simplifycfg` or named presets |
 | Verify | Preset reproduces subset of `-O2` on a small test |
 
 ---
@@ -395,6 +397,7 @@ Optional future **language** work (preprocessor, 3D arrays, `extern`) stays in [
 | `lcc --target`, `-mcpu`, `-mattr` | `TargetMachine` triple/CPU/features (see [Usage.md](Usage.md)) |
 | `lcc -ir-stats <file>` | Load/store/call counts on raw IR (`-` = stderr) |
 | `lcc -fold-add-zero` | Fold `add iN %x, 0` before LLVM opts (M7) |
+| `lcc -O-passes …` | Explicit New PM pipeline (`opt -passes` syntax; preset `O2-peephole`) |
 | `opt --print-pipeline-passes -passes='default<O2>'` | List O2 passes (LLVM 20) — see [Pipeline.md](Pipeline.md) |
 | `llc` | IR → asm; MIR dumps with stop flags |
 | `llvm-objdump -d` | Disassemble `.o` |
