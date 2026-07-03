@@ -9,46 +9,60 @@ Lfunc_begin0:
 	.cfi_startproc
 	sub	sp, sp, #16
 	.cfi_def_cfa_offset 16
+Ltmp1:
+	.loc	1 3 5 prologue_end
+	str	w0, [sp, #4]
+	.loc	1 4 3
+	str	wzr, [sp, #8]
+	.loc	1 5 8
 	mov	w8, #1
-Ltmp3:
-	.loc	1 4 3 prologue_end
-	stp	w0, wzr, [sp, #4]
-	b	LBB0_2
-LBB0_1:
-Ltmp4:
-	.loc	1 9 5
-	ldr	w8, [sp, #12]
-	add	w8, w8, #1
-Ltmp5:
-LBB0_2:
-	.loc	1 5 8
-	ldr	w9, [sp, #4]
-	.loc	1 0 0 is_stmt 0
 	str	w8, [sp, #12]
+	b	LBB0_1
+LBB0_1:
 	.loc	1 5 8
-	mov	w8, w8
-	cmp	w8, w9
-	b.gt	LBB0_5
-Ltmp6:
-	.loc	1 6 5 is_stmt 1
 	ldr	w8, [sp, #12]
-	and	w9, w8, #0x1
-	cmp	w8, #0
-	cneg	w8, w9, lt
-	cbnz	w8, LBB0_1
+	ldr	w9, [sp, #4]
+	subs	w8, w8, w9
+	b.gt	LBB0_7
+	b	LBB0_2
+LBB0_2:
+Ltmp2:
+	.loc	1 6 5
+	ldr	w8, [sp, #12]
+	mov	w10, #2
+	sdiv	w9, w8, w10
+	mul	w9, w9, w10
+	subs	w8, w8, w9
+	cbz	w8, LBB0_4
+	b	LBB0_3
+LBB0_3:
+Ltmp3:
+	.loc	1 7 7
+	b	LBB0_6
+LBB0_4:
+	.loc	1 7 7
+	b	LBB0_5
+Ltmp4:
+LBB0_5:
 	.loc	1 9 5
 	ldr	w8, [sp, #8]
 	add	w8, w8, #1
 	str	w8, [sp, #8]
+	b	LBB0_6
+LBB0_6:
+	.loc	1 9 5
+	ldr	w8, [sp, #12]
+	add	w8, w8, #1
+	str	w8, [sp, #12]
 	b	LBB0_1
-Ltmp7:
-LBB0_5:
+Ltmp5:
+LBB0_7:
 	.loc	1 11 3
 	ldr	w0, [sp, #8]
 	.loc	1 11 3 epilogue_begin is_stmt 0
 	add	sp, sp, #16
 	ret
-Ltmp8:
+Ltmp6:
 Lfunc_end0:
 	.cfi_endproc
 
@@ -60,45 +74,58 @@ Lfunc_begin1:
 	.cfi_startproc
 	sub	sp, sp, #16
 	.cfi_def_cfa_offset 16
+Ltmp8:
+	.loc	1 14 5 prologue_end
+	str	w0, [sp, #4]
+	.loc	1 15 3
+	str	wzr, [sp, #8]
+	.loc	1 16 3
 	mov	w8, #1
-Ltmp9:
-	.loc	1 15 3 prologue_end
-	stp	w0, wzr, [sp, #4]
-	b	LBB1_5
+	str	w8, [sp, #12]
+	.loc	1 17 3
+	b	LBB1_1
 LBB1_1:
 	.loc	1 17 3
 	ldr	w8, [sp, #12]
 	ldr	w9, [sp, #4]
-	cmp	w8, w9
+	subs	w8, w8, w9
 	b.gt	LBB1_6
-Ltmp10:
+	b	LBB1_2
+LBB1_2:
+Ltmp9:
 	.loc	1 18 5
 	ldr	w8, [sp, #12]
-	and	w9, w8, #0x1
-	cmp	w8, #0
-	cneg	w8, w9, lt
-	cbnz	w8, LBB1_4
-	.loc	1 22 5
-	ldp	w8, w9, [sp, #8]
-	add	w8, w8, #1
-	.loc	1 23 5
-	add	w9, w9, #1
-	.loc	1 22 5
-	stp	w8, w9, [sp, #8]
-	.loc	1 23 5
-	b	LBB1_1
-LBB1_4:
-Ltmp11:
+	mov	w10, #2
+	sdiv	w9, w8, w10
+	mul	w9, w9, w10
+	subs	w8, w8, w9
+	cbz	w8, LBB1_4
+	b	LBB1_3
+LBB1_3:
+Ltmp10:
 	.loc	1 19 7
 	ldr	w8, [sp, #12]
 	add	w8, w8, #1
-Ltmp12:
+	str	w8, [sp, #12]
+	.loc	1 20 7
+	b	LBB1_1
+LBB1_4:
+	.loc	1 20 7
+	b	LBB1_5
+Ltmp11:
 LBB1_5:
-	.loc	1 0 0 is_stmt 0
+	.loc	1 22 5
+	ldr	w8, [sp, #8]
+	add	w8, w8, #1
+	str	w8, [sp, #8]
+	.loc	1 23 5
+	ldr	w8, [sp, #12]
+	add	w8, w8, #1
 	str	w8, [sp, #12]
 	b	LBB1_1
+Ltmp12:
 LBB1_6:
-	.loc	1 25 3 is_stmt 1
+	.loc	1 25 3
 	ldr	w0, [sp, #8]
 	.loc	1 25 3 epilogue_begin is_stmt 0
 	add	sp, sp, #16
@@ -115,47 +142,63 @@ Lfunc_begin2:
 	.cfi_startproc
 	sub	sp, sp, #16
 	.cfi_def_cfa_offset 16
-	mov	w8, #1
-Ltmp14:
-	.loc	1 29 3 prologue_end
-	stp	w0, wzr, [sp, #4]
-	.loc	1 30 3
-	str	w8, [sp, #12]
-	b	LBB2_2
-LBB2_1:
 Ltmp15:
-	.loc	1 0 0 is_stmt 0
-	ldr	w8, [sp, #12]
-	.loc	1 37 5 is_stmt 1
-	ldr	w9, [sp, #4]
-	.loc	1 0 0 is_stmt 0
-	add	w8, w8, #1
-	.loc	1 37 5
-	cmp	w8, w9
-	.loc	1 0 0
+	.loc	1 28 5 prologue_end
+	str	w0, [sp, #4]
+	.loc	1 29 3
+	str	wzr, [sp, #8]
+	.loc	1 30 3
+	mov	w8, #1
 	str	w8, [sp, #12]
-	.loc	1 37 5
-	b.gt	LBB2_4
-LBB2_2:
-	.loc	1 32 5 is_stmt 1
+	.loc	1 31 3
+	b	LBB2_1
+LBB2_1:
+Ltmp16:
+	.loc	1 32 5
 	ldr	w8, [sp, #12]
-	and	w9, w8, #0x1
-	cmp	w8, #0
-	cneg	w8, w9, lt
-	cbnz	w8, LBB2_1
+	mov	w10, #2
+	sdiv	w9, w8, w10
+	mul	w9, w9, w10
+	subs	w8, w8, w9
+	cbz	w8, LBB2_3
+	b	LBB2_2
+LBB2_2:
+Ltmp17:
+	.loc	1 33 7
+	ldr	w8, [sp, #12]
+	add	w8, w8, #1
+	str	w8, [sp, #12]
+	.loc	1 34 7
+	b	LBB2_5
+LBB2_3:
+	.loc	1 34 7
+	b	LBB2_4
+Ltmp18:
+LBB2_4:
 	.loc	1 36 5
 	ldr	w8, [sp, #8]
 	add	w8, w8, #1
 	str	w8, [sp, #8]
-	b	LBB2_1
-Ltmp16:
-LBB2_4:
+	.loc	1 37 5
+	ldr	w8, [sp, #12]
+	add	w8, w8, #1
+	str	w8, [sp, #12]
+	b	LBB2_5
+LBB2_5:
+	.loc	1 37 5
+	ldr	w8, [sp, #12]
+	ldr	w9, [sp, #4]
+	subs	w8, w8, w9
+	b.le	LBB2_1
+	b	LBB2_6
+Ltmp19:
+LBB2_6:
 	.loc	1 39 3
 	ldr	w0, [sp, #8]
 	.loc	1 39 3 epilogue_begin is_stmt 0
 	add	sp, sp, #16
 	ret
-Ltmp17:
+Ltmp20:
 Lfunc_end2:
 	.cfi_endproc
 
@@ -165,96 +208,118 @@ _main:
 Lfunc_begin3:
 	.loc	1 42 0 is_stmt 1
 	.cfi_startproc
-	sub	sp, sp, #48
-	stp	x20, x19, [sp, #16]
-	stp	x29, x30, [sp, #32]
-	.cfi_def_cfa_offset 48
+	sub	sp, sp, #32
+	stp	x29, x30, [sp, #16]
+	.cfi_def_cfa_offset 32
 	.cfi_offset w30, -8
 	.cfi_offset w29, -16
-	.cfi_offset w19, -24
-	.cfi_offset w20, -32
-Ltmp18:
-	.loc	1 45 3 prologue_end
-	mov	w0, #32
-	.loc	1 43 3
+Ltmp21:
+	.loc	1 43 3 prologue_end
 	str	wzr, [sp, #12]
 	.loc	1 45 3
+	mov	w0, #32
 	bl	_countEvenNumber
-	cmp	w0, #16
+	subs	w8, w0, #16
 	b.eq	LBB3_2
-	.loc	1 0 3 is_stmt 0
+	b	LBB3_1
+LBB3_1:
+	.loc	1 45 34 is_stmt 0
 	mov	w8, #1
-	.loc	1 45 34
 	str	w8, [sp, #12]
+	b	LBB3_3
 LBB3_2:
+	b	LBB3_3
+LBB3_3:
 	.loc	1 46 3 is_stmt 1
 	mov	w0, #32
 	bl	_countEvenNumber2
-	cmp	w0, #16
-	b.eq	LBB3_4
-	.loc	1 0 3 is_stmt 0
-	mov	w8, #1
-	.loc	1 46 35
-	str	w8, [sp, #12]
+	subs	w8, w0, #16
+	b.eq	LBB3_5
+	b	LBB3_4
 LBB3_4:
+	.loc	1 46 35 is_stmt 0
+	mov	w8, #1
+	str	w8, [sp, #12]
+	b	LBB3_6
+LBB3_5:
+	b	LBB3_6
+LBB3_6:
 	.loc	1 47 3 is_stmt 1
 	mov	w0, #32
 	bl	_countEvenNumber3
-	cmp	w0, #16
-	b.eq	LBB3_6
-	.loc	1 0 3 is_stmt 0
+	subs	w8, w0, #16
+	b.eq	LBB3_8
+	b	LBB3_7
+LBB3_7:
+	.loc	1 47 35 is_stmt 0
 	mov	w8, #1
-	.loc	1 47 35
 	str	w8, [sp, #12]
-LBB3_6:
-	.loc	1 48 3 is_stmt 1
-	mov	w0, wzr
-	bl	_countEvenNumber
-	cbz	w0, LBB3_8
-	.loc	1 0 3 is_stmt 0
-	mov	w8, #1
-	.loc	1 48 32
-	str	w8, [sp, #12]
+	b	LBB3_9
 LBB3_8:
+	b	LBB3_9
+LBB3_9:
+	.loc	1 0 35
+	mov	w0, wzr
+	.loc	1 48 3 is_stmt 1
+	bl	_countEvenNumber
+	cbz	w0, LBB3_11
+	b	LBB3_10
+LBB3_10:
+	.loc	1 48 32 is_stmt 0
+	mov	w8, #1
+	str	w8, [sp, #12]
+	b	LBB3_12
+LBB3_11:
+	b	LBB3_12
+LBB3_12:
 	.loc	1 49 3 is_stmt 1
 	mov	w0, #1
-	mov	w19, #1
 	bl	_countEvenNumber
-	cbz	w0, LBB3_10
+	cbz	w0, LBB3_14
+	b	LBB3_13
+LBB3_13:
 	.loc	1 49 32 is_stmt 0
-	str	w19, [sp, #12]
-LBB3_10:
+	mov	w8, #1
+	str	w8, [sp, #12]
+	b	LBB3_15
+LBB3_14:
+	b	LBB3_15
+LBB3_15:
 	.loc	1 51 3 is_stmt 1
 	ldr	w8, [sp, #12]
-	.loc	1 0 0 is_stmt 0
-Lloh0:
-	adrp	x9, l___unnamed_1@PAGE
-Lloh1:
-	add	x9, x9, l___unnamed_1@PAGEOFF
-	cmp	w8, #0
-Lloh2:
-	adrp	x8, l___unnamed_2@PAGE
-Lloh3:
-	add	x8, x8, l___unnamed_2@PAGEOFF
-	csel	x0, x8, x9, eq
+	cbnz	w8, LBB3_17
+	b	LBB3_16
+LBB3_16:
+Ltmp22:
+	.loc	1 52 5
+	adrp	x0, l___unnamed_1@PAGE
+	add	x0, x0, l___unnamed_1@PAGEOFF
 	bl	_printf
-	.loc	1 56 3 epilogue_begin is_stmt 1
-	ldp	x29, x30, [sp, #32]
+	b	LBB3_18
+Ltmp23:
+LBB3_17:
+	.loc	1 54 5
+	adrp	x0, l___unnamed_2@PAGE
+	add	x0, x0, l___unnamed_2@PAGEOFF
+	bl	_printf
+	b	LBB3_18
+Ltmp24:
+LBB3_18:
+	.loc	1 56 3
 	ldr	w0, [sp, #12]
-	ldp	x20, x19, [sp, #16]
-	add	sp, sp, #48
+	.loc	1 56 3 epilogue_begin is_stmt 0
+	ldp	x29, x30, [sp, #16]
+	add	sp, sp, #32
 	ret
-Ltmp19:
-	.loh AdrpAdd	Lloh2, Lloh3
-	.loh AdrpAdd	Lloh0, Lloh1
+Ltmp25:
 Lfunc_end3:
 	.cfi_endproc
 
 	.section	__TEXT,__cstring,cstring_literals
-l___unnamed_2:
+l___unnamed_1:
 	.asciz	"21.continue.c PASS\n"
 
-l___unnamed_1:
+l___unnamed_2:
 	.asciz	"21.continue.c FAIL\n"
 
 	.section	__DWARF,__debug_abbrev,regular,debug

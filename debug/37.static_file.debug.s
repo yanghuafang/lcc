@@ -9,21 +9,17 @@ Lfunc_begin0:
 	sub	sp, sp, #16
 	.cfi_def_cfa_offset 16
 Ltmp1:
-	.loc	1 6 3 prologue_end
-Lloh0:
-	adrp	x8, _counter@PAGE
-Lloh1:
-	ldr	w9, [x8, _counter@PAGEOFF]
-	mov	w8, w0
-	.loc	1 5 12
-	str	w8, [sp, #12]
+	.loc	1 5 12 prologue_end
+	str	w0, [sp, #12]
 	.loc	1 6 3
-	add	w0, w0, w9
+	ldr	w8, [sp, #12]
+	adrp	x9, _counter@PAGE
+	ldr	w9, [x9, _counter@PAGEOFF]
+	add	w0, w8, w9
 	.loc	1 6 3 epilogue_begin is_stmt 0
 	add	sp, sp, #16
 	ret
 Ltmp2:
-	.loh AdrpLdr	Lloh0, Lloh1
 Lfunc_end0:
 	.cfi_endproc
 
@@ -31,15 +27,18 @@ Lfunc_end0:
 	.p2align	2
 _bump:
 Lfunc_begin1:
+	.loc	1 9 0 is_stmt 1
 	.cfi_startproc
-	.loc	1 10 3 prologue_end is_stmt 1
 	adrp	x8, _counter@PAGE
-	ldr	w9, [x8, _counter@PAGEOFF]
-	add	w0, w9, #1
-	str	w0, [x8, _counter@PAGEOFF]
-	.loc	1 11 3
-	ret
 Ltmp3:
+	.loc	1 10 3 prologue_end
+	ldr	w9, [x8, _counter@PAGEOFF]
+	add	w9, w9, #1
+	str	w9, [x8, _counter@PAGEOFF]
+	.loc	1 11 3
+	ldr	w0, [x8, _counter@PAGEOFF]
+	ret
+Ltmp4:
 Lfunc_end1:
 	.cfi_endproc
 
@@ -53,18 +52,19 @@ Lfunc_begin2:
 	.cfi_def_cfa_offset 16
 	.cfi_offset w30, -8
 	.cfi_offset w29, -16
-Ltmp4:
-	.loc	1 15 3 prologue_end
 	adrp	x8, _counter@PAGE
+Ltmp5:
+	.loc	1 15 3 prologue_end
 	ldr	w9, [x8, _counter@PAGEOFF]
-	add	w0, w9, #1
-	str	w0, [x8, _counter@PAGEOFF]
+	add	w9, w9, #1
+	str	w9, [x8, _counter@PAGEOFF]
 	.loc	1 16 3
+	ldr	w0, [x8, _counter@PAGEOFF]
 	bl	_helper
 	.loc	1 16 3 epilogue_begin is_stmt 0
 	ldp	x29, x30, [sp], #16
 	ret
-Ltmp5:
+Ltmp6:
 Lfunc_end2:
 	.cfi_endproc
 
@@ -79,88 +79,112 @@ Lfunc_begin3:
 	.cfi_def_cfa_offset 32
 	.cfi_offset w30, -8
 	.cfi_offset w29, -16
-Ltmp6:
-	.loc	1 22 3 prologue_end
-	mov	w0, #5
-	.loc	1 20 3
+Ltmp7:
+	.loc	1 20 3 prologue_end
 	str	wzr, [sp, #12]
+	mov	w0, #5
 	.loc	1 22 3
 	bl	_helper
-	cmp	w0, #5
+	subs	w8, w0, #5
 	b.eq	LBB3_2
-	.loc	1 0 3 is_stmt 0
+	b	LBB3_1
+LBB3_1:
+	.loc	1 22 23 is_stmt 0
 	mov	w8, #1
-	.loc	1 22 23
 	str	w8, [sp, #12]
+	b	LBB3_3
 LBB3_2:
+	b	LBB3_3
+LBB3_3:
 	.loc	1 23 3 is_stmt 1
 	bl	_bump
-	cmp	w0, #1
-	b.eq	LBB3_4
-	.loc	1 0 3 is_stmt 0
-	mov	w8, #1
-	.loc	1 23 20
-	str	w8, [sp, #12]
+	subs	w8, w0, #1
+	b.eq	LBB3_5
+	b	LBB3_4
 LBB3_4:
+	.loc	1 23 20 is_stmt 0
+	mov	w8, #1
+	str	w8, [sp, #12]
+	b	LBB3_6
+LBB3_5:
+	b	LBB3_6
+LBB3_6:
 	.loc	1 24 3 is_stmt 1
 	bl	_bump
-	cmp	w0, #2
-	b.eq	LBB3_6
-	.loc	1 0 3 is_stmt 0
+	subs	w8, w0, #2
+	b.eq	LBB3_8
+	b	LBB3_7
+LBB3_7:
+	.loc	1 24 20 is_stmt 0
 	mov	w8, #1
-	.loc	1 24 20
 	str	w8, [sp, #12]
-LBB3_6:
+	b	LBB3_9
+LBB3_8:
+	b	LBB3_9
+LBB3_9:
 	.loc	1 25 3 is_stmt 1
 	mov	w0, #3
 	bl	_helper
-	cmp	w0, #5
-	b.eq	LBB3_8
-	.loc	1 0 3 is_stmt 0
+	subs	w8, w0, #5
+	b.eq	LBB3_11
+	b	LBB3_10
+LBB3_10:
+	.loc	1 25 23 is_stmt 0
 	mov	w8, #1
-	.loc	1 25 23
 	str	w8, [sp, #12]
-LBB3_8:
+	b	LBB3_12
+LBB3_11:
+	b	LBB3_12
+LBB3_12:
 	.loc	1 26 3 is_stmt 1
 	bl	_bump_with_helper
-	cmp	w0, #6
-	b.eq	LBB3_10
-	.loc	1 0 3 is_stmt 0
+	subs	w8, w0, #6
+	b.eq	LBB3_14
+	b	LBB3_13
+LBB3_13:
+	.loc	1 26 32 is_stmt 0
 	mov	w8, #1
-	.loc	1 26 32
 	str	w8, [sp, #12]
-LBB3_10:
+	b	LBB3_15
+LBB3_14:
+	b	LBB3_15
+LBB3_15:
 	.loc	1 28 3 is_stmt 1
 	ldr	w8, [sp, #12]
-	.loc	1 0 0 is_stmt 0
-Lloh2:
-	adrp	x9, l___unnamed_1@PAGE
-Lloh3:
-	add	x9, x9, l___unnamed_1@PAGEOFF
-	cmp	w8, #0
-Lloh4:
-	adrp	x8, l___unnamed_2@PAGE
-Lloh5:
-	add	x8, x8, l___unnamed_2@PAGEOFF
-	csel	x0, x8, x9, eq
+	cbnz	w8, LBB3_17
+	b	LBB3_16
+LBB3_16:
+Ltmp8:
+	.loc	1 29 5
+	adrp	x0, l___unnamed_1@PAGE
+	add	x0, x0, l___unnamed_1@PAGEOFF
 	bl	_printf
-	.loc	1 33 3 epilogue_begin is_stmt 1
-	ldp	x29, x30, [sp, #16]
+	b	LBB3_18
+Ltmp9:
+LBB3_17:
+	.loc	1 31 5
+	adrp	x0, l___unnamed_2@PAGE
+	add	x0, x0, l___unnamed_2@PAGEOFF
+	bl	_printf
+	b	LBB3_18
+Ltmp10:
+LBB3_18:
+	.loc	1 33 3
 	ldr	w0, [sp, #12]
+	.loc	1 33 3 epilogue_begin is_stmt 0
+	ldp	x29, x30, [sp, #16]
 	add	sp, sp, #32
 	ret
-Ltmp7:
-	.loh AdrpAdd	Lloh4, Lloh5
-	.loh AdrpAdd	Lloh2, Lloh3
+Ltmp11:
 Lfunc_end3:
 	.cfi_endproc
 
 .zerofill __DATA,__bss,_counter,4,2
 	.section	__TEXT,__cstring,cstring_literals
-l___unnamed_2:
+l___unnamed_1:
 	.asciz	"37.static_file.c PASS\n"
 
-l___unnamed_1:
+l___unnamed_2:
 	.asciz	"37.static_file.c FAIL\n"
 
 	.section	__DWARF,__debug_abbrev,regular,debug

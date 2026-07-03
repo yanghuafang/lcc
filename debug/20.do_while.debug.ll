@@ -57,7 +57,7 @@ entry:
   store i32 0, ptr %i, align 4, !dbg !20
   br label %do.loop, !dbg !25
 
-do.loop:                                          ; preds = %do.loop, %entry
+do.loop:                                          ; preds = %do.cond, %entry
   %1 = load i32, ptr %i, align 4, !dbg !26
   %2 = load i32, ptr %sum, align 4, !dbg !26
   %3 = add i32 %2, %1, !dbg !26
@@ -67,12 +67,15 @@ do.loop:                                          ; preds = %do.loop, %entry
   %6 = add i32 %5, 1, !dbg !28
   store i32 %6, ptr %i, align 4, !dbg !28
   %7 = load i32, ptr %i, align 4, !dbg !28
+  br label %do.cond, !dbg !28
+
+do.cond:                                          ; preds = %do.loop
   %8 = load i32, ptr %i, align 4, !dbg !28
   %9 = load i32, ptr %n, align 4, !dbg !28
   %10 = icmp sle i32 %8, %9, !dbg !28
   br i1 %10, label %do.loop, label %do.end, !dbg !28
 
-do.end:                                           ; preds = %do.loop
+do.end:                                           ; preds = %do.cond
   %11 = load i32, ptr %sum, align 4, !dbg !29
   ret i32 %11, !dbg !29
 }
@@ -84,50 +87,71 @@ entry:
   store i32 0, ptr %err, align 4, !dbg !34
   %0 = call i32 @countSum(i32 100), !dbg !35
   %1 = icmp ne i32 %0, 5050, !dbg !35
-  br i1 %1, label %then, label %if.end, !dbg !35
+  br i1 %1, label %then, label %else, !dbg !35
 
 then:                                             ; preds = %entry
   store i32 1, ptr %err, align 4, !dbg !36
   %2 = load i32, ptr %err, align 4, !dbg !36
   br label %if.end, !dbg !36
 
-if.end:                                           ; preds = %entry, %then
+else:                                             ; preds = %entry
+  br label %if.end, !dbg !36
+
+if.end:                                           ; preds = %else, %then
   %3 = call i32 @countSum2(i32 100), !dbg !37
   %4 = icmp ne i32 %3, 5050, !dbg !37
-  br i1 %4, label %then1, label %if.end3, !dbg !37
+  br i1 %4, label %then1, label %else2, !dbg !37
 
 then1:                                            ; preds = %if.end
   store i32 1, ptr %err, align 4, !dbg !38
   %5 = load i32, ptr %err, align 4, !dbg !38
   br label %if.end3, !dbg !38
 
-if.end3:                                          ; preds = %if.end, %then1
+else2:                                            ; preds = %if.end
+  br label %if.end3, !dbg !38
+
+if.end3:                                          ; preds = %else2, %then1
   %6 = call i32 @countSum(i32 0), !dbg !39
   %7 = icmp ne i32 %6, 0, !dbg !39
-  br i1 %7, label %then4, label %if.end6, !dbg !39
+  br i1 %7, label %then4, label %else5, !dbg !39
 
 then4:                                            ; preds = %if.end3
   store i32 1, ptr %err, align 4, !dbg !40
   %8 = load i32, ptr %err, align 4, !dbg !40
   br label %if.end6, !dbg !40
 
-if.end6:                                          ; preds = %if.end3, %then4
+else5:                                            ; preds = %if.end3
+  br label %if.end6, !dbg !40
+
+if.end6:                                          ; preds = %else5, %then4
   %9 = call i32 @countSum2(i32 0), !dbg !41
   %10 = icmp ne i32 %9, 0, !dbg !41
-  br i1 %10, label %then7, label %if.end9, !dbg !41
+  br i1 %10, label %then7, label %else8, !dbg !41
 
 then7:                                            ; preds = %if.end6
   store i32 1, ptr %err, align 4, !dbg !42
   %11 = load i32, ptr %err, align 4, !dbg !42
   br label %if.end9, !dbg !42
 
-if.end9:                                          ; preds = %if.end6, %then7
+else8:                                            ; preds = %if.end6
+  br label %if.end9, !dbg !42
+
+if.end9:                                          ; preds = %else8, %then7
   %12 = load i32, ptr %err, align 4, !dbg !43
   %13 = icmp eq i32 %12, 0, !dbg !43
-  %. = select i1 %13, ptr @0, ptr @1, !dbg !44
-  %14 = call i32 (ptr, ...) @printf(ptr %.), !dbg !44
-  %15 = load i32, ptr %err, align 4, !dbg !45
-  ret i32 %15, !dbg !45
+  br i1 %13, label %then10, label %else11, !dbg !43
+
+then10:                                           ; preds = %if.end9
+  %14 = call i32 (ptr, ...) @printf(ptr @0), !dbg !44
+  br label %if.end12, !dbg !44
+
+else11:                                           ; preds = %if.end9
+  %15 = call i32 (ptr, ...) @printf(ptr @1), !dbg !46
+  br label %if.end12, !dbg !46
+
+if.end12:                                         ; preds = %else11, %then10
+  %16 = load i32, ptr %err, align 4, !dbg !48
+  ret i32 %16, !dbg !48
 }
 
 !llvm.dbg.cu = !{!0}
@@ -176,5 +200,8 @@ if.end9:                                          ; preds = %if.end6, %then7
 !41 = !DILocation(line: 29, column: 3, scope: !30)
 !42 = !DILocation(line: 29, column: 26, scope: !30)
 !43 = !DILocation(line: 31, column: 3, scope: !30)
-!44 = !DILocation(line: 0, scope: !30)
-!45 = !DILocation(line: 36, column: 3, scope: !30)
+!44 = !DILocation(line: 32, column: 5, scope: !45)
+!45 = distinct !DILexicalBlock(scope: !30, file: !1, line: 31, column: 17)
+!46 = !DILocation(line: 34, column: 5, scope: !47)
+!47 = distinct !DILexicalBlock(scope: !30, file: !1, line: 33, column: 10)
+!48 = !DILocation(line: 36, column: 3, scope: !30)

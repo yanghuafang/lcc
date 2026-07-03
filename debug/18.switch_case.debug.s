@@ -10,29 +10,134 @@ Lfunc_begin0:
 	sub	sp, sp, #16
 	.cfi_def_cfa_offset 16
 Ltmp1:
-	.loc	1 5 3 prologue_end
-	sub	w8, w0, #1
-	.loc	1 3 6
+	.loc	1 3 6 prologue_end
 	str	w0, [sp, #8]
 	.loc	1 5 3
-	cmp	w8, #9
-	b.hi	LBB0_2
-Lloh0:
-	adrp	x9, l_switch.table.gradeOfScore@PAGE
-Lloh1:
-	add	x9, x9, l_switch.table.gradeOfScore@PAGEOFF
-	ldrb	w0, [x9, w8, sxtw]
-	b	LBB0_3
-LBB0_2:
+	ldr	w8, [sp, #8]
+	str	w8, [sp, #4]
+	subs	w8, w8, #1
+	b.eq	LBB0_11
+	b	LBB0_1
+LBB0_1:
 	.loc	1 0 3 is_stmt 0
-	mov	w0, #69
+	ldr	w8, [sp, #4]
+	.loc	1 5 3
+	subs	w8, w8, #2
+	b.eq	LBB0_12
+	b	LBB0_2
+LBB0_2:
+	.loc	1 0 3
+	ldr	w8, [sp, #4]
+	.loc	1 5 3
+	subs	w8, w8, #3
+	b.eq	LBB0_13
+	b	LBB0_3
 LBB0_3:
-	strb	w0, [sp, #15]
-	.loc	1 28 3 epilogue_begin is_stmt 1
+	.loc	1 0 3
+	ldr	w8, [sp, #4]
+	.loc	1 5 3
+	subs	w8, w8, #4
+	b.eq	LBB0_14
+	b	LBB0_4
+LBB0_4:
+	.loc	1 0 3
+	ldr	w8, [sp, #4]
+	.loc	1 5 3
+	subs	w8, w8, #5
+	b.eq	LBB0_15
+	b	LBB0_5
+LBB0_5:
+	.loc	1 0 3
+	ldr	w8, [sp, #4]
+	.loc	1 5 3
+	subs	w8, w8, #6
+	b.eq	LBB0_16
+	b	LBB0_6
+LBB0_6:
+	.loc	1 0 3
+	ldr	w8, [sp, #4]
+	.loc	1 5 3
+	subs	w8, w8, #7
+	b.eq	LBB0_17
+	b	LBB0_7
+LBB0_7:
+	.loc	1 0 3
+	ldr	w8, [sp, #4]
+	.loc	1 5 3
+	subs	w8, w8, #8
+	b.eq	LBB0_18
+	b	LBB0_8
+LBB0_8:
+	.loc	1 0 3
+	ldr	w8, [sp, #4]
+	.loc	1 5 3
+	subs	w8, w8, #9
+	b.eq	LBB0_19
+	b	LBB0_9
+LBB0_9:
+	.loc	1 0 3
+	ldr	w8, [sp, #4]
+	.loc	1 5 3
+	subs	w8, w8, #10
+	b.eq	LBB0_20
+	b	LBB0_10
+LBB0_10:
+	b	LBB0_21
+LBB0_11:
+	.loc	1 6 5 is_stmt 1
+	b	LBB0_12
+LBB0_12:
+	.loc	1 7 5
+	b	LBB0_13
+LBB0_13:
+	.loc	1 8 5
+	b	LBB0_14
+LBB0_14:
+	.loc	1 9 5
+	b	LBB0_15
+LBB0_15:
+	.loc	1 11 7
+	mov	w8, #68
+	strb	w8, [sp, #15]
+	.loc	1 12 7
+	b	LBB0_22
+LBB0_16:
+	.loc	1 14 7
+	mov	w8, #67
+	strb	w8, [sp, #15]
+	.loc	1 15 7
+	b	LBB0_22
+LBB0_17:
+	.loc	1 16 5
+	b	LBB0_18
+LBB0_18:
+	.loc	1 18 7
+	mov	w8, #66
+	strb	w8, [sp, #15]
+	.loc	1 19 7
+	b	LBB0_22
+LBB0_19:
+	.loc	1 20 5
+	b	LBB0_20
+LBB0_20:
+	.loc	1 22 7
+	mov	w8, #65
+	strb	w8, [sp, #15]
+	.loc	1 23 7
+	b	LBB0_22
+LBB0_21:
+	.loc	1 25 7
+	mov	w8, #69
+	strb	w8, [sp, #15]
+	.loc	1 26 7
+	b	LBB0_22
+LBB0_22:
+	.loc	1 28 3
+	ldrb	w0, [sp, #15]
+	.loc	1 28 3 epilogue_begin is_stmt 0
 	add	sp, sp, #16
 	ret
 Ltmp2:
-	.loh AdrpAdd	Lloh0, Lloh1
 Lfunc_end0:
 	.cfi_endproc
 
@@ -40,7 +145,7 @@ Lfunc_end0:
 	.p2align	2
 _main:
 Lfunc_begin1:
-	.loc	1 31 0
+	.loc	1 31 0 is_stmt 1
 	.cfi_startproc
 	sub	sp, sp, #32
 	stp	x29, x30, [sp, #16]
@@ -48,114 +153,143 @@ Lfunc_begin1:
 	.cfi_offset w30, -8
 	.cfi_offset w29, -16
 Ltmp3:
-	.loc	1 34 3 prologue_end
-	mov	w0, #3
-	.loc	1 32 3
+	.loc	1 32 3 prologue_end
 	str	wzr, [sp, #4]
 	.loc	1 34 3
+	mov	w0, #3
 	bl	_gradeOfScore
-	and	w8, w0, #0xff
-	cmp	w8, #68
+	sxtb	w8, w0
+	subs	w8, w8, #68
 	b.eq	LBB1_2
-	.loc	1 0 3 is_stmt 0
+	b	LBB1_1
+LBB1_1:
+	.loc	1 34 31 is_stmt 0
 	mov	w8, #1
-	.loc	1 34 31
 	str	w8, [sp, #4]
+	b	LBB1_3
 LBB1_2:
+	b	LBB1_3
+LBB1_3:
 	.loc	1 35 3 is_stmt 1
 	mov	w0, #5
 	bl	_gradeOfScore
-	and	w8, w0, #0xff
-	cmp	w8, #68
-	b.eq	LBB1_4
-	.loc	1 0 3 is_stmt 0
-	mov	w8, #1
-	.loc	1 35 31
-	str	w8, [sp, #4]
+	sxtb	w8, w0
+	subs	w8, w8, #68
+	b.eq	LBB1_5
+	b	LBB1_4
 LBB1_4:
+	.loc	1 35 31 is_stmt 0
+	mov	w8, #1
+	str	w8, [sp, #4]
+	b	LBB1_6
+LBB1_5:
+	b	LBB1_6
+LBB1_6:
 	.loc	1 36 3 is_stmt 1
 	mov	w0, #6
 	bl	_gradeOfScore
-	and	w8, w0, #0xff
-	cmp	w8, #67
-	b.eq	LBB1_6
-	.loc	1 0 3 is_stmt 0
+	sxtb	w8, w0
+	subs	w8, w8, #67
+	b.eq	LBB1_8
+	b	LBB1_7
+LBB1_7:
+	.loc	1 36 31 is_stmt 0
 	mov	w8, #1
-	.loc	1 36 31
 	str	w8, [sp, #4]
-LBB1_6:
+	b	LBB1_9
+LBB1_8:
+	b	LBB1_9
+LBB1_9:
 	.loc	1 37 3 is_stmt 1
 	mov	w0, #8
 	bl	_gradeOfScore
-	and	w8, w0, #0xff
-	cmp	w8, #66
-	b.eq	LBB1_8
-	.loc	1 0 3 is_stmt 0
+	sxtb	w8, w0
+	subs	w8, w8, #66
+	b.eq	LBB1_11
+	b	LBB1_10
+LBB1_10:
+	.loc	1 37 31 is_stmt 0
 	mov	w8, #1
-	.loc	1 37 31
 	str	w8, [sp, #4]
-LBB1_8:
+	b	LBB1_12
+LBB1_11:
+	b	LBB1_12
+LBB1_12:
 	.loc	1 38 3 is_stmt 1
 	mov	w0, #9
 	bl	_gradeOfScore
-	and	w8, w0, #0xff
-	cmp	w8, #65
-	b.eq	LBB1_10
-	.loc	1 0 3 is_stmt 0
+	sxtb	w8, w0
+	subs	w8, w8, #65
+	b.eq	LBB1_14
+	b	LBB1_13
+LBB1_13:
+	.loc	1 38 31 is_stmt 0
 	mov	w8, #1
-	.loc	1 38 31
 	str	w8, [sp, #4]
-LBB1_10:
-	.loc	1 0 31
-	mov	w8, #69
+	b	LBB1_15
+LBB1_14:
+	b	LBB1_15
+LBB1_15:
 	.loc	1 41 3 is_stmt 1
 	str	wzr, [sp, #12]
-	.loc	1 47 3
-	cmp	w8, #69
+	.loc	1 42 3
+	b	LBB1_16
+LBB1_16:
 	.loc	1 44 7
+	mov	w8, #69
 	strb	w8, [sp, #11]
+	.loc	1 45 7
+	b	LBB1_17
+LBB1_17:
 	.loc	1 47 3
-	b.eq	LBB1_12
-	.loc	1 0 3 is_stmt 0
+	ldrsb	w8, [sp, #11]
+	subs	w8, w8, #69
+	b.eq	LBB1_19
+	b	LBB1_18
+LBB1_18:
+	.loc	1 47 21 is_stmt 0
 	mov	w8, #1
-	.loc	1 47 21
 	str	w8, [sp, #4]
-LBB1_12:
+	b	LBB1_20
+LBB1_19:
+	b	LBB1_20
+LBB1_20:
 	.loc	1 49 3 is_stmt 1
 	ldr	w8, [sp, #4]
-	.loc	1 0 0 is_stmt 0
-Lloh2:
-	adrp	x9, l___unnamed_1@PAGE
-Lloh3:
-	add	x9, x9, l___unnamed_1@PAGEOFF
-	cmp	w8, #0
-Lloh4:
-	adrp	x8, l___unnamed_2@PAGE
-Lloh5:
-	add	x8, x8, l___unnamed_2@PAGEOFF
-	csel	x0, x8, x9, eq
+	cbnz	w8, LBB1_22
+	b	LBB1_21
+LBB1_21:
+Ltmp4:
+	.loc	1 50 5
+	adrp	x0, l___unnamed_1@PAGE
+	add	x0, x0, l___unnamed_1@PAGEOFF
 	bl	_printf
-	.loc	1 54 3 epilogue_begin is_stmt 1
-	ldp	x29, x30, [sp, #16]
+	b	LBB1_23
+Ltmp5:
+LBB1_22:
+	.loc	1 52 5
+	adrp	x0, l___unnamed_2@PAGE
+	add	x0, x0, l___unnamed_2@PAGEOFF
+	bl	_printf
+	b	LBB1_23
+Ltmp6:
+LBB1_23:
+	.loc	1 54 3
 	ldr	w0, [sp, #4]
+	.loc	1 54 3 epilogue_begin is_stmt 0
+	ldp	x29, x30, [sp, #16]
 	add	sp, sp, #32
 	ret
-Ltmp4:
-	.loh AdrpAdd	Lloh4, Lloh5
-	.loh AdrpAdd	Lloh2, Lloh3
+Ltmp7:
 Lfunc_end1:
 	.cfi_endproc
 
 	.section	__TEXT,__cstring,cstring_literals
-l___unnamed_2:
+l___unnamed_1:
 	.asciz	"18.switch_case.c PASS\n"
 
-l___unnamed_1:
+l___unnamed_2:
 	.asciz	"18.switch_case.c FAIL\n"
-
-	.section	__TEXT,__const
-l_switch.table.gradeOfScore:
-	.ascii	"DDDDDCBBAA"
 
 	.section	__DWARF,__debug_abbrev,regular,debug
 Lsection_abbrev:

@@ -21,7 +21,7 @@ entry:
   %err = alloca i32, align 4
     #dbg_declare(ptr %err, !18, !DIExpression(), !19)
   store i32 0, ptr %err, align 4, !dbg !19
-  %0 = bitcast ptr %s to ptr, !dbg !20
+  %0 = getelementptr i8, ptr %s, i32 0, !dbg !20
   store i8 103, ptr %0, align 1, !dbg !20
   %1 = load i8, ptr %0, align 1, !dbg !20
   %2 = getelementptr i8, ptr %s, i32 1, !dbg !21
@@ -48,7 +48,7 @@ entry:
   %14 = load i8, ptr getelementptr (i8, ptr @gs, i32 4), align 1, !dbg !29
   store i8 0, ptr getelementptr (i8, ptr @gs, i32 5), align 1, !dbg !30
   %15 = load i8, ptr getelementptr (i8, ptr @gs, i32 5), align 1, !dbg !30
-  %16 = bitcast ptr %i to ptr, !dbg !31
+  %16 = getelementptr i32, ptr %i, i32 0, !dbg !31
   store i32 128, ptr %16, align 4, !dbg !31
   %17 = load i32, ptr %16, align 4, !dbg !31
   %18 = getelementptr i32, ptr %i, i32 1, !dbg !32
@@ -58,71 +58,89 @@ entry:
   %20 = load i32, ptr @gi, align 4, !dbg !33
   store i32 2048, ptr getelementptr (i32, ptr @gi, i32 1), align 4, !dbg !34
   %21 = load i32, ptr getelementptr (i32, ptr @gi, i32 1), align 4, !dbg !34
-  %22 = bitcast ptr %i to ptr, !dbg !35
+  %22 = getelementptr i32, ptr %i, i32 0, !dbg !35
   %23 = load i32, ptr %22, align 4, !dbg !35
   %24 = icmp ne i32 %23, 128, !dbg !35
-  br i1 %24, label %then, label %if.end, !dbg !35
+  br i1 %24, label %then, label %else, !dbg !35
 
 then:                                             ; preds = %entry
   store i32 1, ptr %err, align 4, !dbg !36
   %25 = load i32, ptr %err, align 4, !dbg !36
   br label %if.end, !dbg !36
 
-if.end:                                           ; preds = %entry, %then
+else:                                             ; preds = %entry
+  br label %if.end, !dbg !36
+
+if.end:                                           ; preds = %else, %then
   %26 = getelementptr i32, ptr %i, i32 1, !dbg !37
   %27 = load i32, ptr %26, align 4, !dbg !37
   %28 = icmp ne i32 %27, 256, !dbg !37
-  br i1 %28, label %then1, label %if.end3, !dbg !37
+  br i1 %28, label %then1, label %else2, !dbg !37
 
 then1:                                            ; preds = %if.end
   store i32 1, ptr %err, align 4, !dbg !38
   %29 = load i32, ptr %err, align 4, !dbg !38
   br label %if.end3, !dbg !38
 
-if.end3:                                          ; preds = %if.end, %then1
+else2:                                            ; preds = %if.end
+  br label %if.end3, !dbg !38
+
+if.end3:                                          ; preds = %else2, %then1
   %30 = load i32, ptr @gi, align 4, !dbg !39
   %31 = icmp ne i32 %30, 1024, !dbg !39
-  br i1 %31, label %then4, label %if.end6, !dbg !39
+  br i1 %31, label %then4, label %else5, !dbg !39
 
 then4:                                            ; preds = %if.end3
   store i32 1, ptr %err, align 4, !dbg !40
   %32 = load i32, ptr %err, align 4, !dbg !40
   br label %if.end6, !dbg !40
 
-if.end6:                                          ; preds = %if.end3, %then4
+else5:                                            ; preds = %if.end3
+  br label %if.end6, !dbg !40
+
+if.end6:                                          ; preds = %else5, %then4
   %33 = load i32, ptr getelementptr (i32, ptr @gi, i32 1), align 4, !dbg !41
   %34 = icmp ne i32 %33, 2048, !dbg !41
-  br i1 %34, label %then7, label %if.end9, !dbg !41
+  br i1 %34, label %then7, label %else8, !dbg !41
 
 then7:                                            ; preds = %if.end6
   store i32 1, ptr %err, align 4, !dbg !42
   %35 = load i32, ptr %err, align 4, !dbg !42
   br label %if.end9, !dbg !42
 
-if.end9:                                          ; preds = %if.end6, %then7
-  %36 = bitcast ptr %s to ptr, !dbg !43
+else8:                                            ; preds = %if.end6
+  br label %if.end9, !dbg !42
+
+if.end9:                                          ; preds = %else8, %then7
+  %36 = getelementptr i8, ptr %s, i32 0, !dbg !43
   %37 = load i8, ptr %36, align 1, !dbg !43
   %38 = sext i8 %37 to i32, !dbg !43
   %39 = icmp ne i32 %38, 103, !dbg !43
-  br i1 %39, label %then10, label %if.end12, !dbg !43
+  br i1 %39, label %then10, label %else11, !dbg !43
 
 then10:                                           ; preds = %if.end9
   store i32 1, ptr %err, align 4, !dbg !44
   %40 = load i32, ptr %err, align 4, !dbg !44
   br label %if.end12, !dbg !44
 
-if.end12:                                         ; preds = %if.end9, %then10
+else11:                                           ; preds = %if.end9
+  br label %if.end12, !dbg !44
+
+if.end12:                                         ; preds = %else11, %then10
   %41 = load i8, ptr @gs, align 1, !dbg !45
   %42 = sext i8 %41 to i32, !dbg !45
   %43 = icmp ne i32 %42, 108, !dbg !45
-  br i1 %43, label %then13, label %if.end15, !dbg !45
+  br i1 %43, label %then13, label %else14, !dbg !45
 
 then13:                                           ; preds = %if.end12
   store i32 1, ptr %err, align 4, !dbg !46
   %44 = load i32, ptr %err, align 4, !dbg !46
   br label %if.end15, !dbg !46
 
-if.end15:                                         ; preds = %if.end12, %then13
+else14:                                           ; preds = %if.end12
+  br label %if.end15, !dbg !46
+
+if.end15:                                         ; preds = %else14, %then13
   %45 = getelementptr i32, ptr %i, i32 2, !dbg !47
   store i32 0, ptr %45, align 4, !dbg !47
   %46 = load i32, ptr %45, align 4, !dbg !47
@@ -132,31 +150,46 @@ if.end15:                                         ; preds = %if.end12, %then13
   %49 = getelementptr i32, ptr %i, i32 2, !dbg !49
   %50 = load i32, ptr %49, align 4, !dbg !49
   %51 = icmp ne i32 %50, 0, !dbg !49
-  br i1 %51, label %then16, label %if.end18, !dbg !49
+  br i1 %51, label %then16, label %else17, !dbg !49
 
 then16:                                           ; preds = %if.end15
   store i32 1, ptr %err, align 4, !dbg !50
   %52 = load i32, ptr %err, align 4, !dbg !50
   br label %if.end18, !dbg !50
 
-if.end18:                                         ; preds = %if.end15, %then16
+else17:                                           ; preds = %if.end15
+  br label %if.end18, !dbg !50
+
+if.end18:                                         ; preds = %else17, %then16
   %53 = getelementptr i32, ptr %i, i32 3, !dbg !51
   %54 = load i32, ptr %53, align 4, !dbg !51
   %55 = icmp ne i32 %54, -1, !dbg !51
-  br i1 %55, label %then19, label %if.end21, !dbg !51
+  br i1 %55, label %then19, label %else20, !dbg !51
 
 then19:                                           ; preds = %if.end18
   store i32 1, ptr %err, align 4, !dbg !52
   %56 = load i32, ptr %err, align 4, !dbg !52
   br label %if.end21, !dbg !52
 
-if.end21:                                         ; preds = %if.end18, %then19
+else20:                                           ; preds = %if.end18
+  br label %if.end21, !dbg !52
+
+if.end21:                                         ; preds = %else20, %then19
   %57 = load i32, ptr %err, align 4, !dbg !53
   %58 = icmp eq i32 %57, 0, !dbg !53
-  %. = select i1 %58, ptr @1, ptr @2, !dbg !54
-  %59 = call i32 (ptr, ...) @printf(ptr %.), !dbg !54
-  %60 = load i32, ptr %err, align 4, !dbg !55
-  ret i32 %60, !dbg !55
+  br i1 %58, label %then22, label %else23, !dbg !53
+
+then22:                                           ; preds = %if.end21
+  %59 = call i32 (ptr, ...) @printf(ptr @1), !dbg !54
+  br label %if.end24, !dbg !54
+
+else23:                                           ; preds = %if.end21
+  %60 = call i32 (ptr, ...) @printf(ptr @2), !dbg !56
+  br label %if.end24, !dbg !56
+
+if.end24:                                         ; preds = %else23, %then22
+  %61 = load i32, ptr %err, align 4, !dbg !58
+  ret i32 %61, !dbg !58
 }
 
 !llvm.dbg.cu = !{!0}
@@ -215,5 +248,8 @@ if.end21:                                         ; preds = %if.end18, %then19
 !51 = !DILocation(line: 40, column: 3, scope: !2)
 !52 = !DILocation(line: 40, column: 19, scope: !2)
 !53 = !DILocation(line: 42, column: 3, scope: !2)
-!54 = !DILocation(line: 0, scope: !2)
-!55 = !DILocation(line: 47, column: 3, scope: !2)
+!54 = !DILocation(line: 43, column: 5, scope: !55)
+!55 = distinct !DILexicalBlock(scope: !2, file: !1, line: 42, column: 17)
+!56 = !DILocation(line: 45, column: 5, scope: !57)
+!57 = distinct !DILexicalBlock(scope: !2, file: !1, line: 44, column: 10)
+!58 = !DILocation(line: 47, column: 3, scope: !2)

@@ -1,6 +1,6 @@
 # Compiler pipeline & LLVM tools
 
-**Status:** M9 classical-optimization study notes live here; M18 may add CI recipes and more examples.
+**Status:** M9 classical-optimization study notes and M12 codegen/asm diff live here; M18 may add CI recipes and more examples.
 
 Middle/back-end implementation milestones: [MiddleBackendRoadmap.md](MiddleBackendRoadmap.md). Full learning path: [LearningPlan.md](LearningPlan.md).
 
@@ -151,6 +151,70 @@ This is a compact example of **mem2reg** (remove allocas), **instcombine** (simp
 2. Run `opt --print-pipeline-passes -passes='default<O2>' /tmp/q-pre.ll -disable-output` and locate `mem2reg`, `instcombine`, `gvn`, and `licm`.
 3. Diff `@partition` and `@swap` between `25.quick_sort.release.pre.ll` and `.post.ll`.
 4. Confirm `.post.ll` is very close to `opt -passes='default<O2>'` on `.pre.ll` output (lcc’s `-O2` uses the same pipeline).
+
+---
+
+## Codegen opt level & asm diff (M12)
+
+IR `-O` runs in `IrOptimizer` (middle-end). The same CLI level is forwarded to `TargetBackend` as LLVM **`CodeGenOptLevel`** for `-o` and `-S` emission. Middle-end and backend opt are independent layers: even with `-O0` IR you can request `-O2` codegen (unusual), and `-O2` IR with `-O0` codegen is also possible — `compile-tests.sh` uses matching pairs (`--debug` = `-g -O0`, `--release` = `-O2`).
+
+### Mapping (LLVM 20)
+
+| CLI | `CodeGenOptLevel` | Backend effect (summary) |
+|-----|-------------------|--------------------------|
+| *(none)* / `-O0` | `None` | Minimal machine peepholes; stack spills for all locals |
+| `-O1` | `Less` | Light machine opts |
+| `-O2`, `-Os`, `-Oz` | `Default` | Standard regalloc, peepholes, branch folding |
+| `-O3` | `Aggressive` | More aggressive machine passes |
+
+Implementation: `resolveCodeGenOptLevel()` in `src/TargetBackend.cpp`, wired from `main` via `TargetBackendOptions::optimizationLevel`.
+
+### Case study: `25.quick_sort.c` asm (`-O0` vs `-O2`)
+
+`compile-tests.sh` writes `debug/25.quick_sort.debug.s` (`-g -O0`) and `debug/25.quick_sort.release.s` (`-O2`). On a typical ARM64 host:
+
+```bash
+wc -l ../debug/25.quick_sort.debug.s ../debug/25.quick_sort.release.s
+# 890 debug.s  vs  149 release.s  (whole file)
+```
+
+**`-O0` `@partition`** (`debug/25.quick_sort.debug.s`): parameters and locals live on the stack; each use is a `str`/`ldr` pair; `@swap` is called from the loop:
+
+```asm
+_partition:
+    sub sp, sp, #48
+    str x0, [sp]          ; spill array pointer
+    str w1, [sp, #12]     ; spill low
+    ...
+    bl _swap              ; call helper every swap
+```
+
+**`-O2` `@partition`** (`debug/25.quick_sort.release.s`): SSA-style values in registers; pivot in `w9`, indices in `w1`/`w11`; swaps inlined with `ldr`/`str` (no `@swap` call in the hot loop):
+
+```asm
+_partition:
+    sub w10, w2, #1
+    ldr w9, [x0, w2, sxtw #2]    ; pivot in register
+    ...
+    ldr w13, [x8, w1, sxtw #2]
+    cmp w13, w9
+    ...
+    str w13, [x8, w11, sxtw #2]  ; inline swap
+    str w14, [x8, x12, lsl #2]
+```
+
+The release build combines **IR opts** (mem2reg, instcombine, inlining) with **backend opts** (better regalloc, dead block elimination, tail-call / call elimination). Compare with:
+
+```bash
+diff -u ../debug/25.quick_sort.debug.s ../debug/25.quick_sort.release.s | less
+llvm-objdump -d ../../lcc-build/25.quick_sort.o   # after --release compile
+```
+
+### Verify M12 yourself
+
+1. Run `./compile-tests.sh --debug 25.quick_sort.c && ./compile-tests.sh --release 25.quick_sort.c`.
+2. Confirm `@partition` in `.release.s` is shorter and avoids stack spills / `@swap` calls in the loop.
+3. Full suite: `./compile-tests.sh && ./link-tests.sh && ./run-tests.sh`.
 
 ---
 

@@ -12,6 +12,8 @@ struct TargetBackendOptions {
   std::string triple;  // empty = host default
   std::string cpu = "generic";
   std::string features;
+  // CLI -O for backend codegen (see TargetBackend::resolveCodeGenOptLevel).
+  std::string optimizationLevel;
 };
 
 // LLVM backend: TargetMachine setup and object/asm emission via legacy PM.

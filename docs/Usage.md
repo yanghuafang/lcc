@@ -17,7 +17,7 @@ lcc -i <input.c> -o <output.o> [-S <asm.s>] [-v <ast.dot>] [-l <ir.ll>] [-l-pre-
 | `-l-post-opt` | no | LLVM IR right after optimization, or after debug finalization when `-g` |
 | `-ir-stats` | no | Write load/store/call counts to `file` (`-` = stderr); counts raw IR before LLVM opts |
 | `-g` | no | Embed DWARF in the object file (use without `-O` for reliable stepping and variables) |
-| `-O0` … `-Oz` | no | LLVM optimization level (mutually exclusive) |
+| `-O0` … `-Oz` | no | LLVM optimization level (mutually exclusive); also sets backend `CodeGenOptLevel` for `-o`/`-S` |
 | `--target` | no | LLVM target triple (default: host) |
 | `-mcpu` | no | Target CPU for codegen (default: `generic`) |
 | `-mattr` | no | Target features, e.g. `+avx2,-sse4.1` (default: none) |

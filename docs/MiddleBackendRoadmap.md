@@ -11,7 +11,7 @@ Implementation details for [LearningPlan.md](LearningPlan.md) milestones **M4–
 | IR emission | `CodeGenerator::genIrCode`, `AbstractSyntaxTree.cpp`, `Utils.cpp` | AST walk → raw `llvm::Module` |
 | IR optimization | `IrOptimizer::run` | `PassBuilder::buildPerModuleDefaultPipeline` |
 | IR instrumentation | `IrInstructionStatsPass` (`-ir-stats`) | New PM function pass; no IR change |
-| Object emission | `TargetBackend::emitObject` via `CodeGenerator::genObjectCode` | Host triple (or `--target`), `-mcpu`/`-mattr`, legacy PM → `.o` |
+| Object emission | `TargetBackend::emitObject` via `CodeGenerator::genObjectCode` | Host triple (or `--target`), `-mcpu`/`-mattr`, CLI `-O` → `CodeGenOptLevel`, legacy PM → `.o` |
 | Assembly emission | `TargetBackend::emitAssembly` via `-S` | Same `TargetBackendOptions` as object emission |
 | Debug info | `DebugInfoBuilder` | `-g` skips IR opts |
 | Reference IR | `debug/*.{debug,release}.{pre,post}.ll`, `*.debug.ll`, `*.release.ll` | 40 tests × 2 modes |
@@ -248,11 +248,30 @@ Use `llvm::CodeGenFileType::AssemblyFile` in `addPassesToEmitFile`.
 
 ## M12: Codegen opt level & asm diff
 
+**Status:** done
+
 **Acceptance criteria**
 
-- [ ] `TargetMachine` codegen opt level matches CLI `-O` (see `CodeGenOpt::Level`)
-- [ ] Saved asm for `25.quick_sort.c` at `-O0` and `-O2` under `debug/` (optional, gitignored or one golden)
-- [ ] Written comparison: instruction count or loop structure in hot function
+- [x] `TargetMachine` codegen opt level matches CLI `-O` (see `CodeGenOptLevel` in `TargetBackend.cpp`)
+- [x] Saved asm for `25.quick_sort.c` at `-O0` and `-O2` under `debug/` (`*.debug.s` / `*.release.s` from `compile-tests.sh`)
+- [x] Written comparison: instruction count and loop structure in hot function ([Pipeline.md § M12](Pipeline.md#m12-codegen-opt-level--asm-diff))
+
+**Mapping** (LLVM 20 `CodeGenOptLevel`):
+
+| CLI | Codegen opt |
+|-----|-------------|
+| *(none)* / `-O0` | `None` |
+| `-O1` | `Less` |
+| `-O2`, `-Os`, `-Oz` | `Default` |
+| `-O3` | `Aggressive` |
+
+**Verify asm diff**
+
+```bash
+# From lcc/scripts after compile-tests.sh (--debug = -g -O0, --release = -O2)
+wc -l ../debug/25.quick_sort.debug.s ../debug/25.quick_sort.release.s
+diff -u ../debug/25.quick_sort.debug.s ../debug/25.quick_sort.release.s | head
+```
 
 ---
 

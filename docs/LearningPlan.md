@@ -271,6 +271,8 @@ Skip if M6 satisfies your learning goals.
 
 ## M12: Codegen opt level & asm diff
 
+**Status:** done
+
 **Goal:** Relate IR `-O` to backend output.
 
 | Step | Action |

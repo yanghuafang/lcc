@@ -192,6 +192,7 @@ int main(int argc, char* argv[]) {
   backendOptions.triple = parser.get<std::string>("--target");
   backendOptions.cpu = parser.get<std::string>("-mcpu");
   backendOptions.features = parser.get<std::string>("-mattr");
+  backendOptions.optimizationLevel = optimizationLevel;
   generator.setTargetBackendOptions(backendOptions);
 
   // Generate object file.
