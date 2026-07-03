@@ -15,6 +15,7 @@ All commands below assume `cd lcc/scripts`.
 | `check-debug-info.sh` | Smoke test: compile with `-g -O0`, verify `llvm-dwarfdump` output |
 | `check-asm-smoke.sh` | Smoke test: `-O2 -S` on one test; verify non-empty asm (M18 CI) |
 | `mir-study.sh` | Study helper: print MIR before/after regalloc via `llc` (M13) |
+| `bench.sh` | Benchmark `benchmarks/*` (compile time, IR count, runtime); `--smoke` for CI — see [Benchmark.md](Benchmark.md) |
 
 `tests-compile-link-run.sh` is not run directly; it defines the test list and shared `compile` / `link` / `run` helpers used by the three `*-tests.sh` scripts.
 
@@ -93,6 +94,14 @@ Validates `DW_TAG_subprogram`, local variables, lexical blocks, and struct debug
 
 Compiles `12.arithmetic.c` with `-O2 -S` and checks that assembly is non-empty and defines `main`. Ubuntu CI runs this after the full suite and `check-debug-info.sh`.
 
+### Benchmark smoke test
+
+```bash
+./bench.sh --smoke
+```
+
+See [Benchmark.md](Benchmark.md) for workloads, timed runs, and recording results.
+
 ## CI
 
-GitHub Actions (`.github/workflows/linux.yml`) on `ubuntu-24.04` runs install, build, compile, link, run, `check-debug-info.sh`, and `check-asm-smoke.sh`. See [Install.md](Install.md) for Ubuntu dependencies.
+GitHub Actions (`.github/workflows/linux.yml`) on `ubuntu-24.04` runs install, build, compile, link, run, `check-debug-info.sh`, `check-asm-smoke.sh`, and `bench.sh --smoke`. See [Install.md](Install.md) for Ubuntu dependencies.

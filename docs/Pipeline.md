@@ -486,6 +486,20 @@ Compare with **M12 asm** (`debug/25.quick_sort.release.s`): the release `@partit
 
 ---
 
+## Benchmark harness (M15)
+
+**No lcc code required.** See **[Benchmark.md](Benchmark.md)** for workloads, `bench.sh` usage, variants, CI smoke, and a results log for future optimization comparisons.
+
+Quick commands from `lcc/scripts`:
+
+```bash
+./bench.sh --smoke          # CI: compile/link/run all benchmarks × variants
+./bench.sh                  # compile time + IR count + runtime tables
+./bench.sh --runs 5 matrix_mul_large.c
+```
+
+---
+
 ## Auto-vectorization study (M14)
 
 LLVM **`loop-vectorizer`** and **`slp-vectorizer`** run at `-O3` inside `IrOptimizer` (same as `opt -passes='default<O3>'`). lcc does **not** implement a custom vector pass — you observe LLVM’s on real loops.

@@ -323,13 +323,15 @@ Custom loop vectorizer pass: **out of scope** unless you extend to M7-style rese
 
 ## M15: Benchmark harness (optional)
 
+**Status:** done
+
 **Goal:** Compare opt levels and transforms where performance matters.
 
 | Step | Action |
 |------|--------|
-| Implement | `scripts/bench-opt.sh` — time `-O0` vs `-O2`, with/without custom pass (M7) |
-| Implement | Use `hyperfine` or `/usr/bin/time`; optional IR instruction count |
-| Verify | Table in doc; CI runs smoke only (correctness), not flaky timing |
+| Implement | `scripts/bench.sh` — compile time, IR count, and runtime on `benchmarks/` workloads |
+| Implement | Average wall time via `/usr/bin/time` (`--runs`, default 10); post-opt IR instruction count |
+| Verify | [Benchmark.md](Benchmark.md); CI runs `./bench.sh --smoke` only (correctness) |
 
 Instrument-only passes (M6): benchmark optional.
 
