@@ -38,3 +38,7 @@ jobs:
       - name: Debug info smoke test
         working-directory: scripts
         run: ./check-debug-info.sh
+
+      - name: Assembly emission smoke test
+        working-directory: scripts
+        run: ./check-asm-smoke.sh

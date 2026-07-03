@@ -356,6 +356,8 @@ Full register allocator: **out of scope**.
 
 ## M18: Documentation & CI smoke
 
+**Status:** done
+
 **Goal:** Keep the repo teachable for the next reader.
 
 | Step | Action |

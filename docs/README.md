@@ -2,24 +2,24 @@
 
 Guides for using, extending, and hacking on the **lcc** teaching compiler.
 
-Start with the [README](../README.md) for a quick clone-and-run path.
+Start with the [README](../README.md) for a quick clone-and-run path, then [LearningPlan.md](LearningPlan.md) for the full milestone path **M0–M18**.
 
 ## Learning path
 
 | Document | Contents |
 |----------|----------|
-| [LearningPlan.md](LearningPlan.md) | **Start here** — milestones M0–M18 (front-end study, IR, opts, backend) |
-| [MiddleBackendRoadmap.md](MiddleBackendRoadmap.md) | Implementation details for middle-end & back-end milestones |
-| [Roadmap.md](Roadmap.md) | Front-end & language extension plan (complete; deferrals listed) |
-| [Pipeline.md](Pipeline.md) | Compiler pipeline, LLVM tools, classical opt study (M9) |
+| [LearningPlan.md](LearningPlan.md) | **Start here** — milestones M0–M18 (front-end study, IR, opts, backend, docs/CI) |
+| [MiddleBackendRoadmap.md](MiddleBackendRoadmap.md) | Implementation details & acceptance criteria for middle/back-end milestones (M4–M17) |
+| [Roadmap.md](Roadmap.md) | Front-end language extension plan (complete; deferrals listed) |
+| [Pipeline.md](Pipeline.md) | Compiler pipeline, LLVM tool reference (`opt`, `llc`, `objdump`, `mca`), study notes (M9, M12, M14) |
 
 ## How-to
 
 | Document | Contents |
 |----------|----------|
 | [Install.md](Install.md) | Dependencies (macOS, Ubuntu), build `lcc`, `build-lcc.sh` options, manual CMake |
-| [Usage.md](Usage.md) | `lcc` CLI flags, compile/link workflow, debug programs built by `lcc` |
-| [Testing.md](Testing.md) | Scripts in `lcc/scripts`, unit tests, `compile-tests.sh` modes |
+| [Usage.md](Usage.md) | `lcc` CLI flags (`-l-pre-opt`, `-l-post-opt`, `-ir-stats`, `-S`, target flags, `-O0`…`-O3`) |
+| [Testing.md](Testing.md) | Scripts in `lcc/scripts`, unit tests, compile modes, CI smoke checks |
 | [Development.md](Development.md) | Debug `lcc` itself in VS Code / LLDB |
 
 ## Reference
@@ -28,3 +28,16 @@ Start with the [README](../README.md) for a quick clone-and-run path.
 |----------|----------|
 | [Language.md](Language.md) | Supported C subset, limitations, manual linkage declarations |
 | [Conflicts.md](Conflicts.md) | Parser shift/reduce and reduce/reduce conflicts (Bison) |
+
+## Milestone map (quick index)
+
+| Milestone | Topic | Primary doc |
+|-----------|-------|-------------|
+| M0–M3 | Build, tour, IR generation study | [LearningPlan.md](LearningPlan.md), [Testing.md](Testing.md) |
+| M4–M6 | IR dumps, `IrOptimizer`, `-ir-stats` pass | [MiddleBackendRoadmap.md](MiddleBackendRoadmap.md), [Usage.md](Usage.md) |
+| M9 | Classical LLVM opts on `-O2` | [Pipeline.md](Pipeline.md#classical-optimization-study-m9) |
+| M10–M12 | `TargetBackend`, `-S`, codegen opt level | [MiddleBackendRoadmap.md](MiddleBackendRoadmap.md), [Pipeline.md](Pipeline.md#codegen-opt-level--asm-diff-m12) |
+| M14 | Auto-vectorization study | [Pipeline.md](Pipeline.md#auto-vectorization-study-m14) |
+| M18 | Tool recipes & CI smoke | [Pipeline.md](Pipeline.md#llvm-tool-reference), [Testing.md](Testing.md) |
+
+Optional milestones (M7, M8, M13, M15–M17) are documented in [LearningPlan.md](LearningPlan.md) and [MiddleBackendRoadmap.md](MiddleBackendRoadmap.md).

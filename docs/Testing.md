@@ -13,6 +13,7 @@ All commands below assume `cd lcc/scripts`.
 | `link-tests.sh` | Link `../../lcc-build/*.o` to executables with `LCC_LINKER` |
 | `run-tests.sh` | Run linked test binaries |
 | `check-debug-info.sh` | Smoke test: compile with `-g -O0`, verify `llvm-dwarfdump` output |
+| `check-asm-smoke.sh` | Smoke test: `-O2 -S` on one test; verify non-empty asm (M18 CI) |
 
 `tests-compile-link-run.sh` is not run directly; it defines the test list and shared `compile` / `link` / `run` helpers used by the three `*-tests.sh` scripts.
 
@@ -83,6 +84,14 @@ Examples:
 
 Validates `DW_TAG_subprogram`, local variables, lexical blocks, and struct debug types via `llvm-dwarfdump`.
 
+### Assembly smoke test
+
+```bash
+./check-asm-smoke.sh
+```
+
+Compiles `12.arithmetic.c` with `-O2 -S` and checks that assembly is non-empty and defines `main`. Ubuntu CI runs this after the full suite and `check-debug-info.sh`.
+
 ## CI
 
-GitHub Actions (`.github/workflows/linux.yml`) on `ubuntu-24.04` runs install, build, compile, link, run, and `check-debug-info.sh`. See [Install.md](Install.md) for Ubuntu dependencies.
+GitHub Actions (`.github/workflows/linux.yml`) on `ubuntu-24.04` runs install, build, compile, link, run, `check-debug-info.sh`, and `check-asm-smoke.sh`. See [Install.md](Install.md) for Ubuntu dependencies.

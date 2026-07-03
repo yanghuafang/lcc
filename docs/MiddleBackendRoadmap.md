@@ -386,6 +386,19 @@ M10 can start after M4 (parallel with M5–M9 if IR dumps exist).
 
 ---
 
+## M18: Documentation & CI smoke
+
+**Status:** done
+
+**Acceptance criteria**
+
+- [x] [Usage.md](Usage.md) documents all CLI flags (IR dumps, `-ir-stats`, `-S`, target flags, `-O` middle/back-end split)
+- [x] [Pipeline.md](Pipeline.md) — LLVM tool reference (`opt`, `llc`, `llvm-objdump`, `llvm-mca`, `llvm-dwarfdump`)
+- [x] CI: `check-asm-smoke.sh` in `.github/workflows/linux.yml`
+- [x] [docs/README.md](README.md) links all plan docs and milestone index
+
+---
+
 ## Related docs
 
 - [LearningPlan.md](LearningPlan.md) — master milestone list

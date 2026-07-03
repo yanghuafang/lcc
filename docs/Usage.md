@@ -22,6 +22,19 @@ lcc -i <input.c> -o <output.o> [-S <asm.s>] [-v <ast.dot>] [-l <ir.ll>] [-l-pre-
 | `-mcpu` | no | Target CPU for codegen (default: `generic`) |
 | `-mattr` | no | Target features, e.g. `+avx2,-sse4.1` (default: none) |
 
+### Optimization levels (`-O`)
+
+| Flag | Middle-end (`IrOptimizer`) | Back-end (`TargetBackend`) |
+|------|----------------------------|----------------------------|
+| *(none)* | No IR passes | `CodeGenOptLevel::None` |
+| `-O0` | O0 pipeline | None |
+| `-O1` | O1 pipeline | Less |
+| `-O2` | O2 pipeline | Default |
+| `-O3` | O3 pipeline (includes vectorizers) | Aggressive |
+| `-Os` / `-Oz` | Size-focused IR pipeline | Default |
+
+With **`-g`**, middle-end LLVM opts are **skipped** (DWARF `dbg.declare` allocas must survive); the CLI `-O` level is still passed to the back-end. See [Pipeline.md](Pipeline.md) for IR/asm study recipes (M9, M12, M14).
+
 ### Target flags
 
 Passed to `TargetMachine` for `-o` and `-S` emission. Defaults match pre-M11 behavior (host triple, `cpu=generic`, no extra features).
@@ -125,3 +138,11 @@ lldb ../../lcc-build/0.hello_world
 On Linux, add `-no-pie` to the `clang` link line if you link by hand.
 
 Supported DWARF under `-g`/`-O0`-style builds: subprograms, line stepping, locals and parameters, struct members, and lexical blocks. Optimized debugging (`dbg.value` salvage) is out of scope.
+
+## Related docs
+
+| Document | Topics |
+|----------|--------|
+| [Pipeline.md](Pipeline.md) | LLVM tool recipes (`opt`, `llc`, `objdump`, `mca`), M9/M12/M14 study notes |
+| [Testing.md](Testing.md) | Regression scripts, compile modes, CI smoke tests |
+| [LearningPlan.md](LearningPlan.md) | Full milestone path M0–M18 |

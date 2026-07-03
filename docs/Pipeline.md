@@ -1,6 +1,6 @@
 # Compiler pipeline & LLVM tools
 
-**Status:** M9 classical-optimization study notes, M12 codegen/asm diff, and M14 vectorization study live here; M18 may add CI recipes and more examples.
+**Status:** Complete tool reference and study notes (M9, M12, M14); CI smoke recipes below.
 
 Middle/back-end implementation milestones: [MiddleBackendRoadmap.md](MiddleBackendRoadmap.md). Full learning path: [LearningPlan.md](LearningPlan.md).
 
@@ -49,6 +49,90 @@ llc /tmp/q-post.ll -o /tmp/out.s
 # Disassemble object file
 llvm-objdump -d ../../lcc-build/25.quick_sort.o
 ```
+
+---
+
+## LLVM tool reference
+
+Run from `lcc/scripts` after `source ./build-env.sh` (LLVM 20 on `PATH`). Use committed `debug/*.ll` artifacts or fresh dumps from `lcc -l-pre-opt` / `-l-post-opt` / `-l`.
+
+| Tool | Role | Typical input | Example |
+|------|------|---------------|---------|
+| **`lcc`** | Full pipeline: C → IR → opt → `.o` / `.s` | `.c` | `../../lcc-build/lcc -O2 -i ../tests/25.quick_sort.c -o /tmp/q.o -S /tmp/q.s` |
+| **`opt`** | IR passes (same pipelines as `IrOptimizer`) | `.ll` | `opt -passes='default<O2>' ../debug/25.quick_sort.release.pre.ll -S -o /tmp/q-opt.ll` |
+| **`llc`** | IR → machine asm (external backend) | `.ll` | `llc -O2 ../debug/25.quick_sort.release.post.ll -o /tmp/out.s` |
+| **`llvm-objdump`** | Disassemble `.o` / inspect sections | `.o` | `llvm-objdump -d ../../lcc-build/25.quick_sort.o` |
+| **`llvm-mca`** | Throughput / port analysis on asm snippets | `.s` | `llvm-mca -mtriple=arm64-apple-darwin -iterations=100 loop.s` |
+| **`llvm-dwarfdump`** | Inspect DWARF in objects | `.o` | `llvm-dwarfdump --name=main ../../lcc-build/0.hello_world.o` |
+| **`dot`** | Render AST graphs | `.dot` | `dot ../debug/0.hello_world.dot -T png -o /tmp/ast.png` |
+
+### `opt` — middle-end IR
+
+```bash
+# List passes in the O2 default pipeline (LLVM 20)
+opt --print-pipeline-passes -passes='default<O2>' \
+  ../debug/25.quick_sort.release.pre.ll -disable-output
+
+# Run O3 with target triple (vectorizer cost model) on lcc pre-opt IR
+../../lcc-build/lcc -O3 -i ../tests/40.array_sum.c -o /tmp/s.o -l-pre-opt /tmp/s.pre.ll
+opt -passes='default<O3>' -mtriple=arm64-apple-darwin /tmp/s.pre.ll -S -o /tmp/s.vec.ll
+
+# Pass remarks (why loop-vectorizer skipped or ran)
+opt -passes='default<O3>' /tmp/s.pre.ll -disable-output \
+  -pass-remarks-missed=loop-vectorize 2>&1 | head
+```
+
+`-S` on `opt` writes **LLVM IR text**, not machine assembly. For machine asm from IR, use **`lcc -S`** or **`llc`**.
+
+### `llc` — IR to assembly (study)
+
+```bash
+# Lower post-opt IR to asm (host default triple)
+llc -O2 ../debug/25.quick_sort.release.post.ll -o /tmp/q.s
+
+# Cross-target / feature study (x86 AVX2 example)
+llc -O3 -mtriple=x86_64-unknown-linux-gnu -mattr=+avx2 /tmp/s.vec.ll -o /tmp/s.avx.s
+
+# MIR inspection (optional M13): stop before register allocation
+llc -stop-before=registerizer -print-machineinstrs \
+  ../debug/25.quick_sort.release.post.ll -o /dev/null 2>&1 | less
+```
+
+### `llvm-objdump` — object files
+
+```bash
+# Full disassembly of a test object
+llvm-objdump -d ../../lcc-build/12.arithmetic.o
+
+# Compare with lcc -S output for the same test
+../../lcc-build/lcc -O2 -i ../tests/12.arithmetic.c -o /tmp/a.o -S /tmp/a.s
+diff -u <(grep -v '^\s*\.' /tmp/a.s | head -40) \
+        <(llvm-objdump -d --no-show-raw-insn /tmp/a.o | head -40) || true
+```
+
+### `llvm-mca` — asm throughput (optional)
+
+Extract a hot loop from `lcc -S` or `llc` output into a standalone `.s` snippet, then:
+
+```bash
+llvm-mca -mtriple=arm64-apple-darwin -mcpu=generic -iterations=200 loop.s
+```
+
+See [M14 vectorization study](#auto-vectorization-study-m14) for scalar vs vector loop examples.
+
+### CI smoke checks
+
+Ubuntu CI (`.github/workflows/linux.yml`) runs, in order: build → full compile/link/run suite → `check-debug-info.sh` → **`check-asm-smoke.sh`**.
+
+Local equivalents:
+
+```bash
+./compile-tests.sh && ./link-tests.sh && ./run-tests.sh
+./check-debug-info.sh
+./check-asm-smoke.sh
+```
+
+`check-asm-smoke.sh` compiles `12.arithmetic.c` with `-O2 -S` and verifies non-empty asm containing `main`. `compile-tests.sh` already emits `debug/*.s` for all 40 tests; the smoke script is a fast explicit `-S` gate.
 
 ---
 
@@ -343,6 +427,7 @@ Use vectorized asm from case study B for a before/after comparison.
 ## Related docs
 
 - [LearningPlan.md](LearningPlan.md) — full learning path (M0–M18)
-- [Usage.md](Usage.md) — `lcc` CLI flags (`-l-pre-opt`, `-l-post-opt`, `-ir-stats`, `-S`, `--target`, `-mcpu`, `-mattr`, `-O2`)
-- [Testing.md](Testing.md) — compile modes and `debug/*.ll` artifacts
-- [MiddleBackendRoadmap.md](MiddleBackendRoadmap.md) — M9 acceptance criteria
+- [Usage.md](Usage.md) — `lcc` CLI flags (`-l-pre-opt`, `-l-post-opt`, `-ir-stats`, `-S`, `--target`, `-mcpu`, `-mattr`, `-O0`…`-O3`)
+- [Testing.md](Testing.md) — compile modes, `debug/*.ll` artifacts, CI smoke scripts
+- [MiddleBackendRoadmap.md](MiddleBackendRoadmap.md) — middle/back-end milestone acceptance criteria
+- [Development.md](Development.md) — debug `lcc` in LLDB

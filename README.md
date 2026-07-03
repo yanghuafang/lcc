@@ -51,7 +51,7 @@ Full index (grouped by learning path, how-to, and reference): [docs/README.md](d
 | [docs/Development.md](docs/Development.md) | Debug `lcc` in VS Code / LLDB |
 | [docs/Language.md](docs/Language.md) | Full feature list and limitations |
 | [docs/Roadmap.md](docs/Roadmap.md) | Front-end language features (complete) |
-| [docs/Pipeline.md](docs/Pipeline.md) | Pipeline overview, LLVM tools, classical opt study (M9) |
+| [docs/Pipeline.md](docs/Pipeline.md) | Pipeline overview, LLVM tool reference, opt/asm/vectorization study (M9, M12, M14) |
 | [docs/Conflicts.md](docs/Conflicts.md) | Bison parser conflicts |
 
 ## Requirements
@@ -60,4 +60,4 @@ LLVM **20**, flex, bison, argparse, graphviz, CMake **3.22+**, **C++17**, and a 
 
 ## Roadmap
 
-Front-end language work (arrays through `-g` debug info) is **complete**; see [docs/Roadmap.md](docs/Roadmap.md). Next: middle-end IR, optimization, and backend — follow [docs/LearningPlan.md](docs/LearningPlan.md) milestone by milestone.
+Front-end language work (arrays through `-g` debug info) is **complete**; see [docs/Roadmap.md](docs/Roadmap.md). Middle/back-end milestones through **M18** (docs & CI smoke) are documented in [docs/LearningPlan.md](docs/LearningPlan.md).
