@@ -189,6 +189,48 @@ lldb ../../lcc-build/0.hello_world
 
 Supported DWARF under `-g`/`-O0`-style builds: subprograms, line stepping, locals and parameters, struct members, and lexical blocks. Optimized debugging (`dbg.value` salvage) is out of scope.
 
+## Run on the Ubuntu host
+
+`lcc` claims macOS and Ubuntu, but a working copy only ever sits on one of them. `remote-ubuntu.sh` runs a command on the Linux box — usually one of the scripts here — so the Ubuntu half of that claim is checkable in the same minute the edit is made, rather than by pushing a branch and waiting for CI to disagree.
+
+```text
+remote-ubuntu.sh [--sync | --clone] [--shell] [command ...]
+```
+
+| Flag | Effect |
+|------|--------|
+| *(none)* | Run the command against whatever tree is already on the host |
+| `--sync` | Mirror this working tree to the host first (`rsync --delete`), uncommitted edits included |
+| `--clone` | `git clone` the repository onto the host first; refuses to overwrite an existing checkout |
+| `--shell` | Run from the remote repo root rather than `scripts/`, and treat the argument as shell text rather than a list of arguments |
+| `-h`, `--help` | Show usage |
+
+Examples, from `lcc/scripts`:
+
+```bash
+./remote-ubuntu.sh ./run-tests.sh                  # run, against what is there
+./remote-ubuntu.sh --sync ./build-lcc.sh --debug   # copy the tree first, then build
+./remote-ubuntu.sh --sync                          # copy the tree and stop
+./remote-ubuntu.sh --clone ./build-lcc.sh          # clone from GitHub, then build
+./remote-ubuntu.sh --shell 'git log --oneline -3'  # one-off probe from the repo root
+```
+
+Copying is opt-in rather than the default because it is the only step that destroys anything: `--sync` runs `rsync --delete` against the remote checkout, so whatever is there is made to match this machine exactly, and an edit made only on the host is lost. It excludes `.git/` (this machine is the source of truth for history), editor and tool state, and `src/generated/`, which CMake regenerates from the local flex and bison on whichever host it configures.
+
+`--sync` and `--clone` answer the same question — where the remote tree comes from — with different answers, so asking for both is a contradiction rather than a sequence, and is refused. `--sync` sends what is on this machine; `--clone` fetches what is pushed to GitHub, which is the honest way to check that what was committed is what actually builds.
+
+The command runs in the remote `scripts/` directory, because that is where every other script here expects to be run from, and under a login shell, so whatever the host's profile puts on `PATH` — `/snap/bin`, `~/.local/bin` — is there: `ssh host cmd` runs a shell that is neither login nor interactive, and reads neither startup file. `--shell` runs from the repo root instead, for one-off probes that are not scripts.
+
+| Variable | Default | Meaning |
+|----------|---------|---------|
+| `LCC_REMOTE_HOST` | `yanghuafang@192.168.10.13` | `user@host` to reach |
+| `LCC_REMOTE_DIR` | `study-projects/lcc` | Checkout path on the host, relative to its home directory |
+| `LCC_REPO_URL` | `https://github.com/yanghuafang/lcc.git` | What `--clone` clones |
+
+The remote path mirrors the local one by default, so the sibling build directory `build-env.sh` derives (`../../lcc-build`) lands in the same place relative to the checkout on both hosts, and nothing has to be told twice. Since `--sync` deletes whatever else lives under `LCC_REMOTE_DIR`, give it a path of its own.
+
+Set `LCC_REPO_URL` to `git@github.com:yanghuafang/lcc.git` to clone over ssh: `--clone` forwards this machine's ssh agent, so the key that already reaches GitHub from here authenticates the clone and the host needs no key of its own. If it fails with `Permission denied (publickey)`, the forwarded agent holds no key — run `ssh-add` here and check with `ssh-add -l`.
+
 ## Related docs
 
 | Document | Topics |
