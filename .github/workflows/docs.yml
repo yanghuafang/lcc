@@ -5,13 +5,23 @@ on:
     branches: [main, master]
   pull_request:
     branches: [main, master]
+  # Republish without a commit: a Pages settings change, or a deploy that
+  # failed for a reason the tree cannot fix.
+  workflow_dispatch:
 
 jobs:
   # Doxygen exits 0 after warning about a broken \param or reference, so docs.sh
   # gates on the warning log instead. One platform, for the same reason as the
-  # lint gates: the findings do not depend on the host.
+  # lint gates: the findings do not depend on the host. The same run produces
+  # what deploy publishes, so the site can never carry a tree this check would
+  # have rejected.
   build:
     runs-on: ubuntu-latest
+    env:
+      # Where docs.sh writes, stated once so the upload step below can name the
+      # same tree. This is the location docs.sh picks on its own -- beside the
+      # checkout rather than inside it, for the reason object files go there.
+      LCC_BUILD_DIR: ${{ github.workspace }}/../lcc-build
     steps:
       - uses: actions/checkout@v4
 
@@ -26,3 +36,50 @@ jobs:
       - name: Generate the API reference
         working-directory: scripts
         run: ./docs.sh
+
+      # Doxygen escapes the uppercase in a CamelCase header name to _<letter>,
+      # so the file and source page of every header opens with an underscore,
+      # which Jekyll excludes. deploy-pages serves the artifact as it stands
+      # and never runs Jekyll, so this is insurance rather than a fix: it is
+      # what keeps the site from depending on that staying true.
+      - name: Keep Jekyll out of the generated tree
+        run: touch "${LCC_BUILD_DIR}/docs/html/.nojekyll"
+
+      - name: Upload the site
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ${{ env.LCC_BUILD_DIR }}/docs/html
+
+  # Its own job because the Pages service reports the deployment against an
+  # environment, and an environment cannot cover only part of a job.
+  deploy:
+    needs: build
+    # Scoped to this job: deploy-pages needs pages:write to hand the artifact to
+    # the Pages service and id-token:write to prove which run produced it, and
+    # the build job above -- which runs on every pull request -- needs neither.
+    # contents:read is spelled out because naming any permission drops the rest
+    # to none.
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    # The site has one URL and the last deploy wins, so publishing follows main
+    # and nothing else; on a pull request this job reports as skipped while the
+    # build above still gates the change.
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    # One deploy at a time, and on the deploy alone: a doc build has no reason
+    # to queue behind another branch's. cancel-in-progress is off, unlike a
+    # build matrix where a superseded run is waste -- cancelling a deploy that
+    # has already begun leaves the site serving a half-published tree, and the
+    # next push replaces it anyway.
+    concurrency:
+      group: pages
+      cancel-in-progress: false
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
