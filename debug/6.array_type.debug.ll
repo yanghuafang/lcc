@@ -3,10 +3,10 @@ source_filename = "lcc"
 target datalayout = "e-m:o-p270:32:32-p271:32:32-p272:64:64-i64:64-i128:128-n32:64-S128-Fn32"
 target triple = "arm64-apple-darwin25.5.0"
 
-@gs = global [16 x i8] undef
+@gs = global [16 x i8] zeroinitializer
 @0 = private unnamed_addr constant [13 x i8] c"hello world!\00", align 1
 @gps = global ptr @0
-@gi = global [4 x i32] undef
+@gi = global [4 x i32] zeroinitializer
 @1 = private unnamed_addr constant [21 x i8] c"6.array_type.c PASS\0A\00", align 1
 @2 = private unnamed_addr constant [21 x i8] c"6.array_type.c FAIL\0A\00", align 1
 
