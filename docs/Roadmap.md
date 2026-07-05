@@ -332,7 +332,7 @@ Pure infrastructure — no new C syntax. Valuable for debugging, but does not un
 
 ## Explicitly out of scope (for now)
 
-These appear under **Not supported** in [Language.md](Language.md) and are **not** on the near-term roadmap:
+These are **deliberately deferred** — larger subsystems or architectural non-goals, each with a reason not to pursue it near-term (they also appear under **Not supported** in [Language.md](Language.md)). Smaller, self-contained language extensions and diagnostics are catalogued under [Future directions](#future-directions-no-milestones) below.
 
 | Feature | Reason to defer |
 |---------|-----------------|
@@ -341,6 +341,39 @@ These appear under **Not supported** in [Language.md](Language.md) and are **not
 | Separate semantic-analysis pass | Add only when a feature requires it (e.g. heavy typedef disambiguation) — see architecture notes in `AbstractSyntaxTree.hpp` |
 | Split `Expr` from `Stmt` | Large churn; low ROI unless rewriting the frontend for pedagogy |
 | 3D arrays (3a / 3b) | 2D covers multidim teaching goals; high complexity for diminishing returns |
+
+---
+
+## Future directions (no milestones)
+
+The front-end language set and the M0–M18 middle/back-end track are complete, and the current compiler is sufficient for lcc's teaching goals. The ideas below are recorded **for reference only** — they are **deliberately unscheduled, carry no milestones, and are not planned near-term**. Pick one up ad hoc only if it serves a specific learning goal.
+
+### Real diagnostics
+
+Today `yyerror` prints a single `ERROR: <msg>` line. The parser already tracks `%locations` (per-token line/column in `yylloc`), so a future effort could:
+
+- emit `file:line:col: error: …` with the offending source line and a `^` caret,
+- keep parsing after an error (Bison `error` productions / synchronization) to report more than the first problem,
+- format lexer, parser, and codegen errors consistently.
+
+Self-contained; adds no new language semantics; high UX/teaching value.
+
+### C language features not yet implemented
+
+Smaller, self-contained extensions — distinct from the larger deferrals under [Explicitly out of scope](#explicitly-out-of-scope-for-now) (preprocessor, `extern` / multi-TU, 3D arrays):
+
+| Idea | Touches | Notes |
+|------|---------|-------|
+| `goto` + labels | lexer, `Parser.y`, codegen | Self-contained; reuses the basic-block machinery from loops / `switch` |
+| Function pointers | declarator grammar, type system, call lowering | Hardest corner of the type system; enables callbacks |
+| More scalar types | lexer, `BuiltinType`, codegen | `signed`, `long long`, `long double` |
+| Struct bit-fields | AST, struct layout, codegen | Packing rules |
+| Designated initializers | init grammar, codegen | `{ .x = 1, [2] = 3 }` |
+| Block-scope `typedef` | scope handling, State 133 conflicts | Extends the current file-scope `typedef` |
+
+Each would follow the same one-idea-per-change discipline (grammar → AST → codegen → tests), but none is scheduled.
+
+Deeper **optimization / back-end** ideas are recorded in [MiddleBackendRoadmap.md § Future directions](MiddleBackendRoadmap.md#future-directions-no-milestones).
 
 ---
 

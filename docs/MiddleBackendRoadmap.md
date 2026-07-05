@@ -428,6 +428,19 @@ M10 can start after M4 (parallel with M5–M9 if IR dumps exist).
 
 ---
 
+## Future directions (no milestones)
+
+M4–M17 cover the middle/back-end learning goals, and the current compiler is sufficient for lcc's teaching purpose. The ideas below are recorded **for reference only** — **deliberately unscheduled, carrying no milestones, and not planned near-term** — for anyone who later wants to go deeper on optimization or codegen:
+
+- **A transforming IR pass beyond `FoldAddZeroPass`** (M7): local constant folding, dead-store elimination, or a small CSE, written as a New PM pass.
+- **Vectorization-candidate reporter** (the M14 stretch): an analysis-only pass that flags loops LLVM could vectorize, without transforming them.
+- **A transforming `MachineFunctionPass`** (M17 is analysis-only): a genuine MIR peephole, spliced through the same `TargetPassConfig` hook in `TargetBackend`.
+- **LLVM optimization remarks** (`-pass-remarks` / `-Rpass`): surface *why* loops did or didn't vectorize or inline.
+
+These would extend, but do not block, the completed plan. A custom register allocator and a full loop vectorizer remain **out of scope** (use LLVM's). Front-end **diagnostics** and **language** ideas live in [Roadmap.md § Future directions](Roadmap.md#future-directions-no-milestones).
+
+---
+
 ## Related docs
 
 - [LearningPlan.md](LearningPlan.md) — master milestone list

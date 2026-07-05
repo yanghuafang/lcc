@@ -444,6 +444,15 @@ Optional future **language** work (preprocessor, 3D arrays, `extern`) stays in [
 
 ---
 
+## Future directions (no milestones)
+
+M0–M18 are complete and sufficient for lcc's teaching goals. Ideas that could be explored later — **deliberately unscheduled and carrying no milestones** (distinct from the *never*-planned items in [Out of scope](#out-of-scope-all-milestones) above) — are recorded, not planned near-term, in:
+
+- [Roadmap.md § Future directions](Roadmap.md#future-directions-no-milestones) — real diagnostics and additional C language features (`goto`, function pointers, more scalar types, bit-fields, …).
+- [MiddleBackendRoadmap.md § Future directions](MiddleBackendRoadmap.md#future-directions-no-milestones) — deeper optimization and codegen passes (transforming IR/MIR passes, vectorization-candidate reporter, opt remarks).
+
+---
+
 ## Related docs
 
 | Document | Role |
