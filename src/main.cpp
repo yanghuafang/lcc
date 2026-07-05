@@ -76,6 +76,10 @@ int main(int argc, char* argv[]) {
   parser.add_argument("-mattr")
       .default_value("")
       .help("target features for codegen, e.g. +avx2,-sse4.1");
+  parser.add_argument("-machine-stats", "--machine-instruction-stats-file")
+      .default_value("")
+      .help("write machine-instruction counts (final MIR) to FILE (use - for "
+            "stderr); M17 legacy MachineFunctionPass. Omit to disable.");
 
   auto& optimizationGroup = parser.add_mutually_exclusive_group();
   optimizationGroup.add_argument("-O0")
@@ -211,6 +215,7 @@ int main(int argc, char* argv[]) {
   backendOptions.cpu = parser.get<std::string>("-mcpu");
   backendOptions.features = parser.get<std::string>("-mattr");
   backendOptions.optimizationLevel = optimizationLevel;
+  backendOptions.machineStatsPath = parser.get<std::string>("-machine-stats");
   generator.setTargetBackendOptions(backendOptions);
 
   // Generate object file.

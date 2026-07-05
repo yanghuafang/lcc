@@ -14,6 +14,7 @@ Implementation details for [LearningPlan.md](LearningPlan.md) milestones **M4–
 | IR transform (optional) | `FoldAddZeroPass` (`-fold-add-zero`) | New PM function pass; M7 teaching peephole |
 | Object emission | `TargetBackend::emitObject` via `CodeGenerator::genObjectCode` | Host triple (or `--target`), `-mcpu`/`-mattr`, CLI `-O` → `CodeGenOptLevel`, legacy PM → `.o` |
 | Assembly emission | `TargetBackend::emitAssembly` via `-S` | Same `TargetBackendOptions` as object emission |
+| Machine instrumentation (optional) | `MachineInstrStatsPass` (`-machine-stats`) | Legacy MachineFunctionPass on final MIR; counts only, no codegen change |
 | Debug info | `DebugInfoBuilder` | `-g` skips IR opts |
 | Reference IR | `debug/*.{debug,release}.{pre,post}.ll`, `*.debug.ll`, `*.release.ll` | 40 tests × 2 modes |
 
@@ -26,6 +27,7 @@ src/
   passes/
     IrInstructionStatsPass.cpp              ← M6 (done)
     FoldAddZeroPass.cpp                     ← M7 (done)
+    MachineInstrStatsPass.cpp               ← M17 (done, legacy MachineFunctionPass)
 ```
 
 ---
@@ -357,13 +359,19 @@ No `-mcpu` variant: lcc defaults to LLVM's `generic` CPU, so `-mcpu generic` mat
 
 ## M17: Machine pass (advanced, optional)
 
+**Status:** done
+
+**Script/pass:** `src/passes/MachineInstrStatsPass.{hpp,cpp}` — a legacy `MachineFunctionPass` that counts machine instructions on fully lowered MIR (post-regalloc). Enabled with `-machine-stats <file>` (`-` = stderr).
+
 **Acceptance**
 
-- [ ] One pass at machine layer on host target
-- [ ] Does not break object correctness on chosen test
-- [ ] Documented separately from IR New PM (different registration)
+- [x] One pass at machine layer on host target (`MachineInstrStatsPass`, spliced before the AsmPrinter)
+- [x] Does not break object correctness — object/asm byte-identical with vs without `-machine-stats` (analysis-only: `runOnMachineFunction` returns false, `getAnalysisUsage` = `setPreservesAll`); full suite PASS
+- [x] Documented separately from IR New PM (different registration): legacy PM + `TargetPassConfig` in `TargetBackend`, not `PassBuilder` — see [Pipeline.md § M17](Pipeline.md#machine-function-pass-m17)
 
-**Out of scope:** custom register allocator.
+**Registration:** default emission uses `TargetMachine::addPassesToEmitFile`. When `-machine-stats` is set, `TargetBackend::addEmitPassesWithMachineStats` drives the codegen pipeline by hand (`createPassConfig` → `addISelPasses` → `addMachinePasses` → add pass → `addAsmPrinter` → `createFreeMachineFunctionPass`) so the machine pass runs on final MIR. Default path is unchanged, so committed `debug/*.s` / `.o` goldens are byte-identical.
+
+**Out of scope:** custom register allocator; transforming machine passes.
 
 ---
 

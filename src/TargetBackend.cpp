@@ -3,6 +3,9 @@
 #include <optional>
 #include <stdexcept>
 
+#include <llvm/CodeGen/MachineModuleInfo.h>
+#include <llvm/CodeGen/Passes.h>
+#include <llvm/CodeGen/TargetPassConfig.h>
 #include <llvm/IR/LegacyPassManager.h>
 #include <llvm/IR/Module.h>
 #include <llvm/MC/TargetRegistry.h>
@@ -13,6 +16,8 @@
 #include <llvm/Target/TargetMachine.h>
 #include <llvm/Target/TargetOptions.h>
 #include <llvm/TargetParser/Host.h>
+
+#include "passes/MachineInstrStatsPass.hpp"
 
 namespace {
 
@@ -43,6 +48,44 @@ llvm::CodeGenOptLevel resolveCodeGenOptLevel(
     return llvm::CodeGenOptLevel::Aggressive;
   }
   return llvm::CodeGenOptLevel::None;
+}
+
+// Manually drive the legacy codegen pipeline so a custom MachineFunctionPass can
+// be spliced in just before the AsmPrinter (M17). This mirrors
+// CodeGenTargetMachineImpl::addPassesToEmitFile but adds one machine pass on the
+// fully lowered MIR. Only used when -machine-stats is set; the default emission
+// path stays on the stock addPassesToEmitFile so committed goldens are untouched.
+// Returns true on failure, matching addPassesToEmitFile's convention.
+bool addEmitPassesWithMachineStats(llvm::TargetMachine& targetMachine,
+                                   llvm::legacy::PassManager& pm,
+                                   llvm::raw_pwrite_stream& out,
+                                   llvm::CodeGenFileType fileType,
+                                   const std::string& statsPath) {
+  llvm::TargetPassConfig* passConfig = targetMachine.createPassConfig(pm);
+  if (passConfig == nullptr) {
+    return true;
+  }
+  passConfig->setDisableVerify(true);
+  pm.add(passConfig);  // PassManager takes ownership.
+
+  auto* mmiwp = new llvm::MachineModuleInfoWrapperPass(&targetMachine);
+  pm.add(mmiwp);
+
+  if (passConfig->addISelPasses()) {
+    return true;
+  }
+  passConfig->addMachinePasses();
+  passConfig->setInitialized();
+
+  // Runs on fully lowered MIR (post-regalloc), immediately before asm printing.
+  pm.add(new MachineInstrStatsPass(statsPath));
+
+  if (targetMachine.addAsmPrinter(pm, out, nullptr, fileType,
+                                  mmiwp->getMMI().getContext())) {
+    return true;
+  }
+  pm.add(llvm::createFreeMachineFunctionPass());
+  return false;
 }
 
 }  // namespace
@@ -81,7 +124,12 @@ void emit(llvm::Module& module, const std::string& path,
   }
 
   llvm::legacy::PassManager pm;
-  if (targetMachine->addPassesToEmitFile(pm, outStream, nullptr, fileType)) {
+  const bool failed =
+      options.machineStatsPath.empty()
+          ? targetMachine->addPassesToEmitFile(pm, outStream, nullptr, fileType)
+          : addEmitPassesWithMachineStats(*targetMachine, pm, outStream,
+                                          fileType, options.machineStatsPath);
+  if (failed) {
     const char* kind =
         fileType == llvm::CodeGenFileType::AssemblyFile ? "assembly" : "object";
     throw std::runtime_error(std::string("Failed to emit ") + kind + " file!");

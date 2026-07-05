@@ -3,7 +3,7 @@
 ## Compile a `.c` file
 
 ```text
-lcc -i <input.c> -o <output.o> [-S <asm.s>] [-v <ast.dot>] [-l <ir.ll>] [-l-pre-opt <pre.ll>] [-l-post-opt <post.ll>] [-ir-stats <file>] [-fold-add-zero] [-O-passes <pipeline>] [--target <triple>] [-mcpu <cpu>] [-mattr <features>] [-g] [-O0|-O1|-O2|-O3|-Os|-Oz]
+lcc -i <input.c> -o <output.o> [-S <asm.s>] [-v <ast.dot>] [-l <ir.ll>] [-l-pre-opt <pre.ll>] [-l-post-opt <post.ll>] [-ir-stats <file>] [-machine-stats <file>] [-fold-add-zero] [-O-passes <pipeline>] [--target <triple>] [-mcpu <cpu>] [-mattr <features>] [-g] [-O0|-O1|-O2|-O3|-Os|-Oz]
 ```
 
 `-O-passes` and `-O0`…`-Oz` are **mutually exclusive** (middle-end: custom pipeline vs `default<O*>`). With `-g`, both are skipped (same as `-O2` with debug). Backend `-O` codegen level follows the CLI `-O` flag only — when you use `-O-passes` alone, backend defaults to no codegen opts (`-O0` equivalent).
@@ -18,6 +18,7 @@ lcc -i <input.c> -o <output.o> [-S <asm.s>] [-v <ast.dot>] [-l <ir.ll>] [-l-pre-
 | `-l-pre-opt` | no | LLVM IR right after codegen, before `IrOptimizer` and debug finalization |
 | `-l-post-opt` | no | LLVM IR right after optimization, or after debug finalization when `-g` |
 | `-ir-stats` | no | Write load/store/call counts to `file` (`-` = stderr); counts raw IR before LLVM opts |
+| `-machine-stats` | no | Write machine-instruction counts (final MIR) to `file` (`-` = stderr); runs a legacy `MachineFunctionPass` in codegen (M17) |
 | `-fold-add-zero` | no | Run `FoldAddZeroPass` before LLVM opts (`add iN %x, 0` → `%x`; M7) |
 | `-O-passes` | no | Explicit New PM pipeline (`opt -passes` syntax); **mutually exclusive** with `-O0`…`-Oz` |
 | `-g` | no | Embed DWARF in the object file (use without `-O` for reliable stepping and variables) |
@@ -108,6 +109,17 @@ Example (IR instruction stats), from `lcc/scripts`:
 ../../lcc-build/lcc -O2 -i ../tests/25.quick_sort.c -o /tmp/q.o -ir-stats /tmp/stats.txt
 cat /tmp/stats.txt
 ```
+
+Example (machine-instruction stats — MIR layer, not IR), from `lcc/scripts`:
+
+```bash
+../../lcc-build/lcc -O2 -i ../tests/25.quick_sort.c -o /tmp/q.o -machine-stats -
+# lcc machine-instr-stats (final MIR, host target):
+#   swap: 5 machine instructions
+#   ... total: functions=4 machine_instructions=<host-dependent>
+```
+
+`-machine-stats` counts **target machine** instructions after register allocation, so numbers are host-specific (x86_64 vs arm64) and differ from the `-ir-stats` IR counts. It is a legacy `MachineFunctionPass` (analysis only), so the emitted `.o`/`.s` is unchanged whether or not the flag is set. See [Pipeline.md](Pipeline.md#machine-function-pass-m17) for how machine passes register differently from New PM IR passes.
 
 Example (custom transform pass), from `lcc/scripts`:
 
