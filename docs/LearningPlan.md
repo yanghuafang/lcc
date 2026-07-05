@@ -52,6 +52,8 @@ flowchart LR
 
 ## Milestone checklist
 
+**Status: all milestones M0–M18 are complete**, including the optional ones (M7, M8, M13, M15, M16, M17).
+
 Track progress here. Do not start the next milestone until **Verify** passes for the current one.
 
 | ID | Milestone | Layer | Required? |

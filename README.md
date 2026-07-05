@@ -61,4 +61,4 @@ LLVM **20**, flex, bison, argparse, graphviz, CMake **3.22+**, **C++17**, and a 
 
 ## Roadmap
 
-Front-end language work (arrays through `-g` debug info) is **complete**; see [docs/Roadmap.md](docs/Roadmap.md). Middle/back-end milestones through **M18** (docs & CI smoke) are documented in [docs/LearningPlan.md](docs/LearningPlan.md).
+Front-end language work (arrays through `-g` debug info) is **complete**; see [docs/Roadmap.md](docs/Roadmap.md). Middle/back-end milestones **M0–M18 are complete**, including the optional ones (M7, M8, M13, M15, M16, M17); see [docs/LearningPlan.md](docs/LearningPlan.md).

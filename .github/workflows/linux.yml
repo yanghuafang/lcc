@@ -43,6 +43,10 @@ jobs:
         working-directory: scripts
         run: ./check-asm-smoke.sh
 
+      - name: Machine pass smoke test
+        working-directory: scripts
+        run: ./check-machine-pass-smoke.sh
+
       - name: Benchmark smoke test
         working-directory: scripts
         run: ./bench.sh --smoke

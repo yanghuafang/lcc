@@ -368,6 +368,7 @@ No `-mcpu` variant: lcc defaults to LLVM's `generic` CPU, so `-mcpu generic` mat
 - [x] One pass at machine layer on host target (`MachineInstrStatsPass`, spliced before the AsmPrinter)
 - [x] Does not break object correctness — object/asm byte-identical with vs without `-machine-stats` (analysis-only: `runOnMachineFunction` returns false, `getAnalysisUsage` = `setPreservesAll`); full suite PASS
 - [x] Documented separately from IR New PM (different registration): legacy PM + `TargetPassConfig` in `TargetBackend`, not `PassBuilder` — see [Pipeline.md § M17](Pipeline.md#machine-function-pass-m17)
+- [x] CI smoke (`check-machine-pass-smoke.sh`) exercises the hand-rolled pipeline on Ubuntu and asserts the object is byte-identical with vs without `-machine-stats`
 
 **Registration:** default emission uses `TargetMachine::addPassesToEmitFile`. When `-machine-stats` is set, `TargetBackend::addEmitPassesWithMachineStats` drives the codegen pipeline by hand (`createPassConfig` → `addISelPasses` → `addMachinePasses` → add pass → `addAsmPrinter` → `createFreeMachineFunctionPass`) so the machine pass runs on final MIR. Default path is unchanged, so committed `debug/*.s` / `.o` goldens are byte-identical.
 
@@ -420,10 +421,10 @@ M10 can start after M4 (parallel with M5–M9 if IR dumps exist).
 
 **Acceptance criteria**
 
-- [x] [Usage.md](Usage.md) documents all CLI flags (IR dumps, `-ir-stats`, `-S`, target flags, `-O` middle/back-end split)
+- [x] [Usage.md](Usage.md) documents all CLI flags (IR dumps, `-ir-stats`, `-machine-stats`, `-S`, target flags, `-O` middle/back-end split)
 - [x] [Pipeline.md](Pipeline.md) — LLVM tool reference (`opt`, `llc`, `llvm-objdump`, `llvm-mca`, `llvm-dwarfdump`)
-- [x] CI: `check-asm-smoke.sh` in `.github/workflows/linux.yml`
-- [x] [docs/README.md](README.md) links all plan docs and milestone index
+- [x] CI smoke in `.github/workflows/linux.yml`: `check-debug-info.sh`, `check-asm-smoke.sh`, `check-machine-pass-smoke.sh` (M17 codegen path), `bench.sh --smoke`
+- [x] [docs/README.md](README.md) links all plan docs and milestone index (M0–M18 complete)
 
 ---
 
