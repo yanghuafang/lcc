@@ -339,12 +339,14 @@ Instrument-only passes (M6): benchmark optional.
 
 ## M16: IR opt regression script (optional)
 
+**Status:** done
+
 **Goal:** Catch unintended IR changes.
 
 | Step | Action |
 |------|--------|
-| Implement | `scripts/check-ir-opt.sh` — instruction counts or diff vs golden `.release.ll` |
-| Verify | Detects deliberate IR change; documented in [Testing.md](Testing.md) |
+| Implement | `scripts/check-ir-opt.sh` — post-opt IR instruction counts (default), `--diff` post-opt IR, or `--release` diff vs golden `.release.ll` |
+| Verify | Detects deliberate IR change (count + diff flag it and exit non-zero); documented in [Testing.md](Testing.md#ir-optimization-regression-check-m16) |
 
 ---
 

@@ -14,6 +14,7 @@ All commands below assume `cd lcc/scripts`.
 | `run-tests.sh` | Run linked test binaries |
 | `check-debug-info.sh` | Smoke test: compile with `-g -O0`, verify `llvm-dwarfdump` output |
 | `check-asm-smoke.sh` | Smoke test: `-O2 -S` on one test; verify non-empty asm (M18 CI) |
+| `check-ir-opt.sh` | IR opt regression: recompile `-O2`, compare IR vs committed `debug/` goldens (M16) |
 | `mir-study.sh` | Study helper: print MIR before/after regalloc via `llc` (M13) |
 | `bench.sh` | Benchmark `benchmarks/*` (compile time, IR count, runtime); `--smoke` for CI — see [Benchmark.md](Benchmark.md) |
 
@@ -93,6 +94,33 @@ Validates `DW_TAG_subprogram`, local variables, lexical blocks, and struct debug
 ```
 
 Compiles `12.arithmetic.c` with `-O2 -S` and checks that assembly is non-empty and defines `main`. Ubuntu CI runs this after the full suite and `check-debug-info.sh`.
+
+### IR optimization regression check (M16)
+
+Catches unintended middle-end IR changes after a compiler edit. It recompiles every test at `-O2` into a temp directory and compares the result against the committed goldens under `debug/`.
+
+```bash
+./check-ir-opt.sh            # count mode (default)
+./check-ir-opt.sh --diff     # full diff of post-opt IR
+./check-ir-opt.sh --release  # full diff of final IR (target lines ignored)
+./check-ir-opt.sh --diff 25.quick_sort.c   # single test
+```
+
+| Mode | Golden | Compares |
+|------|--------|----------|
+| *(default)* count | `debug/<t>.release.post.ll` | Post-opt IR **instruction count** (coarse, fast) |
+| `--diff` | `debug/<t>.release.post.ll` | Full textual diff of post-opt IR (exact) |
+| `--release` | `debug/<t>.release.ll` | Full diff of final IR, ignoring `target datalayout` / `target triple` |
+
+Post-opt goldens (`.release.post.ll`) carry no target metadata, so count and `--diff` modes are host-portable. The `--release` diff uses the final IR (with target lines stripped). Any mismatch prints the offending test and exits non-zero:
+
+```text
+12.arithmetic                             3        2  CHANGED
+IR opt regression check FAILED — IR differs from committed goldens.
+If the change is intentional, regenerate: ./compile-tests.sh --release
+```
+
+The goldens are host-specific (their datalayout shapes struct-heavy IR), so run this on the same host that generated them. After an **intentional** IR change, regenerate the goldens with `./compile-tests.sh --release` and re-run the check. Not wired into CI for that reason — it is a local pre-commit / pre-PR guard.
 
 ### Benchmark smoke test
 

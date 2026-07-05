@@ -341,10 +341,17 @@ No `-mcpu` variant: lcc defaults to LLVM's `generic` CPU, so `-mcpu generic` mat
 
 ## M16: IR opt regression script (optional)
 
-**Script:** `scripts/check-ir-opt.sh`
+**Status:** done
 
-- Count instructions in post-opt IR per test
-- Or diff against committed `debug/*.release.ll` when `--release` mode used
+**Script:** `scripts/check-ir-opt.sh` — recompiles each test at `-O2` into a temp dir and compares the IR against committed `debug/` goldens.
+
+**Acceptance criteria**
+
+- [x] Count mode (default): post-opt IR instruction count vs `debug/*.release.post.ll`
+- [x] `--diff`: full textual diff of post-opt IR vs `debug/*.release.post.ll` (host-portable; no target metadata)
+- [x] `--release`: full diff of final IR vs `debug/*.release.ll`, ignoring `target datalayout` / `target triple`
+- [x] Detects a deliberate IR change and exits non-zero; single-test argument supported
+- [x] Documented in [Testing.md](Testing.md#ir-optimization-regression-check-m16)
 
 ---
 
