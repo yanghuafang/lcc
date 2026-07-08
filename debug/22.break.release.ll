@@ -95,3 +95,8 @@ declare i32 @llvm.smin.i32(i32, i32) #2
 attributes #0 = { nofree norecurse nosync nounwind memory(none) }
 attributes #1 = { nofree nounwind }
 attributes #2 = { nocallback nofree nosync nounwind speculatable willreturn memory(none) }
+
+!llvm.module.flags = !{!0, !1}
+
+!0 = !{i32 8, !"PIC Level", i32 2}
+!1 = !{i32 7, !"PIE Level", i32 2}
