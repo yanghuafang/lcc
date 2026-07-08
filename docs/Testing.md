@@ -52,19 +52,15 @@ Optional compile mode (at most one; applies to all tests or the single named tes
 | *(none)* | `-g -O0` | `.debug.ll` (same as `--debug`) |
 | `--debug` | `-g -O0` | `.debug.ll` |
 | `--release` | `-O2` | `.release.ll` |
-| `--relwithdebinfo` | `-g -O2`¹ | `.relwithdebinfo.ll` |
-
-¹ `-g` disables LLVM optimization in `lcc`; `-O2` is passed but ignored (warning printed). DWARF is still emitted; IR differs from `--debug` mainly in the checked-in snapshot name.
 
 Examples:
 
 ```bash
 ./compile-tests.sh --debug
 ./compile-tests.sh --release 25.quick_sort.c
-./compile-tests.sh --relwithdebinfo
 ```
 
-`compile-tests.sh` always passes `-v` and `-l` so AST (`.dot`, `.png`) and IR land in `lcc/debug/`. The repo keeps reference IR for all three modes: `*.debug.ll`, `*.release.ll`, and `*.relwithdebinfo.ll` (40 tests × 3 modes).
+`compile-tests.sh` always passes `-v` and `-l` so AST (`.dot`, `.png`) and IR land in `lcc/debug/`. The repo keeps reference IR for both modes: `*.debug.ll` and `*.release.ll` (40 tests × 2 modes).
 
 ### Debug-info smoke test
 
