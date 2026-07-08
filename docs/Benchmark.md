@@ -83,7 +83,7 @@ The 512 pair uses far fewer reps than the 128 pair because each matmul is ~64× 
 | `./bench.sh --runs N …` | Same, with `N` timed runs | Yes | No |
 | `./bench.sh --smoke` | Compile, link, run each variant once | No | **Yes** |
 
-Smoke mode only checks that every variant **builds and runs correctly**; it does not assert performance thresholds. CI runs `./bench.sh --smoke` in [`.github/workflows/linux.yml`](../.github/workflows/linux.yml).
+Smoke mode only checks that every variant **builds and runs correctly**; it does not assert performance thresholds. CI runs `./bench.sh --smoke` in [`.github/workflows/ci.yml`](../.github/workflows/ci.yml).
 
 ---
 

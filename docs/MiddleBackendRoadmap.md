@@ -423,7 +423,7 @@ M10 can start after M4 (parallel with M5–M9 if IR dumps exist).
 
 - [x] [Usage.md](Usage.md) documents all CLI flags (IR dumps, `-ir-stats`, `-machine-stats`, `-S`, target flags, `-O` middle/back-end split)
 - [x] [Pipeline.md](Pipeline.md) — LLVM tool reference (`opt`, `llc`, `llvm-objdump`, `llvm-mca`, `llvm-dwarfdump`)
-- [x] CI smoke in `.github/workflows/linux.yml`: `check-debug-info.sh`, `check-asm-smoke.sh`, `check-machine-pass-smoke.sh` (M17 codegen path), `bench.sh --smoke`
+- [x] CI smoke in `.github/workflows/ci.yml` (Ubuntu 24.04 / 26.04 + macOS matrix): `check-debug-info.sh`, `check-asm-smoke.sh`, `check-machine-pass-smoke.sh` (M17 codegen path), `bench.sh --smoke`
 - [x] [docs/README.md](README.md) links all plan docs and milestone index (M0–M18 complete)
 
 ---

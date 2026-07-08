@@ -18,13 +18,22 @@ Build output lives in `../../lcc-build/` relative to `lcc/scripts/` (sibling of 
 
 ### macOS
 
+From `lcc/scripts` (installs Homebrew first if it is not already present):
+
 ```bash
+./install-deps-macos.sh
+```
+
+Or manually — install [Homebrew](https://brew.sh) if needed, then the packages:
+
+```bash
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 brew install flex bison llvm@20 argparse graphviz cmake
 ```
 
-### Ubuntu 24.04 LTS
+### Ubuntu 24.04 / 26.04 LTS
 
-`llvm-20` and `libargparse-dev` are available from Ubuntu apt on **24.04 LTS**. Other releases (e.g. 22.04, 26.04) are not supported.
+`llvm-20` and `libargparse-dev` are available from Ubuntu apt on **24.04** and **26.04 LTS**. Older releases (e.g. 22.04) are not supported.
 
 From `lcc/scripts`:
 

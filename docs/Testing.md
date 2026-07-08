@@ -7,7 +7,8 @@ All commands below assume `cd lcc/scripts`.
 | Script | Purpose |
 |--------|---------|
 | `build-env.sh` | Export `PATH`, `LLVM_DIR`, `LCC_LINKER` for macOS (Homebrew) or Ubuntu (apt LLVM 20) |
-| `install-deps-ubuntu.sh` | Install apt packages on Ubuntu 24.04 LTS |
+| `install-deps-ubuntu.sh` | Install apt packages on Ubuntu 24.04 / 26.04 LTS |
+| `install-deps-macos.sh` | Install Homebrew packages on macOS |
 | `build-lcc.sh` | Configure and build the `lcc` compiler — see [Install.md](Install.md) |
 | `compile-tests.sh` | Compile unit tests to `../../lcc-build/*.o`; writes AST/IR/asm under `../debug/` |
 | `link-tests.sh` | Link `../../lcc-build/*.o` to executables with `LCC_LINKER` |
@@ -141,6 +142,6 @@ See [Benchmark.md](Benchmark.md) for workloads, timed runs, and recording result
 
 ## CI
 
-GitHub Actions (`.github/workflows/linux.yml`) on `ubuntu-24.04` runs install, build, compile, link, run, `check-debug-info.sh`, `check-asm-smoke.sh`, `check-machine-pass-smoke.sh`, and `bench.sh --smoke`. See [Install.md](Install.md) for Ubuntu dependencies.
+GitHub Actions (`.github/workflows/ci.yml`) runs a matrix on `ubuntu-24.04`, `ubuntu-26.04`, and `macos-latest`: install, build, compile, link, run, `check-debug-info.sh`, `check-asm-smoke.sh`, `check-machine-pass-smoke.sh`, and `bench.sh --smoke`. See [Install.md](Install.md) for dependencies.
 
 `check-ir-opt.sh` (M16) is **not** in CI: its `debug/` goldens are host-specific, so it is a local pre-commit guard run on the host that generated them.

@@ -125,7 +125,7 @@ See [M14 vectorization study](#auto-vectorization-study-m14) for scalar vs vecto
 
 ### CI smoke checks
 
-Ubuntu CI (`.github/workflows/linux.yml`) runs, in order: build → full compile/link/run suite → `check-debug-info.sh` → **`check-asm-smoke.sh`**.
+CI (`.github/workflows/ci.yml`, matrix over Ubuntu 24.04 / 26.04 and macOS) runs, in order: build → full compile/link/run suite → `check-debug-info.sh` → **`check-asm-smoke.sh`** → `check-machine-pass-smoke.sh` → `bench.sh --smoke`.
 
 Local equivalents:
 

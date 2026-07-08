@@ -380,7 +380,7 @@ Full register allocator: **out of scope**.
 |------|--------|
 | Implement | Update [Usage.md](Usage.md) with new flags |
 | Implement | Expand [Pipeline.md](Pipeline.md) — full tool recipes (`opt`, `llc`, `objdump`, `mca`) |
-| Implement | CI: smoke `-S` on one test (extend `.github/workflows/linux.yml`) |
+| Implement | CI: smoke `-S` on one test (extend `.github/workflows/ci.yml`) |
 | Verify | [docs/README.md](README.md) links all plan docs |
 
 ---
