@@ -13,13 +13,13 @@
 DebugInfoBuilder::DebugInfoBuilder(llvm::Module& module)
     : module_(module),
       context_(module.getContext()),
-      dib_(new llvm::DIBuilder(module)),
+      dib_(std::make_unique<llvm::DIBuilder>(module)),
       compileUnit_(nullptr),
       file_(nullptr),
       initialized_(false),
       codeGenerator_(nullptr) {}
 
-DebugInfoBuilder::~DebugInfoBuilder() { delete dib_; }
+DebugInfoBuilder::~DebugInfoBuilder() = default;
 
 void DebugInfoBuilder::initialize(const std::string& sourcePath) {
   if (initialized_) {
