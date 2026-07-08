@@ -1,5 +1,7 @@
 #include "CodeGenerator.hpp"
 
+#include <cassert>
+
 #include <llvm/Analysis/LoopAnalysisManager.h>
 #include <llvm/IR/LegacyPassManager.h>
 #include <llvm/IR/PassManager.h>
@@ -363,6 +365,10 @@ void CodeGenerator::enterLoop(llvm::BasicBlock* continueBlock,
 }
 
 void CodeGenerator::leaveLoop() {
+  // Both stacks are pushed by enterLoop; switch uses breakBlockStack_ only, so
+  // do not assert size equality across the two stacks.
+  assert(!continueBlockStack_.empty() && !breakBlockStack_.empty() &&
+         "leaveLoop without a matching enterLoop");
   if (continueBlockStack_.empty() || breakBlockStack_.empty()) {
     return;
   }
@@ -376,6 +382,8 @@ void CodeGenerator::enterSwitch(llvm::BasicBlock* breakBlock) {
 }
 
 void CodeGenerator::leaveSwitch() {
+  assert(!breakBlockStack_.empty() &&
+         "leaveSwitch without a matching enterSwitch");
   if (breakBlockStack_.empty()) {
     return;
   }
