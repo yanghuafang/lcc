@@ -3,7 +3,7 @@ source_filename = "lcc"
 target datalayout = "e-m:o-i64:64-i128:128-n32:64-S128"
 target triple = "arm64-apple-darwin25.5.0"
 
-@gm = local_unnamed_addr global [3 x [4 x i32]] undef
+@gm = local_unnamed_addr global [3 x [4 x i32]] zeroinitializer
 @str = private unnamed_addr constant [24 x i8] c"33.array_2d_decl.c FAIL\00", align 1
 @str.1 = private unnamed_addr constant [24 x i8] c"33.array_2d_decl.c PASS\00", align 1
 

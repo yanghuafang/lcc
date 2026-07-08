@@ -3,10 +3,10 @@ source_filename = "lcc"
 target datalayout = "e-m:o-i64:64-i128:128-n32:64-S128"
 target triple = "arm64-apple-darwin25.5.0"
 
-@gs = local_unnamed_addr global [16 x i8] undef
+@gs = local_unnamed_addr global [16 x i8] zeroinitializer
 @0 = private unnamed_addr constant [13 x i8] c"hello world!\00", align 1
 @gps = local_unnamed_addr global i8* getelementptr inbounds ([13 x i8], [13 x i8]* @0, i64 0, i64 0)
-@gi = local_unnamed_addr global [4 x i32] undef
+@gi = local_unnamed_addr global [4 x i32] zeroinitializer
 @str.1 = private unnamed_addr constant [20 x i8] c"6.array_type.c PASS\00", align 1
 
 ; Function Attrs: nofree nounwind

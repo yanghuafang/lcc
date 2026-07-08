@@ -44,6 +44,7 @@ tests=(
   "37.static_file.c"
   "38.static_local.c"
   "39.break_continue_hierarchy.c"
+  "41.zero_init_global.c"
 )
 
 # lcc flags for test compilation; set via setCompileMode() from compile-tests.sh.

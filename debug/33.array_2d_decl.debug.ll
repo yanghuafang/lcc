@@ -5,7 +5,7 @@ target triple = "arm64-apple-darwin25.5.0"
 
 %struct.Cell = type { i32, i32 }
 
-@gm = global [3 x [4 x i32]] undef
+@gm = global [3 x [4 x i32]] zeroinitializer
 @0 = private unnamed_addr constant [25 x i8] c"33.array_2d_decl.c PASS\0A\00", align 1
 @1 = private unnamed_addr constant [25 x i8] c"33.array_2d_decl.c FAIL\0A\00", align 1
 
