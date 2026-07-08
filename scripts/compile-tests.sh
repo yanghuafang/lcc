@@ -14,7 +14,7 @@ remaining=()
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
-    --debug|--release|--relwithdebinfo)
+    --debug|--release)
       if [[ -n "$compile_mode" ]]; then
         echo "Only one compile mode may be specified." >&2
         exit 1

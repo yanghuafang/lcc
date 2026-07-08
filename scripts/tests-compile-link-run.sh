@@ -62,13 +62,9 @@ setCompileMode() {
       lcc_debug_flags=""
       lcc_opt_flags="-O2"
       ;;
-    --relwithdebinfo)
-      lcc_debug_flags="-g"
-      lcc_opt_flags="-O2"
-      ;;
     *)
       echo "Unknown compile mode: $1" >&2
-      echo "Expected --debug, --release, or --relwithdebinfo." >&2
+      echo "Expected --debug or --release." >&2
       return 1
       ;;
   esac
@@ -106,9 +102,6 @@ compile() {
       ;;
     --release)
       ir_suffix=".release.ll"
-      ;;
-    --relwithdebinfo)
-      ir_suffix=".relwithdebinfo.ll"
       ;;
   esac
   local ir="${base}${ir_suffix}"

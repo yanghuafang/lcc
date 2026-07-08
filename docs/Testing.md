@@ -52,14 +52,12 @@ Optional compile mode (at most one; applies to all tests or the single named tes
 | *(none)* | *(none)* | Default regression run (no DWARF, no LLVM opts) |
 | `--debug` | `-g -O0` | Debuggable test binaries |
 | `--release` | `-O2` | Optimized, no debug info |
-| `--relwithdebinfo` | `-g -O2` | DWARF emitted; LLVM opts still skipped under `-g` — see [Usage.md](Usage.md) |
 
 Examples:
 
 ```bash
 ./compile-tests.sh --debug
 ./compile-tests.sh --release 25.quick_sort.c
-./compile-tests.sh --relwithdebinfo
 ```
 
 `compile-tests.sh` always passes `-v` and `-l` so AST (`.dot`, `.png`) and IR (`.ll`) land in `lcc/debug/`. Checked-in copies of those artifacts live under `lcc/debug/` in the repo.
