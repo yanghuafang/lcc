@@ -582,13 +582,25 @@ void CodeGenerator::genObjectCode(const std::string& fileName) {
   std::string cpu = "generic";
   std::string features;
   llvm::TargetOptions options;
-  auto optionalModel = llvm::Optional<llvm::Reloc::Model>();
+  // Emit position-independent code. A null model lets the target pick its
+  // default, which is Static (absolute relocations) on ELF; modern Linux links
+  // executables as PIE by default and rejects those, which is why lcc objects
+  // previously needed -no-pie. Reloc::PIC_ makes the objects link cleanly into
+  // a PIE without extra flags and matches Darwin's existing default.
+  const auto optionalModel =
+      llvm::Optional<llvm::Reloc::Model>(llvm::Reloc::PIC_);
   std::unique_ptr<llvm::TargetMachine> targetMachine(
       target->createTargetMachine(targetTriple, cpu, features, options,
                                   optionalModel));
 
   module_->setDataLayout(targetMachine->createDataLayout());
   module_->setTargetTriple(targetTriple);
+  // Record PIC/PIE level 2 (matching clang -fPIE) so the emitted IR documents
+  // the PIC model chosen above. Defined symbols still reach through the GOT/PLT
+  // on ELF because lcc does not mark globals dso_local; that affects only
+  // codegen quality, not PIE linkability.
+  module_->setPICLevel(llvm::PICLevel::BigPIC);
+  module_->setPIELevel(llvm::PIELevel::Large);
 
   std::error_code errCode;
   llvm::raw_fd_ostream objFileStream(fileName, errCode, llvm::sys::fs::OF_None);

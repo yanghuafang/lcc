@@ -275,3 +275,8 @@ if.end33:                                         ; preds = %if.end30, %then31
   %144 = load i32, i32* %err, align 4
   ret i32 %144
 }
+
+!llvm.module.flags = !{!0, !1}
+
+!0 = !{i32 7, !"PIC Level", i32 2}
+!1 = !{i32 7, !"PIE Level", i32 2}

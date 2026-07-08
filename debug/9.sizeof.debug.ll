@@ -11,35 +11,35 @@ target triple = "arm64-apple-darwin25.5.0"
 
 declare i32 @printf(i8*, ...)
 
-define i32 @main() !dbg !2 {
+define i32 @main() !dbg !4 {
 entry:
   %sex = alloca i32, align 4
-  call void @llvm.dbg.declare(metadata i32* %sex, metadata !7, metadata !DIExpression()), !dbg !8
+  call void @llvm.dbg.declare(metadata i32* %sex, metadata !9, metadata !DIExpression()), !dbg !10
   %id = alloca %union.ID, align 8
-  call void @llvm.dbg.declare(metadata %union.ID* %id, metadata !9, metadata !DIExpression()), !dbg !16
+  call void @llvm.dbg.declare(metadata %union.ID* %id, metadata !11, metadata !DIExpression()), !dbg !18
   %student = alloca %struct.Student, align 8
-  call void @llvm.dbg.declare(metadata %struct.Student* %student, metadata !17, metadata !DIExpression()), !dbg !24
+  call void @llvm.dbg.declare(metadata %struct.Student* %student, metadata !19, metadata !DIExpression()), !dbg !26
   %pc = alloca i8*, align 8
-  call void @llvm.dbg.declare(metadata i8** %pc, metadata !25, metadata !DIExpression()), !dbg !26
+  call void @llvm.dbg.declare(metadata i8** %pc, metadata !27, metadata !DIExpression()), !dbg !28
   %d = alloca double, align 8
-  call void @llvm.dbg.declare(metadata double* %d, metadata !27, metadata !DIExpression()), !dbg !29
+  call void @llvm.dbg.declare(metadata double* %d, metadata !29, metadata !DIExpression()), !dbg !31
   %f = alloca float, align 4
-  call void @llvm.dbg.declare(metadata float* %f, metadata !30, metadata !DIExpression()), !dbg !31
+  call void @llvm.dbg.declare(metadata float* %f, metadata !32, metadata !DIExpression()), !dbg !33
   %l = alloca i64, align 8
-  call void @llvm.dbg.declare(metadata i64* %l, metadata !32, metadata !DIExpression()), !dbg !34
+  call void @llvm.dbg.declare(metadata i64* %l, metadata !34, metadata !DIExpression()), !dbg !36
   %i = alloca i32, align 4
-  call void @llvm.dbg.declare(metadata i32* %i, metadata !35, metadata !DIExpression()), !dbg !36
+  call void @llvm.dbg.declare(metadata i32* %i, metadata !37, metadata !DIExpression()), !dbg !38
   %c = alloca i8, align 1
-  call void @llvm.dbg.declare(metadata i8* %c, metadata !37, metadata !DIExpression()), !dbg !38
+  call void @llvm.dbg.declare(metadata i8* %c, metadata !39, metadata !DIExpression()), !dbg !40
   %err = alloca i32, align 4
-  call void @llvm.dbg.declare(metadata i32* %err, metadata !39, metadata !DIExpression()), !dbg !40
-  store i32 0, i32* %err, align 4, !dbg !40
-  %0 = load i32, i32* %err, align 4, !dbg !41
-  %1 = icmp eq i32 %0, 0, !dbg !41
-  %. = select i1 %1, i8* getelementptr inbounds ([17 x i8], [17 x i8]* @0, i32 0, i32 0), i8* getelementptr inbounds ([17 x i8], [17 x i8]* @1, i32 0, i32 0), !dbg !42
-  %2 = call i32 (i8*, ...) @printf(i8* %.), !dbg !42
-  %3 = load i32, i32* %err, align 4, !dbg !43
-  ret i32 %3, !dbg !43
+  call void @llvm.dbg.declare(metadata i32* %err, metadata !41, metadata !DIExpression()), !dbg !42
+  store i32 0, i32* %err, align 4, !dbg !42
+  %0 = load i32, i32* %err, align 4, !dbg !43
+  %1 = icmp eq i32 %0, 0, !dbg !43
+  %. = select i1 %1, i8* getelementptr inbounds ([17 x i8], [17 x i8]* @0, i32 0, i32 0), i8* getelementptr inbounds ([17 x i8], [17 x i8]* @1, i32 0, i32 0), !dbg !44
+  %2 = call i32 (i8*, ...) @printf(i8* %.), !dbg !44
+  %3 = load i32, i32* %err, align 4, !dbg !45
+  ret i32 %3, !dbg !45
 }
 
 ; Function Attrs: nofree nosync nounwind readnone speculatable willreturn
@@ -48,48 +48,51 @@ declare void @llvm.dbg.declare(metadata, metadata, metadata) #0
 attributes #0 = { nofree nosync nounwind readnone speculatable willreturn }
 
 !llvm.dbg.cu = !{!0}
+!llvm.module.flags = !{!2, !3}
 
 !0 = distinct !DICompileUnit(language: DW_LANG_C, file: !1, producer: "lcc", isOptimized: false, runtimeVersion: 0, emissionKind: FullDebug)
 !1 = !DIFile(filename: "9.sizeof.c", directory: "../tests")
-!2 = distinct !DISubprogram(name: "main", linkageName: "main", scope: null, file: !1, line: 17, type: !3, scopeLine: 17, spFlags: DISPFlagDefinition, unit: !0, retainedNodes: !6)
-!3 = !DISubroutineType(types: !4)
-!4 = !{!5}
-!5 = !DIBasicType(name: "int", size: 32, encoding: DW_ATE_signed)
-!6 = !{}
-!7 = !DILocalVariable(name: "sex", scope: !2, file: !1, line: 27, type: !5)
-!8 = !DILocation(line: 27, column: 3, scope: !2)
-!9 = !DILocalVariable(name: "id", scope: !2, file: !1, line: 26, type: !10)
-!10 = !DICompositeType(tag: DW_TAG_union_type, name: "ID", file: !1, size: 64, align: 64, elements: !11)
-!11 = !{!12, !13}
-!12 = !DIDerivedType(tag: DW_TAG_member, name: "id", file: !1, baseType: !5, size: 32, align: 32)
-!13 = !DIDerivedType(tag: DW_TAG_member, name: "name", file: !1, baseType: !14, size: 64, align: 64)
-!14 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !15, size: 64)
-!15 = !DIBasicType(name: "char", size: 8, encoding: DW_ATE_signed_char)
-!16 = !DILocation(line: 26, column: 3, scope: !2)
-!17 = !DILocalVariable(name: "student", scope: !2, file: !1, line: 25, type: !18)
-!18 = !DICompositeType(tag: DW_TAG_structure_type, name: "Student", file: !1, size: 192, align: 64, elements: !19)
-!19 = !{!12, !20, !21, !22}
-!20 = !DIDerivedType(tag: DW_TAG_member, name: "name", file: !1, baseType: !14, size: 64, align: 64, offset: 64)
-!21 = !DIDerivedType(tag: DW_TAG_member, name: "sex", file: !1, baseType: !15, size: 8, align: 8, offset: 128)
-!22 = !DIDerivedType(tag: DW_TAG_member, name: "score", file: !1, baseType: !23, size: 32, align: 32, offset: 160)
-!23 = !DIBasicType(name: "float", size: 32, encoding: DW_ATE_float)
-!24 = !DILocation(line: 25, column: 3, scope: !2)
-!25 = !DILocalVariable(name: "pc", scope: !2, file: !1, line: 24, type: !14)
-!26 = !DILocation(line: 24, column: 3, scope: !2)
-!27 = !DILocalVariable(name: "d", scope: !2, file: !1, line: 23, type: !28)
-!28 = !DIBasicType(name: "double", size: 64, encoding: DW_ATE_float)
-!29 = !DILocation(line: 23, column: 3, scope: !2)
-!30 = !DILocalVariable(name: "f", scope: !2, file: !1, line: 22, type: !23)
-!31 = !DILocation(line: 22, column: 3, scope: !2)
-!32 = !DILocalVariable(name: "l", scope: !2, file: !1, line: 21, type: !33)
-!33 = !DIBasicType(name: "long", size: 64, encoding: DW_ATE_signed)
-!34 = !DILocation(line: 21, column: 3, scope: !2)
-!35 = !DILocalVariable(name: "i", scope: !2, file: !1, line: 20, type: !5)
-!36 = !DILocation(line: 20, column: 3, scope: !2)
-!37 = !DILocalVariable(name: "c", scope: !2, file: !1, line: 19, type: !15)
-!38 = !DILocation(line: 19, column: 3, scope: !2)
-!39 = !DILocalVariable(name: "err", scope: !2, file: !1, line: 18, type: !5)
-!40 = !DILocation(line: 18, column: 3, scope: !2)
-!41 = !DILocation(line: 42, column: 3, scope: !2)
-!42 = !DILocation(line: 0, scope: !2)
-!43 = !DILocation(line: 47, column: 3, scope: !2)
+!2 = !{i32 7, !"PIC Level", i32 2}
+!3 = !{i32 7, !"PIE Level", i32 2}
+!4 = distinct !DISubprogram(name: "main", linkageName: "main", scope: null, file: !1, line: 17, type: !5, scopeLine: 17, spFlags: DISPFlagDefinition, unit: !0, retainedNodes: !8)
+!5 = !DISubroutineType(types: !6)
+!6 = !{!7}
+!7 = !DIBasicType(name: "int", size: 32, encoding: DW_ATE_signed)
+!8 = !{}
+!9 = !DILocalVariable(name: "sex", scope: !4, file: !1, line: 27, type: !7)
+!10 = !DILocation(line: 27, column: 3, scope: !4)
+!11 = !DILocalVariable(name: "id", scope: !4, file: !1, line: 26, type: !12)
+!12 = !DICompositeType(tag: DW_TAG_union_type, name: "ID", file: !1, size: 64, align: 64, elements: !13)
+!13 = !{!14, !15}
+!14 = !DIDerivedType(tag: DW_TAG_member, name: "id", file: !1, baseType: !7, size: 32, align: 32)
+!15 = !DIDerivedType(tag: DW_TAG_member, name: "name", file: !1, baseType: !16, size: 64, align: 64)
+!16 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !17, size: 64)
+!17 = !DIBasicType(name: "char", size: 8, encoding: DW_ATE_signed_char)
+!18 = !DILocation(line: 26, column: 3, scope: !4)
+!19 = !DILocalVariable(name: "student", scope: !4, file: !1, line: 25, type: !20)
+!20 = !DICompositeType(tag: DW_TAG_structure_type, name: "Student", file: !1, size: 192, align: 64, elements: !21)
+!21 = !{!14, !22, !23, !24}
+!22 = !DIDerivedType(tag: DW_TAG_member, name: "name", file: !1, baseType: !16, size: 64, align: 64, offset: 64)
+!23 = !DIDerivedType(tag: DW_TAG_member, name: "sex", file: !1, baseType: !17, size: 8, align: 8, offset: 128)
+!24 = !DIDerivedType(tag: DW_TAG_member, name: "score", file: !1, baseType: !25, size: 32, align: 32, offset: 160)
+!25 = !DIBasicType(name: "float", size: 32, encoding: DW_ATE_float)
+!26 = !DILocation(line: 25, column: 3, scope: !4)
+!27 = !DILocalVariable(name: "pc", scope: !4, file: !1, line: 24, type: !16)
+!28 = !DILocation(line: 24, column: 3, scope: !4)
+!29 = !DILocalVariable(name: "d", scope: !4, file: !1, line: 23, type: !30)
+!30 = !DIBasicType(name: "double", size: 64, encoding: DW_ATE_float)
+!31 = !DILocation(line: 23, column: 3, scope: !4)
+!32 = !DILocalVariable(name: "f", scope: !4, file: !1, line: 22, type: !25)
+!33 = !DILocation(line: 22, column: 3, scope: !4)
+!34 = !DILocalVariable(name: "l", scope: !4, file: !1, line: 21, type: !35)
+!35 = !DIBasicType(name: "long", size: 64, encoding: DW_ATE_signed)
+!36 = !DILocation(line: 21, column: 3, scope: !4)
+!37 = !DILocalVariable(name: "i", scope: !4, file: !1, line: 20, type: !7)
+!38 = !DILocation(line: 20, column: 3, scope: !4)
+!39 = !DILocalVariable(name: "c", scope: !4, file: !1, line: 19, type: !17)
+!40 = !DILocation(line: 19, column: 3, scope: !4)
+!41 = !DILocalVariable(name: "err", scope: !4, file: !1, line: 18, type: !7)
+!42 = !DILocation(line: 18, column: 3, scope: !4)
+!43 = !DILocation(line: 42, column: 3, scope: !4)
+!44 = !DILocation(line: 0, scope: !4)
+!45 = !DILocation(line: 47, column: 3, scope: !4)

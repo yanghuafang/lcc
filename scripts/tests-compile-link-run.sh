@@ -114,13 +114,9 @@ compile() {
 linkObj2Bin() {
   local obj=$1
   local bin=$2
-  local link_flags=()
-  if [[ "$(uname -s)" == Linux ]]; then
-    # lcc emits non-PIC objects; Ubuntu defaults to PIE executables.
-    link_flags=(-no-pie)
-  fi
-  if ! "${LCC_LINKER}" ../../lcc-build/${obj} -o ../../lcc-build/${bin} \
-    "${link_flags[@]}"; then
+  # lcc emits position-independent objects (genObjectCode uses Reloc::PIC_), so
+  # they link into Ubuntu's default PIE executables without -no-pie.
+  if ! "${LCC_LINKER}" ../../lcc-build/${obj} -o ../../lcc-build/${bin}; then
     echo "Failed to link ${obj} with ${LCC_LINKER}" >&2
     return 1
   fi
