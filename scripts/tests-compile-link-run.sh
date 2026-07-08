@@ -107,6 +107,9 @@ compile() {
   esac
   local ir="${base}${ir_suffix}"
   local graph=${base}.dot
+  # Per-file banner so each test's lcc output is easy to separate visually and
+  # grep for when compiling the whole suite (see compile-tests.sh).
+  printf '\n========== [%s] %s ==========\n' "${compile_mode#--}" "${source}"
   compileC2Obj ${source} ${obj} ${ir} ${graph}
   graph2Image ${source}
 }
