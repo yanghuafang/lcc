@@ -7,7 +7,8 @@ All commands below assume `cd lcc/scripts`.
 | Script | Purpose |
 |--------|---------|
 | `build-env.sh` | Export `PATH`, `LLVM_DIR`, `LCC_LINKER` for macOS (Homebrew) or Ubuntu (apt LLVM 14) |
-| `install-deps-ubuntu.sh` | Install apt packages on Ubuntu 24.04 LTS |
+| `install-deps-ubuntu.sh` | Install apt packages on Ubuntu 22.04 / 24.04 LTS |
+| `install-deps-macos.sh` | Install Homebrew packages on macOS |
 | `build-lcc.sh` | Configure and build the `lcc` compiler — see [Install.md](Install.md) |
 | `compile-tests.sh` | Compile unit tests to `../../lcc-build/*.o`; writes AST/IR under `../debug/` |
 | `link-tests.sh` | Link `../../lcc-build/*.o` to executables with `LCC_LINKER` |
@@ -72,4 +73,4 @@ Validates `DW_TAG_subprogram`, local variables, lexical blocks, and struct debug
 
 ## CI
 
-GitHub Actions (`.github/workflows/linux.yml`) on `ubuntu-24.04` runs install, build, compile, link, run, and `check-debug-info.sh`. See [Install.md](Install.md) for Ubuntu dependencies.
+GitHub Actions (`.github/workflows/ci.yml`) runs a matrix on `ubuntu-22.04`, `ubuntu-24.04`, and `macos-latest`: install, build, compile, link, run, and `check-debug-info.sh`. See [Install.md](Install.md) for dependencies.

@@ -31,11 +31,11 @@ else()
   include(FetchContent)
   FetchContent_Declare(
     argparse
-    GIT_REPOSITORY https://github.com/peter-args/argparse.git
-    GIT_TAG v2.9
+    GIT_REPOSITORY https://github.com/p-ranav/argparse.git
+    GIT_TAG v3.2
   )
   FetchContent_MakeAvailable(argparse)
-  message(STATUS "Using FetchContent argparse (v2.9)")
+  message(STATUS "Using FetchContent argparse (v3.2)")
 endif()
 
 # Config LLVM
