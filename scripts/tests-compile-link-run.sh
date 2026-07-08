@@ -116,6 +116,9 @@ compile() {
   local ir="${base}${mode_suffix}.ll"
   local asm="${base}${mode_suffix}.s"
   local graph=${base}.dot
+  # Per-file banner so each test's lcc output is easy to separate visually and
+  # grep for when compiling the whole suite (see compile-tests.sh).
+  printf '\n========== [%s] %s ==========\n' "${compile_mode#--}" "${source}"
   compileC2Obj ${source} ${obj} ${ir_pre} ${ir_post} ${ir} ${graph} ${asm}
   graph2Image ${source}
 }
