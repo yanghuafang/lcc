@@ -3,16 +3,19 @@
 set -euo pipefail
 
 if [[ "$(uname -s)" != Linux ]]; then
-  echo "This script installs dependencies on Ubuntu 24.04 LTS." >&2
+  echo "This script installs dependencies on Ubuntu 24.04 / 26.04 LTS." >&2
   exit 1
 fi
 
 if [[ -f /etc/os-release ]]; then
   # shellcheck disable=SC1091
   source /etc/os-release
-  if [[ "${VERSION_ID:-}" != 24.04 ]]; then
-    echo "Warning: lcc is supported on Ubuntu 24.04 LTS; llvm-20 apt packages may be missing on ${PRETTY_NAME:-this system}." >&2
-  fi
+  case "${VERSION_ID:-}" in
+    24.04|26.04) ;;
+    *)
+      echo "Warning: lcc is tested on Ubuntu 24.04 / 26.04 LTS; llvm-20 apt packages may be missing on ${PRETTY_NAME:-this system}." >&2
+      ;;
+  esac
 fi
 
 sudo apt-get update

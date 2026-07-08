@@ -10,8 +10,8 @@ A teaching C compiler built with **flex**, **bison**, and **LLVM 20**. It uses *
 git clone git@github.com:yanghuafang/lcc.git
 cd lcc/scripts
 
-# macOS: brew install flex bison llvm@20 argparse graphviz cmake
-# Ubuntu 24.04: ./install-deps-ubuntu.sh
+# macOS: ./install-deps-macos.sh
+# Ubuntu 24.04 / 26.04: ./install-deps-ubuntu.sh
 
 ./build-lcc.sh
 ./compile-tests.sh 0.hello_world.c
@@ -52,7 +52,7 @@ Details: [docs/Language.md](docs/Language.md)
 
 ## Requirements
 
-LLVM **20**, flex, bison, argparse, graphviz, CMake **3.22+**, **C++17**, and a system linker (`clang` or `gcc`). Supported platforms: **macOS** (Homebrew) and **Ubuntu 24.04 LTS**. See [docs/Install.md](docs/Install.md).
+LLVM **20**, flex, bison, argparse, graphviz, CMake **3.22+**, **C++17**, and a system linker (`clang` or `gcc`). Supported platforms: **macOS** (Homebrew) and **Ubuntu 24.04 / 26.04 LTS**. See [docs/Install.md](docs/Install.md).
 
 ## Roadmap
 

@@ -1,20 +1,32 @@
-name: Linux
+name: CI
 
 on:
   push:
-    branches: [main, master]
+    branches: [lcc-llvm-20]
   pull_request:
-    branches: [main, master]
+    branches: [lcc-llvm-20]
 
 jobs:
-  ubuntu:
-    runs-on: ubuntu-24.04
+  build-and-test:
+    name: ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      # Report every platform's result even if one fails.
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04, ubuntu-26.04, macos-latest]
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install dependencies
+      - name: Install dependencies (Ubuntu)
+        if: runner.os == 'Linux'
         working-directory: scripts
         run: ./install-deps-ubuntu.sh
+
+      - name: Install dependencies (macOS)
+        if: runner.os == 'macOS'
+        working-directory: scripts
+        run: ./install-deps-macos.sh
 
       - name: Build lcc
         working-directory: scripts
