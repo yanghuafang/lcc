@@ -59,4 +59,17 @@ cmake -S ../ -B ../../lcc-build \
   -DCMAKE_EXE_LINKER_FLAGS="" \
   -DCMAKE_SHARED_LINKER_FLAGS="" \
   -DCMAKE_MODULE_LINKER_FLAGS=""
-cmake --build ../../lcc-build
+
+# Build across all logical cores (override with LCC_BUILD_JOBS=N ./build-lcc.sh).
+if [[ -n "${LCC_BUILD_JOBS:-}" ]]; then
+  build_jobs="${LCC_BUILD_JOBS}"
+elif command -v nproc >/dev/null 2>&1; then
+  build_jobs="$(nproc)"                      # Linux
+elif [[ "$(uname -s)" == Darwin ]]; then
+  build_jobs="$(sysctl -n hw.logicalcpu)"    # macOS
+else
+  build_jobs="$(getconf _NPROCESSORS_ONLN 2>/dev/null || echo 4)"
+fi
+
+echo "Building lcc with ${build_jobs} parallel jobs..."
+cmake --build ../../lcc-build --parallel "${build_jobs}"
