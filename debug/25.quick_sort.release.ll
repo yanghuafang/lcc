@@ -188,3 +188,8 @@ attributes #0 = { mustprogress nofree norecurse nosync nounwind willreturn memor
 attributes #1 = { nofree norecurse nosync nounwind memory(argmem: readwrite) }
 attributes #2 = { nofree nosync nounwind memory(argmem: readwrite) }
 attributes #3 = { nofree nounwind }
+
+!llvm.module.flags = !{!0, !1}
+
+!0 = !{i32 8, !"PIC Level", i32 2}
+!1 = !{i32 7, !"PIE Level", i32 2}

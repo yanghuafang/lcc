@@ -16,285 +16,288 @@ declare ptr @malloc(i64)
 
 declare i64 @strlen(ptr)
 
-define void @fill_employee(ptr %0, i32 %1, i8 %2) !dbg !2 {
+define void @fill_employee(ptr %0, i32 %1, i8 %2) !dbg !4 {
 entry:
   %sex = alloca i8, align 1
-    #dbg_declare(ptr %sex, !10, !DIExpression(), !11)
+    #dbg_declare(ptr %sex, !12, !DIExpression(), !13)
   %id = alloca i32, align 4
-    #dbg_declare(ptr %id, !12, !DIExpression(), !11)
+    #dbg_declare(ptr %id, !14, !DIExpression(), !13)
   %employee = alloca ptr, align 8
-    #dbg_declare(ptr %employee, !13, !DIExpression(), !11)
-  store ptr %0, ptr %employee, align 8, !dbg !11
-  store i32 %1, ptr %id, align 4, !dbg !11
-  store i8 %2, ptr %sex, align 1, !dbg !11
-  %3 = load ptr, ptr %employee, align 8, !dbg !14
-  %4 = bitcast ptr %3 to ptr, !dbg !14
-  %5 = load i32, ptr %id, align 4, !dbg !14
-  store i32 %5, ptr %4, align 4, !dbg !14
-  %6 = load i32, ptr %4, align 4, !dbg !14
-  %7 = load ptr, ptr %employee, align 8, !dbg !15
-  %8 = getelementptr %struct.Employee, ptr %7, i32 0, i32 1, !dbg !15
-  %9 = load i8, ptr %sex, align 1, !dbg !15
-  store i8 %9, ptr %8, align 1, !dbg !15
-  %10 = load i8, ptr %8, align 1, !dbg !15
-  ret void, !dbg !15
+    #dbg_declare(ptr %employee, !15, !DIExpression(), !13)
+  store ptr %0, ptr %employee, align 8, !dbg !13
+  store i32 %1, ptr %id, align 4, !dbg !13
+  store i8 %2, ptr %sex, align 1, !dbg !13
+  %3 = load ptr, ptr %employee, align 8, !dbg !16
+  %4 = bitcast ptr %3 to ptr, !dbg !16
+  %5 = load i32, ptr %id, align 4, !dbg !16
+  store i32 %5, ptr %4, align 4, !dbg !16
+  %6 = load i32, ptr %4, align 4, !dbg !16
+  %7 = load ptr, ptr %employee, align 8, !dbg !17
+  %8 = getelementptr %struct.Employee, ptr %7, i32 0, i32 1, !dbg !17
+  %9 = load i8, ptr %sex, align 1, !dbg !17
+  store i8 %9, ptr %8, align 1, !dbg !17
+  %10 = load i8, ptr %8, align 1, !dbg !17
+  ret void, !dbg !17
 }
 
-define i32 @main() !dbg !16 {
+define i32 @main() !dbg !18 {
 entry:
   %len = alloca i64, align 8
-    #dbg_declare(ptr %len, !19, !DIExpression(), !21)
+    #dbg_declare(ptr %len, !21, !DIExpression(), !23)
   %sex = alloca i32, align 4
-    #dbg_declare(ptr %sex, !22, !DIExpression(), !23)
+    #dbg_declare(ptr %sex, !24, !DIExpression(), !25)
   %id = alloca i32, align 4
-    #dbg_declare(ptr %id, !24, !DIExpression(), !25)
+    #dbg_declare(ptr %id, !26, !DIExpression(), !27)
   %sz = alloca i32, align 4
-    #dbg_declare(ptr %sz, !26, !DIExpression(), !27)
+    #dbg_declare(ptr %sz, !28, !DIExpression(), !29)
   %origin = alloca %struct.Point, align 8
-    #dbg_declare(ptr %origin, !28, !DIExpression(), !33)
+    #dbg_declare(ptr %origin, !30, !DIExpression(), !35)
   %workerPtr = alloca ptr, align 8
-    #dbg_declare(ptr %workerPtr, !34, !DIExpression(), !35)
+    #dbg_declare(ptr %workerPtr, !36, !DIExpression(), !37)
   %worker = alloca %struct.Employee, align 8
-    #dbg_declare(ptr %worker, !36, !DIExpression(), !41)
+    #dbg_declare(ptr %worker, !38, !DIExpression(), !43)
   %err = alloca i32, align 4
-    #dbg_declare(ptr %err, !42, !DIExpression(), !43)
-  store i32 0, ptr %err, align 4, !dbg !43
-  %0 = getelementptr %struct.Employee, ptr %worker, i32 0, i32 1, !dbg !44
-  store i8 77, ptr %0, align 1, !dbg !44
-  %1 = load i8, ptr %0, align 1, !dbg !44
-  store ptr %worker, ptr %workerPtr, align 8, !dbg !45
-  %2 = load ptr, ptr %workerPtr, align 8, !dbg !45
-  %3 = load ptr, ptr %workerPtr, align 8, !dbg !46
-  call void @fill_employee(ptr %3, i32 11, i8 70), !dbg !46
-  %4 = bitcast ptr %origin to ptr, !dbg !47
-  store i32 3, ptr %4, align 4, !dbg !47
-  %5 = load i32, ptr %4, align 4, !dbg !47
-  %6 = getelementptr %struct.Point, ptr %origin, i32 0, i32 1, !dbg !48
-  store i32 4, ptr %6, align 4, !dbg !48
-  %7 = load i32, ptr %6, align 4, !dbg !48
-  store i32 8, ptr %sz, align 4, !dbg !49
-  %8 = load i32, ptr %sz, align 4, !dbg !49
-  %9 = load i32, ptr %sz, align 4, !dbg !50
-  %10 = icmp ne i32 %9, 8, !dbg !50
-  br i1 %10, label %then, label %if.end, !dbg !50
+    #dbg_declare(ptr %err, !44, !DIExpression(), !45)
+  store i32 0, ptr %err, align 4, !dbg !45
+  %0 = getelementptr %struct.Employee, ptr %worker, i32 0, i32 1, !dbg !46
+  store i8 77, ptr %0, align 1, !dbg !46
+  %1 = load i8, ptr %0, align 1, !dbg !46
+  store ptr %worker, ptr %workerPtr, align 8, !dbg !47
+  %2 = load ptr, ptr %workerPtr, align 8, !dbg !47
+  %3 = load ptr, ptr %workerPtr, align 8, !dbg !48
+  call void @fill_employee(ptr %3, i32 11, i8 70), !dbg !48
+  %4 = bitcast ptr %origin to ptr, !dbg !49
+  store i32 3, ptr %4, align 4, !dbg !49
+  %5 = load i32, ptr %4, align 4, !dbg !49
+  %6 = getelementptr %struct.Point, ptr %origin, i32 0, i32 1, !dbg !50
+  store i32 4, ptr %6, align 4, !dbg !50
+  %7 = load i32, ptr %6, align 4, !dbg !50
+  store i32 8, ptr %sz, align 4, !dbg !51
+  %8 = load i32, ptr %sz, align 4, !dbg !51
+  %9 = load i32, ptr %sz, align 4, !dbg !52
+  %10 = icmp ne i32 %9, 8, !dbg !52
+  br i1 %10, label %then, label %if.end, !dbg !52
 
 then:                                             ; preds = %entry
-  store i32 1, ptr %err, align 4, !dbg !51
-  %11 = load i32, ptr %err, align 4, !dbg !51
-  br label %if.end, !dbg !51
+  store i32 1, ptr %err, align 4, !dbg !53
+  %11 = load i32, ptr %err, align 4, !dbg !53
+  br label %if.end, !dbg !53
 
 if.end:                                           ; preds = %entry, %then
-  store i32 8, ptr %sz, align 4, !dbg !52
-  %12 = load i32, ptr %sz, align 4, !dbg !52
-  %13 = load i32, ptr %sz, align 4, !dbg !53
-  %14 = icmp ne i32 %13, 8, !dbg !53
-  br i1 %14, label %then1, label %if.end3, !dbg !53
+  store i32 8, ptr %sz, align 4, !dbg !54
+  %12 = load i32, ptr %sz, align 4, !dbg !54
+  %13 = load i32, ptr %sz, align 4, !dbg !55
+  %14 = icmp ne i32 %13, 8, !dbg !55
+  br i1 %14, label %then1, label %if.end3, !dbg !55
 
 then1:                                            ; preds = %if.end
-  store i32 1, ptr %err, align 4, !dbg !54
-  %15 = load i32, ptr %err, align 4, !dbg !54
-  br label %if.end3, !dbg !54
+  store i32 1, ptr %err, align 4, !dbg !56
+  %15 = load i32, ptr %err, align 4, !dbg !56
+  br label %if.end3, !dbg !56
 
 if.end3:                                          ; preds = %if.end, %then1
-  store i32 8, ptr %sz, align 4, !dbg !55
-  %16 = load i32, ptr %sz, align 4, !dbg !55
-  %17 = load i32, ptr %sz, align 4, !dbg !56
-  %18 = icmp ne i32 %17, 8, !dbg !56
-  br i1 %18, label %then4, label %if.end6, !dbg !56
+  store i32 8, ptr %sz, align 4, !dbg !57
+  %16 = load i32, ptr %sz, align 4, !dbg !57
+  %17 = load i32, ptr %sz, align 4, !dbg !58
+  %18 = icmp ne i32 %17, 8, !dbg !58
+  br i1 %18, label %then4, label %if.end6, !dbg !58
 
 then4:                                            ; preds = %if.end3
-  store i32 1, ptr %err, align 4, !dbg !57
-  %19 = load i32, ptr %err, align 4, !dbg !57
-  br label %if.end6, !dbg !57
+  store i32 1, ptr %err, align 4, !dbg !59
+  %19 = load i32, ptr %err, align 4, !dbg !59
+  br label %if.end6, !dbg !59
 
 if.end6:                                          ; preds = %if.end3, %then4
-  store i32 8, ptr %sz, align 4, !dbg !58
-  %20 = load i32, ptr %sz, align 4, !dbg !58
-  %21 = load i32, ptr %sz, align 4, !dbg !59
-  %22 = icmp ne i32 %21, 8, !dbg !59
-  br i1 %22, label %then7, label %if.end9, !dbg !59
+  store i32 8, ptr %sz, align 4, !dbg !60
+  %20 = load i32, ptr %sz, align 4, !dbg !60
+  %21 = load i32, ptr %sz, align 4, !dbg !61
+  %22 = icmp ne i32 %21, 8, !dbg !61
+  br i1 %22, label %then7, label %if.end9, !dbg !61
 
 then7:                                            ; preds = %if.end6
-  store i32 1, ptr %err, align 4, !dbg !60
-  %23 = load i32, ptr %err, align 4, !dbg !60
-  br label %if.end9, !dbg !60
+  store i32 1, ptr %err, align 4, !dbg !62
+  %23 = load i32, ptr %err, align 4, !dbg !62
+  br label %if.end9, !dbg !62
 
 if.end9:                                          ; preds = %if.end6, %then7
-  %24 = call i64 @strlen(ptr @0), !dbg !61
-  store i64 %24, ptr %len, align 4, !dbg !61
-  %25 = load i64, ptr %len, align 4, !dbg !61
-  %26 = load i64, ptr %len, align 4, !dbg !62
-  %27 = icmp ne i64 %26, 2, !dbg !62
-  br i1 %27, label %then10, label %if.end12, !dbg !62
+  %24 = call i64 @strlen(ptr @0), !dbg !63
+  store i64 %24, ptr %len, align 4, !dbg !63
+  %25 = load i64, ptr %len, align 4, !dbg !63
+  %26 = load i64, ptr %len, align 4, !dbg !64
+  %27 = icmp ne i64 %26, 2, !dbg !64
+  br i1 %27, label %then10, label %if.end12, !dbg !64
 
 then10:                                           ; preds = %if.end9
-  store i32 1, ptr %err, align 4, !dbg !63
-  %28 = load i32, ptr %err, align 4, !dbg !63
-  br label %if.end12, !dbg !63
+  store i32 1, ptr %err, align 4, !dbg !65
+  %28 = load i32, ptr %err, align 4, !dbg !65
+  br label %if.end12, !dbg !65
 
 if.end12:                                         ; preds = %if.end9, %then10
-  %29 = bitcast ptr %worker to ptr, !dbg !64
-  %30 = load i32, ptr %29, align 4, !dbg !64
-  store i32 %30, ptr %id, align 4, !dbg !64
-  %31 = load i32, ptr %id, align 4, !dbg !64
-  %32 = load i32, ptr %id, align 4, !dbg !65
-  %33 = icmp ne i32 %32, 11, !dbg !65
-  br i1 %33, label %then13, label %if.end15, !dbg !65
+  %29 = bitcast ptr %worker to ptr, !dbg !66
+  %30 = load i32, ptr %29, align 4, !dbg !66
+  store i32 %30, ptr %id, align 4, !dbg !66
+  %31 = load i32, ptr %id, align 4, !dbg !66
+  %32 = load i32, ptr %id, align 4, !dbg !67
+  %33 = icmp ne i32 %32, 11, !dbg !67
+  br i1 %33, label %then13, label %if.end15, !dbg !67
 
 then13:                                           ; preds = %if.end12
-  store i32 1, ptr %err, align 4, !dbg !66
-  %34 = load i32, ptr %err, align 4, !dbg !66
-  br label %if.end15, !dbg !66
+  store i32 1, ptr %err, align 4, !dbg !68
+  %34 = load i32, ptr %err, align 4, !dbg !68
+  br label %if.end15, !dbg !68
 
 if.end15:                                         ; preds = %if.end12, %then13
-  %35 = load ptr, ptr %workerPtr, align 8, !dbg !67
-  %36 = bitcast ptr %35 to ptr, !dbg !67
-  %37 = load i32, ptr %36, align 4, !dbg !67
-  store i32 %37, ptr %id, align 4, !dbg !67
-  %38 = load i32, ptr %id, align 4, !dbg !67
-  %39 = load i32, ptr %id, align 4, !dbg !68
-  %40 = icmp ne i32 %39, 11, !dbg !68
-  br i1 %40, label %then16, label %if.end18, !dbg !68
+  %35 = load ptr, ptr %workerPtr, align 8, !dbg !69
+  %36 = bitcast ptr %35 to ptr, !dbg !69
+  %37 = load i32, ptr %36, align 4, !dbg !69
+  store i32 %37, ptr %id, align 4, !dbg !69
+  %38 = load i32, ptr %id, align 4, !dbg !69
+  %39 = load i32, ptr %id, align 4, !dbg !70
+  %40 = icmp ne i32 %39, 11, !dbg !70
+  br i1 %40, label %then16, label %if.end18, !dbg !70
 
 then16:                                           ; preds = %if.end15
-  store i32 1, ptr %err, align 4, !dbg !69
-  %41 = load i32, ptr %err, align 4, !dbg !69
-  br label %if.end18, !dbg !69
+  store i32 1, ptr %err, align 4, !dbg !71
+  %41 = load i32, ptr %err, align 4, !dbg !71
+  br label %if.end18, !dbg !71
 
 if.end18:                                         ; preds = %if.end15, %then16
-  %42 = load ptr, ptr %workerPtr, align 8, !dbg !70
-  %43 = getelementptr %struct.Employee, ptr %42, i32 0, i32 1, !dbg !70
-  %44 = load i8, ptr %43, align 1, !dbg !70
-  %45 = sext i8 %44 to i32, !dbg !70
-  store i32 %45, ptr %sex, align 4, !dbg !70
-  %46 = load i32, ptr %sex, align 4, !dbg !70
-  %47 = load i32, ptr %sex, align 4, !dbg !71
-  %48 = icmp ne i32 %47, 70, !dbg !71
-  br i1 %48, label %then19, label %if.end21, !dbg !71
+  %42 = load ptr, ptr %workerPtr, align 8, !dbg !72
+  %43 = getelementptr %struct.Employee, ptr %42, i32 0, i32 1, !dbg !72
+  %44 = load i8, ptr %43, align 1, !dbg !72
+  %45 = sext i8 %44 to i32, !dbg !72
+  store i32 %45, ptr %sex, align 4, !dbg !72
+  %46 = load i32, ptr %sex, align 4, !dbg !72
+  %47 = load i32, ptr %sex, align 4, !dbg !73
+  %48 = icmp ne i32 %47, 70, !dbg !73
+  br i1 %48, label %then19, label %if.end21, !dbg !73
 
 then19:                                           ; preds = %if.end18
-  store i32 1, ptr %err, align 4, !dbg !72
-  %49 = load i32, ptr %err, align 4, !dbg !72
-  br label %if.end21, !dbg !72
+  store i32 1, ptr %err, align 4, !dbg !74
+  %49 = load i32, ptr %err, align 4, !dbg !74
+  br label %if.end21, !dbg !74
 
 if.end21:                                         ; preds = %if.end18, %then19
-  %50 = bitcast ptr %origin to ptr, !dbg !73
-  %51 = load i32, ptr %50, align 4, !dbg !73
-  store i32 %51, ptr %id, align 4, !dbg !73
-  %52 = load i32, ptr %id, align 4, !dbg !73
-  %53 = load i32, ptr %id, align 4, !dbg !74
-  %54 = icmp ne i32 %53, 3, !dbg !74
-  br i1 %54, label %then22, label %if.end24, !dbg !74
+  %50 = bitcast ptr %origin to ptr, !dbg !75
+  %51 = load i32, ptr %50, align 4, !dbg !75
+  store i32 %51, ptr %id, align 4, !dbg !75
+  %52 = load i32, ptr %id, align 4, !dbg !75
+  %53 = load i32, ptr %id, align 4, !dbg !76
+  %54 = icmp ne i32 %53, 3, !dbg !76
+  br i1 %54, label %then22, label %if.end24, !dbg !76
 
 then22:                                           ; preds = %if.end21
-  store i32 1, ptr %err, align 4, !dbg !75
-  %55 = load i32, ptr %err, align 4, !dbg !75
-  br label %if.end24, !dbg !75
+  store i32 1, ptr %err, align 4, !dbg !77
+  %55 = load i32, ptr %err, align 4, !dbg !77
+  br label %if.end24, !dbg !77
 
 if.end24:                                         ; preds = %if.end21, %then22
-  %56 = getelementptr %struct.Point, ptr %origin, i32 0, i32 1, !dbg !76
-  %57 = load i32, ptr %56, align 4, !dbg !76
-  store i32 %57, ptr %sex, align 4, !dbg !76
-  %58 = load i32, ptr %sex, align 4, !dbg !76
-  %59 = load i32, ptr %sex, align 4, !dbg !77
-  %60 = icmp ne i32 %59, 4, !dbg !77
-  br i1 %60, label %then25, label %if.end27, !dbg !77
+  %56 = getelementptr %struct.Point, ptr %origin, i32 0, i32 1, !dbg !78
+  %57 = load i32, ptr %56, align 4, !dbg !78
+  store i32 %57, ptr %sex, align 4, !dbg !78
+  %58 = load i32, ptr %sex, align 4, !dbg !78
+  %59 = load i32, ptr %sex, align 4, !dbg !79
+  %60 = icmp ne i32 %59, 4, !dbg !79
+  br i1 %60, label %then25, label %if.end27, !dbg !79
 
 then25:                                           ; preds = %if.end24
-  store i32 1, ptr %err, align 4, !dbg !78
-  %61 = load i32, ptr %err, align 4, !dbg !78
-  br label %if.end27, !dbg !78
+  store i32 1, ptr %err, align 4, !dbg !80
+  %61 = load i32, ptr %err, align 4, !dbg !80
+  br label %if.end27, !dbg !80
 
 if.end27:                                         ; preds = %if.end24, %then25
-  %62 = load i32, ptr %err, align 4, !dbg !79
-  %63 = icmp eq i32 %62, 0, !dbg !79
-  %. = select i1 %63, ptr @1, ptr @2, !dbg !80
-  %64 = call i32 (ptr, ...) @printf(ptr %.), !dbg !80
-  %65 = load i32, ptr %err, align 4, !dbg !81
-  ret i32 %65, !dbg !81
+  %62 = load i32, ptr %err, align 4, !dbg !81
+  %63 = icmp eq i32 %62, 0, !dbg !81
+  %. = select i1 %63, ptr @1, ptr @2, !dbg !82
+  %64 = call i32 (ptr, ...) @printf(ptr %.), !dbg !82
+  %65 = load i32, ptr %err, align 4, !dbg !83
+  ret i32 %65, !dbg !83
 }
 
 !llvm.dbg.cu = !{!0}
+!llvm.module.flags = !{!2, !3}
 
 !0 = distinct !DICompileUnit(language: DW_LANG_C, file: !1, producer: "lcc", isOptimized: false, runtimeVersion: 0, emissionKind: FullDebug)
 !1 = !DIFile(filename: "36.typedef_struct.c", directory: "../tests")
-!2 = distinct !DISubprogram(name: "fill_employee", linkageName: "fill_employee", scope: null, file: !1, line: 21, type: !3, scopeLine: 21, spFlags: DISPFlagDefinition, unit: !0, retainedNodes: !9)
-!3 = !DISubroutineType(types: !4)
-!4 = !{!5, !6, !7, !8}
-!5 = !DIBasicType(name: "void", encoding: DW_ATE_address)
-!6 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !5, size: 64)
-!7 = !DIBasicType(name: "int", size: 32, encoding: DW_ATE_signed)
-!8 = !DIBasicType(name: "char", size: 8, encoding: DW_ATE_signed_char)
-!9 = !{}
-!10 = !DILocalVariable(name: "sex", arg: 3, scope: !2, file: !1, line: 21, type: !8)
-!11 = !DILocation(line: 21, column: 6, scope: !2)
-!12 = !DILocalVariable(name: "id", arg: 2, scope: !2, file: !1, line: 21, type: !7)
-!13 = !DILocalVariable(name: "employee", arg: 1, scope: !2, file: !1, line: 21, type: !6)
-!14 = !DILocation(line: 22, column: 3, scope: !2)
-!15 = !DILocation(line: 23, column: 3, scope: !2)
-!16 = distinct !DISubprogram(name: "main", linkageName: "main", scope: null, file: !1, line: 26, type: !17, scopeLine: 26, spFlags: DISPFlagDefinition, unit: !0, retainedNodes: !9)
-!17 = !DISubroutineType(types: !18)
-!18 = !{!7}
-!19 = !DILocalVariable(name: "len", scope: !16, file: !1, line: 34, type: !20)
-!20 = !DIBasicType(name: "unsigned long", size: 64, encoding: DW_ATE_unsigned)
-!21 = !DILocation(line: 34, column: 3, scope: !16)
-!22 = !DILocalVariable(name: "sex", scope: !16, file: !1, line: 33, type: !7)
-!23 = !DILocation(line: 33, column: 3, scope: !16)
-!24 = !DILocalVariable(name: "id", scope: !16, file: !1, line: 32, type: !7)
-!25 = !DILocation(line: 32, column: 3, scope: !16)
-!26 = !DILocalVariable(name: "sz", scope: !16, file: !1, line: 31, type: !7)
-!27 = !DILocation(line: 31, column: 3, scope: !16)
-!28 = !DILocalVariable(name: "origin", scope: !16, file: !1, line: 30, type: !29)
-!29 = !DICompositeType(tag: DW_TAG_structure_type, name: "Point", file: !1, size: 64, align: 32, elements: !30)
-!30 = !{!31, !32}
-!31 = !DIDerivedType(tag: DW_TAG_member, name: "x", file: !1, baseType: !7, size: 32, align: 32)
-!32 = !DIDerivedType(tag: DW_TAG_member, name: "y", file: !1, baseType: !7, size: 32, align: 32, offset: 32)
-!33 = !DILocation(line: 30, column: 3, scope: !16)
-!34 = !DILocalVariable(name: "workerPtr", scope: !16, file: !1, line: 29, type: !6)
-!35 = !DILocation(line: 29, column: 3, scope: !16)
-!36 = !DILocalVariable(name: "worker", scope: !16, file: !1, line: 28, type: !37)
-!37 = !DICompositeType(tag: DW_TAG_structure_type, name: "Employee", file: !1, size: 64, align: 32, elements: !38)
-!38 = !{!39, !40}
-!39 = !DIDerivedType(tag: DW_TAG_member, name: "id", file: !1, baseType: !7, size: 32, align: 32)
-!40 = !DIDerivedType(tag: DW_TAG_member, name: "sex", file: !1, baseType: !8, size: 8, align: 8, offset: 32)
-!41 = !DILocation(line: 28, column: 3, scope: !16)
-!42 = !DILocalVariable(name: "err", scope: !16, file: !1, line: 27, type: !7)
-!43 = !DILocation(line: 27, column: 3, scope: !16)
-!44 = !DILocation(line: 36, column: 3, scope: !16)
-!45 = !DILocation(line: 37, column: 3, scope: !16)
-!46 = !DILocation(line: 38, column: 3, scope: !16)
-!47 = !DILocation(line: 40, column: 3, scope: !16)
-!48 = !DILocation(line: 41, column: 3, scope: !16)
-!49 = !DILocation(line: 43, column: 3, scope: !16)
-!50 = !DILocation(line: 44, column: 3, scope: !16)
-!51 = !DILocation(line: 44, column: 16, scope: !16)
-!52 = !DILocation(line: 45, column: 3, scope: !16)
-!53 = !DILocation(line: 46, column: 3, scope: !16)
-!54 = !DILocation(line: 46, column: 16, scope: !16)
-!55 = !DILocation(line: 47, column: 3, scope: !16)
-!56 = !DILocation(line: 48, column: 3, scope: !16)
-!57 = !DILocation(line: 48, column: 16, scope: !16)
-!58 = !DILocation(line: 49, column: 3, scope: !16)
-!59 = !DILocation(line: 50, column: 3, scope: !16)
-!60 = !DILocation(line: 50, column: 16, scope: !16)
-!61 = !DILocation(line: 52, column: 3, scope: !16)
-!62 = !DILocation(line: 53, column: 3, scope: !16)
-!63 = !DILocation(line: 53, column: 17, scope: !16)
-!64 = !DILocation(line: 55, column: 3, scope: !16)
-!65 = !DILocation(line: 56, column: 3, scope: !16)
-!66 = !DILocation(line: 56, column: 17, scope: !16)
-!67 = !DILocation(line: 57, column: 3, scope: !16)
-!68 = !DILocation(line: 58, column: 3, scope: !16)
-!69 = !DILocation(line: 58, column: 17, scope: !16)
-!70 = !DILocation(line: 59, column: 3, scope: !16)
-!71 = !DILocation(line: 60, column: 3, scope: !16)
-!72 = !DILocation(line: 60, column: 19, scope: !16)
-!73 = !DILocation(line: 61, column: 3, scope: !16)
-!74 = !DILocation(line: 62, column: 3, scope: !16)
-!75 = !DILocation(line: 62, column: 16, scope: !16)
-!76 = !DILocation(line: 63, column: 3, scope: !16)
-!77 = !DILocation(line: 64, column: 3, scope: !16)
-!78 = !DILocation(line: 64, column: 17, scope: !16)
-!79 = !DILocation(line: 66, column: 3, scope: !16)
-!80 = !DILocation(line: 0, scope: !16)
-!81 = !DILocation(line: 71, column: 3, scope: !16)
+!2 = !{i32 8, !"PIC Level", i32 2}
+!3 = !{i32 7, !"PIE Level", i32 2}
+!4 = distinct !DISubprogram(name: "fill_employee", linkageName: "fill_employee", scope: null, file: !1, line: 21, type: !5, scopeLine: 21, spFlags: DISPFlagDefinition, unit: !0, retainedNodes: !11)
+!5 = !DISubroutineType(types: !6)
+!6 = !{!7, !8, !9, !10}
+!7 = !DIBasicType(name: "void", encoding: DW_ATE_address)
+!8 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !7, size: 64)
+!9 = !DIBasicType(name: "int", size: 32, encoding: DW_ATE_signed)
+!10 = !DIBasicType(name: "char", size: 8, encoding: DW_ATE_signed_char)
+!11 = !{}
+!12 = !DILocalVariable(name: "sex", arg: 3, scope: !4, file: !1, line: 21, type: !10)
+!13 = !DILocation(line: 21, column: 6, scope: !4)
+!14 = !DILocalVariable(name: "id", arg: 2, scope: !4, file: !1, line: 21, type: !9)
+!15 = !DILocalVariable(name: "employee", arg: 1, scope: !4, file: !1, line: 21, type: !8)
+!16 = !DILocation(line: 22, column: 3, scope: !4)
+!17 = !DILocation(line: 23, column: 3, scope: !4)
+!18 = distinct !DISubprogram(name: "main", linkageName: "main", scope: null, file: !1, line: 26, type: !19, scopeLine: 26, spFlags: DISPFlagDefinition, unit: !0, retainedNodes: !11)
+!19 = !DISubroutineType(types: !20)
+!20 = !{!9}
+!21 = !DILocalVariable(name: "len", scope: !18, file: !1, line: 34, type: !22)
+!22 = !DIBasicType(name: "unsigned long", size: 64, encoding: DW_ATE_unsigned)
+!23 = !DILocation(line: 34, column: 3, scope: !18)
+!24 = !DILocalVariable(name: "sex", scope: !18, file: !1, line: 33, type: !9)
+!25 = !DILocation(line: 33, column: 3, scope: !18)
+!26 = !DILocalVariable(name: "id", scope: !18, file: !1, line: 32, type: !9)
+!27 = !DILocation(line: 32, column: 3, scope: !18)
+!28 = !DILocalVariable(name: "sz", scope: !18, file: !1, line: 31, type: !9)
+!29 = !DILocation(line: 31, column: 3, scope: !18)
+!30 = !DILocalVariable(name: "origin", scope: !18, file: !1, line: 30, type: !31)
+!31 = !DICompositeType(tag: DW_TAG_structure_type, name: "Point", file: !1, size: 64, align: 32, elements: !32)
+!32 = !{!33, !34}
+!33 = !DIDerivedType(tag: DW_TAG_member, name: "x", file: !1, baseType: !9, size: 32, align: 32)
+!34 = !DIDerivedType(tag: DW_TAG_member, name: "y", file: !1, baseType: !9, size: 32, align: 32, offset: 32)
+!35 = !DILocation(line: 30, column: 3, scope: !18)
+!36 = !DILocalVariable(name: "workerPtr", scope: !18, file: !1, line: 29, type: !8)
+!37 = !DILocation(line: 29, column: 3, scope: !18)
+!38 = !DILocalVariable(name: "worker", scope: !18, file: !1, line: 28, type: !39)
+!39 = !DICompositeType(tag: DW_TAG_structure_type, name: "Employee", file: !1, size: 64, align: 32, elements: !40)
+!40 = !{!41, !42}
+!41 = !DIDerivedType(tag: DW_TAG_member, name: "id", file: !1, baseType: !9, size: 32, align: 32)
+!42 = !DIDerivedType(tag: DW_TAG_member, name: "sex", file: !1, baseType: !10, size: 8, align: 8, offset: 32)
+!43 = !DILocation(line: 28, column: 3, scope: !18)
+!44 = !DILocalVariable(name: "err", scope: !18, file: !1, line: 27, type: !9)
+!45 = !DILocation(line: 27, column: 3, scope: !18)
+!46 = !DILocation(line: 36, column: 3, scope: !18)
+!47 = !DILocation(line: 37, column: 3, scope: !18)
+!48 = !DILocation(line: 38, column: 3, scope: !18)
+!49 = !DILocation(line: 40, column: 3, scope: !18)
+!50 = !DILocation(line: 41, column: 3, scope: !18)
+!51 = !DILocation(line: 43, column: 3, scope: !18)
+!52 = !DILocation(line: 44, column: 3, scope: !18)
+!53 = !DILocation(line: 44, column: 16, scope: !18)
+!54 = !DILocation(line: 45, column: 3, scope: !18)
+!55 = !DILocation(line: 46, column: 3, scope: !18)
+!56 = !DILocation(line: 46, column: 16, scope: !18)
+!57 = !DILocation(line: 47, column: 3, scope: !18)
+!58 = !DILocation(line: 48, column: 3, scope: !18)
+!59 = !DILocation(line: 48, column: 16, scope: !18)
+!60 = !DILocation(line: 49, column: 3, scope: !18)
+!61 = !DILocation(line: 50, column: 3, scope: !18)
+!62 = !DILocation(line: 50, column: 16, scope: !18)
+!63 = !DILocation(line: 52, column: 3, scope: !18)
+!64 = !DILocation(line: 53, column: 3, scope: !18)
+!65 = !DILocation(line: 53, column: 17, scope: !18)
+!66 = !DILocation(line: 55, column: 3, scope: !18)
+!67 = !DILocation(line: 56, column: 3, scope: !18)
+!68 = !DILocation(line: 56, column: 17, scope: !18)
+!69 = !DILocation(line: 57, column: 3, scope: !18)
+!70 = !DILocation(line: 58, column: 3, scope: !18)
+!71 = !DILocation(line: 58, column: 17, scope: !18)
+!72 = !DILocation(line: 59, column: 3, scope: !18)
+!73 = !DILocation(line: 60, column: 3, scope: !18)
+!74 = !DILocation(line: 60, column: 19, scope: !18)
+!75 = !DILocation(line: 61, column: 3, scope: !18)
+!76 = !DILocation(line: 62, column: 3, scope: !18)
+!77 = !DILocation(line: 62, column: 16, scope: !18)
+!78 = !DILocation(line: 63, column: 3, scope: !18)
+!79 = !DILocation(line: 64, column: 3, scope: !18)
+!80 = !DILocation(line: 64, column: 17, scope: !18)
+!81 = !DILocation(line: 66, column: 3, scope: !18)
+!82 = !DILocation(line: 0, scope: !18)
+!83 = !DILocation(line: 71, column: 3, scope: !18)

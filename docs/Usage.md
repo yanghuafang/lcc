@@ -40,19 +40,13 @@ dot ../debug/0.hello_world.dot -T png -o ../debug/0.hello_world.png
 
 ## Link `.o` to an executable
 
-`lcc` emits a relocatable object file. Link it with the system toolchain:
+`lcc` emits a **position-independent** relocatable object file (the back-end uses LLVM's `Reloc::PIC_` model). Link it with the system toolchain — no `-no-pie` needed, even on Linux toolchains that default to PIE:
 
 ```bash
 clang <object.o> -o <executable>
 ```
 
-On Ubuntu, use `-no-pie` when linking `lcc` objects (non-PIC relocations):
-
-```bash
-clang ../../lcc-build/0.hello_world.o -o ../../lcc-build/0.hello_world -no-pie
-```
-
-The test scripts pass `-no-pie` on Linux automatically via `LCC_LINKER` (default `/usr/bin/clang` on macOS and Ubuntu). Override if needed:
+The test scripts link via `LCC_LINKER` (default `/usr/bin/clang` on macOS and Ubuntu). Override if needed:
 
 ```bash
 LCC_LINKER=gcc ./link-tests.sh
@@ -67,7 +61,5 @@ LCC_LINKER=gcc ./link-tests.sh
 clang ../../lcc-build/0.hello_world.o -o ../../lcc-build/0.hello_world
 lldb ../../lcc-build/0.hello_world
 ```
-
-On Linux, add `-no-pie` to the `clang` link line if you link by hand.
 
 Supported DWARF under `-g`/`-O0`-style builds: subprograms, line stepping, locals and parameters, struct members, and lexical blocks. Optimized debugging (`dbg.value` salvage) is out of scope.

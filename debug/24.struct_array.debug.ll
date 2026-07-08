@@ -10,138 +10,141 @@ target triple = "arm64-apple-darwin25.5.0"
 
 declare i32 @printf(ptr, ...)
 
-define i32 @main() !dbg !2 {
+define i32 @main() !dbg !4 {
 entry:
   %data = alloca i32, align 4
-    #dbg_declare(ptr %data, !7, !DIExpression(), !8)
+    #dbg_declare(ptr %data, !9, !DIExpression(), !10)
   %id = alloca i32, align 4
-    #dbg_declare(ptr %id, !9, !DIExpression(), !10)
+    #dbg_declare(ptr %id, !11, !DIExpression(), !12)
   %da = alloca [2 x %struct.Data], align 8
-    #dbg_declare(ptr %da, !11, !DIExpression(), !16)
+    #dbg_declare(ptr %da, !13, !DIExpression(), !18)
   %err = alloca i32, align 4
-    #dbg_declare(ptr %err, !17, !DIExpression(), !18)
-  store i32 0, ptr %err, align 4, !dbg !18
-  %0 = bitcast ptr %da to ptr, !dbg !19
-  %1 = bitcast ptr %0 to ptr, !dbg !19
-  store i32 0, ptr %1, align 4, !dbg !19
-  %2 = load i32, ptr %1, align 4, !dbg !19
-  %3 = bitcast ptr %da to ptr, !dbg !20
-  %4 = getelementptr %struct.Data, ptr %3, i32 0, i32 1, !dbg !20
-  store i32 0, ptr %4, align 4, !dbg !20
-  %5 = load i32, ptr %4, align 4, !dbg !20
-  %6 = getelementptr %struct.Data, ptr %da, i32 1, !dbg !21
-  %7 = bitcast ptr %6 to ptr, !dbg !21
-  store i32 10, ptr %7, align 4, !dbg !21
-  %8 = load i32, ptr %7, align 4, !dbg !21
-  %9 = getelementptr %struct.Data, ptr %da, i32 1, !dbg !22
-  %10 = getelementptr %struct.Data, ptr %9, i32 0, i32 1, !dbg !22
-  store i32 80, ptr %10, align 4, !dbg !22
-  %11 = load i32, ptr %10, align 4, !dbg !22
-  %12 = getelementptr %struct.Data, ptr %da, i32 1, !dbg !23
-  %13 = bitcast ptr %12 to ptr, !dbg !23
-  %14 = load i32, ptr %13, align 4, !dbg !23
-  store i32 %14, ptr %id, align 4, !dbg !23
-  %15 = load i32, ptr %id, align 4, !dbg !23
-  %16 = getelementptr %struct.Data, ptr %da, i32 1, !dbg !24
-  %17 = getelementptr %struct.Data, ptr %16, i32 0, i32 1, !dbg !24
-  %18 = load i32, ptr %17, align 4, !dbg !24
-  store i32 %18, ptr %data, align 4, !dbg !24
-  %19 = load i32, ptr %data, align 4, !dbg !24
-  %20 = load i32, ptr %id, align 4, !dbg !25
-  %21 = icmp ne i32 %20, 10, !dbg !25
-  br i1 %21, label %then, label %if.end, !dbg !25
+    #dbg_declare(ptr %err, !19, !DIExpression(), !20)
+  store i32 0, ptr %err, align 4, !dbg !20
+  %0 = bitcast ptr %da to ptr, !dbg !21
+  %1 = bitcast ptr %0 to ptr, !dbg !21
+  store i32 0, ptr %1, align 4, !dbg !21
+  %2 = load i32, ptr %1, align 4, !dbg !21
+  %3 = bitcast ptr %da to ptr, !dbg !22
+  %4 = getelementptr %struct.Data, ptr %3, i32 0, i32 1, !dbg !22
+  store i32 0, ptr %4, align 4, !dbg !22
+  %5 = load i32, ptr %4, align 4, !dbg !22
+  %6 = getelementptr %struct.Data, ptr %da, i32 1, !dbg !23
+  %7 = bitcast ptr %6 to ptr, !dbg !23
+  store i32 10, ptr %7, align 4, !dbg !23
+  %8 = load i32, ptr %7, align 4, !dbg !23
+  %9 = getelementptr %struct.Data, ptr %da, i32 1, !dbg !24
+  %10 = getelementptr %struct.Data, ptr %9, i32 0, i32 1, !dbg !24
+  store i32 80, ptr %10, align 4, !dbg !24
+  %11 = load i32, ptr %10, align 4, !dbg !24
+  %12 = getelementptr %struct.Data, ptr %da, i32 1, !dbg !25
+  %13 = bitcast ptr %12 to ptr, !dbg !25
+  %14 = load i32, ptr %13, align 4, !dbg !25
+  store i32 %14, ptr %id, align 4, !dbg !25
+  %15 = load i32, ptr %id, align 4, !dbg !25
+  %16 = getelementptr %struct.Data, ptr %da, i32 1, !dbg !26
+  %17 = getelementptr %struct.Data, ptr %16, i32 0, i32 1, !dbg !26
+  %18 = load i32, ptr %17, align 4, !dbg !26
+  store i32 %18, ptr %data, align 4, !dbg !26
+  %19 = load i32, ptr %data, align 4, !dbg !26
+  %20 = load i32, ptr %id, align 4, !dbg !27
+  %21 = icmp ne i32 %20, 10, !dbg !27
+  br i1 %21, label %then, label %if.end, !dbg !27
 
 then:                                             ; preds = %entry
-  store i32 1, ptr %err, align 4, !dbg !26
-  %22 = load i32, ptr %err, align 4, !dbg !26
-  br label %if.end, !dbg !26
+  store i32 1, ptr %err, align 4, !dbg !28
+  %22 = load i32, ptr %err, align 4, !dbg !28
+  br label %if.end, !dbg !28
 
 if.end:                                           ; preds = %entry, %then
-  %23 = load i32, ptr %data, align 4, !dbg !27
-  %24 = icmp ne i32 %23, 80, !dbg !27
-  br i1 %24, label %then1, label %if.end3, !dbg !27
+  %23 = load i32, ptr %data, align 4, !dbg !29
+  %24 = icmp ne i32 %23, 80, !dbg !29
+  br i1 %24, label %then1, label %if.end3, !dbg !29
 
 then1:                                            ; preds = %if.end
-  store i32 1, ptr %err, align 4, !dbg !28
-  %25 = load i32, ptr %err, align 4, !dbg !28
-  br label %if.end3, !dbg !28
+  store i32 1, ptr %err, align 4, !dbg !30
+  %25 = load i32, ptr %err, align 4, !dbg !30
+  br label %if.end3, !dbg !30
 
 if.end3:                                          ; preds = %if.end, %then1
-  %26 = bitcast ptr %da to ptr, !dbg !29
-  %27 = bitcast ptr %26 to ptr, !dbg !29
-  %28 = load i32, ptr %27, align 4, !dbg !29
-  store i32 %28, ptr %id, align 4, !dbg !29
-  %29 = load i32, ptr %id, align 4, !dbg !29
-  %30 = bitcast ptr %da to ptr, !dbg !30
-  %31 = getelementptr %struct.Data, ptr %30, i32 0, i32 1, !dbg !30
-  %32 = load i32, ptr %31, align 4, !dbg !30
-  store i32 %32, ptr %data, align 4, !dbg !30
-  %33 = load i32, ptr %data, align 4, !dbg !30
-  %34 = load i32, ptr %id, align 4, !dbg !31
-  %35 = icmp ne i32 %34, 0, !dbg !31
-  br i1 %35, label %then4, label %if.end6, !dbg !31
+  %26 = bitcast ptr %da to ptr, !dbg !31
+  %27 = bitcast ptr %26 to ptr, !dbg !31
+  %28 = load i32, ptr %27, align 4, !dbg !31
+  store i32 %28, ptr %id, align 4, !dbg !31
+  %29 = load i32, ptr %id, align 4, !dbg !31
+  %30 = bitcast ptr %da to ptr, !dbg !32
+  %31 = getelementptr %struct.Data, ptr %30, i32 0, i32 1, !dbg !32
+  %32 = load i32, ptr %31, align 4, !dbg !32
+  store i32 %32, ptr %data, align 4, !dbg !32
+  %33 = load i32, ptr %data, align 4, !dbg !32
+  %34 = load i32, ptr %id, align 4, !dbg !33
+  %35 = icmp ne i32 %34, 0, !dbg !33
+  br i1 %35, label %then4, label %if.end6, !dbg !33
 
 then4:                                            ; preds = %if.end3
-  store i32 1, ptr %err, align 4, !dbg !32
-  %36 = load i32, ptr %err, align 4, !dbg !32
-  br label %if.end6, !dbg !32
+  store i32 1, ptr %err, align 4, !dbg !34
+  %36 = load i32, ptr %err, align 4, !dbg !34
+  br label %if.end6, !dbg !34
 
 if.end6:                                          ; preds = %if.end3, %then4
-  %37 = load i32, ptr %data, align 4, !dbg !33
-  %38 = icmp ne i32 %37, 0, !dbg !33
-  br i1 %38, label %then7, label %if.end9, !dbg !33
+  %37 = load i32, ptr %data, align 4, !dbg !35
+  %38 = icmp ne i32 %37, 0, !dbg !35
+  br i1 %38, label %then7, label %if.end9, !dbg !35
 
 then7:                                            ; preds = %if.end6
-  store i32 1, ptr %err, align 4, !dbg !34
-  %39 = load i32, ptr %err, align 4, !dbg !34
-  br label %if.end9, !dbg !34
+  store i32 1, ptr %err, align 4, !dbg !36
+  %39 = load i32, ptr %err, align 4, !dbg !36
+  br label %if.end9, !dbg !36
 
 if.end9:                                          ; preds = %if.end6, %then7
-  %40 = load i32, ptr %err, align 4, !dbg !35
-  %41 = icmp eq i32 %40, 0, !dbg !35
-  %. = select i1 %41, ptr @0, ptr @1, !dbg !36
-  %42 = call i32 (ptr, ...) @printf(ptr %.), !dbg !36
-  %43 = load i32, ptr %err, align 4, !dbg !37
-  ret i32 %43, !dbg !37
+  %40 = load i32, ptr %err, align 4, !dbg !37
+  %41 = icmp eq i32 %40, 0, !dbg !37
+  %. = select i1 %41, ptr @0, ptr @1, !dbg !38
+  %42 = call i32 (ptr, ...) @printf(ptr %.), !dbg !38
+  %43 = load i32, ptr %err, align 4, !dbg !39
+  ret i32 %43, !dbg !39
 }
 
 !llvm.dbg.cu = !{!0}
+!llvm.module.flags = !{!2, !3}
 
 !0 = distinct !DICompileUnit(language: DW_LANG_C, file: !1, producer: "lcc", isOptimized: false, runtimeVersion: 0, emissionKind: FullDebug)
 !1 = !DIFile(filename: "24.struct_array.c", directory: "../tests")
-!2 = distinct !DISubprogram(name: "main", linkageName: "main", scope: null, file: !1, line: 8, type: !3, scopeLine: 8, spFlags: DISPFlagDefinition, unit: !0, retainedNodes: !6)
-!3 = !DISubroutineType(types: !4)
-!4 = !{!5}
-!5 = !DIBasicType(name: "int", size: 32, encoding: DW_ATE_signed)
-!6 = !{}
-!7 = !DILocalVariable(name: "data", scope: !2, file: !1, line: 12, type: !5)
-!8 = !DILocation(line: 12, column: 3, scope: !2)
-!9 = !DILocalVariable(name: "id", scope: !2, file: !1, line: 11, type: !5)
-!10 = !DILocation(line: 11, column: 3, scope: !2)
-!11 = !DILocalVariable(name: "da", scope: !2, file: !1, line: 10, type: !12)
-!12 = !DICompositeType(tag: DW_TAG_array_type, baseType: !13, size: 128, align: 32, elements: !14)
-!13 = !DIBasicType(name: "void", encoding: DW_ATE_address)
-!14 = !{!15}
-!15 = !DISubrange(count: 2, lowerBound: 0)
-!16 = !DILocation(line: 10, column: 3, scope: !2)
-!17 = !DILocalVariable(name: "err", scope: !2, file: !1, line: 9, type: !5)
-!18 = !DILocation(line: 9, column: 3, scope: !2)
-!19 = !DILocation(line: 14, column: 3, scope: !2)
-!20 = !DILocation(line: 15, column: 3, scope: !2)
-!21 = !DILocation(line: 16, column: 3, scope: !2)
-!22 = !DILocation(line: 17, column: 3, scope: !2)
-!23 = !DILocation(line: 19, column: 3, scope: !2)
-!24 = !DILocation(line: 20, column: 3, scope: !2)
-!25 = !DILocation(line: 21, column: 3, scope: !2)
-!26 = !DILocation(line: 21, column: 17, scope: !2)
-!27 = !DILocation(line: 22, column: 3, scope: !2)
-!28 = !DILocation(line: 22, column: 19, scope: !2)
-!29 = !DILocation(line: 24, column: 3, scope: !2)
-!30 = !DILocation(line: 25, column: 3, scope: !2)
-!31 = !DILocation(line: 26, column: 3, scope: !2)
-!32 = !DILocation(line: 26, column: 16, scope: !2)
-!33 = !DILocation(line: 27, column: 3, scope: !2)
-!34 = !DILocation(line: 27, column: 18, scope: !2)
-!35 = !DILocation(line: 29, column: 3, scope: !2)
-!36 = !DILocation(line: 0, scope: !2)
-!37 = !DILocation(line: 34, column: 3, scope: !2)
+!2 = !{i32 8, !"PIC Level", i32 2}
+!3 = !{i32 7, !"PIE Level", i32 2}
+!4 = distinct !DISubprogram(name: "main", linkageName: "main", scope: null, file: !1, line: 8, type: !5, scopeLine: 8, spFlags: DISPFlagDefinition, unit: !0, retainedNodes: !8)
+!5 = !DISubroutineType(types: !6)
+!6 = !{!7}
+!7 = !DIBasicType(name: "int", size: 32, encoding: DW_ATE_signed)
+!8 = !{}
+!9 = !DILocalVariable(name: "data", scope: !4, file: !1, line: 12, type: !7)
+!10 = !DILocation(line: 12, column: 3, scope: !4)
+!11 = !DILocalVariable(name: "id", scope: !4, file: !1, line: 11, type: !7)
+!12 = !DILocation(line: 11, column: 3, scope: !4)
+!13 = !DILocalVariable(name: "da", scope: !4, file: !1, line: 10, type: !14)
+!14 = !DICompositeType(tag: DW_TAG_array_type, baseType: !15, size: 128, align: 32, elements: !16)
+!15 = !DIBasicType(name: "void", encoding: DW_ATE_address)
+!16 = !{!17}
+!17 = !DISubrange(count: 2, lowerBound: 0)
+!18 = !DILocation(line: 10, column: 3, scope: !4)
+!19 = !DILocalVariable(name: "err", scope: !4, file: !1, line: 9, type: !7)
+!20 = !DILocation(line: 9, column: 3, scope: !4)
+!21 = !DILocation(line: 14, column: 3, scope: !4)
+!22 = !DILocation(line: 15, column: 3, scope: !4)
+!23 = !DILocation(line: 16, column: 3, scope: !4)
+!24 = !DILocation(line: 17, column: 3, scope: !4)
+!25 = !DILocation(line: 19, column: 3, scope: !4)
+!26 = !DILocation(line: 20, column: 3, scope: !4)
+!27 = !DILocation(line: 21, column: 3, scope: !4)
+!28 = !DILocation(line: 21, column: 17, scope: !4)
+!29 = !DILocation(line: 22, column: 3, scope: !4)
+!30 = !DILocation(line: 22, column: 19, scope: !4)
+!31 = !DILocation(line: 24, column: 3, scope: !4)
+!32 = !DILocation(line: 25, column: 3, scope: !4)
+!33 = !DILocation(line: 26, column: 3, scope: !4)
+!34 = !DILocation(line: 26, column: 16, scope: !4)
+!35 = !DILocation(line: 27, column: 3, scope: !4)
+!36 = !DILocation(line: 27, column: 18, scope: !4)
+!37 = !DILocation(line: 29, column: 3, scope: !4)
+!38 = !DILocation(line: 0, scope: !4)
+!39 = !DILocation(line: 34, column: 3, scope: !4)
