@@ -7,6 +7,7 @@
 #include "Types.hpp"
 
 #include <map>
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -79,7 +80,7 @@ class DebugInfoBuilder {
 
   llvm::Module& module_;
   llvm::LLVMContext& context_;
-  llvm::DIBuilder* dib_;
+  std::unique_ptr<llvm::DIBuilder> dib_;
   llvm::DICompileUnit* compileUnit_;
   llvm::DIFile* file_;
   bool initialized_;
