@@ -25,7 +25,7 @@ All commands below assume `cd lcc/scripts`.
 `link-tests.sh` prints progress when linking the full suite:
 
 ```text
-Linking 40 tests with /usr/bin/clang...
+Linking 41 tests with /usr/bin/clang...
 All tests linked.
 ```
 
@@ -49,7 +49,7 @@ Single test:
 
 Each test prints `PASS` or `FAIL` on stdout. Scripts exit non-zero on the first compile, link, or run failure.
 
-### Study fixtures (not in the 40-test suite)
+### Study fixtures (not in the 41-test suite)
 
 | File | Purpose |
 |------|---------|
@@ -79,7 +79,7 @@ Examples:
 ./compile-tests.sh --release 25.quick_sort.c
 ```
 
-`compile-tests.sh` always passes `-v`, `-l-pre-opt`, `-l-post-opt`, `-l`, and `-S` so AST (`.dot`, `.png`), middle-end IR, final IR, and assembly land in `lcc/debug/`. The repo keeps reference snapshots for both modes (40 tests × 2 modes × 4 IR/asm types for pre/post/final/asm).
+`compile-tests.sh` always passes `-v`, `-l-pre-opt`, `-l-post-opt`, `-l`, and `-S` so AST (`.dot`, `.png`), middle-end IR, final IR, and assembly land in `lcc/debug/`. The repo keeps reference snapshots for both modes (41 tests × 2 modes × 4 IR/asm types for pre/post/final/asm).
 
 ### Debug-info smoke test
 
@@ -95,7 +95,7 @@ Validates `DW_TAG_subprogram`, local variables, lexical blocks, and struct debug
 ./check-asm-smoke.sh
 ```
 
-Compiles `12.arithmetic.c` with `-O2 -S` and checks that assembly is non-empty and defines `main`. Ubuntu CI runs this after the full suite and `check-debug-info.sh`.
+Compiles `12.arithmetic.c` with `-O2 -S` and checks that assembly is non-empty and defines `main`. CI runs this after the full suite and `check-debug-info.sh`.
 
 ### Machine pass smoke test
 

@@ -98,7 +98,7 @@ Track progress here. Do not start the next milestone until **Verify** passes for
 
 ## M0: Environment & full test run
 
-**Goal:** Confirm build and 40-test regression.
+**Goal:** Confirm build and 41-test regression.
 
 | Step | Action |
 |------|--------|

@@ -16,7 +16,7 @@ Implementation details for [LearningPlan.md](LearningPlan.md) milestones **M4–
 | Assembly emission | `TargetBackend::emitAssembly` via `-S` | Same `TargetBackendOptions` as object emission |
 | Machine instrumentation (optional) | `MachineInstrStatsPass` (`-machine-stats`) | Legacy MachineFunctionPass on final MIR; counts only, no codegen change |
 | Debug info | `DebugInfoBuilder` | `-g` skips IR opts |
-| Reference IR | `debug/*.{debug,release}.{pre,post}.ll`, `*.debug.ll`, `*.release.ll` | 40 tests × 2 modes |
+| Reference IR | `debug/*.{debug,release}.{pre,post}.ll`, `*.debug.ll`, `*.release.ll` | 41 tests × 2 modes |
 
 Target refactor layout (introduce incrementally):
 
@@ -131,7 +131,7 @@ class IrOptimizer {
 
 - [x] Pass linked into `lcc` binary
 - [x] Stats via `-ir-stats <file>` (`-` = stderr)
-- [x] No change to program semantics — all 40 tests PASS
+- [x] No change to program semantics — all 41 tests PASS
 - [x] Pass behind `-ir-stats` (disabled by default for compile-tests.sh)
 
 **Implementation:** `IrInstructionStatsPass` (`src/passes/`)

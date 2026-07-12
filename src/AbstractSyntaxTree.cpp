@@ -823,6 +823,9 @@ llvm::Value* UnaryExpr::genIncDecCode(CodeGenerator& generator, bool increment,
   if (value != nullptr && (value->getType()->isIntegerTy() ||
                            value->getType()->isFloatingPointTy() ||
                            value->getType()->isPointerTy())) {
+    // Non-integers have no integer width; fall back to 64 so getOneValue yields
+    // an i64 "1". createAdd/createSub then reinterpret it: a one-element GEP
+    // step for pointers, or a promoted 1.0 for floats.
     size_t valueBitWidth =
         value->getType()->isIntegerTy()
             ? static_cast<llvm::IntegerType*>(value->getType())->getBitWidth()
@@ -1107,6 +1110,9 @@ llvm::Value* genStructMemberPtr(CodeGenerator& generator, llvm::Value* structPtr
                              memberName);
     }
 
+    // A union is stored as its largest member (UnionType::genTypeBody), so all
+    // members share one address: return the storage pointer (opaque) and let
+    // the caller's load/store type reinterpret it -- no GEP, unlike a struct.
     return generator.getBuilder().CreatePointerCast(
         structPtr, llvm::PointerType::get(generator.getContext(), 0));
   }
@@ -1683,7 +1689,9 @@ llvm::Type* UnionType::genTypeBody(CodeGenerator& generator) {
     return llvmType_;
   }
 
-  // Find the max size member.
+  // LLVM has no union type; model a union as a one-field struct holding its
+  // largest member. Members alias this shared storage and are reinterpreted at
+  // each access (see genStructMemberPtr).
   size_t maxSize = 0;
   llvm::Type* maxSizeMemberType = nullptr;
   for (FieldDecl* member : *unionBody_) {
@@ -2235,7 +2243,8 @@ llvm::Value* FuncCall::genCode(CodeGenerator& generator) {
     for (; index < argList_->size(); ++index) {
       llvm::Value* arg = argList_->at(index)->genCode(generator);
 
-      // Extend char/short/bool to int, float to double.
+      // C default argument promotions for the variadic tail (required by the
+      // calling convention): char/short/bool -> int, float -> double.
       if (arg->getType()->isIntegerTy()) {
         arg = Utils::typeUpgrade(generator.getBuilder(), arg, generator.getBuilder().getInt32Ty(),
                                  argList_->at(index)->getExprTypeId(generator),
@@ -2688,6 +2697,9 @@ llvm::Value* LogicExpr::genCodePtr(CodeGenerator& generator) {
 llvm::Value* LogicExpr::genBoolBinaryCode(
     CodeGenerator& generator,
     const std::function<llvm::Value*(llvm::Value*, llvm::Value*)>& combine) {
+  // Both operands are evaluated here before combine() (a select-based
+  // CreateLogicalAnd/Or), so && and || do NOT short-circuit as in C: the RHS
+  // and its side effects always run.
   llvm::Value* lhs = Utils::castToBool(generator.getBuilder(), lhs_->genCode(generator));
   llvm::Value* rhs = Utils::castToBool(generator.getBuilder(), rhs_->genCode(generator));
   return combine(lhs, rhs);
@@ -2809,6 +2821,8 @@ llvm::Value* TernaryCondition::genTernarySelect(
         "Condition is not a bool expression in ternary condition expression!");
   }
 
+  // Both arms are evaluated before CreateSelect, so unlike C's ?: the untaken
+  // branch's side effects still run. Result types are unified via typeUpgrade.
   llvm::Value* trueVal = evalBranch(trueExpr_);
   llvm::Value* falseVal = evalBranch(falseExpr_);
   bool isUnsigned = false;

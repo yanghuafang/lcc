@@ -135,9 +135,7 @@ Local equivalents:
 ./check-asm-smoke.sh
 ```
 
-`check-asm-smoke.sh` compiles `12.arithmetic.c` with `-O2 -S` and verifies non-empty asm containing `main`. `compile-tests.sh` already emits `debug/*.s` for all 40 tests; the smoke script is a fast explicit `-S` gate.
-
-`check-asm-smoke.sh` compiles `12.arithmetic.c` with `-O2 -S` and verifies non-empty asm containing `main`. `compile-tests.sh` already emits `debug/*.s` for all 40 tests; the smoke script is a fast explicit `-S` gate.
+`check-asm-smoke.sh` compiles `12.arithmetic.c` with `-O2 -S` and verifies non-empty asm containing `main`. `compile-tests.sh` already emits `debug/*.s` for all 41 tests; the smoke script is a fast explicit `-S` gate.
 
 ---
 
@@ -570,7 +568,7 @@ LLVM **`loop-vectorizer`** and **`slp-vectorizer`** run at `-O3` inside `IrOptim
 
 ### Study fixture
 
-`tests/40.array_sum.c` — a simple `sum_array` reduction. **Not** in `compile-tests.sh` (study-only; avoids expanding the 40-test suite). For element-wise loops (often easier to vectorize), use the `add_arrays` snippet in the commands below.
+`tests/40.array_sum.c` — a simple `sum_array` reduction. **Not** in `compile-tests.sh` (study-only; avoids expanding the 41-test suite). For element-wise loops (often easier to vectorize), use the `add_arrays` snippet in the commands below.
 
 ### How lcc runs the vectorizers today
 

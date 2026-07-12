@@ -1,6 +1,6 @@
 # Benchmarks
 
-lcc ships a **benchmark harness** and large workloads under [`benchmarks/`](../benchmarks/) so you can measure the effect of middle-end and back-end optimizations on **compile time**, **IR size**, and **runtime**. Benchmarks are separate from the 40-test PASS/FAIL suite in [`tests/`](../tests/): unit tests stay small and deterministic; benchmarks are sized for meaningful timing.
+lcc ships a **benchmark harness** and large workloads under [`benchmarks/`](../benchmarks/) so you can measure the effect of middle-end and back-end optimizations on **compile time**, **IR size**, and **runtime**. Benchmarks are separate from the 41-test PASS/FAIL suite in [`tests/`](../tests/): unit tests stay small and deterministic; benchmarks are sized for meaningful timing.
 
 **Milestone:** M15 ([LearningPlan.md](LearningPlan.md)). **Script:** [`scripts/bench.sh`](../scripts/bench.sh).
 

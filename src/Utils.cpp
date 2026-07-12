@@ -403,6 +403,8 @@ llvm::Value* Utils::createCmpEq(llvm::IRBuilder<>& builder, llvm::Value* lhs,
     }
   }
 
+  // Pointer and mixed pointer/integer equality: compare as i64 via ptrtoint so
+  // both sides are plain integers regardless of the (opaque) pointer types.
   if (lhs->getType()->isPointerTy() && lhs->getType() == rhs->getType()) {
     return builder.CreateICmpEQ(
         builder.CreatePtrToInt(lhs, builder.getInt64Ty()),
@@ -457,6 +459,9 @@ llvm::Value* Utils::createAssign(llvm::IRBuilder<>& builder, llvm::Value* lhs,
   return lhs;
 }
 
+// ptr + int is lowered to a GEP whose element type comes from the AST pointer/
+// array type (pointerArithmeticElementType), since IR pointers are opaque; int +
+// ptr is handled commutatively. Otherwise fall back to integer/float add.
 llvm::Value* Utils::createAdd(llvm::IRBuilder<>& builder, llvm::Value* lhs,
                               llvm::Value* rhs, AST::VarType* lhsVarType,
                               AST::VarType* rhsVarType,
@@ -489,6 +494,8 @@ llvm::Value* Utils::createAdd(llvm::IRBuilder<>& builder, llvm::Value* lhs,
   throw std::logic_error("Add with unsupported types!");
 }
 
+// Mirrors createAdd. ptr - ptr uses CreatePtrDiff, which returns an element
+// count, not a byte offset.
 llvm::Value* Utils::createSub(llvm::IRBuilder<>& builder, llvm::Value* lhs,
                               llvm::Value* rhs, AST::VarType* lhsVarType,
                               AST::VarType* rhsVarType,
