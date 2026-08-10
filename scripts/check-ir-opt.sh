@@ -2,16 +2,16 @@
 
 # check-ir-opt.sh — IR optimization regression check (M16).
 #
-# Recompiles each unit test at -O2 and compares the resulting IR against the
+# Recompiles each test at -O2 and compares the resulting IR against the
 # committed goldens under ../debug/, catching unintended middle-end IR changes
 # after compiler edits. See ../docs/Testing.md.
 #
 # Modes:
 #   (default)   count   — compare post-opt IR *instruction counts* against
-#                         debug/<test>.release.post.ll. Host-portable (post-opt
-#                         IR carries no target metadata); a coarse fast signal.
+#                         debug/<test>.release.post.ll. Needs no filtering, since
+#                         post-opt IR has no target header lines; coarse and fast.
 #   --diff              — full textual diff of fresh post-opt IR against
-#                         debug/<test>.release.post.ll. Portable and exact.
+#                         debug/<test>.release.post.ll. Exact.
 #   --release           — full diff of fresh final IR (-l, after object
 #                         emission) against debug/<test>.release.ll, ignoring the
 #                         host-specific `target datalayout` / `target triple`.

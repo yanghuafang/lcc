@@ -5,7 +5,7 @@
 On both macOS and Ubuntu:
 
 - **LLVM 20** (libraries and tools such as `llvm-dwarfdump`)
-- **flex**, **bison**
+- **flex**, **bison** — CMake runs both in `src/` on every configure, so they are required even though the generated sources are committed
 - **argparse** (CMake `find_package` or FetchContent fallback)
 - **graphviz** (`dot` for AST images)
 - A system C/C++ linker (**`clang`** or **`gcc`**) to link `.o` files produced by `lcc`
@@ -104,4 +104,4 @@ bison -d Parser.y -v                           # Parser.output (conflicts)
 bison -d Parser.y -v -Wcounterexamples &> Parser.counterexamples
 ```
 
-Building `lcc` (or running `bison` on `Parser.y`) reports **48 shift/reduce** and **6 reduce/reduce** conflicts. That is expected for this compact grammar: Bison resolves them with default rules, and the unit tests still pass. For a learner-oriented breakdown, see [Conflicts.md](Conflicts.md).
+Building `lcc` (or running `bison` on `Parser.y`) reports **48 shift/reduce** and **6 reduce/reduce** conflicts. That is expected for this compact grammar: Bison resolves them with default rules, and the test suite still passes. For a learner-oriented breakdown, see [ParserConflicts.md](ParserConflicts.md).

@@ -31,7 +31,7 @@ void initializeAllTargets() {
 
 // Map CLI -O to TargetMachine codegen opt (legacy PM). Separate from
 // IrOptimizer IR passes. empty/O0 must be None — createTargetMachine
-// otherwise defaults to Default (~O2 machine opts). See Pipeline.md (M12).
+// otherwise defaults to Default (~O2 machine opts). See LlvmTools.md (M12).
 llvm::CodeGenOptLevel resolveCodeGenOptLevel(
     const std::string& optimizationLevel) {
   if (optimizationLevel.empty() || optimizationLevel == "O0") {

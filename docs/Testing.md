@@ -10,7 +10,7 @@ All commands below assume `cd lcc/scripts`.
 | `install-deps-ubuntu.sh` | Install apt packages on Ubuntu 24.04 / 26.04 LTS |
 | `install-deps-macos.sh` | Install Homebrew packages on macOS |
 | `build-lcc.sh` | Configure and build the `lcc` compiler — see [Install.md](Install.md) |
-| `compile-tests.sh` | Compile unit tests to `../../lcc-build/*.o`; writes AST/IR/asm under `../debug/` |
+| `compile-tests.sh` | Compile the test programs to `../../lcc-build/*.o`; writes AST/IR/asm under `../debug/` |
 | `link-tests.sh` | Link `../../lcc-build/*.o` to executables with `LCC_LINKER` |
 | `run-tests.sh` | Run linked test binaries |
 | `check-debug-info.sh` | Smoke test: compile with `-g -O0`, verify `llvm-dwarfdump` output |
@@ -18,7 +18,7 @@ All commands below assume `cd lcc/scripts`.
 | `check-machine-pass-smoke.sh` | Smoke test: `-machine-stats` emits a summary and leaves the object byte-identical (M17 CI) |
 | `check-ir-opt.sh` | IR opt regression: recompile `-O2`, compare IR vs committed `debug/` goldens (M16) |
 | `mir-study.sh` | Study helper: print MIR before/after regalloc via `llc` (M13) |
-| `bench.sh` | Benchmark `benchmarks/*` (compile time, IR count, runtime); `--smoke` for CI — see [Benchmark.md](Benchmark.md) |
+| `bench.sh` | Benchmark `benchmarks/*` (compile time, IR count, runtime); `--smoke` for CI — see [Benchmarks.md](Benchmarks.md) |
 
 `tests-compile-link-run.sh` is not run directly; it defines the test list and shared `compile` / `link` / `run` helpers used by the three `*-tests.sh` scripts.
 
@@ -29,7 +29,7 @@ Linking 41 tests with /usr/bin/clang...
 All tests linked.
 ```
 
-## Unit tests
+## Regression suite
 
 Typical full run:
 
@@ -53,7 +53,7 @@ Each test prints `PASS` or `FAIL` on stdout. Scripts exit non-zero on the first 
 
 | File | Purpose |
 |------|---------|
-| `tests/40.array_sum.c` | M14 vectorization study — compile manually with `-O3`; see [Pipeline.md](Pipeline.md#auto-vectorization-study-m14) |
+| `tests/40.array_sum.c` | M14 vectorization study — compile manually with `-O3`; see [LlvmTools.md](LlvmTools.md#auto-vectorization-study-m14) |
 
 ### `compile-tests.sh` modes
 
@@ -122,7 +122,7 @@ Catches unintended middle-end IR changes after a compiler edit. It recompiles ev
 | `--diff` | `debug/<t>.release.post.ll` | Full textual diff of post-opt IR (exact) |
 | `--release` | `debug/<t>.release.ll` | Full diff of final IR, ignoring `target datalayout` / `target triple` |
 
-Post-opt goldens (`.release.post.ll`) carry no target metadata, so count and `--diff` modes are host-portable. The `--release` diff uses the final IR (with target lines stripped). Any mismatch prints the offending test and exits non-zero:
+Post-opt goldens (`.release.post.ll`) contain no `target datalayout` / `target triple` lines, so the count and `--diff` modes need no filtering; the `--release` mode strips those lines from the final IR instead. This is only about the header lines — the IR body is still shaped by the host datalayout (see below). Any mismatch prints the offending test and exits non-zero:
 
 ```text
 12.arithmetic                             3        2  CHANGED
@@ -132,13 +132,15 @@ If the change is intentional, regenerate: ./compile-tests.sh --release
 
 The goldens are host-specific (their datalayout shapes struct-heavy IR), so run this on the same host that generated them. After an **intentional** IR change, regenerate the goldens with `./compile-tests.sh --release` and re-run the check. Not wired into CI for that reason — it is a local pre-commit / pre-PR guard.
 
+The final-IR goldens (`*.debug.ll`, `*.release.ll`) embed the full host triple, including the OS patch version (`arm64-apple-darwin25.6.0`). An OS point upgrade therefore makes `compile-tests.sh` rewrite all 41 of them with nothing but a triple change — review such diffs before committing. `check-ir-opt.sh` is unaffected: its default and `--diff` modes read `.post.ll`, which has no target lines, and `--release` strips them.
+
 ### Benchmark smoke test
 
 ```bash
 ./bench.sh --smoke
 ```
 
-See [Benchmark.md](Benchmark.md) for workloads, timed runs, and recording results.
+See [Benchmarks.md](Benchmarks.md) for workloads, timed runs, and recording results.
 
 ## CI
 

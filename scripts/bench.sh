@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Benchmark lcc opt variants on large workloads under benchmarks/ (M15).
-# Full guide: ../docs/Benchmark.md
+# Full guide: ../docs/Benchmarks.md
 # Reports compile time, post-opt IR instruction count, and runtime.
 # CI: ./bench.sh --smoke (correctness only, no timing).
 #

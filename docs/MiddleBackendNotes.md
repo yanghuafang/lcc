@@ -1,6 +1,6 @@
-# Middle-end & back-end roadmap
+# Middle-end & back-end notes
 
-Implementation details for [LearningPlan.md](LearningPlan.md) milestones **M4–M17**. The front-end language roadmap lives in [Roadmap.md](Roadmap.md) and is **complete**.
+Implementation details and acceptance criteria for [LearningPlan.md](LearningPlan.md) milestones **M4–M18**. All of them are implemented; each section below records what was built and how to verify it.
 
 ---
 
@@ -18,16 +18,16 @@ Implementation details for [LearningPlan.md](LearningPlan.md) milestones **M4–
 | Debug info | `DebugInfoBuilder` | `-g` skips IR opts |
 | Reference IR | `debug/*.{debug,release}.{pre,post}.ll`, `*.debug.ll`, `*.release.ll` | 41 tests × 2 modes |
 
-Target refactor layout (introduce incrementally):
+Files the milestones added:
 
 ```
 src/
-  IrOptimizer.hpp / IrOptimizer.cpp      ← M5 (done)
-  TargetBackend.hpp / TargetBackend.cpp   ← M10 (done)
+  IrOptimizer.hpp / IrOptimizer.cpp      ← M5
+  TargetBackend.hpp / TargetBackend.cpp   ← M10
   passes/
-    IrInstructionStatsPass.cpp              ← M6 (done)
-    FoldAddZeroPass.cpp                     ← M7 (done)
-    MachineInstrStatsPass.cpp               ← M17 (done, legacy MachineFunctionPass)
+    IrInstructionStatsPass.cpp              ← M6
+    FoldAddZeroPass.cpp                     ← M7
+    MachineInstrStatsPass.cpp               ← M17 (legacy MachineFunctionPass)
 ```
 
 ---
@@ -44,8 +44,6 @@ src/
 ---
 
 ## M4: Pre/post IR dumps
-
-**Status:** done
 
 **Acceptance criteria**
 
@@ -64,7 +62,7 @@ src/
 | `-l-post-opt <file>` | IR after `IrOptimizer::run()` and debug finalization (`-g`) |
 | `-l <file>` | After `genObjectCode()` in `main` (before optional `-S`; includes target metadata; test goldens) |
 
-**Hook in `genIrCode`** (after AST walk; reflects M5/M6):
+**Hook in `genIrCode`** (after the AST walk, with the M5–M8 wiring):
 
 ```cpp
 if (!preOptIrPath.empty()) {
@@ -73,7 +71,12 @@ if (!preOptIrPath.empty()) {
 
 const std::string optLevel =
     generateDebugInfo ? std::string{} : optimizationLevel;
-IrOptimizer{}.run(*module_, optLevel, {.irStatsPath = irStatsPath});
+const std::string pipeline =
+    generateDebugInfo ? std::string{} : customPipeline;
+IrOptimizer{}.run(*module_, optLevel,
+                  {.irStatsPath = irStatsPath,
+                   .foldAddZero = foldAddZero,
+                   .customPipeline = pipeline});
 if (generateDebugInfo) {
   debugInfo_->finalize();
 }
@@ -83,7 +86,7 @@ if (!postOptIrPath.empty()) {
 }
 ```
 
-`genIrCode` always calls `IrOptimizer::run`; it no-ops unless `-O` or `-ir-stats` is set. With `-g`, `optLevel` is empty (LLVM opts skipped) but `-ir-stats` still runs. `-l` is dumped from `main` right after `genObjectCode()` (before optional `-S`), not here.
+`genIrCode` always calls `IrOptimizer::run`; it no-ops unless at least one of `-O`, `-ir-stats`, `-fold-add-zero`, or `-O-passes` is set. With `-g`, both `optLevel` and the custom pipeline are blanked (LLVM opts skipped), but the custom passes still run. `-l` is dumped from `main` right after `genObjectCode()` (before optional `-S`), not here.
 
 **Verify**
 
@@ -96,8 +99,6 @@ diff -u /tmp/pre.ll /tmp/post.ll | head
 ---
 
 ## M5: Extract `IrOptimizer`
-
-**Status:** done
 
 **Acceptance criteria**
 
@@ -125,8 +126,6 @@ class IrOptimizer {
 
 ## M6: Custom New PM pass — instrumentation
 
-**Status:** done
-
 **Acceptance criteria**
 
 - [x] Pass linked into `lcc` binary
@@ -151,13 +150,11 @@ class IrOptimizer {
 
 ## M7: Custom New PM pass — simple transform (optional)
 
-**Status:** done
-
 **Acceptance criteria**
 
 - [x] Pass removes or folds a narrow class of redundant IR (`FoldAddZeroPass`: `add iN %x, 0` → `%x`)
 - [x] All tests PASS (behavior preserved; flag disabled by default in `compile-tests.sh`)
-- [x] Post-opt IR diff documented for `12.arithmetic.c` ([Pipeline.md § M7](Pipeline.md#custom-transform-pass-m7))
+- [x] Post-opt IR diff documented for `12.arithmetic.c` ([LlvmTools.md § M7](LlvmTools.md#custom-transform-pass-m7))
 - [x] Optional: M15 benchmark shows no regression (or improvement) — `bench.sh --smoke`
 
 **Implementation:** `FoldAddZeroPass` (`src/passes/`), enabled with `-fold-add-zero` before the default LLVM pipeline.
@@ -165,8 +162,6 @@ class IrOptimizer {
 ---
 
 ## M8: Pipeline control (optional)
-
-**Status:** done
 
 **Acceptance criteria**
 
@@ -181,15 +176,13 @@ class IrOptimizer {
 
 ## M9: Classical opts study
 
-**Status:** done
-
 **No lcc code required** beyond notes. Acceptance:
 
-- [x] Listed passes that run at `-O2` on `25.quick_sort.c` ([Pipeline.md](Pipeline.md))
+- [x] Listed passes that run at `-O2` on `25.quick_sort.c` ([LlvmTools.md](LlvmTools.md))
 - [x] Identified mem2reg / SSA on `@partition` in pre/post dumps
 - [x] Explained instcombine + DCE on `@swap` with IR snippets
 
-**Commands** (LLVM 20; see [Pipeline.md](Pipeline.md) for full recipes):
+**Commands** (LLVM 20; see [LlvmTools.md](LlvmTools.md) for full recipes):
 
 ```bash
 ../../lcc-build/lcc -O2 -i ../tests/25.quick_sort.c -o /tmp/q.o \
@@ -201,21 +194,21 @@ opt --print-pipeline-passes -passes='default<O2>' /tmp/q-pre.ll -disable-output
 
 ## M10: Extract `TargetBackend`; emit asm
 
-**Status:** done
-
 **Acceptance criteria**
 
 - [x] `-S <file>` writes assembly
 - [x] `-o` still writes object (existing behavior)
 - [x] Full test suite PASS
 
-**API sketch** (current; M11 wires CLI into `TargetBackendOptions`):
+**API** (current; `triple` / `cpu` / `features` are wired to the CLI by M11, `optimizationLevel` by M12, `machineStatsPath` by M17):
 
 ```cpp
 struct TargetBackendOptions {
   std::string triple;  // empty = host default
   std::string cpu = "generic";
   std::string features;
+  std::string optimizationLevel;  // CLI -O → CodeGenOptLevel (M12)
+  std::string machineStatsPath;   // non-empty splices MachineInstrStatsPass (M17)
 };
 
 class TargetBackend {
@@ -232,8 +225,6 @@ Use `llvm::CodeGenFileType::AssemblyFile` in `addPassesToEmitFile`.
 ---
 
 ## M11: Target CLI flags
-
-**Status:** done
 
 **Acceptance criteria**
 
@@ -253,22 +244,13 @@ Use `llvm::CodeGenFileType::AssemblyFile` in `addPassesToEmitFile`.
 
 ## M12: Codegen opt level & asm diff
 
-**Status:** done
-
 **Acceptance criteria**
 
 - [x] `TargetMachine` codegen opt level matches CLI `-O` (see `CodeGenOptLevel` in `TargetBackend.cpp`)
 - [x] Saved asm for `25.quick_sort.c` at `-O0` and `-O2` under `debug/` (`*.debug.s` / `*.release.s` from `compile-tests.sh`)
-- [x] Written comparison: instruction count and loop structure in hot function ([Pipeline.md § M12](Pipeline.md#codegen-opt-level--asm-diff-m12))
+- [x] Written comparison: instruction count and loop structure in hot function ([LlvmTools.md § M12](LlvmTools.md#codegen-opt-level--asm-diff-m12))
 
-**Mapping** (LLVM 20 `CodeGenOptLevel`):
-
-| CLI | Codegen opt |
-|-----|-------------|
-| *(none)* / `-O0` | `None` |
-| `-O1` | `Less` |
-| `-O2`, `-Os`, `-Oz` | `Default` |
-| `-O3` | `Aggressive` |
+**Mapping:** CLI `-O` → `CodeGenOptLevel` is tabulated in [Usage.md § Optimization levels](Usage.md#optimization-levels--o); what each level changes in the back-end is in [LlvmTools.md § M12](LlvmTools.md#codegen-opt-level--asm-diff-m12).
 
 **Verify asm diff**
 
@@ -282,8 +264,6 @@ diff -u ../debug/25.quick_sort.debug.s ../debug/25.quick_sort.release.s | head
 
 ## M13: MIR inspection (optional)
 
-**Status:** done
-
 **No lcc code required.**
 
 ```bash
@@ -295,44 +275,38 @@ llc -O2 --stop-before=greedy ../debug/25.quick_sort.release.post.ll -o /tmp/q.pr
 
 **Acceptance**
 
-- [x] Notes: virtual registers (`%15:gpr64common`) before `greedy`; physical (`$w9`) after `prologepilog` — [Pipeline.md § M13](Pipeline.md#mir-inspection-m13)
+- [x] Notes: virtual registers (`%15:gpr64common`) before `greedy`; physical (`$w9`) after `prologepilog` — [LlvmTools.md § M13](LlvmTools.md#mir-inspection-m13)
 - [x] Can name where MIR sits in pipeline (after ISel, before asm; regalloc = `greedy` pass)
 
 ---
 
 ## M14: Vectorization study
 
-**Status:** done
-
 **Acceptance criteria**
 
 - [x] Loop-heavy test compiled at `-O3` (`tests/40.array_sum.c`; study-only, not in compile-tests.sh)
-- [x] Asm inspected for SIMD ops (platform-dependent; see [Pipeline.md § M14](Pipeline.md#auto-vectorization-study-m14))
+- [x] Asm inspected for SIMD ops (platform-dependent; see [LlvmTools.md § M14](LlvmTools.md#auto-vectorization-study-m14))
 - [x] Short write-up: vectorized or not, and LLVM reason (cost model without TM in IrOptimizer; quick_sort control flow)
-- [x] Optional: `llvm-mca` recipe on scalar loop asm in Pipeline.md
+- [x] Optional: `llvm-mca` recipe on scalar loop asm in LlvmTools.md
 
 **Not required:** custom vectorization pass. LLVM `LoopVectorizer` / `SLPVectorizer` run via `-O3` pipeline.
-
-**Optional stretch:** M6-style pass that **reports** loops that are candidates for vectorization (analysis only).
 
 ---
 
 ## M15: Benchmark harness (optional)
 
-**Status:** done
-
 **Script:** `scripts/bench.sh` — compile time, IR count, and runtime on `benchmarks/` workloads
 
-**Docs:** [Benchmark.md](Benchmark.md) — programs, variants, usage, results log
+**Docs:** [Benchmarks.md](Benchmarks.md) — programs, variants, usage, results log
 
 | Variant | Purpose |
 |---------|---------|
 | `-O0` vs `-O2` | LLVM opt impact (compile time, IR count, runtime) |
 | With vs without `-fold-add-zero` | Custom transform impact on benchmark workloads |
 
-No `-mcpu` variant: lcc defaults to LLVM's `generic` CPU, so `-mcpu generic` matches plain `-O2`. Host-specific CPUs are a manual study (see [Benchmark.md](Benchmark.md)).
+No `-mcpu` variant: lcc defaults to LLVM's `generic` CPU, so `-mcpu generic` matches plain `-O2`. Host-specific CPUs are a manual study (see [Benchmarks.md](Benchmarks.md)).
 
-**Metrics** (see [Benchmark.md](Benchmark.md))
+**Metrics** (see [Benchmarks.md](Benchmarks.md))
 
 - Compile and runtime wall time — averaged over `--runs` (default 10) via `/usr/bin/time`
 - Post-opt IR instruction count from `-l-post-opt`
@@ -342,8 +316,6 @@ No `-mcpu` variant: lcc defaults to LLVM's `generic` CPU, so `-mcpu generic` mat
 ---
 
 ## M16: IR opt regression script (optional)
-
-**Status:** done
 
 **Script:** `scripts/check-ir-opt.sh` — recompiles each test at `-O2` into a temp dir and compares the IR against committed `debug/` goldens.
 
@@ -359,20 +331,29 @@ No `-mcpu` variant: lcc defaults to LLVM's `generic` CPU, so `-mcpu generic` mat
 
 ## M17: Machine pass (advanced, optional)
 
-**Status:** done
-
 **Script/pass:** `src/passes/MachineInstrStatsPass.{hpp,cpp}` — a legacy `MachineFunctionPass` that counts machine instructions on fully lowered MIR (post-regalloc). Enabled with `-machine-stats <file>` (`-` = stderr).
 
 **Acceptance**
 
 - [x] One pass at machine layer on host target (`MachineInstrStatsPass`, spliced before the AsmPrinter)
 - [x] Does not break object correctness — object/asm byte-identical with vs without `-machine-stats` (analysis-only: `runOnMachineFunction` returns false, `getAnalysisUsage` = `setPreservesAll`); full suite PASS
-- [x] Documented separately from IR New PM (different registration): legacy PM + `TargetPassConfig` in `TargetBackend`, not `PassBuilder` — see [Pipeline.md § M17](Pipeline.md#machine-function-pass-m17)
-- [x] CI smoke (`check-machine-pass-smoke.sh`) exercises the hand-rolled pipeline on Ubuntu and asserts the object is byte-identical with vs without `-machine-stats`
+- [x] Documented separately from IR New PM (different registration): legacy PM + `TargetPassConfig` in `TargetBackend`, not `PassBuilder` — see [LlvmTools.md § M17](LlvmTools.md#machine-function-pass-m17)
+- [x] CI smoke (`check-machine-pass-smoke.sh`) exercises the hand-rolled pipeline on every matrix platform and asserts the object is byte-identical with vs without `-machine-stats`
 
-**Registration:** default emission uses `TargetMachine::addPassesToEmitFile`. When `-machine-stats` is set, `TargetBackend::addEmitPassesWithMachineStats` drives the codegen pipeline by hand (`createPassConfig` → `addISelPasses` → `addMachinePasses` → add pass → `addAsmPrinter` → `createFreeMachineFunctionPass`) so the machine pass runs on final MIR. Default path is unchanged, so committed `debug/*.s` / `.o` goldens are byte-identical.
+**Registration:** default emission uses `TargetMachine::addPassesToEmitFile`. When `-machine-stats` is set, the file-local `addEmitPassesWithMachineStats` helper in `TargetBackend.cpp` drives the codegen pipeline by hand (`createPassConfig` → `addISelPasses` → `addMachinePasses` → add pass → `addAsmPrinter` → `createFreeMachineFunctionPass`) so the machine pass runs on final MIR. Default path is unchanged, so committed `debug/*.s` / `.o` goldens are byte-identical.
 
-**Out of scope:** custom register allocator; transforming machine passes.
+**Out of scope for M17:** a custom register allocator (never planned), and any transforming machine pass — M17 is analysis-only. A transforming `MachineFunctionPass` is recorded under [Future directions](#future-directions-no-milestones) as unscheduled.
+
+---
+
+## M18: Documentation & CI smoke
+
+**Acceptance criteria**
+
+- [x] [Usage.md](Usage.md) documents all CLI flags (IR dumps, `-ir-stats`, `-machine-stats`, `-S`, target flags, `-O` middle/back-end split)
+- [x] [LlvmTools.md](LlvmTools.md) — LLVM tool reference (`opt`, `llc`, `llvm-objdump`, `llvm-mca`, `llvm-dwarfdump`)
+- [x] CI smoke in `.github/workflows/ci.yml` (Ubuntu 24.04 / 26.04 + macOS matrix): `check-debug-info.sh`, `check-asm-smoke.sh`, `check-machine-pass-smoke.sh` (M17 codegen path), `bench.sh --smoke`
+- [x] [docs/README.md](README.md) links all plan docs and milestone index (M0–M18 complete)
 
 ---
 
@@ -382,8 +363,7 @@ No `-mcpu` variant: lcc defaults to LLVM's `generic` CPU, so `-mcpu generic` mat
 2. Implement minimal diff.
 3. Run full test suite.
 4. Update [Usage.md](Usage.md) if CLI changed.
-5. Check off milestone in [LearningPlan.md](LearningPlan.md) table.
-6. Merge when verify checklist complete.
+5. Merge when the verify checklist is complete.
 
 ---
 
@@ -408,43 +388,34 @@ flowchart TD
   M10 --> M13[M13 MIR]
   M11 --> M14
   M7 --> M15
+  M4 --> M16[M16 IR opt regression]
+  M10 --> M17[M17 machine pass]
   M12 --> M18[M18 docs CI]
+  M16 --> M18
+  M17 --> M18
 ```
 
 M10 can start after M4 (parallel with M5–M9 if IR dumps exist).
 
 ---
 
-## M18: Documentation & CI smoke
-
-**Status:** done
-
-**Acceptance criteria**
-
-- [x] [Usage.md](Usage.md) documents all CLI flags (IR dumps, `-ir-stats`, `-machine-stats`, `-S`, target flags, `-O` middle/back-end split)
-- [x] [Pipeline.md](Pipeline.md) — LLVM tool reference (`opt`, `llc`, `llvm-objdump`, `llvm-mca`, `llvm-dwarfdump`)
-- [x] CI smoke in `.github/workflows/ci.yml` (Ubuntu 24.04 / 26.04 + macOS matrix): `check-debug-info.sh`, `check-asm-smoke.sh`, `check-machine-pass-smoke.sh` (M17 codegen path), `bench.sh --smoke`
-- [x] [docs/README.md](README.md) links all plan docs and milestone index (M0–M18 complete)
-
----
-
 ## Future directions (no milestones)
 
-M4–M17 cover the middle/back-end learning goals, and the current compiler is sufficient for lcc's teaching purpose. The ideas below are recorded **for reference only** — **deliberately unscheduled, carrying no milestones, and not planned near-term** — for anyone who later wants to go deeper on optimization or codegen:
+M4–M18 cover the middle/back-end learning goals, and the current compiler is sufficient for lcc's teaching purpose. The ideas below are recorded for reference only — **deliberately unscheduled, with no milestones attached** — for anyone who later wants to go deeper on optimization or codegen:
 
 - **A transforming IR pass beyond `FoldAddZeroPass`** (M7): local constant folding, dead-store elimination, or a small CSE, written as a New PM pass.
-- **Vectorization-candidate reporter** (the M14 stretch): an analysis-only pass that flags loops LLVM could vectorize, without transforming them.
+- **Vectorization-candidate reporter** (M6-style): an analysis-only pass that flags loops LLVM could vectorize, without transforming them.
 - **A transforming `MachineFunctionPass`** (M17 is analysis-only): a genuine MIR peephole, spliced through the same `TargetPassConfig` hook in `TargetBackend`.
 - **LLVM optimization remarks** (`-pass-remarks` / `-Rpass`): surface *why* loops did or didn't vectorize or inline.
 
-These would extend, but do not block, the completed plan. A custom register allocator and a full loop vectorizer remain **out of scope** (use LLVM's). Front-end **diagnostics** and **language** ideas live in [Roadmap.md § Future directions](Roadmap.md#future-directions-no-milestones).
+These would extend, but do not block, the completed plan. A custom register allocator and a full loop vectorizer remain **out of scope** (use LLVM's). Front-end **diagnostics** and **language** ideas live in [FrontendNotes.md § Future directions](FrontendNotes.md#future-directions-no-milestones).
 
 ---
 
 ## Related docs
 
 - [LearningPlan.md](LearningPlan.md) — master milestone list
-- [Roadmap.md](Roadmap.md) — front-end language features (done)
-- [Pipeline.md](Pipeline.md) — pipeline & LLVM tools (M9 classical opt study; M18 may add CI recipes)
+- [FrontendNotes.md](FrontendNotes.md) — front-end language features (done)
+- [LlvmTools.md](LlvmTools.md) — pipeline, LLVM tools, and per-milestone case studies
 - [Testing.md](Testing.md) — regression scripts
 - [Usage.md](Usage.md) — CLI reference

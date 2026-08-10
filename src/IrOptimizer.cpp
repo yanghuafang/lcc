@@ -107,12 +107,14 @@ void IrOptimizer::run(llvm::Module& module,
     mpm.addPass(llvm::createModuleToFunctionPassAdaptor(FoldAddZeroPass{}));
   }
   if (wantCustomPipeline) {
-    // User pipeline (opt -passes syntax) replaces default<O*>; see docs/Pipeline.md (M8).
+    // User pipeline (opt -passes syntax) replaces default<O*>; see
+    // docs/LlvmTools.md (M8).
     addCustomPipeline(pb, mpm, options.customPipeline);
   } else if (wantDefaultOpts) {
     const llvm::OptimizationLevel* level =
         resolveOptimizationLevel(optimizationLevel);
-    // Same default pipelines as `opt -passes='default<O*>'`; see docs/Pipeline.md (M9).
+    // Same default pipelines as `opt -passes='default<O*>'`; see
+    // docs/LlvmTools.md (M9).
     mpm.addPass(pb.buildPerModuleDefaultPipeline(*level));
   }
 

@@ -22,7 +22,8 @@ class Module;
 // This is deliberately different from the New PM IR passes in this directory
 // (IrInstructionStatsPass, FoldAddZeroPass): a machine pass registers through
 // the legacy codegen PassManager and TargetPassConfig in TargetBackend, not
-// through PassBuilder. Enabled with -machine-stats (see docs/Pipeline.md). M17.
+// through PassBuilder. Enabled with -machine-stats; see docs/LlvmTools.md
+// (M17).
 class MachineInstrStatsPass : public llvm::MachineFunctionPass {
  public:
   // LLVM identifies a legacy pass by this member's address; the value is unused.

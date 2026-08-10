@@ -6,13 +6,13 @@
 lcc -i <input.c> -o <output.o> [-S <asm.s>] [-v <ast.dot>] [-l <ir.ll>] [-l-pre-opt <pre.ll>] [-l-post-opt <post.ll>] [-ir-stats <file>] [-machine-stats <file>] [-fold-add-zero] [-O-passes <pipeline>] [--target <triple>] [-mcpu <cpu>] [-mattr <features>] [-g] [-O0|-O1|-O2|-O3|-Os|-Oz]
 ```
 
-`-O-passes` and `-O0`…`-Oz` are **mutually exclusive** (middle-end: custom pipeline vs `default<O*>`). With `-g`, both are skipped (same as `-O2` with debug). Backend `-O` codegen level follows the CLI `-O` flag only — when you use `-O-passes` alone, backend defaults to no codegen opts (`-O0` equivalent).
+`-O-passes` and `-O0`…`-Oz` are **mutually exclusive** (middle-end: custom pipeline vs `default<O*>`), and `-g` skips both. [Optimization levels](#optimization-levels--o) below explains how the middle-end and back-end levels are chosen.
 
 | Flag | Required | Description |
 |------|----------|-------------|
 | `-i` | yes | Input C source file |
 | `-o` | yes | Output object file (`.o`) |
-| `-S` | no | Write machine assembly to `FILE` (host target; optional second `TargetBackend` pass after `-l`) |
+| `-S` | no | Write machine assembly to `FILE` (same target as `-o`; optional second `TargetBackend` pass after `-l`) |
 | `-v` | no | AST graph (GraphViz `.dot`) |
 | `-l` | no | LLVM IR after object emission (includes `target triple` / `datalayout`; used by test scripts) |
 | `-l-pre-opt` | no | LLVM IR right after codegen, before `IrOptimizer` and debug finalization |
@@ -38,7 +38,9 @@ lcc -i <input.c> -o <output.o> [-S <asm.s>] [-v <ast.dot>] [-l <ir.ll>] [-l-pre-
 | `-O3` | O3 pipeline (includes vectorizers) | Aggressive |
 | `-Os` / `-Oz` | Size-focused IR pipeline | Default |
 
-With **`-g`**, middle-end LLVM opts are **skipped** (DWARF `dbg.declare` allocas must survive); the CLI `-O` level is still passed to the back-end. **`-O-passes`** is also skipped under `-g`. See [Pipeline.md](Pipeline.md) for IR/asm study recipes (M9, M12, M14).
+**`-g` skips the whole middle-end** — no `-O` pipeline and no `-O-passes` — so that the `dbg.declare` allocas DWARF depends on survive; `lcc` warns if you passed either. The CLI `-O` level still reaches the back-end, so `-g -O2` pairs unoptimized IR with optimized codegen. Custom passes (`-ir-stats`, `-fold-add-zero`) run under `-g` as usual.
+
+The back-end level follows the CLI `-O` flag alone. Since `-O-passes` cannot be combined with `-O0`…`-Oz`, using it leaves the back-end at `CodeGenOptLevel::None`. See [LlvmTools.md](LlvmTools.md) for IR/asm study recipes (M9, M12, M14).
 
 ### Explicit pipeline (`-O-passes`)
 
@@ -96,12 +98,13 @@ Example (compare raw vs optimized IR), from `lcc/scripts`:
 
 ```bash
 ../../lcc-build/lcc -O2 -i ../tests/25.quick_sort.c -o /tmp/q.o \
-  -l-pre-opt ../debug/25.quick_sort.release.pre.ll \
-  -l-post-opt ../debug/25.quick_sort.release.post.ll
-diff -u ../debug/25.quick_sort.release.pre.ll ../debug/25.quick_sort.release.post.ll | head
+  -l-pre-opt /tmp/q.pre.ll -l-post-opt /tmp/q.post.ll
+diff -u /tmp/q.pre.ll /tmp/q.post.ll | head
 ```
 
-With `-g`, LLVM optimization is skipped; `-l-pre-opt` and `-l-post-opt` still differ because `debugInfo_->finalize()` runs between them. With `-O2` and no `-g`, pre and post differ from LLVM opts.
+Dump to `/tmp` rather than `../debug/`: those files are committed goldens that [`check-ir-opt.sh`](Testing.md#ir-optimization-regression-check-m16) compares against, and `./compile-tests.sh --release` is the supported way to regenerate them.
+
+Under `-g` the two dumps still differ even though no LLVM pipeline runs, because `debugInfo_->finalize()` happens between them.
 
 Example (IR instruction stats), from `lcc/scripts`:
 
@@ -119,7 +122,7 @@ Example (machine-instruction stats — MIR layer, not IR), from `lcc/scripts`:
 #   ... total: functions=4 machine_instructions=<host-dependent>
 ```
 
-`-machine-stats` counts **target machine** instructions after register allocation, so numbers are host-specific (x86_64 vs arm64) and differ from the `-ir-stats` IR counts. It is a legacy `MachineFunctionPass` (analysis only), so the emitted `.o`/`.s` is unchanged whether or not the flag is set. See [Pipeline.md](Pipeline.md#machine-function-pass-m17) for how machine passes register differently from New PM IR passes.
+`-machine-stats` counts **target machine** instructions after register allocation, so numbers are host-specific (x86_64 vs arm64) and differ from the `-ir-stats` IR counts. It is a legacy `MachineFunctionPass` (analysis only), so the emitted `.o`/`.s` is unchanged whether or not the flag is set. See [LlvmTools.md](LlvmTools.md#machine-function-pass-m17) for how machine passes register differently from New PM IR passes.
 
 Example (custom transform pass), from `lcc/scripts`:
 
@@ -176,7 +179,7 @@ LCC_LINKER=gcc ./link-tests.sh
 
 ## Debug a program built by `lcc`
 
-`-g` embeds debug info for the **generated** C program (the `-i` file), not for debugging `lcc` itself. See [Development.md](Development.md) to debug the compiler.
+`-g` embeds debug info for the **generated** C program (the `-i` file), not for debugging `lcc` itself. See [DebuggingLcc.md](DebuggingLcc.md) to debug the compiler.
 
 ```bash
 ../../lcc-build/lcc -g -O0 -i ../tests/0.hello_world.c -o ../../lcc-build/0.hello_world.o
@@ -190,6 +193,6 @@ Supported DWARF under `-g`/`-O0`-style builds: subprograms, line stepping, local
 
 | Document | Topics |
 |----------|--------|
-| [Pipeline.md](Pipeline.md) | LLVM tool recipes (`opt`, `llc`, `objdump`, `mca`), M9/M12/M14 study notes |
+| [LlvmTools.md](LlvmTools.md) | LLVM tool recipes (`opt`, `llc`, `objdump`, `mca`) and milestone case studies (M7–M9, M12–M14, M17) |
 | [Testing.md](Testing.md) | Regression scripts, compile modes, CI smoke tests |
 | [LearningPlan.md](LearningPlan.md) | Full milestone path M0–M18 |

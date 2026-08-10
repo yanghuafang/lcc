@@ -11,7 +11,7 @@ lcc's grammar is intentionally compact: declarations, statements, and expression
 | Shift/reduce | 48 | Prefer **shift** |
 | Reduce/reduce | 6 | Prefer the **first** grammar rule |
 
-As of the current grammar, `./build-lcc.sh` (which runs `bison -d Parser.y` via CMake) prints:
+As of the current grammar, `./build-lcc.sh` (which runs `bison -d Parser.y -v` via CMake) prints:
 
 ```
 Parser.y: warning: 48 shift/reduce conflicts [-Wconflicts-sr]
@@ -131,13 +131,13 @@ In ISO C, postfix `[]` binds **tighter** than unary `*`, `+`, `-`, `!`, `~`, and
 *ptr[i]    /* means *(ptr[i]), not (*ptr)[i] */
 ```
 
-### What Bison does
+### What Bison does — subscript
 
 Default shift/reduce resolution **shifts** `[`, which chooses the correct C reading.
 
-### Where to look in Parser.output
+### Where to look — subscript states
 
-Conflicts appear in many states after unary/binary rules — for example **states 131–132, 141–146, 202–235, 265, and 288** (search for `LBRACKET  [reduce using rule` or `conflicts: 1 shift/reduce` in the file header). Counterexample pattern:
+Conflicts appear in many states after unary/binary rules — for example **states 131–132, 141–146, 202, 205–206, 209–235, 265, and 288** (search for `LBRACKET  [reduce using rule` or `conflicts: 1 shift/reduce` in the file header). Counterexample pattern:
 
 ```
 Example: ASTERISK Expr • LBRACKET Expr RBRACKET
@@ -147,7 +147,7 @@ Example: ASTERISK Expr • LBRACKET Expr RBRACKET
 
 The same pattern repeats for `&`, `+`, `-`, `++`, `--`, `!`, `~`, and every binary operator — one conflict per rule that ends with `Expr •` before `[`.
 
-### Takeaway for learners
+### Takeaway — a benign conflict
 
 Not every shift/reduce conflict is a bug. When the default is **shift**, and that matches language precedence, the conflict is **benign**. You still want to verify with counterexamples and test programs.
 
@@ -190,7 +190,7 @@ After parsing `if (b) stmt1 •`, the parser can:
 
 `%nonassoc` on `ELSE` tells Bison: do not reduce a rule that ends with `ELSE` on the stack when the lookahead is also `ELSE`. In practice, on input `... stmt • else`, the parser **shifts** `else` to the nearest open `if`. That is standard C behavior.
 
-### Where to look
+### Where to look — dangling else
 
 - **State 305** in `Parser.output`
 - Counterexample:
@@ -201,7 +201,7 @@ IF ( Expr ) IF ( Expr ) Stmt • ELSE Stmt
   Reduce:  outer if closes, else would attach outward
 ```
 
-### Takeaway
+### Takeaway — a one-line precedence fix
 
 This is the most famous parser ambiguity. The fix is a one-line precedence declaration, not a grammar rewrite.
 
@@ -228,15 +228,15 @@ After `_VarType •` with lookahead `;`:
 
 Both are syntactically allowed in lcc's grammar.
 
-### What Bison does
+### What Bison does — TypeDecl
 
 Default: **shift** `;` → `TypeDecl` wins when `_VarType` is immediately followed by `;`.
 
-### Where to look
+### Where to look — TypeDecl
 
 - **State 26** in `Parser.output`
 
-### Takeaway
+### Takeaway — entangled declaration syntax
 
 Declaration syntax in C is notoriously entangled (types, declarators, and specifiers overlap). A teaching grammar often accepts a few odd forms (`int;`) to avoid a much larger parser.
 
@@ -271,11 +271,11 @@ IDENTIFIER • ;
 
 For `MyType;` at file scope, the first reading is a forward type declaration; the second would treat `MyType` as a variable — very different semantics.
 
-### What Bison does
+### What Bison does — IDENTIFIER
 
 Reduce/reduce default: pick **rule 29** (`_VarType: IDENTIFIER`) over **rule 110** (`Expr: IDENTIFIER`) because it appears first in the grammar file.
 
-### Where to look
+### Where to look — IDENTIFIER
 
 - **State 133** — four reduce/reduce conflicts on `COMMA`, `SEMICOLON`, `ASTERISK`, `RPARENTHESES`
 
@@ -286,9 +286,16 @@ This is the **most subtle** conflict group. Industrial compilers often:
 - parse typedef names in a separate scope and lexer hack (`TYPENAME` vs `IDENTIFIER`), or
 - run a semantic pass that disambiguates.
 
-lcc keeps one token and relies on rule order. The current tests do not expose incorrect parses, but typedef-heavy code in ambiguous positions could mis-parse.
+lcc keeps one token and relies on rule order. The 41-test suite avoids the affected shapes, but this is **not** a theoretical risk: because rule 29 wins on lookahead `ASTERISK` and `RPARENTHESES`, a parenthesized expression that begins with a bare identifier followed by `)` or `*` commits to the type reading and fails outright:
 
-### Takeaway for learners
+```c
+r = (a);            /* syntax error, unexpected SEMICOLON  — parsed as a cast */
+r = (a * 7) + 1;    /* syntax error, unexpected INTEGER, expecting RPARENTHESES */
+```
+
+Both are ordinary integer variables — no typedef required. Any other lookahead after the identifier keeps the `Expr` reading (`(a + 7)`, `(a == 3)`), as does a parenthesis that does not open with a bare identifier (`(7 * a)`, `(*p * 7)`). See [Language.md](Language.md#not-supported-yet) for the user-facing note and workarounds.
+
+### Takeaway — reduce/reduce needs a grammar change
 
 Reduce/reduce conflicts are **never** resolved by "shift." You must either reorder rules, split non-terminals, or enrich the lexer — otherwise you are silently choosing one meaning.
 
@@ -313,7 +320,7 @@ For input `sizeof ( foo )`, after `foo •`:
 | Rule 119 | `sizeof ( VarType )` with `VarType → _VarType → IDENTIFIER` |
 | Rule 120 | `sizeof ( Expr )` with `Expr → IDENTIFIER` |
 
-### What Bison does
+### What Bison does — sizeof
 
 - On `)`: **shift** prefers the dedicated `IDENTIFIER` production (rule 121).
 - Reduce/reduce on `*` / `)`: **first** matching reduce — `_VarType` path before `Expr`.
@@ -322,11 +329,11 @@ For input `sizeof ( foo )`, after `foo •`:
 
 All three actions build an `AST::SizeOf` node in `Parser.y`. The conflict affects **how** the parse tree is shaped, not which AST node type is created for simple `sizeof(foo)` cases.
 
-### Where to look
+### Where to look — sizeof
 
 - **State 197** in `Parser.output`
 
-### Takeaway
+### Takeaway — overlapping productions
 
 Overlapping productions are common when a language allows `sizeof(T)` and `sizeof expr` with similar syntax. A dedicated third rule removes some ambiguity but can introduce new conflicts unless the grammar is unified.
 
@@ -367,7 +374,7 @@ Default **shift** favors the typedef form when an alias name follows.
 
 **Where to look:** states **124** and **125** in `Parser.output`.
 
-### Takeaway
+### Takeaway — new declarator forms add states
 
 Declaration syntax in C entangles types, declarators, and specifiers. Each new declarator form can add shift/reduce states without changing the older conflict groups.
 
@@ -398,7 +405,7 @@ For a **learning compiler** with a fixed test suite: **yes**, with caveats.
 | Dangling else | Yes (`%nonassoc ELSE`) | Low |
 | TypeDecl vs empty VarDecl | Shift favors `TypeDecl` | Low — odd forms like `int;` |
 | Array bounds / typedef struct | Shift favors declarator continuation | Low for current tests |
-| IDENTIFIER type vs expr | First rule wins (`_VarType`) | Medium for typedef-heavy code |
+| IDENTIFIER type vs expr | First rule wins (`_VarType`) | **Medium** — rejects `(a)` and `(a * x)` for any variable, not just typedefs |
 | sizeof overload | Similar AST nodes | Low for current tests |
 
 A conflict-free grammar is possible but usually costs more non-terminals, lexer complexity, or a separate typedef pass — trade-offs lcc deliberately avoids in `Parser.y`.

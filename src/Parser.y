@@ -347,7 +347,7 @@ InitList:   InitList COMMA InitItem
                                 { $$ = new AST::InitList(); $$->push_back($1); }
             ;
 
- /* %prec COMMA: disambiguate InitList from comma expressions (see Conflicts.md) */
+ /* %prec COMMA: disambiguate InitList from comma expressions (see ParserConflicts.md) */
 InitItem:   Expr %prec COMMA
                                 { $$ = new AST::InitElement($1); }
             | LBRACE InitList RBRACE
