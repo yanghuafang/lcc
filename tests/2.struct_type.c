@@ -1,3 +1,5 @@
+// struct declaration, member access with '.', and nesting.
+
 int printf(char*, ...);
 
 struct Employee {

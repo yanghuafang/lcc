@@ -1,3 +1,6 @@
+// Bitwise and shift operators. Right shift is arithmetic for signed operands
+// and logical for unsigned, which is why signedness is tracked in the AST.
+
 int printf(char*, ...);
 
 int main() {

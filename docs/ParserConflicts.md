@@ -1,6 +1,6 @@
 # Parser grammar conflicts in lcc
 
-This document explains the **shift/reduce** and **reduce/reduce** conflicts reported by GNU Bison for `src/Parser.y`. It is written for learners studying how a bottom-up (LALR) C parser is built.
+This document explains the **shift/reduce** and **reduce/reduce** conflicts reported by GNU Bison for `src/frontend/Parser.y`. It is written for learners studying how a bottom-up (LALR) C parser is built.
 
 lcc's grammar is intentionally compact: declarations, statements, and expressions share non-terminals in places that a production compiler would often split apart. That simplicity is good for learning, but it produces conflicts. Bison still builds a working parser by applying **default resolution rules**. All conflicts are resolved automatically; none block compilation of the current test suite.
 
@@ -31,7 +31,7 @@ cd src
 bison -d Parser.y -v
 
 # Human-readable conflict report (search for "conflicts:")
-less Parser.output
+less generated/Parser.output
 
 # Concrete ambiguous examples (Bison 3.7+)
 bison -d Parser.y -Wcounterexamples 2>&1 | less
@@ -315,7 +315,7 @@ Expr: SIZEOF LPARENTHESES VarType RPARENTHESES    /* sizeof(type) — rule 119 *
 For input `sizeof ( foo )`, after `foo •`:
 
 | Candidate | Path |
-|-----------|------|
+| ----------- | ------ |
 | Rule 121 | `sizeof ( IDENTIFIER )` — shift `)` |
 | Rule 119 | `sizeof ( VarType )` with `VarType → _VarType → IDENTIFIER` |
 | Rule 120 | `sizeof ( Expr )` with `Expr → IDENTIFIER` |
@@ -391,7 +391,7 @@ Conflicts around `[` are separate from the `%left` / `%right` precedence table, 
 
 Subscript `LBRACKET` is **not** in the precedence table; it is a distinct postfix production (`Expr LBRACKET Expr RBRACKET`). That is why unary/binary-vs-subscript conflicts show up as explicit shift/reduce pairs rather than being silently ordered by `%prec`.
 
-Full table: `src/Parser.y` (comments link to [C operator precedence](https://en.cppreference.com/w/c/language/operator_precedence)).
+Full table: `src/frontend/Parser.y` (comments link to [C operator precedence](https://en.cppreference.com/w/c/language/operator_precedence)).
 
 ---
 
@@ -400,7 +400,7 @@ Full table: `src/Parser.y` (comments link to [C operator precedence](https://en.
 For a **learning compiler** with a fixed test suite: **yes**, with caveats.
 
 | Conflict group | Resolved correctly for C? | Risk |
-|----------------|---------------------------|------|
+| ---------------- | --------------------------- | ------ |
 | Subscript vs operators | Yes (shift) | Low |
 | Dangling else | Yes (`%nonassoc ELSE`) | Low |
 | TypeDecl vs empty VarDecl | Shift favors `TypeDecl` | Low — odd forms like `int;` |
@@ -432,5 +432,5 @@ A conflict-free grammar is possible but usually costs more non-terminals, lexer 
 - [Bison manual — Shift/Reduce](https://www.gnu.org/software/bison/manual/html_node/Shift_002fReduce.html)
 - [Bison manual — Reduce/Reduce](https://www.gnu.org/software/bison/manual/html_node/Reduce_002fReduce.html)
 - [Install.md](Install.md) — manual bison commands and `Parser.output` generation
-- `src/Parser.y` — full grammar and precedence declarations
-- `src/Parser.output` — complete LR automaton (regenerate with `bison -d Parser.y -v`)
+- `src/frontend/Parser.y` — full grammar and precedence declarations
+- `src/generated/Parser.output` — complete LR automaton (regenerate with `bison -d Parser.y -v`)

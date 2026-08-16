@@ -1,3 +1,7 @@
+// break and continue nested across loops and switches, where each must find
+// its innermost enclosing target. This is what the target stacks on
+// CodeGenerator exist for.
+
 int printf(char*, ...);
 
 int for_break_continue(void) {
@@ -70,21 +74,19 @@ int switch_for_break_continue(void) {
   int r = 0;
   int x = 1;
   switch (x) {
-    case 1:
-      {
-        int sum = 0;
-        for (int i = 0; i < 5; i++) {
-          if (i == 2) {
-            continue;
-          }
-          if (i == 4) {
-            break;
-          }
-          sum = sum + i;
+    case 1: {
+      int sum = 0;
+      for (int i = 0; i < 5; i++) {
+        if (i == 2) {
+          continue;
         }
-        r = sum;
+        if (i == 4) {
+          break;
+        }
+        sum = sum + i;
       }
-      break;
+      r = sum;
+    } break;
     default:
       r = -1;
       break;

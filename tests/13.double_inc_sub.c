@@ -1,3 +1,6 @@
+// Prefix and postfix ++/--, whose difference is the value the expression
+// yields, not the effect on the variable.
+
 int printf(char*, ...);
 
 int main() {

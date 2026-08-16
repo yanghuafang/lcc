@@ -1,5 +1,11 @@
 #!/bin/bash
 
+# install-deps-macos.sh — install lcc's build dependencies via Homebrew.
+#
+# LLVM 20, flex, bison, argparse, graphviz, cmake. Homebrew keeps llvm@20 and
+# the newer flex/bison keg-only, which is why build-env.sh adds them to PATH
+# explicitly instead of relying on the default one.
+
 set -euo pipefail
 
 if [[ "$(uname -s)" != Darwin ]]; then

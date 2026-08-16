@@ -5,7 +5,7 @@
 _main:
 Lfunc_begin0:
 	.file	1 "../tests" "30.array_mixed_decl.c"
-	.loc	1 3 0
+	.loc	1 6 0
 	.cfi_startproc
 	sub	sp, sp, #48
 	stp	x29, x30, [sp, #32]
@@ -13,79 +13,79 @@ Lfunc_begin0:
 	.cfi_offset w30, -8
 	.cfi_offset w29, -16
 Ltmp0:
-	.loc	1 4 3 prologue_end
+	.loc	1 7 3 prologue_end
 	str	wzr, [sp, #8]
 	mov	w8, #10
-	.loc	1 6 3
+	.loc	1 9 3
 	str	w8, [sp, #12]
-	.loc	1 7 3
+	.loc	1 10 3
 	mov	w8, #20
 	str	w8, [sp, #16]
-	.loc	1 8 3
+	.loc	1 11 3
 	mov	w8, #30
 	str	w8, [sp, #28]
-	.loc	1 10 3
+	.loc	1 13 3
 	ldr	w8, [sp, #12]
 	subs	w8, w8, #10
 	b.eq	LBB0_2
 	b	LBB0_1
 LBB0_1:
-	.loc	1 10 19 is_stmt 0
+	.loc	1 13 19 is_stmt 0
 	mov	w8, #1
 	str	w8, [sp, #8]
 	b	LBB0_3
 LBB0_2:
 	b	LBB0_3
 LBB0_3:
-	.loc	1 11 3 is_stmt 1
+	.loc	1 14 3 is_stmt 1
 	ldr	w8, [sp, #16]
 	subs	w8, w8, #20
 	b.eq	LBB0_5
 	b	LBB0_4
 LBB0_4:
-	.loc	1 11 19 is_stmt 0
+	.loc	1 14 19 is_stmt 0
 	mov	w8, #1
 	str	w8, [sp, #8]
 	b	LBB0_6
 LBB0_5:
 	b	LBB0_6
 LBB0_6:
-	.loc	1 12 3 is_stmt 1
+	.loc	1 15 3 is_stmt 1
 	ldr	w8, [sp, #28]
 	subs	w8, w8, #30
 	b.eq	LBB0_8
 	b	LBB0_7
 LBB0_7:
-	.loc	1 12 16 is_stmt 0
+	.loc	1 15 16 is_stmt 0
 	mov	w8, #1
 	str	w8, [sp, #8]
 	b	LBB0_9
 LBB0_8:
 	b	LBB0_9
 LBB0_9:
-	.loc	1 14 3 is_stmt 1
+	.loc	1 17 3 is_stmt 1
 	ldr	w8, [sp, #8]
 	cbnz	w8, LBB0_11
 	b	LBB0_10
 LBB0_10:
 Ltmp1:
-	.loc	1 15 5
+	.loc	1 18 5
 	adrp	x0, l___unnamed_1@PAGE
 	add	x0, x0, l___unnamed_1@PAGEOFF
 	bl	_printf
 	b	LBB0_12
 Ltmp2:
 LBB0_11:
-	.loc	1 17 5
+	.loc	1 20 5
 	adrp	x0, l___unnamed_2@PAGE
 	add	x0, x0, l___unnamed_2@PAGEOFF
 	bl	_printf
 	b	LBB0_12
 Ltmp3:
 LBB0_12:
-	.loc	1 19 3
+	.loc	1 22 3
 	ldr	w0, [sp, #8]
-	.loc	1 19 3 epilogue_begin is_stmt 0
+	.loc	1 22 3 epilogue_begin is_stmt 0
 	ldp	x29, x30, [sp, #32]
 	add	sp, sp, #48
 	ret
@@ -230,7 +230,7 @@ Ldebug_info_start0:
 	.long	35
 	.long	35
 	.byte	1
-	.byte	3
+	.byte	6
 	.long	114
 
 	.byte	3
@@ -239,7 +239,7 @@ Ldebug_info_start0:
 	.byte	28
 	.long	44
 	.byte	1
-	.byte	5
+	.byte	8
 	.long	114
 	.byte	3
 	.byte	2
@@ -247,7 +247,7 @@ Ldebug_info_start0:
 	.byte	12
 	.long	46
 	.byte	1
-	.byte	5
+	.byte	8
 	.long	121
 	.byte	3
 	.byte	2
@@ -255,7 +255,7 @@ Ldebug_info_start0:
 	.byte	8
 	.long	68
 	.byte	1
-	.byte	4
+	.byte	7
 	.long	114
 	.byte	0
 	.byte	4

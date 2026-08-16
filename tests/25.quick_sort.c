@@ -1,3 +1,6 @@
+// A full program rather than a feature probe: recursion, array parameters,
+// pointer swaps. The closest thing here to real code.
+
 int printf(char*, ...);
 
 void swap(int* a, int* b) {

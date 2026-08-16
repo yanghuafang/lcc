@@ -1,3 +1,6 @@
+// continue in for, while, and do/while. Each jumps to a different block: the
+// update clause for for, the condition for the other two.
+
 int printf(char*, ...);
 
 int countEvenNumber(int n) {

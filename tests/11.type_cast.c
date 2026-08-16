@@ -1,3 +1,6 @@
+// Explicit casts between integer, floating, and pointer types, including the
+// narrowing and sign-changing cases.
+
 int printf(char*, ...);
 
 int main() {

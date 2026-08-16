@@ -28,9 +28,23 @@ jobs:
         working-directory: scripts
         run: ./install-deps-macos.sh
 
+      # Cheap and platform-independent, so it runs before the build: a
+      # formatting slip should fail in seconds, not after a full LLVM link.
+      - name: Formatting check
+        working-directory: scripts
+        run: ./format.sh --check
+
       - name: Build lcc
         working-directory: scripts
         run: ./build-lcc.sh
+
+      # clang-tidy needs the compile database the build just produced. Run it on
+      # one platform only: the findings are host-independent, and a third copy
+      # would triple the slowest non-build step for no extra signal.
+      - name: clang-tidy check
+        if: matrix.os == 'ubuntu-24.04'
+        working-directory: scripts
+        run: ./tidy.sh
 
       - name: Compile tests
         working-directory: scripts

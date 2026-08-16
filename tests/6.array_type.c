@@ -1,3 +1,6 @@
+// Array declaration, indexing, and the array-to-pointer decay that C applies
+// whenever an array is used as a value.
+
 int printf(char*, ...);
 
 char gs[16];

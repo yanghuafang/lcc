@@ -1,0 +1,70 @@
+# clang-tidy configuration for lcc. Run with scripts/tidy.sh.
+#
+# The check list is curated rather than "all of readability-* and modernize-*",
+# because several upstream checks fight this project's goal of being read by
+# people learning compilers. Each disabled family is listed with its reason, so
+# the exclusions can be re-argued rather than rediscovered.
+#
+# Deliberately NOT enabled:
+#
+#   modernize-use-trailing-return-type
+#       Would rewrite 358 signatures into `auto f() -> llvm::Value*`. That form
+#       is harder to skim for a reader who is here to learn compilers, not
+#       modern C++ syntax, and it buries the return type that these APIs are
+#       largely about.
+#   readability-identifier-length
+#       Flags `i`, `f`, `pb`, `mpm`. Conventional loop and builder names.
+#   readability-magic-numbers
+#       Nearly every hit is a bit width (8/16/32/64) or a DWARF constant, where
+#       the literal is clearer than a named constant would be.
+#   readability-function-cognitive-complexity
+#       The AST walkers are inherently branchy; splitting them to satisfy a
+#       threshold would scatter logic that reads better in one place.
+#   bugprone-easily-swappable-parameters
+#       Fires on every (builder, lhs, rhs, lhsTypeId, rhsTypeId) signature in
+#       the operator lowering, which is the shape the domain calls for.
+#   performance-inefficient-string-concatenation
+#       Fires in dot/AstToDot.cpp, where `tree += a + " [label = " + b + "]\n"`
+#       reads as the DOT line it produces. Splitting each into five `+=` calls
+#       to avoid temporaries would obscure that, and this runs once per AST node
+#       only under -v, so it is not a path worth optimizing for.
+#   readability-use-anyofallof
+#       Would replace a four-line `for` in DeclToIr.cpp with std::any_of and a
+#       lambda. The loop is the more approachable form for this audience.
+#
+# Bug-hunting checks (bugprone-*, clang-analyzer-*) are intentionally out of
+# scope here; this configuration is about style and redundancy only.
+
+Checks: >
+  -*,
+  modernize-deprecated-headers,
+  modernize-use-auto,
+  modernize-use-bool-literals,
+  modernize-use-equals-default,
+  modernize-use-nullptr,
+  modernize-use-override,
+  performance-avoid-endl,
+  performance-inefficient-vector-operation,
+  performance-trivially-destructible,
+  readability-const-return-type,
+  readability-container-size-empty,
+  readability-convert-member-functions-to-static,
+  readability-else-after-return,
+  readability-implicit-bool-conversion,
+  readability-make-member-function-const,
+  readability-math-missing-parentheses,
+  readability-named-parameter,
+  readability-non-const-parameter,
+  readability-qualified-auto,
+  readability-redundant-declaration,
+  readability-redundant-member-init,
+  readability-redundant-string-cstr,
+  readability-simplify-boolean-expr,
+  readability-static-definition-in-anonymous-namespace
+
+# Never analyze flex/bison output; it is machine-generated and regenerated on
+# every configure.
+HeaderFilterRegex: 'src/(?!generated/).*\.hpp$'
+
+WarningsAsErrors: ''
+FormatStyle: file

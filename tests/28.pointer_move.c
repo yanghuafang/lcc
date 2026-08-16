@@ -1,3 +1,6 @@
+// Pointer arithmetic: ++/--/+=/-= on pointers scale by the pointee size, and
+// pointer difference divides by it.
+
 int printf(char*, ...);
 
 int main() {

@@ -1,5 +1,11 @@
 #!/bin/bash
 
+# install-deps-ubuntu.sh — install lcc's build dependencies via apt.
+#
+# Targets Ubuntu 24.04 and 26.04, where llvm-20 and libargparse-dev are in the
+# distro archive; on other releases it warns that those packages may be absent
+# rather than adding a third-party apt source.
+
 set -euo pipefail
 
 if [[ "$(uname -s)" != Linux ]]; then
@@ -20,7 +26,7 @@ fi
 
 sudo apt-get update
 
-for pkg in llvm-20-dev libargparse-dev; do
+for pkg in llvm-20-dev libargparse-dev clang-format-20 clang-tidy-20; do
   if ! apt-cache show "${pkg}" >/dev/null 2>&1; then
     echo "Package ${pkg} is not available. Use Ubuntu 24.04 LTS." >&2
     exit 1
@@ -38,6 +44,8 @@ sudo apt-get install -y \
   llvm-20 \
   llvm-20-dev \
   llvm-20-tools \
+  clang-format-20 \
+  clang-tidy-20 \
   libargparse-dev
 
 echo "Ubuntu dependencies installed. Build with: ./build-lcc.sh"

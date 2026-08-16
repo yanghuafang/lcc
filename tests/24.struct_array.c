@@ -1,3 +1,6 @@
+// Arrays of structs: indexing then member access, and the address
+// arithmetic that combination needs.
+
 int printf(char*, ...);
 
 struct Data {

@@ -13,7 +13,7 @@ lcc is a teaching compiler: each step should add one clear idea (grammar, AST, c
 Before extending, it helps to know what the current codebase already supports:
 
 | Area | Status |
-|------|--------|
+| ------ | -------- |
 | 1D array declaration | `int a[10];` through `VarType` + `VarList`; bounds on each `VarInit` (`ArrayBoundList`) |
 | Mixed array/scalar lists | `int a[4], b;` in one declaration (`tests/30.array_mixed_decl.c`) |
 | Array indexing | `arr[i]` via `Subscript` and `ArrayType` |
@@ -28,8 +28,8 @@ Before extending, it helps to know what the current codebase already supports:
 | Block-scope `static` | Mangled module globals, one-time init (`tests/38.static_local.c`) |
 | User-defined types | `struct`, `union`, `enum` with tag names (`DefinedType` lookup) |
 | Type names in expressions | `_VarType: IDENTIFIER` for registered tags and typedef aliases |
-| `-g` CLI flag | Parsed in `main.cpp`; passed to `CodeGenerator` — emits compile unit, stepping, locals/params, struct members, and lexical blocks; skips LLVM opts when set |
-| **LLVM 20** toolchain | Opaque pointers in IR; pointee types tracked on AST `VarType` (`Utils::memoryAccessType`, etc.); requires C++17 |
+| `-g` CLI flag | Parsed in `driver/main.cpp`; passed to `CodeGenerator` — emits compile unit, stepping, locals/params, struct members, and lexical blocks; skips LLVM opts when set |
+| **LLVM 20** toolchain | Opaque pointers in IR; pointee types tracked on AST `VarType` (`vartype::memoryAccessType`, etc.); requires C++17 |
 
 See [ParserConflicts.md](ParserConflicts.md) for parser ambiguities that several of these steps had to work around (especially `typedef`).
 
@@ -38,7 +38,7 @@ See [ParserConflicts.md](ParserConflicts.md) for parser ambiguities that several
 ## Recommended order (summary)
 
 | Priority | Feature | Effort | Why this order |
-|----------|---------|--------|----------------|
+| ---------- | --------- | -------- | ---------------- |
 | **—** | [Array declarators](#array-extension-plan) (done) | Small | Unified `VarInit` + `ArrayBoundList`; foundation for init and multidim |
 | **1** | [1D array initialization](#1-1d-array-initialization) (done) | Medium | Brace init, inferred `[]`, string literals |
 | **2** | [2D arrays](#2-2d-and-3d-arrays) (done) | Medium | 2a declaration + 2b initialization; reuses 1D init helpers |
@@ -85,7 +85,7 @@ flowchart TD
 C array initialization is intentionally split into small merges. **2D is complete; 3D is deferred.** Support legal forms in tiers; reject illegal forms (e.g. `char s[5] = "hello"`, `int a[][]`) once the matching feature is in scope.
 
 | Step | Delivers | Tests (examples) |
-|------|----------|------------------|
+| ------ | ---------- | ------------------ |
 | **Declarators** (done) | `ArrayBound` / `ArrayBoundList` on `VarInit`; one `VarDecl` path; `int a[4], b;` | `tests/30.array_mixed_decl.c` |
 | **1a** (done) | `int a[4] = {1,2,3};` — zero-fill, global/local | `tests/31.array_1d_brace_init.c` |
 | **1b** (done) | `int a[] = {…};`, `char s[] = "hello";`, `char s[6] = "hello";` | `tests/32.array_1d_inferred_string_init.c`; reject `char s[5] = "hello"` |
@@ -152,7 +152,7 @@ int matrix[8][5];
 ```
 
 - `buildVarType` applies `ArrayBoundList` outside-in, so `int m[2][3]` becomes LLVM `[2 x [3 x T]]`.
-- `Subscript::genCodePtr` nests through `Utils::createAdd` (which emits the `CreateGEP`), handling `a[i][j]` on locals, globals, and struct element grids.
+- `Subscript::genCodePtr` nests through `ops::createAdd` (which emits the `CreateGEP`), handling `a[i][j]` on locals, globals, and struct element grids.
 - `tests/33.array_2d_decl.c`.
 
 ### 2b — 2D initialization (done)
@@ -195,7 +195,7 @@ IntPtr p;
 ```
 
 | Layer | Changes |
-|-------|---------|
+| ------- | --------- |
 | **Lexer** | `TYPEDEF` token |
 | **Parser** | `TypedefDecl: TYPEDEF VarType IDENTIFIER SEMICOLON` |
 | **AST** | `TypedefDecl` (alias name + underlying `VarType*`) |
@@ -220,7 +220,7 @@ unsigned long strlen(const char* s);
 ```
 
 | Layer | Changes |
-|-------|---------|
+| ------- | --------- |
 | **Parser / AST** | Combined typedef patterns (`typedef struct S { … } S;`) |
 | **Symbol table** | Typedef names visible in type positions; expression-position limits documented |
 | **Disambiguation** | Fewer wrong parses when a typedef name could be a variable (State 133 — see [ParserConflicts.md](ParserConflicts.md)) |
@@ -262,7 +262,7 @@ int bump(void) {
 ```
 
 | Layer | Changes |
-|-------|---------|
+| ------- | --------- |
 | **Lexer** | `STATIC` token |
 | **Parser** | `STATIC` prefix on `VarDecl` and `FuncDecl` |
 | **AST** | `isStatic_` on `VarDecl` and `FuncDecl` |
@@ -304,8 +304,8 @@ Orthogonal to types and initializers. Teaches linkage and lifetime without block
 **5a–5d (done):** compile unit and subprograms; statement `DebugLoc`; `dbg.declare` for params/locals; `DICompositeType` for structs/unions; `DILexicalBlock` for `{ ... }`; `-g` disables LLVM optimization (warn if `-O1+` is also passed).
 
 | Layer | Changes |
-|-------|---------|
-| **Driver** | Pass debug flag from `main.cpp` into `CodeGenerator` — **done (5a)** |
+| ------- | --------- |
+| **Driver** | Pass debug flag from `driver/main.cpp` into `CodeGenerator` — **done (5a)** |
 | **LLVM** | `DIBuilder`: compile unit, subprograms, `DebugLoc`, `dbg.declare`, struct/union `DICompositeType`, `DILexicalBlock` — **done** |
 | **AST / codegen** | `SourceLoc` on functions and statements; param/local `declareAlloca`; `Block` pushes lexical scopes — **done** |
 
@@ -320,10 +320,10 @@ Pure infrastructure — no new C syntax. Valuable for debugging, but does not un
 These are **deliberately deferred** — larger subsystems or architectural non-goals, each with a reason not to pursue it near-term (they also appear under **Not supported** in [Language.md](Language.md)). Smaller, self-contained ideas live under [Future directions](#future-directions-no-milestones) below.
 
 | Feature | Reason to defer |
-|---------|-----------------|
+| --------- | ----------------- |
 | Preprocessing (`#include`, `#define`) | Separate pipeline stage; very large |
 | `extern` variables | Linkage + multi-TU model; manual decls work today |
-| Separate semantic-analysis pass | Add only when a feature requires it (e.g. heavy typedef disambiguation) — see architecture notes in `AbstractSyntaxTree.hpp` |
+| Separate semantic-analysis pass | Add only when a feature requires it (e.g. heavy typedef disambiguation) — see architecture notes in `ast/Nodes.hpp` |
 | Split `Expr` from `Stmt` | Large churn; low ROI unless rewriting the frontend for pedagogy |
 | 3D arrays | 2D covers multidim teaching goals; high complexity for diminishing returns |
 
@@ -346,7 +346,7 @@ Self-contained; adds no new language semantics; high UX/teaching value.
 ### C language features not yet implemented
 
 | Idea | Touches | Notes |
-|------|---------|-------|
+| ------ | --------- | ------- |
 | `goto` + labels | lexer, `Parser.y`, codegen | Self-contained; reuses the basic-block machinery from loops / `switch` |
 | Function pointers | declarator grammar, type system, call lowering | Hardest corner of the type system; enables callbacks |
 | More scalar types | lexer, `BuiltinType`, codegen | `signed`, `long long`, `long double` |

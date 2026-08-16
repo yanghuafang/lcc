@@ -1,6 +1,9 @@
+// Precedence and associativity without parentheses, checking the parse tree
+// the grammar's precedence table produces.
+
 int printf(char*, ...);
 
-void subFunc(int i) { }
+void subFunc(int i) {}
 
 int main() {
   int err = 0;

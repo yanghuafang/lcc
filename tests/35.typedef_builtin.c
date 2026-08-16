@@ -1,3 +1,6 @@
+// typedef over builtin types. The alias resolves to its underlying type
+// before any type rule is applied.
+
 int printf(char*, ...);
 
 typedef unsigned long size_t;

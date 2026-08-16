@@ -1,3 +1,6 @@
+// 1D array with a brace initializer, including partial init — unlisted
+// elements are zero-filled.
+
 int printf(char*, ...);
 
 int ga[4] = {1, 2, 3};

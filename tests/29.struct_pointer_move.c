@@ -1,3 +1,5 @@
+// Pointer arithmetic over a struct array, plus '->' member access.
+
 int printf(char*, ...);
 
 struct Data {

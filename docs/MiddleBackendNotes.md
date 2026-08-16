@@ -7,12 +7,12 @@ Implementation details and acceptance criteria for [LearningPlan.md](LearningPla
 ## Current baseline
 
 | Component | File | Behavior |
-|-----------|------|----------|
-| IR emission | `CodeGenerator::genIrCode`, `AbstractSyntaxTree.cpp`, `Utils.cpp` | AST walk → raw `llvm::Module` |
+| ----------- | ------ | ---------- |
+| IR emission | `pipeline::genIr`, `irgen/ExprToIr.cpp`, `irgen/StmtToIr.cpp`, `irgen/Operators.cpp`, `irgen/TypeConversion.cpp` | AST walk → raw `llvm::Module` |
 | IR optimization | `IrOptimizer::run` | `PassBuilder::buildPerModuleDefaultPipeline` |
 | IR instrumentation | `IrInstructionStatsPass` (`-ir-stats`) | New PM function pass; no IR change |
 | IR transform (optional) | `FoldAddZeroPass` (`-fold-add-zero`) | New PM function pass; M7 teaching peephole |
-| Object emission | `TargetBackend::emitObject` via `CodeGenerator::genObjectCode` | Host triple (or `--target`), `-mcpu`/`-mattr`, CLI `-O` → `CodeGenOptLevel`, PIC/PIE relocation model, legacy PM → `.o` |
+| Object emission | `TargetBackend::emitObject` via `pipeline::emitObject` | Host triple (or `--target`), `-mcpu`/`-mattr`, CLI `-O` → `CodeGenOptLevel`, PIC/PIE relocation model, legacy PM → `.o` |
 | Assembly emission | `TargetBackend::emitAssembly` via `-S` | Same `TargetBackendOptions` as object emission |
 | Machine instrumentation (optional) | `MachineInstrStatsPass` (`-machine-stats`) | Legacy MachineFunctionPass on final MIR; counts only, no codegen change |
 | Debug info | `DebugInfoBuilder` | `-g` skips IR opts |
@@ -22,12 +22,15 @@ Files the milestones added:
 
 ```
 src/
-  IrOptimizer.hpp / IrOptimizer.cpp      ← M5
-  TargetBackend.hpp / TargetBackend.cpp   ← M10
-  passes/
-    IrInstructionStatsPass.cpp              ← M6
-    FoldAddZeroPass.cpp                     ← M7
-    MachineInstrStatsPass.cpp               ← M17 (legacy MachineFunctionPass)
+  opt/
+    IrOptimizer.hpp / IrOptimizer.cpp     ← M5
+    passes/
+      IrInstructionStatsPass.cpp          ← M6
+      FoldAddZeroPass.cpp                 ← M7
+  backend/
+    TargetBackend.hpp / TargetBackend.cpp ← M10
+    passes/
+      MachineInstrStatsPass.cpp           ← M17 (legacy MachineFunctionPass)
 ```
 
 ---
@@ -35,7 +38,7 @@ src/
 ## Layer map
 
 | Layer | Built by | Custom pass? | Manager |
-|-------|----------|--------------|---------|
+| ------- | ---------- | -------------- | --------- |
 | IR generation | lcc `genCode()` | No | — |
 | IR optimization | LLVM + optional yours | Yes (New PM) | `PassBuilder` / New PM |
 | Codegen | LLVM `TargetMachine` | Optional MachineFunctionPass | Legacy PM in lcc today |
@@ -57,36 +60,37 @@ src/
 **Suggested CLI** (test scripts use `debug/<test>.<mode>.pre.ll` / `.post.ll`)
 
 | Flag | Content |
-|------|---------|
+| ------ | --------- |
 | `-l-pre-opt <file>` | IR immediately after `root->genCode()` |
 | `-l-post-opt <file>` | IR after `IrOptimizer::run()` and debug finalization (`-g`) |
-| `-l <file>` | After `genObjectCode()` in `main` (before optional `-S`; includes target metadata; test goldens) |
+| `-l <file>` | After `pipeline::emitObject()` in `main` (before optional `-S`; includes target metadata; test goldens) |
 
-**Hook in `genIrCode`** (after the AST walk, with the M5–M8 wiring):
+**Hook in `pipeline::genIr`** (after the AST walk, with the M5–M8 wiring):
 
 ```cpp
-if (!preOptIrPath.empty()) {
-  dumpIrCode(preOptIrPath);
+// options is the IrCodeGenOptions passed by main (see irgen/CodeGenerator.hpp).
+if (!options.preOptIrPath.empty()) {
+  dumpIr(generator.getModule(), options.preOptIrPath);
 }
 
 const std::string optLevel =
-    generateDebugInfo ? std::string{} : optimizationLevel;
+    options.generateDebugInfo ? std::string{} : options.optimizationLevel;
 const std::string pipeline =
-    generateDebugInfo ? std::string{} : customPipeline;
+    options.generateDebugInfo ? std::string{} : options.customPipeline;
 IrOptimizer{}.run(*module_, optLevel,
-                  {.irStatsPath = irStatsPath,
-                   .foldAddZero = foldAddZero,
+                  {.irStatsPath = options.irStatsPath,
+                   .foldAddZero = options.foldAddZero,
                    .customPipeline = pipeline});
-if (generateDebugInfo) {
+if (options.generateDebugInfo) {
   debugInfo_->finalize();
 }
 
-if (!postOptIrPath.empty()) {
-  dumpIrCode(postOptIrPath);
+if (!options.postOptIrPath.empty()) {
+  dumpIr(generator.getModule(), options.postOptIrPath);
 }
 ```
 
-`genIrCode` always calls `IrOptimizer::run`; it no-ops unless at least one of `-O`, `-ir-stats`, `-fold-add-zero`, or `-O-passes` is set. With `-g`, both `optLevel` and the custom pipeline are blanked (LLVM opts skipped), but the custom passes still run. `-l` is dumped from `main` right after `genObjectCode()` (before optional `-S`), not here.
+`pipeline::genIr` always calls `IrOptimizer::run`; it no-ops unless at least one of `-O`, `-ir-stats`, `-fold-add-zero`, or `-O-passes` is set. With `-g`, both `optLevel` and the custom pipeline are blanked (LLVM opts skipped), but the custom passes still run. `-l` is dumped from `main` right after `pipeline::emitObject()` (before optional `-S`), not here.
 
 **Verify**
 
@@ -103,7 +107,7 @@ diff -u /tmp/pre.ll /tmp/post.ll | head
 **Acceptance criteria**
 
 - [x] No behavior change vs former `optimizeCode()`
-- [x] `CodeGenerator.cpp` shrinks; IR opt logic in `IrOptimizer.cpp`
+- [x] `irgen/CodeGenerator.cpp` shrinks; IR opt logic in `opt/IrOptimizer.cpp`
 - [x] Full test suite PASS
 
 **API** (current):
@@ -133,7 +137,7 @@ class IrOptimizer {
 - [x] No change to program semantics — all 41 tests PASS
 - [x] Pass behind `-ir-stats` (disabled by default for compile-tests.sh)
 
-**Implementation:** `IrInstructionStatsPass` (`src/passes/`)
+**Implementation:** `IrInstructionStatsPass` (`src/opt/passes/`)
 
 - Counts `load`, `store`, `call`/`invoke` per function; aggregates module totals
 - Enabled only when `-ir-stats <file>` is passed (`-` writes to stderr)
@@ -157,7 +161,7 @@ class IrOptimizer {
 - [x] Post-opt IR diff documented for `12.arithmetic.c` ([LlvmTools.md § M7](LlvmTools.md#custom-transform-pass-m7))
 - [x] Optional: M15 benchmark shows no regression (or improvement) — `bench.sh --smoke`
 
-**Implementation:** `FoldAddZeroPass` (`src/passes/`), enabled with `-fold-add-zero` before the default LLVM pipeline.
+**Implementation:** `FoldAddZeroPass` (`src/opt/passes/`), enabled with `-fold-add-zero` before the default LLVM pipeline.
 
 ---
 
@@ -170,7 +174,7 @@ class IrOptimizer {
 - [x] Invalid pass name → clear error (`Invalid -O-passes pipeline "…": unknown pass name …`)
 - [x] Documented interaction with `-O0`…`-O3` (mutually exclusive; `-g` skips both)
 
-**Implementation:** `IrOptimizerOptions::customPipeline`; `-O-passes` / `--optimization-passes` in `main.cpp`.
+**Implementation:** `IrOptimizerOptions::customPipeline`; `-O-passes` / `--optimization-passes` in `driver/main.cpp`.
 
 ---
 
@@ -246,7 +250,7 @@ Use `llvm::CodeGenFileType::AssemblyFile` in `addPassesToEmitFile`.
 
 **Acceptance criteria**
 
-- [x] `TargetMachine` codegen opt level matches CLI `-O` (see `CodeGenOptLevel` in `TargetBackend.cpp`)
+- [x] `TargetMachine` codegen opt level matches CLI `-O` (see `CodeGenOptLevel` in `backend/TargetBackend.cpp`)
 - [x] Saved asm for `25.quick_sort.c` at `-O0` and `-O2` under `debug/` (`*.debug.s` / `*.release.s` from `compile-tests.sh`)
 - [x] Written comparison: instruction count and loop structure in hot function ([LlvmTools.md § M12](LlvmTools.md#codegen-opt-level--asm-diff-m12))
 
@@ -331,7 +335,7 @@ No `-mcpu` variant: lcc defaults to LLVM's `generic` CPU, so `-mcpu generic` mat
 
 ## M17: Machine pass (advanced, optional)
 
-**Script/pass:** `src/passes/MachineInstrStatsPass.{hpp,cpp}` — a legacy `MachineFunctionPass` that counts machine instructions on fully lowered MIR (post-regalloc). Enabled with `-machine-stats <file>` (`-` = stderr).
+**Script/pass:** `src/backend/passes/MachineInstrStatsPass.{hpp,cpp}` — a legacy `MachineFunctionPass` that counts machine instructions on fully lowered MIR (post-regalloc). Enabled with `-machine-stats <file>` (`-` = stderr).
 
 **Acceptance**
 
@@ -340,7 +344,7 @@ No `-mcpu` variant: lcc defaults to LLVM's `generic` CPU, so `-mcpu generic` mat
 - [x] Documented separately from IR New PM (different registration): legacy PM + `TargetPassConfig` in `TargetBackend`, not `PassBuilder` — see [LlvmTools.md § M17](LlvmTools.md#machine-function-pass-m17)
 - [x] CI smoke (`check-machine-pass-smoke.sh`) exercises the hand-rolled pipeline on every matrix platform and asserts the object is byte-identical with vs without `-machine-stats`
 
-**Registration:** default emission uses `TargetMachine::addPassesToEmitFile`. When `-machine-stats` is set, the file-local `addEmitPassesWithMachineStats` helper in `TargetBackend.cpp` drives the codegen pipeline by hand (`createPassConfig` → `addISelPasses` → `addMachinePasses` → add pass → `addAsmPrinter` → `createFreeMachineFunctionPass`) so the machine pass runs on final MIR. Default path is unchanged, so committed `debug/*.s` / `.o` goldens are byte-identical.
+**Registration:** default emission uses `TargetMachine::addPassesToEmitFile`. When `-machine-stats` is set, the file-local `addEmitPassesWithMachineStats` helper in `backend/TargetBackend.cpp` drives the codegen pipeline by hand (`createPassConfig` → `addISelPasses` → `addMachinePasses` → add pass → `addAsmPrinter` → `createFreeMachineFunctionPass`) so the machine pass runs on final MIR. Default path is unchanged, so committed `debug/*.s` / `.o` goldens are byte-identical.
 
 **Out of scope for M17:** a custom register allocator (never planned), and any transforming machine pass — M17 is analysis-only. A transforming `MachineFunctionPass` is recorded under [Future directions](#future-directions-no-milestones) as unscheduled.
 

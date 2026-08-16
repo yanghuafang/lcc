@@ -1,3 +1,6 @@
+// char array initialized from a string literal with the bound left out; the
+// length comes from the literal, plus one for the terminator.
+
 int printf(char*, ...);
 
 int ga[] = {10, 7, 8, 9, 1, 5};

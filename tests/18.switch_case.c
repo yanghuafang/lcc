@@ -1,3 +1,6 @@
+// switch with case, default, and break. Lowered as a comparison chain rather
+// than LLVM's switch instruction — see SwitchStmt in src/irgen/StmtToIr.cpp.
+
 int printf(char*, ...);
 
 char gradeOfScore(int score) {

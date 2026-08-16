@@ -1,3 +1,6 @@
+// return from several points in a function, including early return, and the
+// void case.
+
 int printf(char*, ...);
 
 int checkAge1(int age) {

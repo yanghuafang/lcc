@@ -1,5 +1,12 @@
 #!/bin/bash
 
+# check-debug-info.sh — smoke test for -g (M5).
+#
+# Compiles a test with -g and greps the DWARF for the tags that matter:
+# DW_TAG_subprogram, _variable, _lexical_block, _structure_type, _member.
+# Catches the regression where debug info is emitted but hollow — which the
+# pass/fail suite cannot see, because the program still runs correctly.
+
 set -eo pipefail
 
 script_dir="$(cd "$(dirname "$0")" && pwd)"

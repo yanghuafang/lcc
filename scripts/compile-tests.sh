@@ -1,5 +1,18 @@
 #!/bin/bash
 
+# compile-tests.sh — compile the test suite with lcc (stage 1 of 3).
+#
+# Runs lcc over tests/*.c, producing the object files plus the AST graph, IR,
+# and assembly artifacts under debug/. The test list and per-mode flags live in
+# tests-compile-link-run.sh, which this sources.
+#
+# Then run ./link-tests.sh and ./run-tests.sh. Pass a file name to limit the
+# run to one test:
+#
+#   ./compile-tests.sh                 # whole suite
+#   ./compile-tests.sh 0.hello_world.c # just one
+#   ./compile-tests.sh --release       # -O2 instead of -g; see docs/Testing.md
+
 source ./tests-compile-link-run.sh
 
 compileAll() {

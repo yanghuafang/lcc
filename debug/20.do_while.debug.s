@@ -5,22 +5,22 @@
 _countSum:
 Lfunc_begin0:
 	.file	1 "../tests" "20.do_while.c"
-	.loc	1 3 0
+	.loc	1 6 0
 	.cfi_startproc
 	sub	sp, sp, #16
 	.cfi_def_cfa_offset 16
 Ltmp1:
-	.loc	1 3 5 prologue_end
+	.loc	1 6 5 prologue_end
 	str	w0, [sp, #4]
-	.loc	1 4 3
+	.loc	1 7 3
 	str	wzr, [sp, #8]
-	.loc	1 5 3
+	.loc	1 8 3
 	mov	w8, #1
 	str	w8, [sp, #12]
-	.loc	1 6 3
+	.loc	1 9 3
 	b	LBB0_1
 LBB0_1:
-	.loc	1 6 3
+	.loc	1 9 3
 	ldr	w8, [sp, #12]
 	ldr	w9, [sp, #4]
 	subs	w8, w8, w9
@@ -28,21 +28,21 @@ LBB0_1:
 	b	LBB0_2
 LBB0_2:
 Ltmp2:
-	.loc	1 7 5
+	.loc	1 10 5
 	ldr	w9, [sp, #12]
 	ldr	w8, [sp, #8]
 	add	w8, w8, w9
 	str	w8, [sp, #8]
-	.loc	1 8 5
+	.loc	1 11 5
 	ldr	w8, [sp, #12]
 	add	w8, w8, #1
 	str	w8, [sp, #12]
 	b	LBB0_1
 Ltmp3:
 LBB0_3:
-	.loc	1 10 3
+	.loc	1 13 3
 	ldr	w0, [sp, #8]
-	.loc	1 10 3 epilogue_begin is_stmt 0
+	.loc	1 13 3 epilogue_begin is_stmt 0
 	add	sp, sp, #16
 	ret
 Ltmp4:
@@ -53,27 +53,27 @@ Lfunc_end0:
 	.p2align	2
 _countSum2:
 Lfunc_begin1:
-	.loc	1 13 0 is_stmt 1
+	.loc	1 16 0 is_stmt 1
 	.cfi_startproc
 	sub	sp, sp, #16
 	.cfi_def_cfa_offset 16
 Ltmp6:
-	.loc	1 13 5 prologue_end
+	.loc	1 16 5 prologue_end
 	str	w0, [sp, #4]
-	.loc	1 14 3
+	.loc	1 17 3
 	str	wzr, [sp, #8]
-	.loc	1 15 3
+	.loc	1 18 3
 	str	wzr, [sp, #12]
-	.loc	1 16 3
+	.loc	1 19 3
 	b	LBB1_1
 LBB1_1:
 Ltmp7:
-	.loc	1 17 5
+	.loc	1 20 5
 	ldr	w9, [sp, #12]
 	ldr	w8, [sp, #8]
 	add	w8, w8, w9
 	str	w8, [sp, #8]
-	.loc	1 18 5
+	.loc	1 21 5
 	ldr	w8, [sp, #12]
 	add	w8, w8, #1
 	str	w8, [sp, #12]
@@ -86,9 +86,9 @@ LBB1_2:
 	b	LBB1_3
 Ltmp8:
 LBB1_3:
-	.loc	1 20 3
+	.loc	1 23 3
 	ldr	w0, [sp, #8]
-	.loc	1 20 3 epilogue_begin is_stmt 0
+	.loc	1 23 3 epilogue_begin is_stmt 0
 	add	sp, sp, #16
 	ret
 Ltmp9:
@@ -99,7 +99,7 @@ Lfunc_end1:
 	.p2align	2
 _main:
 Lfunc_begin2:
-	.loc	1 23 0 is_stmt 1
+	.loc	1 26 0 is_stmt 1
 	.cfi_startproc
 	sub	sp, sp, #32
 	stp	x29, x30, [sp, #16]
@@ -107,9 +107,9 @@ Lfunc_begin2:
 	.cfi_offset w30, -8
 	.cfi_offset w29, -16
 Ltmp10:
-	.loc	1 24 3 prologue_end
+	.loc	1 27 3 prologue_end
 	str	wzr, [sp, #12]
-	.loc	1 26 3
+	.loc	1 29 3
 	mov	w0, #100
 	bl	_countSum
 	mov	w8, #5050
@@ -117,14 +117,14 @@ Ltmp10:
 	b.eq	LBB2_2
 	b	LBB2_1
 LBB2_1:
-	.loc	1 26 30 is_stmt 0
+	.loc	1 29 30 is_stmt 0
 	mov	w8, #1
 	str	w8, [sp, #12]
 	b	LBB2_3
 LBB2_2:
 	b	LBB2_3
 LBB2_3:
-	.loc	1 27 3 is_stmt 1
+	.loc	1 30 3 is_stmt 1
 	mov	w0, #100
 	bl	_countSum2
 	mov	w8, #5050
@@ -132,7 +132,7 @@ LBB2_3:
 	b.eq	LBB2_5
 	b	LBB2_4
 LBB2_4:
-	.loc	1 27 31 is_stmt 0
+	.loc	1 30 31 is_stmt 0
 	mov	w8, #1
 	str	w8, [sp, #12]
 	b	LBB2_6
@@ -141,12 +141,12 @@ LBB2_5:
 LBB2_6:
 	.loc	1 0 31
 	mov	w0, wzr
-	.loc	1 28 3 is_stmt 1
+	.loc	1 31 3 is_stmt 1
 	bl	_countSum
 	cbz	w0, LBB2_8
 	b	LBB2_7
 LBB2_7:
-	.loc	1 28 25 is_stmt 0
+	.loc	1 31 25 is_stmt 0
 	mov	w8, #1
 	str	w8, [sp, #12]
 	b	LBB2_9
@@ -155,41 +155,41 @@ LBB2_8:
 LBB2_9:
 	.loc	1 0 25
 	mov	w0, wzr
-	.loc	1 29 3 is_stmt 1
+	.loc	1 32 3 is_stmt 1
 	bl	_countSum2
 	cbz	w0, LBB2_11
 	b	LBB2_10
 LBB2_10:
-	.loc	1 29 26 is_stmt 0
+	.loc	1 32 26 is_stmt 0
 	mov	w8, #1
 	str	w8, [sp, #12]
 	b	LBB2_12
 LBB2_11:
 	b	LBB2_12
 LBB2_12:
-	.loc	1 31 3 is_stmt 1
+	.loc	1 34 3 is_stmt 1
 	ldr	w8, [sp, #12]
 	cbnz	w8, LBB2_14
 	b	LBB2_13
 LBB2_13:
 Ltmp11:
-	.loc	1 32 5
+	.loc	1 35 5
 	adrp	x0, l___unnamed_1@PAGE
 	add	x0, x0, l___unnamed_1@PAGEOFF
 	bl	_printf
 	b	LBB2_15
 Ltmp12:
 LBB2_14:
-	.loc	1 34 5
+	.loc	1 37 5
 	adrp	x0, l___unnamed_2@PAGE
 	add	x0, x0, l___unnamed_2@PAGEOFF
 	bl	_printf
 	b	LBB2_15
 Ltmp13:
 LBB2_15:
-	.loc	1 36 3
+	.loc	1 39 3
 	ldr	w0, [sp, #12]
-	.loc	1 36 3 epilogue_begin is_stmt 0
+	.loc	1 39 3 epilogue_begin is_stmt 0
 	ldp	x29, x30, [sp, #16]
 	add	sp, sp, #32
 	ret
@@ -322,7 +322,7 @@ Ldebug_info_start0:
 	.long	27
 	.long	27
 	.byte	1
-	.byte	3
+	.byte	6
 	.long	230
 
 	.byte	3
@@ -331,7 +331,7 @@ Ldebug_info_start0:
 	.byte	4
 	.long	61
 	.byte	1
-	.byte	3
+	.byte	6
 	.long	230
 	.byte	4
 	.byte	2
@@ -339,7 +339,7 @@ Ldebug_info_start0:
 	.byte	12
 	.long	55
 	.byte	1
-	.byte	5
+	.byte	8
 	.long	230
 	.byte	4
 	.byte	2
@@ -347,7 +347,7 @@ Ldebug_info_start0:
 	.byte	8
 	.long	57
 	.byte	1
-	.byte	4
+	.byte	7
 	.long	230
 	.byte	0
 	.byte	2
@@ -360,7 +360,7 @@ Ldebug_info_start0:
 	.long	36
 	.long	36
 	.byte	1
-	.byte	13
+	.byte	16
 	.long	230
 
 	.byte	3
@@ -369,7 +369,7 @@ Ldebug_info_start0:
 	.byte	4
 	.long	61
 	.byte	1
-	.byte	13
+	.byte	16
 	.long	230
 	.byte	4
 	.byte	2
@@ -377,7 +377,7 @@ Ldebug_info_start0:
 	.byte	12
 	.long	55
 	.byte	1
-	.byte	15
+	.byte	18
 	.long	230
 	.byte	4
 	.byte	2
@@ -385,7 +385,7 @@ Ldebug_info_start0:
 	.byte	8
 	.long	57
 	.byte	1
-	.byte	14
+	.byte	17
 	.long	230
 	.byte	0
 	.byte	2
@@ -398,7 +398,7 @@ Ldebug_info_start0:
 	.long	46
 	.long	46
 	.byte	1
-	.byte	23
+	.byte	26
 	.long	230
 
 	.byte	4
@@ -407,7 +407,7 @@ Ldebug_info_start0:
 	.byte	12
 	.long	63
 	.byte	1
-	.byte	24
+	.byte	27
 	.long	230
 	.byte	0
 	.byte	5

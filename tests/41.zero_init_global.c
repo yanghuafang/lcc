@@ -1,7 +1,8 @@
-int printf(char*, ...);
-
 // Static-storage objects with no initializer must be zero-initialized
 // (C11 6.7.9/10). Reading them before any write must observe 0 / null.
+
+int printf(char*, ...);
+
 int g_scalar;
 int g_arr[4];
 int g_matrix[2][3];

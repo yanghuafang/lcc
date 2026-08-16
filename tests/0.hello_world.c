@@ -1,3 +1,7 @@
+// Smallest program lcc accepts: a libc declaration, main, and a call.
+// There is no preprocessor, so printf must be declared by hand — every test
+// starts this way.
+
 int printf(char*, ...);
 
 int main() {

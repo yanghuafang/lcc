@@ -1,3 +1,5 @@
+// Function definition and call: parameters, return values, and forward use.
+
 int printf(char*, ...);
 
 int sum(int l, int r);

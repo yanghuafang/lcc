@@ -1,3 +1,6 @@
+// Several names declared in one statement (int a, b, c;), including mixed
+// pointer and array declarators, which share one base type.
+
 int printf(char*, ...);
 
 int main() {

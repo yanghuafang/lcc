@@ -1,3 +1,5 @@
+// The same expressions as 26, parenthesized to force a different grouping.
+
 int printf(char*, ...);
 
 int main() {

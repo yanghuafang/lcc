@@ -1,3 +1,5 @@
+// Three shapes of conditional: sequential ifs, if/else, and an else-if chain.
+
 int printf(char*, ...);
 
 // Pattern 1: sequential if statements (including if-else)

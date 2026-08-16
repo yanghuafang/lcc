@@ -1,3 +1,5 @@
+// Pointer basics: address-of, dereference, and assignment through a pointer.
+
 int printf(char*, ...);
 
 char gc = 'a';

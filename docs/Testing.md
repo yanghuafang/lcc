@@ -19,6 +19,10 @@ All commands below assume `cd lcc/scripts`.
 | `check-ir-opt.sh` | IR opt regression: recompile `-O2`, compare IR vs committed `debug/` goldens (M16) |
 | `mir-study.sh` | Study helper: print MIR before/after regalloc via `llc` (M13) |
 | `bench.sh` | Benchmark `benchmarks/*` (compile time, IR count, runtime); `--smoke` for CI — see [Benchmarks.md](Benchmarks.md) |
+| `format.sh` | `clang-format` plus trailing-whitespace strip; `--check` reports without writing |
+| `tidy.sh` | `clang-tidy` against the curated list in `.clang-tidy`; `--fix` applies what it can |
+
+`format.sh` and `tidy.sh` are style gates rather than tests, but CI runs both, so run them before pushing. Both skip `src/generated/` — flex and bison rewrite it on every configure, so formatting it produces thousands of lines of phantom diff.
 
 `tests-compile-link-run.sh` is not run directly; it defines the test list and shared `compile` / `link` / `run` helpers used by the three `*-tests.sh` scripts.
 
@@ -144,6 +148,8 @@ See [Benchmarks.md](Benchmarks.md) for workloads, timed runs, and recording resu
 
 ## CI
 
-GitHub Actions (`.github/workflows/ci.yml`) runs a matrix on `ubuntu-24.04`, `ubuntu-26.04`, and `macos-latest`: install, build, compile, link, run, `check-debug-info.sh`, `check-asm-smoke.sh`, `check-machine-pass-smoke.sh`, and `bench.sh --smoke`. See [Install.md](Install.md) for dependencies.
+GitHub Actions (`.github/workflows/ci.yml`) runs a matrix on `ubuntu-24.04`, `ubuntu-26.04`, and `macos-latest`: install, `format.sh --check`, build, `tidy.sh`, compile, link, run, `check-debug-info.sh`, `check-asm-smoke.sh`, `check-machine-pass-smoke.sh`, and `bench.sh --smoke`. See [Install.md](Install.md) for dependencies.
+
+`format.sh --check` runs before the build so a formatting slip fails in seconds rather than after a full LLVM link. `tidy.sh` runs after it, because clang-tidy needs the compile database the build produces, and only on `ubuntu-24.04` — its findings are host-independent, so a second and third copy would add cost without signal.
 
 `check-ir-opt.sh` (M16) is **not** in CI: its `debug/` goldens are host-specific, so it is a local pre-commit guard run on the host that generated them.

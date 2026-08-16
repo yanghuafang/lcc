@@ -1,3 +1,6 @@
+// union declaration and member access. All members share storage, so writing
+// one and reading another is the point of the test.
+
 int printf(char*, ...);
 
 union IPv4 {

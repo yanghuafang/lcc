@@ -1,3 +1,6 @@
+// enum declaration. Enumerators become integer constants in the enclosing
+// scope, so they are usable as plain ints afterwards.
+
 int printf(char*, ...);
 
 enum WEEKDAY {

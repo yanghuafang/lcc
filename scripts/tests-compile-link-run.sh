@@ -1,5 +1,15 @@
 #!/bin/bash
 
+# tests-compile-link-run.sh — shared definitions for the three test stages.
+#
+# Not run directly; compile-tests.sh, link-tests.sh, and run-tests.sh each
+# source it. Holds the one authoritative list of suite programs plus the
+# per-stage helpers, so adding a test means editing the `tests` array here only.
+#
+# Compile modes (setCompileMode) decide which lcc flags each test gets:
+# --debug adds -g, --release adds -O2. The debug/ artifacts are named after the
+# mode, which is why the goldens do not collide — see docs/Testing.md.
+
 script_dir="$(cd "$(dirname "$0")" && pwd)"
 source "${script_dir}/build-env.sh" || exit 1
 

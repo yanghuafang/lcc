@@ -6,7 +6,7 @@ _get_seed:
 Lfunc_begin0:
 	.cfi_startproc
 	.file	1 "../tests" "38.static_local.c"
-	.loc	1 4 3 prologue_end
+	.loc	1 7 22 prologue_end
 	mov	w0, #7
 	ret
 Ltmp0:
@@ -17,15 +17,15 @@ Lfunc_end0:
 	.p2align	2
 _counter_calls:
 Lfunc_begin1:
-	.loc	1 7 0
+	.loc	1 9 0
 	.cfi_startproc
 	adrp	x8, _counter_calls.count@PAGE
 Ltmp1:
-	.loc	1 9 3 prologue_end
+	.loc	1 11 3 prologue_end
 	ldr	w9, [x8, _counter_calls.count@PAGEOFF]
 	add	w9, w9, #1
 	str	w9, [x8, _counter_calls.count@PAGEOFF]
-	.loc	1 10 3
+	.loc	1 12 3
 	ldr	w0, [x8, _counter_calls.count@PAGEOFF]
 	ret
 Ltmp2:
@@ -36,15 +36,15 @@ Lfunc_end1:
 	.p2align	2
 _counter_with_init:
 Lfunc_begin2:
-	.loc	1 13 0
+	.loc	1 15 0
 	.cfi_startproc
 	adrp	x8, _counter_with_init.count@PAGE
 Ltmp3:
-	.loc	1 15 3 prologue_end
+	.loc	1 17 3 prologue_end
 	ldr	w9, [x8, _counter_with_init.count@PAGEOFF]
 	add	w9, w9, #1
 	str	w9, [x8, _counter_with_init.count@PAGEOFF]
-	.loc	1 16 3
+	.loc	1 18 3
 	ldr	w0, [x8, _counter_with_init.count@PAGEOFF]
 	ret
 Ltmp4:
@@ -55,14 +55,14 @@ Lfunc_end2:
 	.p2align	2
 _bump_runtime_static_decl:
 Lfunc_begin3:
-	.loc	1 19 0
+	.loc	1 21 0
 	.cfi_startproc
 	stp	x29, x30, [sp, #-16]!
 	.cfi_def_cfa_offset 16
 	.cfi_offset w30, -8
 	.cfi_offset w29, -16
 Ltmp5:
-	.loc	1 20 10 prologue_end
+	.loc	1 22 10 prologue_end
 	adrp	x8, l_bump_runtime_static_decl.value.inited@PAGE
 	ldrb	w8, [x8, l_bump_runtime_static_decl.value.inited@PAGEOFF]
 	tbnz	w8, #0, LBB3_2
@@ -80,13 +80,13 @@ LBB3_1:
 LBB3_2:
 	.loc	1 0 10 is_stmt 0
 	adrp	x8, _bump_runtime_static_decl.value@PAGE
-	.loc	1 21 3 is_stmt 1
+	.loc	1 23 3 is_stmt 1
 	ldr	w9, [x8, _bump_runtime_static_decl.value@PAGEOFF]
 	add	w9, w9, #1
 	str	w9, [x8, _bump_runtime_static_decl.value@PAGEOFF]
-	.loc	1 22 3
+	.loc	1 24 3
 	ldr	w0, [x8, _bump_runtime_static_decl.value@PAGEOFF]
-	.loc	1 22 3 epilogue_begin is_stmt 0
+	.loc	1 24 3 epilogue_begin is_stmt 0
 	ldp	x29, x30, [sp], #16
 	ret
 Ltmp6:
@@ -97,7 +97,7 @@ Lfunc_end3:
 	.p2align	2
 _main:
 Lfunc_begin4:
-	.loc	1 25 0 is_stmt 1
+	.loc	1 27 0 is_stmt 1
 	.cfi_startproc
 	sub	sp, sp, #32
 	stp	x29, x30, [sp, #16]
@@ -105,122 +105,122 @@ Lfunc_begin4:
 	.cfi_offset w30, -8
 	.cfi_offset w29, -16
 Ltmp7:
-	.loc	1 26 3 prologue_end
+	.loc	1 28 3 prologue_end
 	str	wzr, [sp, #12]
-	.loc	1 28 3
+	.loc	1 30 3
 	bl	_counter_calls
 	subs	w8, w0, #1
 	b.eq	LBB4_2
 	b	LBB4_1
 LBB4_1:
-	.loc	1 28 29 is_stmt 0
+	.loc	1 30 29 is_stmt 0
 	mov	w8, #1
 	str	w8, [sp, #12]
 	b	LBB4_3
 LBB4_2:
 	b	LBB4_3
 LBB4_3:
-	.loc	1 29 3 is_stmt 1
+	.loc	1 31 3 is_stmt 1
 	bl	_counter_calls
 	subs	w8, w0, #2
 	b.eq	LBB4_5
 	b	LBB4_4
 LBB4_4:
-	.loc	1 29 29 is_stmt 0
+	.loc	1 31 29 is_stmt 0
 	mov	w8, #1
 	str	w8, [sp, #12]
 	b	LBB4_6
 LBB4_5:
 	b	LBB4_6
 LBB4_6:
-	.loc	1 30 3 is_stmt 1
+	.loc	1 32 3 is_stmt 1
 	bl	_counter_calls
 	subs	w8, w0, #3
 	b.eq	LBB4_8
 	b	LBB4_7
 LBB4_7:
-	.loc	1 30 29 is_stmt 0
+	.loc	1 32 29 is_stmt 0
 	mov	w8, #1
 	str	w8, [sp, #12]
 	b	LBB4_9
 LBB4_8:
 	b	LBB4_9
 LBB4_9:
-	.loc	1 32 3 is_stmt 1
+	.loc	1 34 3 is_stmt 1
 	bl	_counter_with_init
 	subs	w8, w0, #11
 	b.eq	LBB4_11
 	b	LBB4_10
 LBB4_10:
-	.loc	1 32 34 is_stmt 0
+	.loc	1 34 34 is_stmt 0
 	mov	w8, #1
 	str	w8, [sp, #12]
 	b	LBB4_12
 LBB4_11:
 	b	LBB4_12
 LBB4_12:
-	.loc	1 33 3 is_stmt 1
+	.loc	1 35 3 is_stmt 1
 	bl	_counter_with_init
 	subs	w8, w0, #12
 	b.eq	LBB4_14
 	b	LBB4_13
 LBB4_13:
-	.loc	1 33 34 is_stmt 0
+	.loc	1 35 34 is_stmt 0
 	mov	w8, #1
 	str	w8, [sp, #12]
 	b	LBB4_15
 LBB4_14:
 	b	LBB4_15
 LBB4_15:
-	.loc	1 35 3 is_stmt 1
+	.loc	1 37 3 is_stmt 1
 	bl	_bump_runtime_static_decl
 	subs	w8, w0, #8
 	b.eq	LBB4_17
 	b	LBB4_16
 LBB4_16:
-	.loc	1 35 40 is_stmt 0
+	.loc	1 37 40 is_stmt 0
 	mov	w8, #1
 	str	w8, [sp, #12]
 	b	LBB4_18
 LBB4_17:
 	b	LBB4_18
 LBB4_18:
-	.loc	1 36 3 is_stmt 1
+	.loc	1 38 3 is_stmt 1
 	bl	_bump_runtime_static_decl
 	subs	w8, w0, #9
 	b.eq	LBB4_20
 	b	LBB4_19
 LBB4_19:
-	.loc	1 36 40 is_stmt 0
+	.loc	1 38 40 is_stmt 0
 	mov	w8, #1
 	str	w8, [sp, #12]
 	b	LBB4_21
 LBB4_20:
 	b	LBB4_21
 LBB4_21:
-	.loc	1 38 3 is_stmt 1
+	.loc	1 40 3 is_stmt 1
 	ldr	w8, [sp, #12]
 	cbnz	w8, LBB4_23
 	b	LBB4_22
 LBB4_22:
 Ltmp8:
-	.loc	1 39 5
+	.loc	1 41 5
 	adrp	x0, l___unnamed_1@PAGE
 	add	x0, x0, l___unnamed_1@PAGEOFF
 	bl	_printf
 	b	LBB4_24
 Ltmp9:
 LBB4_23:
-	.loc	1 41 5
+	.loc	1 43 5
 	adrp	x0, l___unnamed_2@PAGE
 	add	x0, x0, l___unnamed_2@PAGEOFF
 	bl	_printf
 	b	LBB4_24
 Ltmp10:
 LBB4_24:
-	.loc	1 43 3
+	.loc	1 45 3
 	ldr	w0, [sp, #12]
-	.loc	1 43 3 epilogue_begin is_stmt 0
+	.loc	1 45 3 epilogue_begin is_stmt 0
 	ldp	x29, x30, [sp, #16]
 	add	sp, sp, #32
 	ret
@@ -371,7 +371,7 @@ Ldebug_info_start0:
 	.long	31
 	.long	31
 	.byte	1
-	.byte	3
+	.byte	7
 	.long	202
 
 	.byte	2
@@ -384,7 +384,7 @@ Ldebug_info_start0:
 	.long	40
 	.long	40
 	.byte	1
-	.byte	7
+	.byte	9
 	.long	202
 
 	.byte	2
@@ -397,7 +397,7 @@ Ldebug_info_start0:
 	.long	54
 	.long	54
 	.byte	1
-	.byte	13
+	.byte	15
 	.long	202
 
 	.byte	2
@@ -410,7 +410,7 @@ Ldebug_info_start0:
 	.long	72
 	.long	72
 	.byte	1
-	.byte	19
+	.byte	21
 	.long	202
 
 	.byte	3
@@ -423,7 +423,7 @@ Ldebug_info_start0:
 	.long	97
 	.long	97
 	.byte	1
-	.byte	25
+	.byte	27
 	.long	202
 
 	.byte	4
@@ -432,7 +432,7 @@ Ldebug_info_start0:
 	.byte	12
 	.long	106
 	.byte	1
-	.byte	26
+	.byte	28
 	.long	202
 	.byte	0
 	.byte	5

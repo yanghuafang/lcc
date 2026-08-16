@@ -1,3 +1,6 @@
+// 2D array declaration and indexing. The bounds nest inside-out, so a[i] has
+// the row type.
+
 int printf(char*, ...);
 
 int gm[3][4];

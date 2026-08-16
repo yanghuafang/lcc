@@ -1,3 +1,6 @@
+// The arithmetic operators over mixed types, exercising C's usual arithmetic
+// conversions (see src/types/TypeRules.cpp).
+
 int printf(char*, ...);
 
 int main() {

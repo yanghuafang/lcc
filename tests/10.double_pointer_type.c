@@ -1,3 +1,6 @@
+// Pointer-to-pointer: two levels of indirection, and a function returning an
+// address.
+
 int printf(char*, ...);
 
 int g_data = 0;

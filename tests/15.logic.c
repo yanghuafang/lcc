@@ -1,3 +1,6 @@
+// Comparison and logical operators. Note lcc evaluates both operands of &&
+// and || — see the deviation note in src/irgen/ExprToIr.cpp.
+
 int printf(char*, ...);
 
 int main() {

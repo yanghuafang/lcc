@@ -1,0 +1,12 @@
+# flex and bison output — machine-generated, never hand-edited.
+#
+# Formatting these files is not just pointless but actively harmful: CMake
+# regenerates them on every configure, so any reformatting is reverted by the
+# next build and shows up as thousands of lines of phantom local modifications.
+# Keeping the committed bytes exactly as flex/bison emit them means a fresh
+# build leaves the tree clean.
+#
+# SortIncludes is set separately because clang-format still reorders #includes
+# even when DisableFormat is on.
+DisableFormat: true
+SortIncludes: Never

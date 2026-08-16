@@ -1,10 +1,11 @@
+// File-scope static: internal linkage, so the name is not visible outside
+// this translation unit, and the object lives for the whole program.
+
 int printf(char*, ...);
 
 static int counter = 0;
 
-static int helper(int value) {
-  return value + counter;
-}
+static int helper(int value) { return value + counter; }
 
 int bump(void) {
   counter++;

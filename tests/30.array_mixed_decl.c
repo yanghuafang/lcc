@@ -1,3 +1,6 @@
+// Arrays and scalars declared in one statement, where only some declarators
+// carry array bounds.
+
 int printf(char*, ...);
 
 int main() {

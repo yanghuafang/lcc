@@ -1,3 +1,6 @@
+// for loops, including a declaration in the init clause, whose scope is the
+// loop.
+
 int printf(char*, ...);
 
 int countSum(int n) {

@@ -1,3 +1,6 @@
+// The ?: operator. lcc lowers it with select, so both arms are evaluated;
+// see src/irgen/ExprToIr.cpp.
+
 int printf(char*, ...);
 
 int main() {

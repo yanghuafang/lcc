@@ -1,5 +1,16 @@
 #!/bin/bash
 
+# build-env.sh — toolchain paths for every other script here.
+#
+# Sourced, never executed: it exports LLVM_DIR, prepends the LLVM 20 / flex /
+# bison directories to PATH, and picks LCC_LINKER. Detects Homebrew on macOS and
+# apt layout on Ubuntu, and fails with an actionable message when LLVM 20 is
+# missing rather than letting a later script fail obscurely.
+#
+# LCC_LINKER deliberately prefers the *system* clang/gcc over the LLVM 20 clang
+# this script just put on PATH: lcc emits PIC objects that want a stock PIE
+# link, and Homebrew's clang mishandles them on macOS.
+
 # Toolchain paths for building and testing lcc. Sourced by other scripts in this
 # directory; detects macOS (Homebrew) vs Linux (Ubuntu/Debian apt packages).
 

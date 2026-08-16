@@ -1,3 +1,6 @@
+// Every builtin scalar type: char/short/int/long, their unsigned forms,
+// float/double, and bool. Checks each holds a value and prints back.
+
 int printf(char*, ...);
 
 int main() {

@@ -1,8 +1,10 @@
+// Block-scope static: one object per (function, name), initialized once. A
+// non-constant initializer needs a guard variable — see defineBlockStaticVar
+// in src/irgen/DeclToIr.cpp.
+
 int printf(char*, ...);
 
-int get_seed(void) {
-  return 7;
-}
+int get_seed(void) { return 7; }
 
 int counter_calls(void) {
   static int count;

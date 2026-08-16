@@ -1,3 +1,6 @@
+// do/while, whose body always runs at least once — the one loop whose entry
+// branch targets the body rather than the test.
+
 int printf(char*, ...);
 
 int countSum(int n) {

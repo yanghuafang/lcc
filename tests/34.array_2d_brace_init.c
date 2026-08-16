@@ -1,3 +1,5 @@
+// 2D array brace initialization, both nested {{...},{...}} and flat.
+
 int printf(char*, ...);
 
 int ga[2][3] = {{1, 2, 3}, {4, 5, 6}};

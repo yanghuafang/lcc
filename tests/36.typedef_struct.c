@@ -1,3 +1,6 @@
+// typedef over a struct, including the 'typedef struct X X' form where the
+// alias and the tag share a name.
+
 int printf(char*, ...);
 
 typedef unsigned long size_t;

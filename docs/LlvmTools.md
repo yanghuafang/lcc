@@ -11,12 +11,12 @@ Middle/back-end implementation milestones: [MiddleBackendNotes.md](MiddleBackend
 ```text
 .c  →  Lexer / Parser  →  AST genCode  →  raw LLVM IR
      →  [-l-pre-opt]  →  IrOptimizer (-ir-stats?, -fold-add-zero?, -O / -O-passes unless -g)
-     →  [-g finalize]  →  [-l-post-opt]  →  genObjectCode  →  .o  →  [-l in main]  →  [-S optional]
+     →  [-g finalize]  →  [-l-post-opt]  →  emitObject  →  .o  →  [-l in main]  →  [-S optional]
 ```
 
 `lcc` can emit **`.o`** (always via `-o`) and **`.s`** (optional `-S`). External `llc` on dumped `.ll` still works for study. Under `-g` the `-O` / `-O-passes` pipeline is skipped ([Usage.md](Usage.md#optimization-levels--o)), so the two dumps bracket the custom passes and DWARF finalization only.
 
-IR **generation** is lcc code (`AbstractSyntaxTree.cpp`, `Utils.cpp`). LLVM **passes** run inside `IrOptimizer` via `PassBuilder::buildPerModuleDefaultPipeline`.
+IR **generation** is lcc code (`irgen/ExprToIr.cpp`, `irgen/StmtToIr.cpp`, `irgen/Operators.cpp`, `irgen/TypeConversion.cpp`). LLVM **passes** run inside `IrOptimizer` via `PassBuilder::buildPerModuleDefaultPipeline`.
 
 ---
 
@@ -58,7 +58,7 @@ llvm-objdump -d ../../lcc-build/25.quick_sort.o
 Run from `lcc/scripts` after `source ./build-env.sh` (LLVM 20 on `PATH`). Use committed `debug/*.ll` artifacts or fresh dumps from `lcc -l-pre-opt` / `-l-post-opt` / `-l`.
 
 | Tool | Role | Typical input | Example |
-|------|------|---------------|---------|
+| ------ | ------ | --------------- | --------- |
 | **`lcc`** | Full pipeline: C → IR → opt → `.o` / `.s` | `.c` | `../../lcc-build/lcc -O2 -i ../tests/25.quick_sort.c -o /tmp/q.o -S /tmp/q.s` |
 | **`opt`** | IR passes (same pipelines as `IrOptimizer`) | `.ll` | `opt -passes='default<O2>' ../debug/25.quick_sort.release.pre.ll -S -o /tmp/q-opt.ll` |
 | **`llc`** | IR → machine asm (external backend) | `.ll` | `llc -O2 ../debug/25.quick_sort.release.post.ll -o /tmp/out.s` |
@@ -176,7 +176,7 @@ With **`-O2 -fold-add-zero`**, LLVM’s `instcombine` would also fold this; use 
 
 1. Run the commands above; confirm `add …, 0` disappears from post-opt IR.
 2. `./compile-tests.sh && ./link-tests.sh && ./run-tests.sh` (pass runs **off** by default).
-3. Read `src/passes/FoldAddZeroPass.cpp` — compare with `IrInstructionStatsPass` (M6).
+3. Read `src/opt/passes/FoldAddZeroPass.cpp` — compare with `IrInstructionStatsPass` (M6).
 
 ---
 
@@ -185,7 +185,7 @@ With **`-O2 -fold-add-zero`**, LLVM’s `instcombine` would also fold this; use 
 `-O-passes` uses LLVM **`PassBuilder::parsePassPipeline`** — the same pass names and comma syntax as `opt -passes='…'`. It replaces `default<O*>` for the middle-end only. Since `-O-passes` and `-O0`…`-Oz` are mutually exclusive on the command line, the backend always stays at `CodeGenOptLevel::None` whenever you use it.
 
 | Flag | Middle-end | Backend |
-|------|------------|---------|
+| ------ | ------------ | --------- |
 | `-O2` | `default<O2>` pipeline | `CodeGenOptLevel::Default` |
 | `-O-passes O2-peephole` | `mem2reg,instcombine,simplifycfg` only | `CodeGenOptLevel::None` (no `-O` on CLI) |
 | `-O-passes …` + `-O2` | **Error** (mutually exclusive) | — |
@@ -231,7 +231,7 @@ Verify SSA on `@partition`: peephole post-opt IR should show `phi` nodes for loo
 `opt --print-pipeline-passes -passes='default<O2>'` on `25.quick_sort` pre-opt IR yields a long pipeline. These are the **high-signal** passes to recognize first:
 
 | Phase | Representative passes | Effect |
-|-------|-------------------------|--------|
+| ------- | ------------------------- | -------- |
 | Early cleanup | `sroa`, `early-cse`, `simplifycfg` | Break aggregates, local redundancy, simplify CFG |
 | SSA formation | **`mem2reg`** | Promote `alloca` locals to SSA registers (`phi`) |
 | Peephole on SSA | **`instcombine`**, `aggressive-instcombine` | Fold constants, simplify ops, DCE trivial dead code |
@@ -331,7 +331,7 @@ IR `-O` runs in `IrOptimizer` (middle-end). The same CLI level is forwarded to `
 
 [Usage.md § Optimization levels](Usage.md#optimization-levels--o) has the CLI → `CodeGenOptLevel` mapping. In the back-end, `None` means minimal machine peepholes and every local spilled to the stack; `Less` adds light machine opts; `Default` brings standard register allocation, peepholes, and branch folding; `Aggressive` turns on the remaining machine passes.
 
-Implementation: `resolveCodeGenOptLevel()` in `src/TargetBackend.cpp`, wired from `main` via `TargetBackendOptions::optimizationLevel`.
+Implementation: `resolveCodeGenOptLevel()` in `src/backend/TargetBackend.cpp`, wired from `main` via `TargetBackendOptions::optimizationLevel`.
 
 ### Case study: `25.quick_sort.c` asm (`-O0` vs `-O2`)
 
@@ -433,7 +433,7 @@ llc -O2 --filter-print-funcs=swap --print-after-isel \
 ### Virtual vs physical registers
 
 | Stage | What to look for | `@partition` example (ARM64 host) |
-|-------|------------------|-----------------------------------|
+| ------- | ------------------ | ----------------------------------- |
 | After isel | Virtual regs `%N:regbank`; args copied from `$phys` | `%15:gpr64common = COPY $x0` |
 | Before `greedy` | Most operands still `%28:gpr32`, `%15:gpr64common` | `%28:gpr32 = LDRWroW %15:gpr64common, …` |
 | After `greedy` | Live-in mapping updated; some `$phys` for returns | `$w0 = COPY %25.sub_32:gpr64common` (return) |
@@ -547,7 +547,7 @@ int add_arrays(int* c, int* a, int* b, int n) {
 ```
 
 | Step | `lcc -O3` | `opt -O3 -mtriple=…` on `-l-pre-opt` |
-|------|-----------|----------------------------------------|
+| ------ | ----------- | ---------------------------------------- |
 | Post-opt IR | scalar load/store/add | `<4 x i32>` (ARM) or `<8 x i32>` (AVX2) |
 | Asm | scalar `ldr`/`str` loop | `add.4s` / `vpaddd` |
 
@@ -612,7 +612,7 @@ Quick commands from `lcc/scripts`:
 
 ## Machine function pass (M17)
 
-Where M13 only *inspected* MIR with `llc`, M17 adds lcc's own **`MachineFunctionPass`** to the codegen pipeline. `MachineInstrStatsPass` (`src/passes/MachineInstrStatsPass.cpp`) walks fully lowered MIR — after register allocation and prologue/epilogue insertion — and reports machine-instruction counts per function. It is **analysis only** (`runOnMachineFunction` returns `false`, `getAnalysisUsage` sets `setPreservesAll`), so the emitted `.o`/`.s` is byte-for-byte identical whether or not the pass runs.
+Where M13 only *inspected* MIR with `llc`, M17 adds lcc's own **`MachineFunctionPass`** to the codegen pipeline. `MachineInstrStatsPass` (`src/backend/passes/MachineInstrStatsPass.cpp`) walks fully lowered MIR — after register allocation and prologue/epilogue insertion — and reports machine-instruction counts per function. It is **analysis only** (`runOnMachineFunction` returns `false`, `getAnalysisUsage` sets `setPreservesAll`), so the emitted `.o`/`.s` is byte-for-byte identical whether or not the pass runs.
 
 Enable it with `-machine-stats <file>` (`-` = stderr):
 
@@ -633,7 +633,7 @@ Each emitted file runs its own codegen pipeline, so passing both `-o` and `-S` r
 This is the key learning point — a machine pass registers **completely differently** from the New PM IR passes (`IrInstructionStatsPass`, `FoldAddZeroPass`) that live in the same directory:
 
 | | IR pass (M6/M7) | Machine pass (M17) |
-|--|-----------------|--------------------|
+| -- | ----------------- | -------------------- |
 | Base class | `PassInfoMixin<T>` (New PM) | `MachineFunctionPass` (legacy PM) |
 | Unit | `llvm::Function` / `Module` IR | `llvm::MachineFunction` (MIR) |
 | Manager | `PassBuilder` / `ModulePassManager` in `IrOptimizer` | `legacy::PassManager` + `TargetPassConfig` in `TargetBackend` |
@@ -642,7 +642,7 @@ This is the key learning point — a machine pass registers **completely differe
 
 ### How lcc splices it in
 
-`TargetBackend` normally calls `TargetMachine::addPassesToEmitFile`, which builds the whole codegen pipeline internally with no injection point. When `-machine-stats` is set, lcc instead drives that pipeline by hand (`addEmitPassesWithMachineStats` in `TargetBackend.cpp`), mirroring LLVM's own `addPassesToEmitFile`:
+`TargetBackend` normally calls `TargetMachine::addPassesToEmitFile`, which builds the whole codegen pipeline internally with no injection point. When `-machine-stats` is set, lcc instead drives that pipeline by hand (`addEmitPassesWithMachineStats` in `backend/TargetBackend.cpp`), mirroring LLVM's own `addPassesToEmitFile`:
 
 ```text
 createPassConfig(PM)          # target's TargetPassConfig

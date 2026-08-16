@@ -5,7 +5,7 @@
 _main:
 Lfunc_begin0:
 	.file	1 "../tests" "3.union_type.c"
-	.loc	1 8 0
+	.loc	1 11 0
 	.cfi_startproc
 	sub	sp, sp, #48
 	stp	x29, x30, [sp, #32]
@@ -13,54 +13,54 @@ Lfunc_begin0:
 	.cfi_offset w30, -8
 	.cfi_offset w29, -16
 Ltmp0:
-	.loc	1 9 3 prologue_end
+	.loc	1 12 3 prologue_end
 	str	wzr, [sp, #12]
 	mov	w9, #52532
 	movk	w9, #4779, lsl #16
-	.loc	1 14 3
+	.loc	1 17 3
 	str	w9, [sp, #16]
-	.loc	1 15 3
+	.loc	1 18 3
 	ldr	w8, [sp, #16]
 	str	w8, [sp, #24]
-	.loc	1 16 3
+	.loc	1 19 3
 	ldrb	w8, [sp, #16]
 	strb	w8, [sp, #31]
-	.loc	1 17 3
+	.loc	1 20 3
 	ldr	w8, [sp, #24]
 	subs	w8, w8, w9
 	b.eq	LBB0_2
 	b	LBB0_1
 LBB0_1:
-	.loc	1 17 25 is_stmt 0
+	.loc	1 20 25 is_stmt 0
 	mov	w8, #1
 	str	w8, [sp, #12]
 	b	LBB0_3
 LBB0_2:
 	b	LBB0_3
 LBB0_3:
-	.loc	1 18 3 is_stmt 1
+	.loc	1 21 3 is_stmt 1
 	ldrb	w8, [sp, #31]
 	subs	w8, w8, #52
 	b.eq	LBB0_5
 	b	LBB0_4
 LBB0_4:
-	.loc	1 18 21 is_stmt 0
+	.loc	1 21 21 is_stmt 0
 	mov	w8, #1
 	str	w8, [sp, #12]
 	b	LBB0_6
 LBB0_5:
 	b	LBB0_6
 LBB0_6:
-	.loc	1 20 3 is_stmt 1
+	.loc	1 23 3 is_stmt 1
 	mov	w8, #86
 	strb	w8, [sp, #16]
-	.loc	1 21 3
+	.loc	1 24 3
 	ldr	w8, [sp, #16]
 	str	w8, [sp, #24]
-	.loc	1 22 3
+	.loc	1 25 3
 	ldrb	w8, [sp, #16]
 	strb	w8, [sp, #31]
-	.loc	1 23 3
+	.loc	1 26 3
 	ldr	w8, [sp, #24]
 	mov	w9, #52566
 	movk	w9, #4779, lsl #16
@@ -68,20 +68,20 @@ LBB0_6:
 	b.eq	LBB0_8
 	b	LBB0_7
 LBB0_7:
-	.loc	1 23 25 is_stmt 0
+	.loc	1 26 25 is_stmt 0
 	mov	w8, #1
 	str	w8, [sp, #12]
 	b	LBB0_9
 LBB0_8:
 	b	LBB0_9
 LBB0_9:
-	.loc	1 24 3 is_stmt 1
+	.loc	1 27 3 is_stmt 1
 	ldrb	w8, [sp, #31]
 	subs	w8, w8, #86
 	b.eq	LBB0_11
 	b	LBB0_10
 LBB0_10:
-	.loc	1 24 21 is_stmt 0
+	.loc	1 27 21 is_stmt 0
 	mov	w8, #1
 	str	w8, [sp, #12]
 	b	LBB0_12
@@ -90,65 +90,65 @@ LBB0_11:
 LBB0_12:
 	.loc	1 0 21
 	mov	w8, #-1
-	.loc	1 26 3 is_stmt 1
+	.loc	1 29 3 is_stmt 1
 	str	w8, [sp, #16]
-	.loc	1 27 3
+	.loc	1 30 3
 	ldr	w8, [sp, #16]
 	str	w8, [sp, #24]
-	.loc	1 28 3
+	.loc	1 31 3
 	ldr	w8, [sp, #24]
 	adds	w8, w8, #1
 	b.eq	LBB0_14
 	b	LBB0_13
 LBB0_13:
-	.loc	1 28 25 is_stmt 0
+	.loc	1 31 25 is_stmt 0
 	mov	w8, #1
 	str	w8, [sp, #12]
 	b	LBB0_15
 LBB0_14:
 	b	LBB0_15
 LBB0_15:
-	.loc	1 30 3 is_stmt 1
+	.loc	1 33 3 is_stmt 1
 	strb	wzr, [sp, #16]
-	.loc	1 31 3
+	.loc	1 34 3
 	ldr	w8, [sp, #16]
 	str	w8, [sp, #24]
-	.loc	1 32 3
+	.loc	1 35 3
 	ldr	w8, [sp, #24]
 	adds	w8, w8, #256
 	b.eq	LBB0_17
 	b	LBB0_16
 LBB0_16:
-	.loc	1 32 25 is_stmt 0
+	.loc	1 35 25 is_stmt 0
 	mov	w8, #1
 	str	w8, [sp, #12]
 	b	LBB0_18
 LBB0_17:
 	b	LBB0_18
 LBB0_18:
-	.loc	1 34 3 is_stmt 1
+	.loc	1 37 3 is_stmt 1
 	ldr	w8, [sp, #12]
 	cbnz	w8, LBB0_20
 	b	LBB0_19
 LBB0_19:
 Ltmp1:
-	.loc	1 35 5
+	.loc	1 38 5
 	adrp	x0, l___unnamed_1@PAGE
 	add	x0, x0, l___unnamed_1@PAGEOFF
 	bl	_printf
 	b	LBB0_21
 Ltmp2:
 LBB0_20:
-	.loc	1 37 5
+	.loc	1 40 5
 	adrp	x0, l___unnamed_2@PAGE
 	add	x0, x0, l___unnamed_2@PAGEOFF
 	bl	_printf
 	b	LBB0_21
 Ltmp3:
 LBB0_21:
-	.loc	1 39 3
+	.loc	1 42 3
 	ldr	w0, [sp, #12]
-	.loc	1 39 3 epilogue_begin is_stmt 0
+	.loc	1 42 3 epilogue_begin is_stmt 0
 	ldp	x29, x30, [sp, #32]
 	add	sp, sp, #48
 	ret
@@ -290,7 +290,7 @@ Ldebug_info_start0:
 	.long	28
 	.long	28
 	.byte	1
-	.byte	8
+	.byte	11
 	.long	128
 
 	.byte	3
@@ -299,7 +299,7 @@ Ldebug_info_start0:
 	.byte	31
 	.long	37
 	.byte	1
-	.byte	12
+	.byte	15
 	.long	135
 	.byte	3
 	.byte	2
@@ -307,7 +307,7 @@ Ldebug_info_start0:
 	.byte	24
 	.long	56
 	.byte	1
-	.byte	11
+	.byte	14
 	.long	142
 	.byte	3
 	.byte	2
@@ -315,7 +315,7 @@ Ldebug_info_start0:
 	.byte	16
 	.long	72
 	.byte	1
-	.byte	10
+	.byte	13
 	.long	149
 	.byte	3
 	.byte	2
@@ -323,7 +323,7 @@ Ldebug_info_start0:
 	.byte	12
 	.long	84
 	.byte	1
-	.byte	9
+	.byte	12
 	.long	128
 	.byte	0
 	.byte	4

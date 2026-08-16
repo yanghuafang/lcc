@@ -10,10 +10,10 @@ A teaching C compiler built with **flex**, **bison**, and **LLVM 20**.
 ## Why this project
 
 | Trait | What it means |
-|---|---|
+| --- | --- |
 | **Small enough to read** | A bottom-up **LALR** grammar (flex/bison) instead of a hand-written recursive-descent parser keeps the front-end short enough to study and modify. |
 | **A real toolchain** | Emits genuine **LLVM 20** IR and native object files through `IRBuilder` and `TargetMachine` — not a toy backend. |
-| **Cleanly layered** | Front-end, middle-end (`IrOptimizer`), and back-end (`TargetBackend`) are separated, so you can study or change one layer at a time. |
+| **Cleanly layered** | `src/` is an acyclic dependency graph: `ast/` includes nothing outside itself, `irgen/` does not know the middle end or back end exist, and the phase ordering lives in one file (`driver/Pipeline.cpp`). You can study or change one layer at a time. |
 | **Guided curriculum** | A 19-milestone learning plan (**M0–M18**) takes you from a first build to custom LLVM passes and codegen — see [docs/LearningPlan.md](docs/LearningPlan.md). |
 | **Inspectable** | Dump AST graphs (Graphviz), pre/post-optimization IR, assembly, and IR / machine-instruction stats straight from the CLI. |
 
@@ -24,7 +24,7 @@ A teaching C compiler built with **flex**, **bison**, and **LLVM 20**.
   │  [front-end]   flex (Lexer.l) + bison (Parser.y)
   ▼
 AST  (namespace AST, rooted at g_root)
-  │  [front-end]   CodeGenerator::genIrCode()
+  │  [front-end]   pipeline::genIr()
   ▼
 LLVM IR  (llvm::Module, built with IRBuilder)
   │  [middle-end]  IrOptimizer::run()  — LLVM New PM: -O0..-Oz, -O-passes, custom passes
@@ -119,19 +119,45 @@ Details: [docs/Language.md](docs/Language.md)
 
 ```
 lcc/
-├── src/               # Compiler sources
-│   ├── Lexer.l                  # flex lexer
-│   ├── Parser.y                 # bison LALR grammar
-│   ├── AbstractSyntaxTree.*     # AST nodes + genCode() IR emission
-│   ├── CodeGenerator.*          # LLVM context/module, scoped symbol tables
-│   ├── IrOptimizer.*            # middle-end (LLVM New Pass Manager)
-│   ├── TargetBackend.*          # back-end (.o / .s emission)
-│   ├── DebugInfoBuilder.*       # DWARF debug info (-g)
-│   ├── Visualizer.*             # Graphviz AST graphs (-v)
-│   └── passes/                  # Custom LLVM passes (IR stats, fold-add-zero, machine stats)
+├── src/               # Compiler sources; src/ is the only include root, so
+│   │                  # every include names its directory ("ast/...", "irgen/...")
+│   ├── driver/                  # the only place the phases meet
+│   │   ├── main.cpp             # CLI parsing, flag validation
+│   │   └── Pipeline.*           # walk -> optimize -> emit .o / .s
+│   ├── frontend/                # the .l / .y that define the language
+│   │   ├── Lexer.l              # flex lexer
+│   │   └── Parser.y             # bison LALR grammar
+│   ├── ast/                     # The tree, no LLVM knowledge
+│   │   ├── Nodes.hpp            # Node hierarchy (Decl / Stmt / Expr / VarType)
+│   │   ├── Ownership.cpp        # destructors: who deletes what
+│   │   └── BuiltinTypeId.hpp    # C type enum, carries the signedness LLVM drops
+│   ├── types/                   # What a type is; emits no instructions
+│   │   ├── TypeEnv.hpp          # type environment interface (AST VarType -> llvm::Type)
+│   │   ├── TypeRules.*          # C type rules: promotion, conversion, signedness
+│   │   └── VarTypeQuery.*       # AST VarType -> BuiltinTypeId / llvm::Type queries
+│   ├── irgen/                   # AST -> LLVM IR
+│   │   ├── ExprToIr.cpp         # walker: genCode() for every Expr node
+│   │   ├── StmtToIr.cpp         # walker: statements, basic blocks, break/continue
+│   │   ├── DeclToIr.cpp         # walker: declarations, initializers, block statics
+│   │   ├── TypeToIr.cpp         # walker: AST VarType -> llvm::Type
+│   │   ├── Operators.*          # one function per C operator (arithmetic, bitwise, compare)
+│   │   ├── TypeConversion.*     # emits C conversions (pairs with types/TypeRules)
+│   │   ├── IrIdioms.*           # alloca, block terminator, load/store
+│   │   ├── CodeGenerator.*      # LLVM context/module, scoped symbol tables
+│   │   └── DebugInfoBuilder.*   # DWARF debug info (-g)
+│   ├── opt/                     # middle-end (LLVM New Pass Manager)
+│   │   ├── IrOptimizer.*        # pass pipeline
+│   │   └── passes/              # lcc's own IR passes (IR stats, fold-add-zero)
+│   ├── backend/                 # back-end (.o / .s emission)
+│   │   ├── TargetBackend.*      # TargetMachine setup, legacy-PM codegen
+│   │   └── passes/              # lcc's own MIR passes (machine stats)
+│   ├── dot/                     # AST -> Graphviz DOT, independent of irgen/
+│   │   ├── AstToDot.cpp         # genGraph() for every node (-v)
+│   │   └── DotFileWriter.*      # writes the assembled DOT graph to disk
+│   └── generated/               # flex/bison output — never edit (Lexer.cpp, Parser.*)
 ├── tests/             # 41 suite programs (+1 study fixture); each prints "<name> PASS" or "FAIL"
 ├── benchmarks/        # Larger workloads for bench.sh (M15)
-├── scripts/           # build-lcc.sh, compile/link/run-tests.sh, smoke checks, bench
+├── scripts/           # build-lcc.sh, compile/link/run-tests.sh, format.sh, tidy.sh, bench
 ├── docs/              # Guides (start with LearningPlan.md)
 ├── debug/             # Committed AST / IR / asm goldens for the test suite
 ├── CMakeLists.txt     # flex/bison codegen + LLVM configuration
@@ -141,7 +167,7 @@ lcc/
 ## Documentation
 
 | Guide | Topics |
-|-------|--------|
+| ------- | -------- |
 | [docs/LearningPlan.md](docs/LearningPlan.md) | **Start here** — full learning path (M0–M18) |
 | [docs/Architecture.md](docs/Architecture.md) | `src/` file map and where to make a given change |
 | [docs/LlvmTools.md](docs/LlvmTools.md) | LLVM tool reference and per-milestone case studies (M7–M9, M12–M15, M17) |
@@ -159,7 +185,17 @@ lcc/
 
 ## Requirements
 
-LLVM **20**, flex, bison, CMake **3.22+**, **C++17**, and a system linker (`clang` or `gcc`). flex and bison are required at **configure** time — CMake regenerates the lexer and parser on every run. CMake uses a system **argparse** if present and downloads it otherwise. **graphviz** supplies `dot`, which the test scripts call to render AST images. Supported platforms: **macOS** (Homebrew) and **Ubuntu 24.04 / 26.04 LTS**. See [docs/Install.md](docs/Install.md).
+**macOS** (Homebrew) or **Ubuntu 24.04 / 26.04 LTS**, with:
+
+| Needed | Note |
+| --- | --- |
+| LLVM **20**, CMake **3.22+**, **C++17** | |
+| flex, bison | required at **configure** time — CMake regenerates the lexer and parser on every run |
+| a system linker (`clang` or `gcc`) | links lcc's PIC objects |
+| argparse | used if installed; CMake downloads it otherwise |
+| graphviz | supplies `dot`, which the test scripts call to render AST images |
+
+Setup commands: [docs/Install.md](docs/Install.md).
 
 ## Project status
 

@@ -1,3 +1,5 @@
+// break in all three loop forms, exiting to the block after the loop.
+
 int printf(char*, ...);
 
 int countNumber(int maxRange, int smallRange) {

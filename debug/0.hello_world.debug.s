@@ -5,7 +5,7 @@
 _main:
 Lfunc_begin0:
 	.file	1 "../tests" "0.hello_world.c"
-	.loc	1 3 0
+	.loc	1 7 0
 	.cfi_startproc
 	sub	sp, sp, #32
 	stp	x29, x30, [sp, #16]
@@ -13,43 +13,43 @@ Lfunc_begin0:
 	.cfi_offset w30, -8
 	.cfi_offset w29, -16
 Ltmp0:
-	.loc	1 4 3 prologue_end
+	.loc	1 8 3 prologue_end
 	mov	w8, wzr
 	str	wzr, [sp, #12]
-	.loc	1 5 3
+	.loc	1 9 3
 	tbz	w8, #0, LBB0_2
 	b	LBB0_1
 LBB0_1:
-	.loc	1 5 15 is_stmt 0
+	.loc	1 9 15 is_stmt 0
 	mov	w8, #1
 	str	w8, [sp, #12]
 	b	LBB0_3
 LBB0_2:
 	b	LBB0_3
 LBB0_3:
-	.loc	1 6 3 is_stmt 1
+	.loc	1 10 3 is_stmt 1
 	ldr	w8, [sp, #12]
 	cbnz	w8, LBB0_5
 	b	LBB0_4
 LBB0_4:
 Ltmp1:
-	.loc	1 7 5
+	.loc	1 11 5
 	adrp	x0, l___unnamed_1@PAGE
 	add	x0, x0, l___unnamed_1@PAGEOFF
 	bl	_printf
 	b	LBB0_6
 Ltmp2:
 LBB0_5:
-	.loc	1 9 5
+	.loc	1 13 5
 	adrp	x0, l___unnamed_2@PAGE
 	add	x0, x0, l___unnamed_2@PAGEOFF
 	bl	_printf
 	b	LBB0_6
 Ltmp3:
 LBB0_6:
-	.loc	1 11 3
+	.loc	1 15 3
 	ldr	w0, [sp, #12]
-	.loc	1 11 3 epilogue_begin is_stmt 0
+	.loc	1 15 3 epilogue_begin is_stmt 0
 	ldp	x29, x30, [sp, #16]
 	add	sp, sp, #32
 	ret
@@ -167,7 +167,7 @@ Ldebug_info_start0:
 	.long	29
 	.long	29
 	.byte	1
-	.byte	3
+	.byte	7
 	.long	86
 
 	.byte	3
@@ -176,7 +176,7 @@ Ldebug_info_start0:
 	.byte	12
 	.long	38
 	.byte	1
-	.byte	4
+	.byte	8
 	.long	86
 	.byte	0
 	.byte	4

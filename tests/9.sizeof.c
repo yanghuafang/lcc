@@ -1,3 +1,6 @@
+// sizeof on both types and expressions. The operand is not evaluated, and an
+// array's size is its full extent, not the decayed pointer's.
+
 int printf(char*, ...);
 
 struct Student {
