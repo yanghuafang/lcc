@@ -156,10 +156,11 @@ lcc/
 │   │   └── DotFileWriter.*      # writes the assembled DOT graph to disk
 │   └── generated/               # flex/bison output — never edit (Lexer.cpp, Parser.*)
 ├── tests/             # 41 suite programs (+1 study fixture); each prints "<name> PASS" or "FAIL"
+│   └── graphs/        # Assertion-free fixtures, one per language area, for AST graphs only
 ├── benchmarks/        # Larger workloads for bench.sh (M15)
 ├── scripts/           # build-lcc.sh, compile/link/run-tests.sh, format.sh, tidy.sh, bench
 ├── docs/              # Guides (start with LearningPlan.md)
-├── debug/             # Committed AST / IR / asm goldens for the test suite
+├── debug/             # Committed IR / asm goldens for the suite; AST graphs in debug/graphs/
 ├── CMakeLists.txt     # flex/bison codegen + LLVM configuration
 └── LICENSE            # MIT
 ```

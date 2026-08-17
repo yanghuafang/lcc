@@ -83,7 +83,26 @@ Examples:
 ./compile-tests.sh --release 25.quick_sort.c
 ```
 
-`compile-tests.sh` always passes `-v`, `-l-pre-opt`, `-l-post-opt`, `-l`, and `-S` so AST (`.dot`, `.png`), middle-end IR, final IR, and assembly land in `lcc/debug/`. The repo keeps reference snapshots for both modes (41 tests × 2 modes × 4 IR/asm types for pre/post/final/asm).
+`compile-tests.sh` always passes `-l-pre-opt`, `-l-post-opt`, `-l`, and `-S`, so middle-end IR, final IR, and assembly land in `lcc/debug/`. The repo keeps reference snapshots for both modes (41 tests × 2 modes × 4 IR/asm types for pre/post/final/asm).
+
+### AST graphs
+
+`-v` is **not** passed for the suite. A suite program is mostly assertions, and that scaffolding dominates its AST: `15.logic.c` came to 820 nodes, roughly 700 of them `if (x != y) err = 1;`, against about 100 for the nine logic operators the file exists to demonstrate. The graphs were 29 MB of PNG in which the construct was the hard part to find.
+
+Graphs come from `tests/graphs/` instead — six assertion-free fixtures, one per language area, rendered into `debug/graphs/`:
+
+| Fixture | Covers |
+| --------- | -------- |
+| `types.c` | builtin scalars, pointer, array, struct, union, enum, typedef |
+| `expressions.c` | every operator, plus cast, `sizeof`, ternary, comma |
+| `statements.c` | if/else, switch, all three loops, break/continue/return |
+| `functions.c` | prototype, definition, `void` params, variadic, static, call |
+| `arrays.c` | 1D/2D, explicit and inferred bounds, brace and string init |
+| `structs.c` | `.` and `->`, struct arrays, unions |
+
+They are compiled but never linked or run, since they assert nothing — behaviour is the numbered suite's job. Add a fixture by dropping a `.c` in `tests/graphs/` and adding its name to `graph_fixtures` in `tests-compile-link-run.sh`.
+
+`0.hello_world.c` is the one suite program that still gets a graph: at 54 nodes it is already fixture-sized, and `README.md` embeds `debug/0.hello_world.png`.
 
 ### Debug-info smoke test
 

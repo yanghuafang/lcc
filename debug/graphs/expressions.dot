@@ -1,0 +1,543 @@
+digraph {
+Program [label = Program]
+Program -> FuncDecl_0
+FuncDecl_0 [label = FuncDecl]
+FuncDecl_0 -> BuiltinType_1
+BuiltinType_1 [label = BuiltinType]
+"int_1" [label = "int"]
+BuiltinType_1 -> "int_1"
+main_0[ label = main]
+FuncDecl_0 -> main_0
+FuncDecl_0 -> ParamList_2
+ParamList_2 [label = ParamList]
+FuncDecl_0 -> FuncBody_3
+FuncBody_3 [label = FuncBody]
+FuncBody_3 -> VarDecl_4
+VarDecl_4 [label = VarDecl]
+VarDecl_4 -> BuiltinType_5
+BuiltinType_5 [label = BuiltinType]
+"int_5" [label = "int"]
+BuiltinType_5 -> "int_5"
+VarDecl_4 -> VarInit_6
+VarInit_6 [label = VarInit]
+a_6 [label = a]
+VarInit_6 -> a_6
+VarInit_6 -> Constant_7
+Constant_7 [label = Constant]
+int_7 [label = "6"]
+Constant_7 -> int_7
+FuncBody_3 -> VarDecl_8
+VarDecl_8 [label = VarDecl]
+VarDecl_8 -> BuiltinType_9
+BuiltinType_9 [label = BuiltinType]
+"int_9" [label = "int"]
+BuiltinType_9 -> "int_9"
+VarDecl_8 -> VarInit_10
+VarInit_10 [label = VarInit]
+b_10 [label = b]
+VarInit_10 -> b_10
+VarInit_10 -> Constant_11
+Constant_11 [label = Constant]
+int_11 [label = "3"]
+Constant_11 -> int_11
+FuncBody_3 -> VarDecl_12
+VarDecl_12 [label = VarDecl]
+VarDecl_12 -> BuiltinType_13
+BuiltinType_13 [label = BuiltinType]
+"int_13" [label = "int"]
+BuiltinType_13 -> "int_13"
+VarDecl_12 -> VarInit_14
+VarInit_14 [label = VarInit]
+r_14 [label = r]
+VarInit_14 -> r_14
+FuncBody_3 -> VarDecl_15
+VarDecl_15 [label = VarDecl]
+VarDecl_15 -> BuiltinType_16
+BuiltinType_16 [label = BuiltinType]
+"double_16" [label = "double"]
+BuiltinType_16 -> "double_16"
+VarDecl_15 -> VarInit_17
+VarInit_17 [label = VarInit]
+d_17 [label = d]
+VarInit_17 -> d_17
+VarInit_17 -> Constant_18
+Constant_18 [label = Constant]
+double_18 [label = "1.500000"]
+Constant_18 -> double_18
+FuncBody_3 -> Assign_19
+Assign_19 [label = Assign]
+Assign_19 -> Variable_20
+Variable_20 [label = Variable]
+r_20 [label = r]
+Variable_20 -> r_20
+Assign_19 -> Add_21
+Add_21 [label = Add]
+Add_21 -> Variable_22
+Variable_22 [label = Variable]
+a_22 [label = a]
+Variable_22 -> a_22
+Add_21 -> Variable_23
+Variable_23 [label = Variable]
+b_23 [label = b]
+Variable_23 -> b_23
+FuncBody_3 -> Assign_24
+Assign_24 [label = Assign]
+Assign_24 -> Variable_25
+Variable_25 [label = Variable]
+r_25 [label = r]
+Variable_25 -> r_25
+Assign_24 -> Sub_26
+Sub_26 [label = Sub]
+Sub_26 -> Variable_27
+Variable_27 [label = Variable]
+a_27 [label = a]
+Variable_27 -> a_27
+Sub_26 -> Variable_28
+Variable_28 [label = Variable]
+b_28 [label = b]
+Variable_28 -> b_28
+FuncBody_3 -> Assign_29
+Assign_29 [label = Assign]
+Assign_29 -> Variable_30
+Variable_30 [label = Variable]
+r_30 [label = r]
+Variable_30 -> r_30
+Assign_29 -> Mul_31
+Mul_31 [label = Mul]
+Mul_31 -> Variable_32
+Variable_32 [label = Variable]
+a_32 [label = a]
+Variable_32 -> a_32
+Mul_31 -> Variable_33
+Variable_33 [label = Variable]
+b_33 [label = b]
+Variable_33 -> b_33
+FuncBody_3 -> Assign_34
+Assign_34 [label = Assign]
+Assign_34 -> Variable_35
+Variable_35 [label = Variable]
+r_35 [label = r]
+Variable_35 -> r_35
+Assign_34 -> Div_36
+Div_36 [label = Div]
+Div_36 -> Variable_37
+Variable_37 [label = Variable]
+a_37 [label = a]
+Variable_37 -> a_37
+Div_36 -> Variable_38
+Variable_38 [label = Variable]
+b_38 [label = b]
+Variable_38 -> b_38
+FuncBody_3 -> Assign_39
+Assign_39 [label = Assign]
+Assign_39 -> Variable_40
+Variable_40 [label = Variable]
+r_40 [label = r]
+Variable_40 -> r_40
+Assign_39 -> Mod_41
+Mod_41 [label = Mod]
+Mod_41 -> Variable_42
+Variable_42 [label = Variable]
+a_42 [label = a]
+Variable_42 -> a_42
+Mod_41 -> Variable_43
+Variable_43 [label = Variable]
+b_43 [label = b]
+Variable_43 -> b_43
+FuncBody_3 -> AddAssign_44
+AddAssign_44 [label = AddAssign]
+AddAssign_44 -> Variable_45
+Variable_45 [label = Variable]
+r_45 [label = r]
+Variable_45 -> r_45
+AddAssign_44 -> Variable_46
+Variable_46 [label = Variable]
+b_46 [label = b]
+Variable_46 -> b_46
+FuncBody_3 -> SubAssign_47
+SubAssign_47 [label = SubAssign]
+SubAssign_47 -> Variable_48
+Variable_48 [label = Variable]
+r_48 [label = r]
+Variable_48 -> r_48
+SubAssign_47 -> Variable_49
+Variable_49 [label = Variable]
+b_49 [label = b]
+Variable_49 -> b_49
+FuncBody_3 -> MulAssign_50
+MulAssign_50 [label = MulAssign]
+MulAssign_50 -> Variable_51
+Variable_51 [label = Variable]
+r_51 [label = r]
+Variable_51 -> r_51
+MulAssign_50 -> Variable_52
+Variable_52 [label = Variable]
+b_52 [label = b]
+Variable_52 -> b_52
+FuncBody_3 -> DivAssign_53
+DivAssign_53 [label = DivAssign]
+DivAssign_53 -> Variable_54
+Variable_54 [label = Variable]
+r_54 [label = r]
+Variable_54 -> r_54
+DivAssign_53 -> Variable_55
+Variable_55 [label = Variable]
+b_55 [label = b]
+Variable_55 -> b_55
+FuncBody_3 -> ModAssign_56
+ModAssign_56 [label = ModAssign]
+ModAssign_56 -> Variable_57
+Variable_57 [label = Variable]
+r_57 [label = r]
+Variable_57 -> r_57
+ModAssign_56 -> Variable_58
+Variable_58 [label = Variable]
+b_58 [label = b]
+Variable_58 -> b_58
+FuncBody_3 -> Assign_59
+Assign_59 [label = Assign]
+Assign_59 -> Variable_60
+Variable_60 [label = Variable]
+r_60 [label = r]
+Variable_60 -> r_60
+Assign_59 -> PostfixInc_61
+PostfixInc_61 [label = PostfixInc]
+PostfixInc_61 -> Variable_62
+Variable_62 [label = Variable]
+a_62 [label = a]
+Variable_62 -> a_62
+FuncBody_3 -> Assign_63
+Assign_63 [label = Assign]
+Assign_63 -> Variable_64
+Variable_64 [label = Variable]
+r_64 [label = r]
+Variable_64 -> r_64
+Assign_63 -> PostfixDec_65
+PostfixDec_65 [label = PostfixDec]
+PostfixDec_65 -> Variable_66
+Variable_66 [label = Variable]
+a_66 [label = a]
+Variable_66 -> a_66
+FuncBody_3 -> Assign_67
+Assign_67 [label = Assign]
+Assign_67 -> Variable_68
+Variable_68 [label = Variable]
+r_68 [label = r]
+Variable_68 -> r_68
+Assign_67 -> PrefixInc_69
+PrefixInc_69 [label = PrefixInc]
+PrefixInc_69 -> Variable_70
+Variable_70 [label = Variable]
+a_70 [label = a]
+Variable_70 -> a_70
+FuncBody_3 -> Assign_71
+Assign_71 [label = Assign]
+Assign_71 -> Variable_72
+Variable_72 [label = Variable]
+r_72 [label = r]
+Variable_72 -> r_72
+Assign_71 -> PrefixDec_73
+PrefixDec_73 [label = PrefixDec]
+PrefixDec_73 -> Variable_74
+Variable_74 [label = Variable]
+a_74 [label = a]
+Variable_74 -> a_74
+FuncBody_3 -> Assign_75
+Assign_75 [label = Assign]
+Assign_75 -> Variable_76
+Variable_76 [label = Variable]
+r_76 [label = r]
+Variable_76 -> r_76
+Assign_75 -> BitwiseAnd_77
+BitwiseAnd_77 [label = BitwiseAnd]
+BitwiseAnd_77 -> Variable_78
+Variable_78 [label = Variable]
+a_78 [label = a]
+Variable_78 -> a_78
+BitwiseAnd_77 -> Variable_79
+Variable_79 [label = Variable]
+b_79 [label = b]
+Variable_79 -> b_79
+FuncBody_3 -> Assign_80
+Assign_80 [label = Assign]
+Assign_80 -> Variable_81
+Variable_81 [label = Variable]
+r_81 [label = r]
+Variable_81 -> r_81
+Assign_80 -> BitwiseOr_82
+BitwiseOr_82 [label = BitwiseOr]
+BitwiseOr_82 -> Variable_83
+Variable_83 [label = Variable]
+a_83 [label = a]
+Variable_83 -> a_83
+BitwiseOr_82 -> Variable_84
+Variable_84 [label = Variable]
+b_84 [label = b]
+Variable_84 -> b_84
+FuncBody_3 -> Assign_85
+Assign_85 [label = Assign]
+Assign_85 -> Variable_86
+Variable_86 [label = Variable]
+r_86 [label = r]
+Variable_86 -> r_86
+Assign_85 -> BitwiseXor_87
+BitwiseXor_87 [label = BitwiseXor]
+BitwiseXor_87 -> Variable_88
+Variable_88 [label = Variable]
+a_88 [label = a]
+Variable_88 -> a_88
+BitwiseXor_87 -> Variable_89
+Variable_89 [label = Variable]
+b_89 [label = b]
+Variable_89 -> b_89
+FuncBody_3 -> Assign_90
+Assign_90 [label = Assign]
+Assign_90 -> Variable_91
+Variable_91 [label = Variable]
+r_91 [label = r]
+Variable_91 -> r_91
+Assign_90 -> BitwiseNot_92
+BitwiseNot_92 [label = BitwiseNot]
+BitwiseNot_92 -> Variable_93
+Variable_93 [label = Variable]
+a_93 [label = a]
+Variable_93 -> a_93
+FuncBody_3 -> Assign_94
+Assign_94 [label = Assign]
+Assign_94 -> Variable_95
+Variable_95 [label = Variable]
+r_95 [label = r]
+Variable_95 -> r_95
+Assign_94 -> LeftShift_96
+LeftShift_96 [label = LeftShift]
+LeftShift_96 -> Variable_97
+Variable_97 [label = Variable]
+a_97 [label = a]
+Variable_97 -> a_97
+LeftShift_96 -> Constant_98
+Constant_98 [label = Constant]
+int_98 [label = "1"]
+Constant_98 -> int_98
+FuncBody_3 -> Assign_99
+Assign_99 [label = Assign]
+Assign_99 -> Variable_100
+Variable_100 [label = Variable]
+r_100 [label = r]
+Variable_100 -> r_100
+Assign_99 -> RightShift_101
+RightShift_101 [label = RightShift]
+RightShift_101 -> Variable_102
+Variable_102 [label = Variable]
+a_102 [label = a]
+Variable_102 -> a_102
+RightShift_101 -> Constant_103
+Constant_103 [label = Constant]
+int_103 [label = "1"]
+Constant_103 -> int_103
+FuncBody_3 -> Assign_104
+Assign_104 [label = Assign]
+Assign_104 -> Variable_105
+Variable_105 [label = Variable]
+r_105 [label = r]
+Variable_105 -> r_105
+Assign_104 -> LogicAnd_106
+LogicAnd_106 [label = LogicAnd]
+LogicAnd_106 -> Variable_107
+Variable_107 [label = Variable]
+a_107 [label = a]
+Variable_107 -> a_107
+LogicAnd_106 -> Variable_108
+Variable_108 [label = Variable]
+b_108 [label = b]
+Variable_108 -> b_108
+FuncBody_3 -> Assign_109
+Assign_109 [label = Assign]
+Assign_109 -> Variable_110
+Variable_110 [label = Variable]
+r_110 [label = r]
+Variable_110 -> r_110
+Assign_109 -> LogicOr_111
+LogicOr_111 [label = LogicOr]
+LogicOr_111 -> Variable_112
+Variable_112 [label = Variable]
+a_112 [label = a]
+Variable_112 -> a_112
+LogicOr_111 -> Variable_113
+Variable_113 [label = Variable]
+b_113 [label = b]
+Variable_113 -> b_113
+FuncBody_3 -> Assign_114
+Assign_114 [label = Assign]
+Assign_114 -> Variable_115
+Variable_115 [label = Variable]
+r_115 [label = r]
+Variable_115 -> r_115
+Assign_114 -> LogicNot_116
+LogicNot_116 [label = LogicNot]
+LogicNot_116 -> Variable_117
+Variable_117 [label = Variable]
+a_117 [label = a]
+Variable_117 -> a_117
+FuncBody_3 -> Assign_118
+Assign_118 [label = Assign]
+Assign_118 -> Variable_119
+Variable_119 [label = Variable]
+r_119 [label = r]
+Variable_119 -> r_119
+Assign_118 -> LogicEq_120
+LogicEq_120 [label = LogicEq]
+LogicEq_120 -> Variable_121
+Variable_121 [label = Variable]
+a_121 [label = a]
+Variable_121 -> a_121
+LogicEq_120 -> Variable_122
+Variable_122 [label = Variable]
+b_122 [label = b]
+Variable_122 -> b_122
+FuncBody_3 -> Assign_123
+Assign_123 [label = Assign]
+Assign_123 -> Variable_124
+Variable_124 [label = Variable]
+r_124 [label = r]
+Variable_124 -> r_124
+Assign_123 -> LogicNotEq_125
+LogicNotEq_125 [label = LogicNotEq]
+LogicNotEq_125 -> Variable_126
+Variable_126 [label = Variable]
+a_126 [label = a]
+Variable_126 -> a_126
+LogicNotEq_125 -> Variable_127
+Variable_127 [label = Variable]
+b_127 [label = b]
+Variable_127 -> b_127
+FuncBody_3 -> Assign_128
+Assign_128 [label = Assign]
+Assign_128 -> Variable_129
+Variable_129 [label = Variable]
+r_129 [label = r]
+Variable_129 -> r_129
+Assign_128 -> LogicLessThan_130
+LogicLessThan_130 [label = LogicLessThan]
+LogicLessThan_130 -> Variable_131
+Variable_131 [label = Variable]
+a_131 [label = a]
+Variable_131 -> a_131
+LogicLessThan_130 -> Variable_132
+Variable_132 [label = Variable]
+b_132 [label = b]
+Variable_132 -> b_132
+FuncBody_3 -> Assign_133
+Assign_133 [label = Assign]
+Assign_133 -> Variable_134
+Variable_134 [label = Variable]
+r_134 [label = r]
+Variable_134 -> r_134
+Assign_133 -> LogicGreaterThan_135
+LogicGreaterThan_135 [label = LogicGreaterThan]
+LogicGreaterThan_135 -> Variable_136
+Variable_136 [label = Variable]
+a_136 [label = a]
+Variable_136 -> a_136
+LogicGreaterThan_135 -> Variable_137
+Variable_137 [label = Variable]
+b_137 [label = b]
+Variable_137 -> b_137
+FuncBody_3 -> Assign_138
+Assign_138 [label = Assign]
+Assign_138 -> Variable_139
+Variable_139 [label = Variable]
+r_139 [label = r]
+Variable_139 -> r_139
+Assign_138 -> TernaryCondition_140
+TernaryCondition_140 [label = TernaryCondition]
+TernaryCondition_140 -> LogicGreaterThan_141
+LogicGreaterThan_141 [label = LogicGreaterThan]
+LogicGreaterThan_141 -> Variable_142
+Variable_142 [label = Variable]
+a_142 [label = a]
+Variable_142 -> a_142
+LogicGreaterThan_141 -> Variable_143
+Variable_143 [label = Variable]
+b_143 [label = b]
+Variable_143 -> b_143
+TernaryCondition_140 -> Variable_144
+Variable_144 [label = Variable]
+a_144 [label = a]
+Variable_144 -> a_144
+TernaryCondition_140 -> Variable_145
+Variable_145 [label = Variable]
+b_145 [label = b]
+Variable_145 -> b_145
+FuncBody_3 -> Assign_146
+Assign_146 [label = Assign]
+Assign_146 -> Variable_147
+Variable_147 [label = Variable]
+r_147 [label = r]
+Variable_147 -> r_147
+Assign_146 -> TypeCast_148
+TypeCast_148 [label = TypeCast]
+TypeCast_148 -> BuiltinType_149
+BuiltinType_149 [label = BuiltinType]
+"int_149" [label = "int"]
+BuiltinType_149 -> "int_149"
+TypeCast_148 -> Variable_150
+Variable_150 [label = Variable]
+d_150 [label = d]
+Variable_150 -> d_150
+FuncBody_3 -> Assign_151
+Assign_151 [label = Assign]
+Assign_151 -> Variable_152
+Variable_152 [label = Variable]
+r_152 [label = r]
+Variable_152 -> r_152
+Assign_151 -> SizeOf_153
+SizeOf_153 [label = SizeOf]
+SizeOf_153 -> BuiltinType_154
+BuiltinType_154 [label = BuiltinType]
+"int_154" [label = "int"]
+BuiltinType_154 -> "int_154"
+FuncBody_3 -> Assign_155
+Assign_155 [label = Assign]
+Assign_155 -> Variable_156
+Variable_156 [label = Variable]
+r_156 [label = r]
+Variable_156 -> r_156
+Assign_155 -> Mul_157
+Mul_157 [label = Mul]
+Mul_157 -> Add_158
+Add_158 [label = Add]
+Add_158 -> Variable_159
+Variable_159 [label = Variable]
+a_159 [label = a]
+Variable_159 -> a_159
+Add_158 -> Variable_160
+Variable_160 [label = Variable]
+b_160 [label = b]
+Variable_160 -> b_160
+Mul_157 -> Constant_161
+Constant_161 [label = Constant]
+int_161 [label = "2"]
+Constant_161 -> int_161
+FuncBody_3 -> CommaExpr_162
+CommaExpr_162 [label = CommaExpr]
+CommaExpr_162 -> Assign_163
+Assign_163 [label = Assign]
+Assign_163 -> Variable_164
+Variable_164 [label = Variable]
+r_164 [label = r]
+Variable_164 -> r_164
+Assign_163 -> Variable_165
+Variable_165 [label = Variable]
+a_165 [label = a]
+Variable_165 -> a_165
+CommaExpr_162 -> Variable_166
+Variable_166 [label = Variable]
+b_166 [label = b]
+Variable_166 -> b_166
+FuncBody_3 -> ReturnStmt_167
+ReturnStmt_167 [label = ReturnStmt]
+ReturnStmt_167 -> Variable_168
+Variable_168 [label = Variable]
+r_168 [label = r]
+Variable_168 -> r_168
+}

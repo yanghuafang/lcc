@@ -53,6 +53,10 @@ mkdir -p ../../lcc-build/debug
 
 if [ ${#remaining[@]} -eq 0 ]; then
   compileAll
+  # Only on a whole-suite run: the AST graph fixtures in tests/graphs/ are
+  # mode-independent, so compiling one named test leaves them alone rather than
+  # rewriting artifacts the caller did not ask about.
+  compileGraphFixtures
 else
   compile "${remaining[0]}"
 fi

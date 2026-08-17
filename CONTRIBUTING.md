@@ -69,7 +69,7 @@ Test programs live in `tests/` and follow the naming pattern `N.short_name.c`.
 
 1. Create `tests/N.short_name.c`. It should exercise one feature and self-check, printing `N.short_name.c PASS` on success (or `... FAIL`) and returning non-zero on failure. Because there is no preprocessor, declare any libc helpers manually (e.g. `int printf(char*, ...);`) — see [docs/Language.md](docs/Language.md).
 2. Register it by adding the file name to the `tests=( … )` array in [`scripts/tests-compile-link-run.sh`](scripts/tests-compile-link-run.sh).
-3. Run the suite. Compilation regenerates the golden artifacts under `debug/` (AST `.dot` / `.png`, `.pre` / `.post` / final `.ll`, `.s`). Commit the goldens that correspond to your new test.
+3. Run the suite. Compilation regenerates the golden artifacts under `debug/` (`.pre` / `.post` / final `.ll`, `.s`). Commit the goldens that correspond to your new test. AST graphs are not generated per test — they come from the assertion-free fixtures in `tests/graphs/`, which render into `debug/graphs/`; see [docs/Testing.md](docs/Testing.md#ast-graphs).
 
 Use an existing test such as [`tests/25.quick_sort.c`](tests/25.quick_sort.c) as a template.
 

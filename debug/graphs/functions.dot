@@ -1,0 +1,229 @@
+digraph {
+Program [label = Program]
+Program -> FuncDecl_0
+FuncDecl_0 [label = FuncDecl]
+FuncDecl_0 -> BuiltinType_1
+BuiltinType_1 [label = BuiltinType]
+"int_1" [label = "int"]
+BuiltinType_1 -> "int_1"
+printf_0[ label = printf]
+FuncDecl_0 -> printf_0
+FuncDecl_0 -> ParamList_2
+ParamList_2 [label = ParamList]
+ParamList_2 -> Param_3
+Param_3 [label = Param]
+Param_3 -> PointerType_4
+PointerType_4 [label = PointerType]
+"char*_4" [label = "char*"]
+PointerType_4 -> "char*_4"
+anonymous_3 [label = anonymous]
+Param_3 -> anonymous_3
+"..._2" [label = "..."]
+ParamList_2 -> "..._2"
+Program -> FuncDecl_5
+FuncDecl_5 [label = FuncDecl]
+FuncDecl_5 -> BuiltinType_6
+BuiltinType_6 [label = BuiltinType]
+"int_6" [label = "int"]
+BuiltinType_6 -> "int_6"
+add_5[ label = add]
+FuncDecl_5 -> add_5
+FuncDecl_5 -> ParamList_7
+ParamList_7 [label = ParamList]
+ParamList_7 -> Param_8
+Param_8 [label = Param]
+Param_8 -> BuiltinType_9
+BuiltinType_9 [label = BuiltinType]
+"int_9" [label = "int"]
+BuiltinType_9 -> "int_9"
+a_8 [label = a]
+Param_8 -> a_8
+ParamList_7 -> Param_10
+Param_10 [label = Param]
+Param_10 -> BuiltinType_11
+BuiltinType_11 [label = BuiltinType]
+"int_11" [label = "int"]
+BuiltinType_11 -> "int_11"
+b_10 [label = b]
+Param_10 -> b_10
+Program -> FuncDecl_12
+FuncDecl_12 [label = FuncDecl, static = true]
+FuncDecl_12 -> BuiltinType_13
+BuiltinType_13 [label = BuiltinType]
+"int_13" [label = "int"]
+BuiltinType_13 -> "int_13"
+scale_12[ label = scale]
+FuncDecl_12 -> scale_12
+FuncDecl_12 -> ParamList_14
+ParamList_14 [label = ParamList]
+ParamList_14 -> Param_15
+Param_15 [label = Param]
+Param_15 -> BuiltinType_16
+BuiltinType_16 [label = BuiltinType]
+"int_16" [label = "int"]
+BuiltinType_16 -> "int_16"
+v_15 [label = v]
+Param_15 -> v_15
+FuncDecl_12 -> FuncBody_17
+FuncBody_17 [label = FuncBody]
+FuncBody_17 -> ReturnStmt_18
+ReturnStmt_18 [label = ReturnStmt]
+ReturnStmt_18 -> Mul_19
+Mul_19 [label = Mul]
+Mul_19 -> Variable_20
+Variable_20 [label = Variable]
+v_20 [label = v]
+Variable_20 -> v_20
+Mul_19 -> Constant_21
+Constant_21 [label = Constant]
+int_21 [label = "2"]
+Constant_21 -> int_21
+Program -> FuncDecl_22
+FuncDecl_22 [label = FuncDecl]
+FuncDecl_22 -> BuiltinType_23
+BuiltinType_23 [label = BuiltinType]
+"int_23" [label = "int"]
+BuiltinType_23 -> "int_23"
+add_22[ label = add]
+FuncDecl_22 -> add_22
+FuncDecl_22 -> ParamList_24
+ParamList_24 [label = ParamList]
+ParamList_24 -> Param_25
+Param_25 [label = Param]
+Param_25 -> BuiltinType_26
+BuiltinType_26 [label = BuiltinType]
+"int_26" [label = "int"]
+BuiltinType_26 -> "int_26"
+a_25 [label = a]
+Param_25 -> a_25
+ParamList_24 -> Param_27
+Param_27 [label = Param]
+Param_27 -> BuiltinType_28
+BuiltinType_28 [label = BuiltinType]
+"int_28" [label = "int"]
+BuiltinType_28 -> "int_28"
+b_27 [label = b]
+Param_27 -> b_27
+FuncDecl_22 -> FuncBody_29
+FuncBody_29 [label = FuncBody]
+FuncBody_29 -> ReturnStmt_30
+ReturnStmt_30 [label = ReturnStmt]
+ReturnStmt_30 -> Add_31
+Add_31 [label = Add]
+Add_31 -> Variable_32
+Variable_32 [label = Variable]
+a_32 [label = a]
+Variable_32 -> a_32
+Add_31 -> Variable_33
+Variable_33 [label = Variable]
+b_33 [label = b]
+Variable_33 -> b_33
+Program -> FuncDecl_34
+FuncDecl_34 [label = FuncDecl]
+FuncDecl_34 -> BuiltinType_35
+BuiltinType_35 [label = BuiltinType]
+"int_35" [label = "int"]
+BuiltinType_35 -> "int_35"
+noParams_34[ label = noParams]
+FuncDecl_34 -> noParams_34
+FuncDecl_34 -> ParamList_36
+ParamList_36 [label = ParamList]
+ParamList_36 -> Param_37
+Param_37 [label = Param]
+Param_37 -> BuiltinType_38
+BuiltinType_38 [label = BuiltinType]
+"void_38" [label = "void"]
+BuiltinType_38 -> "void_38"
+anonymous_37 [label = anonymous]
+Param_37 -> anonymous_37
+FuncDecl_34 -> FuncBody_39
+FuncBody_39 [label = FuncBody]
+FuncBody_39 -> ReturnStmt_40
+ReturnStmt_40 [label = ReturnStmt]
+ReturnStmt_40 -> Constant_41
+Constant_41 [label = Constant]
+int_41 [label = "7"]
+Constant_41 -> int_41
+Program -> FuncDecl_42
+FuncDecl_42 [label = FuncDecl]
+FuncDecl_42 -> BuiltinType_43
+BuiltinType_43 [label = BuiltinType]
+"int_43" [label = "int"]
+BuiltinType_43 -> "int_43"
+main_42[ label = main]
+FuncDecl_42 -> main_42
+FuncDecl_42 -> ParamList_44
+ParamList_44 [label = ParamList]
+FuncDecl_42 -> FuncBody_45
+FuncBody_45 [label = FuncBody]
+FuncBody_45 -> VarDecl_46
+VarDecl_46 [label = VarDecl]
+VarDecl_46 -> BuiltinType_47
+BuiltinType_47 [label = BuiltinType]
+"int_47" [label = "int"]
+BuiltinType_47 -> "int_47"
+VarDecl_46 -> VarInit_48
+VarInit_48 [label = VarInit]
+s_48 [label = s]
+VarInit_48 -> s_48
+VarInit_48 -> FuncCall_49
+FuncCall_49 [label = FuncCall]
+add_49[ label = add]
+FuncCall_49 -> add_49
+FuncCall_49 -> Constant_50
+Constant_50 [label = Constant]
+int_50 [label = "1"]
+Constant_50 -> int_50
+FuncCall_49 -> Constant_51
+Constant_51 [label = Constant]
+int_51 [label = "2"]
+Constant_51 -> int_51
+FuncBody_45 -> Assign_52
+Assign_52 [label = Assign]
+Assign_52 -> Variable_53
+Variable_53 [label = Variable]
+s_53 [label = s]
+Variable_53 -> s_53
+Assign_52 -> FuncCall_54
+FuncCall_54 [label = FuncCall]
+scale_54[ label = scale]
+FuncCall_54 -> scale_54
+FuncCall_54 -> Variable_55
+Variable_55 [label = Variable]
+s_55 [label = s]
+Variable_55 -> s_55
+FuncBody_45 -> Assign_56
+Assign_56 [label = Assign]
+Assign_56 -> Variable_57
+Variable_57 [label = Variable]
+s_57 [label = s]
+Variable_57 -> s_57
+Assign_56 -> Add_58
+Add_58 [label = Add]
+Add_58 -> Variable_59
+Variable_59 [label = Variable]
+s_59 [label = s]
+Variable_59 -> s_59
+Add_58 -> FuncCall_60
+FuncCall_60 [label = FuncCall]
+noParams_60[ label = noParams]
+FuncCall_60 -> noParams_60
+FuncBody_45 -> FuncCall_61
+FuncCall_61 [label = FuncCall]
+printf_61[ label = printf]
+FuncCall_61 -> printf_61
+FuncCall_61 -> ConstStr_62
+ConstStr_62 [label = ConstStr]
+str_62 [label = "%d"]
+ConstStr_62 -> str_62
+FuncCall_61 -> Variable_63
+Variable_63 [label = Variable]
+s_63 [label = s]
+Variable_63 -> s_63
+FuncBody_45 -> ReturnStmt_64
+ReturnStmt_64 [label = ReturnStmt]
+ReturnStmt_64 -> Constant_65
+Constant_65 [label = Constant]
+int_65 [label = "0"]
+Constant_65 -> int_65
+}
