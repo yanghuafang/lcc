@@ -128,10 +128,15 @@ AST::Program* g_root;
 %token<doubleVal>               DOUBLEVAL
 %token<strVal>                  STRING
 
-// Lexer allocates idVal/strVal with new; actions copy into AST std::string
-// members. Bison discards the token value after the rule completes.
-%destructor { delete $$; } <idVal>
-%destructor { delete $$; } <strVal>
+// idVal/strVal deliberately have no %destructor. They point into the arena in
+// frontend/TokenStrings.hpp, which the driver frees after yyparse; deleting
+// them here would double-free every token discarded during error recovery.
+//
+// A %destructor would not have been enough on its own anyway: Bison runs one
+// only for a symbol it *discards*, never for one a successful reduction
+// consumed, so a clean parse would have freed nothing. The arena exists
+// because of that. Actions copy the text into AST std::string members, so
+// nothing outlives the parse.
 
 // On syntax error, discard partial AST nodes still on the parse stack.
 // Program is excluded: on success Bison pops the start symbol and would delete

@@ -3,6 +3,8 @@
 %{
 #include "Parser.hpp"
 
+#include "frontend/TokenStrings.hpp"
+
 #include <cerrno>
 #include <climits>
 #include <cstdlib>
@@ -363,7 +365,7 @@ static int returnLexHexConstant(const char* text, size_t len) {
 
  /** Identifier **/
 [a-zA-Z_][a-zA-Z0-9_]* {
-    yylval.idVal = new std::string(yytext, yyleng);
+    yylval.idVal = tokenstrings::create(yytext, yyleng);
     return IDENTIFIER;
 }
 
@@ -468,7 +470,7 @@ static int returnLexHexConstant(const char* text, size_t len) {
 
  /** String (non-greedy: stops at unescaped closing quote) **/
 \"([^\"\\]|\\.)*\" {
-    yylval.strVal = new std::string;
+    yylval.strVal = tokenstrings::createEmpty();
     for (int i = 1; i < yyleng - 1; ++i) {
         if (yytext[i] == '\\') {
             yylval.strVal->push_back(escapeDecode(yytext[++i]));
