@@ -16,11 +16,20 @@
 namespace pipeline {
 
 void genIr(CodeGenerator& generator, AST::Program* root,
-           const IrCodeGenOptions& options) {
+           const IrCodeGenOptions& options,
+           const TargetBackendOptions& targetOptions) {
   if (root == nullptr) {
     std::cerr << "AST root is nullptr!" << '\n';
     return;
   }
+
+  // Describe the target before anything reads the module. sizeof, struct
+  // member offsets, and DWARF type sizes are all answered from the data
+  // layout, and the middle end below optimizes against it too; an unconfigured
+  // module answers from LLVM's default instead, silently and for a machine
+  // that does not exist. The back end re-applies this at emission, so the two
+  // can never disagree about what is being compiled.
+  TargetBackend::configureModule(generator.getModule(), targetOptions);
 
   // Front end: AST -> raw module. Everything from here down is irgen/'s job,
   // and it is the only step that needs the CodeGenerator.

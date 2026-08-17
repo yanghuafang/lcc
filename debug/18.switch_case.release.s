@@ -10,7 +10,7 @@ Lloh0:
 	adrp	x9, l_switch.table.gradeOfScore@PAGE
 Lloh1:
 	add	x9, x9, l_switch.table.gradeOfScore@PAGEOFF
-	ldrb	w0, [x9, w8, sxtw]
+	ldrb	w0, [x9, w8, uxtw]
 	ret
 LBB0_2:
 	mov	w0, #69

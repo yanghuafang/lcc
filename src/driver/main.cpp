@@ -28,16 +28,17 @@
 //   3  cannot open the -i source file
 //   4  lex/parse failed (yyparse returned non-zero)
 //   5  writing the -v AST graph failed
-//   6  IR generation or the middle end failed
+//   6  IR generation or the middle end failed — including an unresolvable
+//      --target, since the module is configured for its target before the AST
+//      walk begins (sizeof and DWARF offsets both need the data layout)
 //   7  object emission failed
 //   8  writing the -l IR dump failed
 //   9  assembly emission failed
 //
 // The ordering of stages 7-9 is deliberate and not obvious: -l is dumped after
-// the object file, because the module only carries its target triple and data
-// layout once the back end has stamped them on, and the committed goldens in
-// debug/ expect those lines. It must also come before the optional -S, since
-// legacy-PM codegen mutates the module as it lowers.
+// the object file, but before the optional -S, since legacy-PM codegen mutates
+// the module as it lowers. The IR dumped after -S is not the IR the object was
+// built from.
 
 extern int yyparse();
 
@@ -222,6 +223,16 @@ int main(int argc, char* argv[]) {
   // (getExprTypeId / getExprVarType) happen on demand while emitting IR.
   CodeGenerator generator;
 
+  // Built before genIr, not just before emission: the target's data layout
+  // decides what sizeof answers and where DWARF puts struct members, so the
+  // module has to know its target before the AST walk starts.
+  TargetBackendOptions backendOptions;
+  backendOptions.triple = parser.get<std::string>("--target");
+  backendOptions.cpu = parser.get<std::string>("-mcpu");
+  backendOptions.features = parser.get<std::string>("-mattr");
+  backendOptions.optimizationLevel = optimizationLevel;
+  backendOptions.machineStatsPath = parser.get<std::string>("-machine-stats");
+
   pipeline::IrCodeGenOptions irCodeGenOptions;
   irCodeGenOptions.optimizationLevel = optimizationLevel;
   irCodeGenOptions.generateDebugInfo = parser.get<bool>("-g");
@@ -232,7 +243,7 @@ int main(int argc, char* argv[]) {
   irCodeGenOptions.foldAddZero = parser.get<bool>("-fold-add-zero");
   irCodeGenOptions.customPipeline = customPipeline;
   try {
-    pipeline::genIr(generator, g_root, irCodeGenOptions);
+    pipeline::genIr(generator, g_root, irCodeGenOptions, backendOptions);
     std::cout << "Generated IR code successfully!" << '\n';
     if (!parser.get<std::string>("-l-pre-opt").empty()) {
       std::cout << "Dumped pre-optimization IR to "
@@ -247,13 +258,6 @@ int main(int argc, char* argv[]) {
     std::cerr << e.what() << '\n';
     return 6;
   }
-
-  TargetBackendOptions backendOptions;
-  backendOptions.triple = parser.get<std::string>("--target");
-  backendOptions.cpu = parser.get<std::string>("-mcpu");
-  backendOptions.features = parser.get<std::string>("-mattr");
-  backendOptions.optimizationLevel = optimizationLevel;
-  backendOptions.machineStatsPath = parser.get<std::string>("-machine-stats");
 
   try {
     pipeline::emitObject(generator.getModule(), parser.get<std::string>("-o"),

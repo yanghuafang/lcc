@@ -1,5 +1,7 @@
 ; ModuleID = 'lcc'
 source_filename = "lcc"
+target datalayout = "e-m:o-p270:32:32-p271:32:32-p272:64:64-i64:64-i128:128-n32:64-S128-Fn32"
+target triple = "arm64-apple-darwin25.6.0"
 
 @ga = global [6 x i32] [i32 10, i32 7, i32 8, i32 9, i32 1, i32 5]
 @gs = global [3 x i8] c"hi\00"
@@ -400,3 +402,8 @@ if.end72:                                         ; preds = %else71, %then70
   %117 = load i32, ptr %err, align 4
   ret i32 %117
 }
+
+!llvm.module.flags = !{!0, !1}
+
+!0 = !{i32 8, !"PIC Level", i32 2}
+!1 = !{i32 7, !"PIE Level", i32 2}

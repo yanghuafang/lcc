@@ -71,13 +71,13 @@ entry:
   store i32 %7, ptr %intVal2, align 4, !dbg !40
   %8 = load i32, ptr %intVal, align 4, !dbg !38
   %9 = sext i32 %8 to i64, !dbg !38
-  store i64 %9, ptr %longVal, align 4, !dbg !38
-  %10 = load i64, ptr %longVal, align 4, !dbg !36
-  store i64 %10, ptr %ulongVal, align 4, !dbg !36
-  %11 = load i64, ptr %longVal, align 4, !dbg !34
-  store i64 %11, ptr %ulongVal2, align 4, !dbg !34
-  %12 = load i64, ptr %ulongVal2, align 4, !dbg !31
-  store i64 %12, ptr %longVal2, align 4, !dbg !31
+  store i64 %9, ptr %longVal, align 8, !dbg !38
+  %10 = load i64, ptr %longVal, align 8, !dbg !36
+  store i64 %10, ptr %ulongVal, align 8, !dbg !36
+  %11 = load i64, ptr %longVal, align 8, !dbg !34
+  store i64 %11, ptr %ulongVal2, align 8, !dbg !34
+  %12 = load i64, ptr %ulongVal2, align 8, !dbg !31
+  store i64 %12, ptr %longVal2, align 8, !dbg !31
   store float 0x400921FB40000000, ptr %floatVal, align 4, !dbg !28
   %13 = load float, ptr %floatVal, align 4, !dbg !26
   %14 = fpext float %13 to double, !dbg !26
@@ -155,7 +155,7 @@ else11:                                           ; preds = %if.end9
   br label %if.end12, !dbg !67
 
 if.end12:                                         ; preds = %else11, %then10
-  %36 = load i64, ptr %longVal, align 4, !dbg !68
+  %36 = load i64, ptr %longVal, align 8, !dbg !68
   %37 = trunc i64 %36 to i32, !dbg !68
   %38 = icmp ne i32 %37, 65, !dbg !68
   br i1 %38, label %then13, label %else14, !dbg !68
@@ -169,7 +169,7 @@ else14:                                           ; preds = %if.end12
   br label %if.end15, !dbg !69
 
 if.end15:                                         ; preds = %else14, %then13
-  %40 = load i64, ptr %ulongVal, align 4, !dbg !70
+  %40 = load i64, ptr %ulongVal, align 8, !dbg !70
   %41 = trunc i64 %40 to i32, !dbg !70
   %42 = icmp ne i32 %41, 65, !dbg !70
   br i1 %42, label %then16, label %else17, !dbg !70
@@ -183,7 +183,7 @@ else17:                                           ; preds = %if.end15
   br label %if.end18, !dbg !71
 
 if.end18:                                         ; preds = %else17, %then16
-  %44 = load i64, ptr %longVal2, align 4, !dbg !72
+  %44 = load i64, ptr %longVal2, align 8, !dbg !72
   %45 = trunc i64 %44 to i32, !dbg !72
   %46 = icmp ne i32 %45, 65, !dbg !72
   br i1 %46, label %then19, label %else20, !dbg !72
@@ -262,66 +262,66 @@ if.end33:                                         ; preds = %else32, %then31
   ret i32 %66, !dbg !85
 }
 
-!llvm.dbg.cu = !{!0}
-!llvm.module.flags = !{!2, !3}
+!llvm.module.flags = !{!0, !1}
+!llvm.dbg.cu = !{!2}
 
-!0 = distinct !DICompileUnit(language: DW_LANG_C, file: !1, producer: "lcc", isOptimized: false, runtimeVersion: 0, emissionKind: FullDebug)
-!1 = !DIFile(filename: "11.type_cast.c", directory: "../tests")
-!2 = !{i32 8, !"PIC Level", i32 2}
-!3 = !{i32 7, !"PIE Level", i32 2}
-!4 = distinct !DISubprogram(name: "main", linkageName: "main", scope: null, file: !1, line: 6, type: !5, scopeLine: 6, spFlags: DISPFlagDefinition, unit: !0, retainedNodes: !8)
+!0 = !{i32 8, !"PIC Level", i32 2}
+!1 = !{i32 7, !"PIE Level", i32 2}
+!2 = distinct !DICompileUnit(language: DW_LANG_C, file: !3, producer: "lcc", isOptimized: false, runtimeVersion: 0, emissionKind: FullDebug)
+!3 = !DIFile(filename: "11.type_cast.c", directory: "../tests")
+!4 = distinct !DISubprogram(name: "main", linkageName: "main", scope: null, file: !3, line: 6, type: !5, scopeLine: 6, spFlags: DISPFlagDefinition, unit: !2, retainedNodes: !8)
 !5 = !DISubroutineType(types: !6)
 !6 = !{!7}
 !7 = !DIBasicType(name: "int", size: 32, encoding: DW_ATE_signed)
 !8 = !{}
-!9 = !DILocalVariable(name: "negToUint", scope: !4, file: !1, line: 44, type: !10)
+!9 = !DILocalVariable(name: "negToUint", scope: !4, file: !3, line: 44, type: !10)
 !10 = !DIBasicType(name: "unsigned int", size: 32, encoding: DW_ATE_unsigned)
 !11 = !DILocation(line: 44, column: 3, scope: !4)
-!12 = !DILocalVariable(name: "ucharFromInt", scope: !4, file: !1, line: 41, type: !13)
+!12 = !DILocalVariable(name: "ucharFromInt", scope: !4, file: !3, line: 41, type: !13)
 !13 = !DIBasicType(name: "unsigned char", size: 8, encoding: DW_ATE_unsigned_char)
 !14 = !DILocation(line: 41, column: 3, scope: !4)
-!15 = !DILocalVariable(name: "intFromUchar", scope: !4, file: !1, line: 38, type: !7)
+!15 = !DILocalVariable(name: "intFromUchar", scope: !4, file: !3, line: 38, type: !7)
 !16 = !DILocation(line: 38, column: 3, scope: !4)
-!17 = !DILocalVariable(name: "ucharBoundary", scope: !4, file: !1, line: 37, type: !13)
+!17 = !DILocalVariable(name: "ucharBoundary", scope: !4, file: !3, line: 37, type: !13)
 !18 = !DILocation(line: 37, column: 3, scope: !4)
-!19 = !DILocalVariable(name: "floatVal2", scope: !4, file: !1, line: 26, type: !20)
+!19 = !DILocalVariable(name: "floatVal2", scope: !4, file: !3, line: 26, type: !20)
 !20 = !DIBasicType(name: "float", size: 32, encoding: DW_ATE_float)
 !21 = !DILocation(line: 26, column: 3, scope: !4)
-!22 = !DILocalVariable(name: "doubleVal2", scope: !4, file: !1, line: 25, type: !23)
+!22 = !DILocalVariable(name: "doubleVal2", scope: !4, file: !3, line: 25, type: !23)
 !23 = !DIBasicType(name: "double", size: 64, encoding: DW_ATE_float)
 !24 = !DILocation(line: 25, column: 3, scope: !4)
-!25 = !DILocalVariable(name: "doubleVal", scope: !4, file: !1, line: 24, type: !23)
+!25 = !DILocalVariable(name: "doubleVal", scope: !4, file: !3, line: 24, type: !23)
 !26 = !DILocation(line: 24, column: 3, scope: !4)
-!27 = !DILocalVariable(name: "floatVal", scope: !4, file: !1, line: 23, type: !20)
+!27 = !DILocalVariable(name: "floatVal", scope: !4, file: !3, line: 23, type: !20)
 !28 = !DILocation(line: 23, column: 3, scope: !4)
-!29 = !DILocalVariable(name: "longVal2", scope: !4, file: !1, line: 21, type: !30)
+!29 = !DILocalVariable(name: "longVal2", scope: !4, file: !3, line: 21, type: !30)
 !30 = !DIBasicType(name: "long", size: 64, encoding: DW_ATE_signed)
 !31 = !DILocation(line: 21, column: 3, scope: !4)
-!32 = !DILocalVariable(name: "ulongVal2", scope: !4, file: !1, line: 20, type: !33)
+!32 = !DILocalVariable(name: "ulongVal2", scope: !4, file: !3, line: 20, type: !33)
 !33 = !DIBasicType(name: "unsigned long", size: 64, encoding: DW_ATE_unsigned)
 !34 = !DILocation(line: 20, column: 3, scope: !4)
-!35 = !DILocalVariable(name: "ulongVal", scope: !4, file: !1, line: 19, type: !33)
+!35 = !DILocalVariable(name: "ulongVal", scope: !4, file: !3, line: 19, type: !33)
 !36 = !DILocation(line: 19, column: 3, scope: !4)
-!37 = !DILocalVariable(name: "longVal", scope: !4, file: !1, line: 18, type: !30)
+!37 = !DILocalVariable(name: "longVal", scope: !4, file: !3, line: 18, type: !30)
 !38 = !DILocation(line: 18, column: 3, scope: !4)
-!39 = !DILocalVariable(name: "intVal2", scope: !4, file: !1, line: 16, type: !7)
+!39 = !DILocalVariable(name: "intVal2", scope: !4, file: !3, line: 16, type: !7)
 !40 = !DILocation(line: 16, column: 3, scope: !4)
-!41 = !DILocalVariable(name: "uintVal2", scope: !4, file: !1, line: 15, type: !10)
+!41 = !DILocalVariable(name: "uintVal2", scope: !4, file: !3, line: 15, type: !10)
 !42 = !DILocation(line: 15, column: 3, scope: !4)
-!43 = !DILocalVariable(name: "uintVal", scope: !4, file: !1, line: 14, type: !10)
+!43 = !DILocalVariable(name: "uintVal", scope: !4, file: !3, line: 14, type: !10)
 !44 = !DILocation(line: 14, column: 3, scope: !4)
-!45 = !DILocalVariable(name: "intVal", scope: !4, file: !1, line: 13, type: !7)
+!45 = !DILocalVariable(name: "intVal", scope: !4, file: !3, line: 13, type: !7)
 !46 = !DILocation(line: 13, column: 3, scope: !4)
-!47 = !DILocalVariable(name: "charVal2", scope: !4, file: !1, line: 11, type: !48)
+!47 = !DILocalVariable(name: "charVal2", scope: !4, file: !3, line: 11, type: !48)
 !48 = !DIBasicType(name: "char", size: 8, encoding: DW_ATE_signed_char)
 !49 = !DILocation(line: 11, column: 3, scope: !4)
-!50 = !DILocalVariable(name: "ucharVal2", scope: !4, file: !1, line: 10, type: !13)
+!50 = !DILocalVariable(name: "ucharVal2", scope: !4, file: !3, line: 10, type: !13)
 !51 = !DILocation(line: 10, column: 3, scope: !4)
-!52 = !DILocalVariable(name: "ucharVal", scope: !4, file: !1, line: 9, type: !13)
+!52 = !DILocalVariable(name: "ucharVal", scope: !4, file: !3, line: 9, type: !13)
 !53 = !DILocation(line: 9, column: 3, scope: !4)
-!54 = !DILocalVariable(name: "charVal", scope: !4, file: !1, line: 8, type: !48)
+!54 = !DILocalVariable(name: "charVal", scope: !4, file: !3, line: 8, type: !48)
 !55 = !DILocation(line: 8, column: 3, scope: !4)
-!56 = !DILocalVariable(name: "err", scope: !4, file: !1, line: 7, type: !7)
+!56 = !DILocalVariable(name: "err", scope: !4, file: !3, line: 7, type: !7)
 !57 = !DILocation(line: 7, column: 3, scope: !4)
 !58 = !DILocation(line: 28, column: 3, scope: !4)
 !59 = !DILocation(line: 28, column: 24, scope: !4)
@@ -347,7 +347,7 @@ if.end33:                                         ; preds = %else32, %then31
 !79 = !DILocation(line: 45, column: 32, scope: !4)
 !80 = !DILocation(line: 47, column: 3, scope: !4)
 !81 = !DILocation(line: 48, column: 5, scope: !82)
-!82 = distinct !DILexicalBlock(scope: !4, file: !1, line: 47, column: 17)
+!82 = distinct !DILexicalBlock(scope: !4, file: !3, line: 47, column: 17)
 !83 = !DILocation(line: 50, column: 5, scope: !84)
-!84 = distinct !DILexicalBlock(scope: !4, file: !1, line: 49, column: 10)
+!84 = distinct !DILexicalBlock(scope: !4, file: !3, line: 49, column: 10)
 !85 = !DILocation(line: 52, column: 3, scope: !4)

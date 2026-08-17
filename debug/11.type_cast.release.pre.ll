@@ -1,5 +1,7 @@
 ; ModuleID = 'lcc'
 source_filename = "lcc"
+target datalayout = "e-m:o-p270:32:32-p271:32:32-p272:64:64-i64:64-i128:128-n32:64-S128-Fn32"
+target triple = "arm64-apple-darwin25.6.0"
 
 @0 = private unnamed_addr constant [21 x i8] c"11.type_cast.c PASS\0A\00", align 1
 @1 = private unnamed_addr constant [21 x i8] c"11.type_cast.c FAIL\0A\00", align 1
@@ -48,13 +50,13 @@ entry:
   store i32 %7, ptr %intVal2, align 4
   %8 = load i32, ptr %intVal, align 4
   %9 = sext i32 %8 to i64
-  store i64 %9, ptr %longVal, align 4
-  %10 = load i64, ptr %longVal, align 4
-  store i64 %10, ptr %ulongVal, align 4
-  %11 = load i64, ptr %longVal, align 4
-  store i64 %11, ptr %ulongVal2, align 4
-  %12 = load i64, ptr %ulongVal2, align 4
-  store i64 %12, ptr %longVal2, align 4
+  store i64 %9, ptr %longVal, align 8
+  %10 = load i64, ptr %longVal, align 8
+  store i64 %10, ptr %ulongVal, align 8
+  %11 = load i64, ptr %longVal, align 8
+  store i64 %11, ptr %ulongVal2, align 8
+  %12 = load i64, ptr %ulongVal2, align 8
+  store i64 %12, ptr %longVal2, align 8
   store float 0x400921FB40000000, ptr %floatVal, align 4
   %13 = load float, ptr %floatVal, align 4
   %14 = fpext float %13 to double
@@ -132,7 +134,7 @@ else11:                                           ; preds = %if.end9
   br label %if.end12
 
 if.end12:                                         ; preds = %else11, %then10
-  %36 = load i64, ptr %longVal, align 4
+  %36 = load i64, ptr %longVal, align 8
   %37 = trunc i64 %36 to i32
   %38 = icmp ne i32 %37, 65
   br i1 %38, label %then13, label %else14
@@ -146,7 +148,7 @@ else14:                                           ; preds = %if.end12
   br label %if.end15
 
 if.end15:                                         ; preds = %else14, %then13
-  %40 = load i64, ptr %ulongVal, align 4
+  %40 = load i64, ptr %ulongVal, align 8
   %41 = trunc i64 %40 to i32
   %42 = icmp ne i32 %41, 65
   br i1 %42, label %then16, label %else17
@@ -160,7 +162,7 @@ else17:                                           ; preds = %if.end15
   br label %if.end18
 
 if.end18:                                         ; preds = %else17, %then16
-  %44 = load i64, ptr %longVal2, align 4
+  %44 = load i64, ptr %longVal2, align 8
   %45 = trunc i64 %44 to i32
   %46 = icmp ne i32 %45, 65
   br i1 %46, label %then19, label %else20
@@ -238,3 +240,8 @@ if.end33:                                         ; preds = %else32, %then31
   %66 = load i32, ptr %err, align 4
   ret i32 %66
 }
+
+!llvm.module.flags = !{!0, !1}
+
+!0 = !{i32 8, !"PIC Level", i32 2}
+!1 = !{i32 7, !"PIE Level", i32 2}

@@ -1,38 +1,26 @@
 ; ModuleID = 'lcc'
 source_filename = "lcc"
+target datalayout = "e-m:o-p270:32:32-p271:32:32-p272:64:64-i64:64-i128:128-n32:64-S128-Fn32"
+target triple = "arm64-apple-darwin25.6.0"
 
 @str.1 = private unnamed_addr constant [22 x i8] c"18.switch_case.c PASS\00", align 1
+@switch.table.gradeOfScore = private unnamed_addr constant [10 x i8] c"DDDDDCBBAA", align 1
 
 ; Function Attrs: mustprogress nofree norecurse nosync nounwind willreturn memory(none)
 define range(i8 65, 70) i8 @gradeOfScore(i32 %0) local_unnamed_addr #0 {
 entry:
-  switch i32 %0, label %case.10 [
-    i32 1, label %switch.end
-    i32 2, label %switch.end
-    i32 3, label %switch.end
-    i32 4, label %switch.end
-    i32 5, label %switch.end
-    i32 6, label %case.5
-    i32 7, label %case.7
-    i32 8, label %case.7
-    i32 9, label %case.9
-    i32 10, label %case.9
-  ]
+  %switch.tableidx = add i32 %0, -1
+  %1 = icmp ult i32 %switch.tableidx, 10
+  br i1 %1, label %switch.lookup, label %switch.end
 
-case.5:                                           ; preds = %entry
+switch.lookup:                                    ; preds = %entry
+  %2 = zext nneg i32 %switch.tableidx to i64
+  %switch.gep = getelementptr inbounds nuw [10 x i8], ptr @switch.table.gradeOfScore, i64 0, i64 %2
+  %switch.load = load i8, ptr %switch.gep, align 1
   br label %switch.end
 
-case.7:                                           ; preds = %entry, %entry
-  br label %switch.end
-
-case.9:                                           ; preds = %entry, %entry
-  br label %switch.end
-
-case.10:                                          ; preds = %entry
-  br label %switch.end
-
-switch.end:                                       ; preds = %entry, %entry, %entry, %entry, %entry, %case.10, %case.9, %case.7, %case.5
-  %grade.0 = phi i8 [ 69, %case.10 ], [ 65, %case.9 ], [ 66, %case.7 ], [ 67, %case.5 ], [ 68, %entry ], [ 68, %entry ], [ 68, %entry ], [ 68, %entry ], [ 68, %entry ]
+switch.end:                                       ; preds = %entry, %switch.lookup
+  %grade.0 = phi i8 [ %switch.load, %switch.lookup ], [ 69, %entry ]
   ret i8 %grade.0
 }
 
@@ -48,3 +36,8 @@ declare noundef i32 @puts(ptr nocapture noundef readonly) local_unnamed_addr #1
 
 attributes #0 = { mustprogress nofree norecurse nosync nounwind willreturn memory(none) }
 attributes #1 = { nofree nounwind }
+
+!llvm.module.flags = !{!0, !1}
+
+!0 = !{i32 8, !"PIC Level", i32 2}
+!1 = !{i32 7, !"PIE Level", i32 2}

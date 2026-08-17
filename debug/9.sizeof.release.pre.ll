@@ -1,8 +1,11 @@
 ; ModuleID = 'lcc'
 source_filename = "lcc"
+target datalayout = "e-m:o-p270:32:32-p271:32:32-p272:64:64-i64:64-i128:128-n32:64-S128-Fn32"
+target triple = "arm64-apple-darwin25.6.0"
 
-%union.ID = type { ptr }
 %struct.Student = type { i32, ptr, i8, float }
+%struct.Padded = type { i8, i64 }
+%union.ID = type { ptr }
 
 @0 = private unnamed_addr constant [17 x i8] c"9.sizeof.c PASS\0A\00", align 1
 @1 = private unnamed_addr constant [17 x i8] c"9.sizeof.c FAIL\0A\00", align 1
@@ -11,6 +14,9 @@ declare i32 @printf(ptr, ...)
 
 define i32 @main() {
 entry:
+  %longs = alloca [4 x i64], align 8
+  %students = alloca [3 x %struct.Student], align 8
+  %padded = alloca %struct.Padded, align 8
   %sex = alloca i32, align 4
   %id = alloca %union.ID, align 8
   %student = alloca %struct.Student, align 8
@@ -154,19 +160,112 @@ else32:                                           ; preds = %if.end30
   br label %if.end33
 
 if.end33:                                         ; preds = %else32, %then31
-  %12 = load i32, ptr %err, align 4
-  %13 = icmp eq i32 %12, 0
-  br i1 %13, label %then34, label %else35
+  br i1 false, label %then34, label %else35
 
 then34:                                           ; preds = %if.end33
-  %14 = call i32 (ptr, ...) @printf(ptr @0)
+  store i32 1, ptr %err, align 4
+  %12 = load i32, ptr %err, align 4
   br label %if.end36
 
 else35:                                           ; preds = %if.end33
-  %15 = call i32 (ptr, ...) @printf(ptr @1)
   br label %if.end36
 
 if.end36:                                         ; preds = %else35, %then34
+  br i1 false, label %then37, label %else38
+
+then37:                                           ; preds = %if.end36
+  store i32 1, ptr %err, align 4
+  %13 = load i32, ptr %err, align 4
+  br label %if.end39
+
+else38:                                           ; preds = %if.end36
+  br label %if.end39
+
+if.end39:                                         ; preds = %else38, %then37
+  br i1 false, label %then40, label %else41
+
+then40:                                           ; preds = %if.end39
+  store i32 1, ptr %err, align 4
+  %14 = load i32, ptr %err, align 4
+  br label %if.end42
+
+else41:                                           ; preds = %if.end39
+  br label %if.end42
+
+if.end42:                                         ; preds = %else41, %then40
+  br i1 false, label %then43, label %else44
+
+then43:                                           ; preds = %if.end42
+  store i32 1, ptr %err, align 4
+  %15 = load i32, ptr %err, align 4
+  br label %if.end45
+
+else44:                                           ; preds = %if.end42
+  br label %if.end45
+
+if.end45:                                         ; preds = %else44, %then43
+  br i1 false, label %then46, label %else47
+
+then46:                                           ; preds = %if.end45
+  store i32 1, ptr %err, align 4
   %16 = load i32, ptr %err, align 4
-  ret i32 %16
+  br label %if.end48
+
+else47:                                           ; preds = %if.end45
+  br label %if.end48
+
+if.end48:                                         ; preds = %else47, %then46
+  br i1 false, label %then49, label %else50
+
+then49:                                           ; preds = %if.end48
+  store i32 1, ptr %err, align 4
+  %17 = load i32, ptr %err, align 4
+  br label %if.end51
+
+else50:                                           ; preds = %if.end48
+  br label %if.end51
+
+if.end51:                                         ; preds = %else50, %then49
+  br i1 false, label %then52, label %else53
+
+then52:                                           ; preds = %if.end51
+  store i32 1, ptr %err, align 4
+  %18 = load i32, ptr %err, align 4
+  br label %if.end54
+
+else53:                                           ; preds = %if.end51
+  br label %if.end54
+
+if.end54:                                         ; preds = %else53, %then52
+  br i1 false, label %then55, label %else56
+
+then55:                                           ; preds = %if.end54
+  store i32 1, ptr %err, align 4
+  %19 = load i32, ptr %err, align 4
+  br label %if.end57
+
+else56:                                           ; preds = %if.end54
+  br label %if.end57
+
+if.end57:                                         ; preds = %else56, %then55
+  %20 = load i32, ptr %err, align 4
+  %21 = icmp eq i32 %20, 0
+  br i1 %21, label %then58, label %else59
+
+then58:                                           ; preds = %if.end57
+  %22 = call i32 (ptr, ...) @printf(ptr @0)
+  br label %if.end60
+
+else59:                                           ; preds = %if.end57
+  %23 = call i32 (ptr, ...) @printf(ptr @1)
+  br label %if.end60
+
+if.end60:                                         ; preds = %else59, %then58
+  %24 = load i32, ptr %err, align 4
+  ret i32 %24
 }
+
+!llvm.module.flags = !{!0, !1}
+
+!0 = !{i32 8, !"PIC Level", i32 2}
+!1 = !{i32 7, !"PIE Level", i32 2}

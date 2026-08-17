@@ -1,7 +1,7 @@
 ; ModuleID = 'lcc'
 source_filename = "lcc"
 target datalayout = "e-m:o-p270:32:32-p271:32:32-p272:64:64-i64:64-i128:128-n32:64-S128-Fn32"
-target triple = "arm64-apple-darwin25.5.0"
+target triple = "arm64-apple-darwin25.6.0"
 
 @ga = local_unnamed_addr global [6 x i32] [i32 10, i32 7, i32 8, i32 9, i32 1, i32 5]
 @gs = local_unnamed_addr global [3 x i8] c"hi\00"

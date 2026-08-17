@@ -1,7 +1,7 @@
 ; ModuleID = 'lcc'
 source_filename = "lcc"
 target datalayout = "e-m:o-p270:32:32-p271:32:32-p272:64:64-i64:64-i128:128-n32:64-S128-Fn32"
-target triple = "arm64-apple-darwin25.5.0"
+target triple = "arm64-apple-darwin25.6.0"
 
 @str.1 = private unnamed_addr constant [19 x i8] c"21.continue.c PASS\00", align 1
 
@@ -39,20 +39,29 @@ while.loop.lr.ph.preheader:                       ; preds = %entry
   br label %while.loop.lr.ph
 
 while.loop.lr.ph:                                 ; preds = %while.loop.lr.ph.preheader, %if.end
-  %lsr.iv = phi i32 [ 2, %while.loop.lr.ph.preheader ], [ %lsr.iv.next, %if.end ]
-  %count.0.ph14 = phi i32 [ %1, %if.end ], [ 0, %while.loop.lr.ph.preheader ]
-  %.not = icmp sgt i32 %lsr.iv, %0
-  br i1 %.not, label %while.end, label %if.end
+  %i.0.ph15 = phi i32 [ %4, %if.end ], [ 1, %while.loop.lr.ph.preheader ]
+  %count.0.ph14 = phi i32 [ %3, %if.end ], [ 0, %while.loop.lr.ph.preheader ]
+  %1 = add i32 %i.0.ph15, 1
+  br label %while.loop
 
-if.end:                                           ; preds = %while.loop.lr.ph
-  %1 = add i32 %count.0.ph14, 1
-  %lsr.iv.next = add i32 %lsr.iv, 2
-  %2 = add i32 %lsr.iv.next, -2
-  %.not10.not = icmp slt i32 %2, %0
+while.loop:                                       ; preds = %while.loop.lr.ph, %then
+  %i.011 = phi i32 [ %i.0.ph15, %while.loop.lr.ph ], [ %2, %then ]
+  %lftr.wideiv = trunc i32 %i.011 to i1
+  br i1 %lftr.wideiv, label %then, label %if.end
+
+then:                                             ; preds = %while.loop
+  %2 = add i32 %i.011, 1
+  %.not = icmp sgt i32 %2, %0
+  br i1 %.not, label %while.end, label %while.loop
+
+if.end:                                           ; preds = %while.loop
+  %3 = add i32 %count.0.ph14, 1
+  %4 = or disjoint i32 %1, 1
+  %.not10.not = icmp slt i32 %1, %0
   br i1 %.not10.not, label %while.loop.lr.ph, label %while.end
 
-while.end:                                        ; preds = %if.end, %while.loop.lr.ph, %entry
-  %count.0.ph.lcssa = phi i32 [ 0, %entry ], [ %1, %if.end ], [ %count.0.ph14, %while.loop.lr.ph ]
+while.end:                                        ; preds = %if.end, %then, %entry
+  %count.0.ph.lcssa = phi i32 [ 0, %entry ], [ %count.0.ph14, %then ], [ %3, %if.end ]
   ret i32 %count.0.ph.lcssa
 }
 
