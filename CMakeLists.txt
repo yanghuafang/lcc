@@ -54,7 +54,11 @@ find_package(LLVM REQUIRED CONFIG)
 message(STATUS "Found LLVM ${LLVM_PACKAGE_VERSION}")
 message(STATUS "Found LLVMConfig.cmake in ${LLVM_DIR}")
 
-include_directories(${LLVM_INCLUDE_DIRS})
+# SYSTEM matters once warnings are on below: LLVM's headers raise thousands of
+# -Wunused-parameter and similar under -Wall -Wextra, and none of them are
+# actionable here. Marking them system (-isystem) silences that noise so the
+# warnings that remain are lcc's own.
+include_directories(SYSTEM ${LLVM_INCLUDE_DIRS})
 separate_arguments(LLVM_DEFINITIONS_LIST NATIVE_COMMAND ${LLVM_DEFINITIONS})
 add_definitions(${LLVM_DEFINITIONS_LIST})
 
@@ -73,6 +77,48 @@ file(GLOB_RECURSE SOURCES
   ${CMAKE_SOURCE_DIR}/src/*.cpp)
 
 add_executable(${CMAKE_PROJECT_NAME} ${SOURCES})
+
+# Warnings.
+#
+# -Wunused-parameter is off by deliberate choice, not because the warnings were
+# noisy to fix. Every AST node overrides genCode(CodeGenerator&) whether or not
+# it needs the generator, and the same holds for genCodePtr and the type
+# queries; that is the interface, so ~85 of these are unavoidable and naming the
+# parameter documents what the slot is for. Leaving the warning on would train
+# the eye to skip the warning output, which is the one thing that makes warnings
+# worthless.
+target_compile_options(${CMAKE_PROJECT_NAME} PRIVATE
+  -Wall -Wextra -Wno-unused-parameter)
+
+# The flex and bison output is regenerated on every configure and must never be
+# hand-edited, so its warnings are not actionable — silence them at the source
+# rather than filtering them out by eye. Handwritten code keeps full warnings.
+set_source_files_properties(
+  ${CMAKE_SOURCE_DIR}/src/generated/Lexer.cpp
+  ${CMAKE_SOURCE_DIR}/src/generated/Parser.cpp
+  PROPERTIES COMPILE_OPTIONS "-w")
+
+# Opt-in, not default: a compiler upgrade can introduce a new warning at any
+# time, and a learner cloning this repo should get a build, not a wall of
+# errors. Turn it on when you want the enforcement: -DLCC_WERROR=ON.
+option(LCC_WERROR "Treat compiler warnings as errors" OFF)
+if(LCC_WERROR)
+  target_compile_options(${CMAKE_PROJECT_NAME} PRIVATE -Werror)
+endif()
+
+# AddressSanitizer build: -DLCC_ASAN=ON, or scripts/build-lcc.sh --asan.
+#
+# Catches use-after-free, buffer overflow, and stack-use-after-return in lcc
+# itself while it compiles the test suite. The frame-pointer flag is what makes
+# its stack traces readable, and -g gives them line numbers; both are otherwise
+# stripped in a Release build.
+option(LCC_ASAN "Build lcc with AddressSanitizer" OFF)
+if(LCC_ASAN)
+  target_compile_options(${CMAKE_PROJECT_NAME} PRIVATE
+    -fsanitize=address -fno-omit-frame-pointer -g)
+  target_link_options(${CMAKE_PROJECT_NAME} PRIVATE -fsanitize=address)
+  message(STATUS "AddressSanitizer enabled")
+endif()
 
 # Link only the LLVM pieces lcc uses. LLVM_AVAILABLE_LIBS links every archive
 # twice on Homebrew (static list + libLLVM.dylib); map components instead.

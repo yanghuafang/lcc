@@ -76,3 +76,38 @@ jobs:
       - name: Benchmark smoke test
         working-directory: scripts
         run: ./bench.sh --smoke
+
+  # lcc compiling the suite while instrumented, which is where a use-after-free
+  # on the AST or a stale llvm::Value* would show up. One platform is enough:
+  # the findings are host-independent, and an ASan build is the slowest job here.
+  asan:
+    name: AddressSanitizer
+    runs-on: ubuntu-24.04
+    env:
+      # Leak detection is off on purpose. LeakSanitizer rides along with ASan on
+      # Linux, and lcc still has two known leaks it would fail on: an orphaned
+      # llvm::BasicBlock in SwitchStmt::genCode, and the AST nodes held by a
+      # partial AST::Decls when a parse fails. Neither is a memory *error*, which
+      # is what this job is for. Turn this on once both are fixed — and expect to
+      # check whether LLVM's own exit-time allocations need suppressing, since
+      # lcc never calls llvm_shutdown().
+      ASAN_OPTIONS: detect_leaks=0
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install dependencies
+        working-directory: scripts
+        run: ./install-deps-ubuntu.sh
+
+      - name: Build lcc with ASan
+        working-directory: scripts
+        run: ./build-lcc.sh --asan
+
+      # Both modes: -O0 and -O2 take different paths through the middle end, and
+      # only the instrumented lcc process matters here — the programs it emits
+      # are not themselves built with ASan.
+      - name: Compile tests under ASan
+        working-directory: scripts
+        run: |
+          ./compile-tests.sh
+          ./compile-tests.sh --release

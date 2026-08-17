@@ -640,8 +640,10 @@ llvm::Value* FuncCall::genCode(CodeGenerator& generator) {
   }
 
   // Check number of arguments.
-  if (func->isVarArg() && argList_->size() < func->arg_size() ||
-      !func->isVarArg() && argList_->size() != func->arg_size()) {
+  // Parenthesized because && binds tighter than ||: a variadic function needs
+  // at least its named parameters, a fixed one needs exactly them.
+  if ((func->isVarArg() && argList_->size() < func->arg_size()) ||
+      (!func->isVarArg() && argList_->size() != func->arg_size())) {
     throw std::logic_error("Wrong argument number for function call!");
   }
 
