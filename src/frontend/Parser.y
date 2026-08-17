@@ -224,11 +224,15 @@ AST::Program* g_root;
 %left DOT ARROW //1
 
  /* Association */
- /* Use nonassoc to resolve else dangling ambiguity which arises when there are
-   multiple nested IF statements, and it is unclear innermost or outermost unpaired IF
-   an ELSE should associate with */
- /* ELSE will pair with nearest preceding(innermost) unpaired IF */
- /* Make ELSE nonassoc to make it intend to shift instead of reduce */
+ /* The dangling-else ambiguity (which unpaired IF does an ELSE belong to) is NOT
+   resolved by this declaration, despite it being the textbook remedy. A rule takes
+   the precedence of its last terminal, and the competing rule
+   `IfStmt: IF LPARENTHESES Expr RPARENTHESES Stmt` ends in RPARENTHESES, which has no
+   precedence — so there is nothing to compare ELSE against. Bison reports the conflict
+   (state 305) and resolves it with its shift default, which happens to be the C
+   behavior: ELSE pairs with the nearest preceding unpaired IF. Removing the line below
+   leaves the automaton unchanged. See docs/ParserConflicts.md section 2 for the
+   evidence and for the %prec marker that would make the resolution explicit. */
 %nonassoc ELSE
 
  /* Start production of C grammar */
