@@ -136,7 +136,10 @@ lcc/
 │   │   ├── TypeRules.*          # C type rules: promotion, conversion, signedness
 │   │   └── VarTypeQuery.*       # AST VarType -> BuiltinTypeId / llvm::Type queries
 │   ├── irgen/                   # AST -> LLVM IR
-│   │   ├── ExprToIr.cpp         # walker: genCode() for every Expr node
+│   │   ├── ExprToIr.cpp         # walker: variables, literals, calls, member access
+│   │   ├── OperatorToIr.cpp     # walker: assign, arithmetic, inc/dec, bitwise, shift
+│   │   ├── LogicToIr.cpp        # walker: &&, ||, !, comparisons, ?:
+│   │   ├── ExprTypeQuery.cpp    # what type an Expr has (no instructions emitted)
 │   │   ├── StmtToIr.cpp         # walker: statements, basic blocks, break/continue
 │   │   ├── DeclToIr.cpp         # walker: declarations and their storage
 │   │   ├── TypeToIr.cpp         # walker: AST VarType -> llvm::Type

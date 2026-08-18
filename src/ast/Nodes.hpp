@@ -826,6 +826,13 @@ class Expr : public Stmt {
   virtual BuiltinType::TypeId getExprTypeId(CodeGenerator& generator);
   BuiltinType::TypeId getLValueTypeId(CodeGenerator& generator);
 
+  // Rvalue form of an lvalue expression: evaluate genCodePtr(), then load
+  // through it. This is the whole of genCode() for every node whose value is
+  // just "what is stored at my own address" — member access, subscript,
+  // dereference, assignment, prefix inc/dec — which is why it is a member here
+  // rather than a helper local to one lowering file.
+  llvm::Value* loadFromLValuePtr(CodeGenerator& generator);
+
   static BuiltinType::TypeId binaryExprTypeId(Expr* lhs, Expr* rhs,
                                               CodeGenerator& generator);
   static bool binaryIsUnsigned(Expr* lhs, Expr* rhs, CodeGenerator& generator);

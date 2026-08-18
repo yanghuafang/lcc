@@ -34,6 +34,12 @@ AST::VarType* resolveTypedefVarType(AST::VarType* varType, TypeEnv& env);
 
 AST::BuiltinTypeId resolvedVarTypeToTypeId(AST::VarType* varType, TypeEnv& env);
 
+// The struct or union a VarType denotes, through typedef aliases and struct tag
+// names — a DefinedType such as "Employee" after "typedef struct Employee
+// Employee". Null when it denotes neither. Member access (. and ->) needs this
+// before it can look a field name up.
+AST::VarType* resolveAggregateVarType(AST::VarType* varType, TypeEnv& env);
+
 // LLVM element type for GEP / PtrDiff on a pointer expression (from AST, not
 // IR).
 llvm::Type* pointerArithmeticElementType(AST::VarType* ptrExprVarType,

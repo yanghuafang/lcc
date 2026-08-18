@@ -139,13 +139,16 @@ Two properties are worth stating because they are easy to lose:
 
 ### `irgen/` — AST to LLVM IR
 
-`irgen/` is **four walkers, five emission services, and one shared context.**
+`irgen/` is **seven walkers, five emission services, and one shared context.**
 
-The walk is split by node category — the same `Decl` / `Stmt` / `Expr` / `VarType` taxonomy the grammar and `ast/Nodes.hpp` already use, so the file to open follows from the kind of node you are chasing. All four define members of classes declared in `ast/Nodes.hpp`, so none of them has a header of its own.
+The walk is split by node category — the same `Decl` / `Stmt` / `Expr` / `VarType` taxonomy the grammar and `ast/Nodes.hpp` already use, so the file to open follows from the kind of node you are chasing. `Expr` is four files rather than one, because C's expression grammar is the largest part of the language. All seven define members of classes declared in `ast/Nodes.hpp`, so none of them has a header of its own.
 
 | Walker | Responsibility |
 | ------ | ---------------- |
-| `irgen/ExprToIr.cpp` | `genCode()` / `genCodePtr()` for every `Expr` node, plus the `getExpr*` / `getLValue*` type queries that stand in for a semantic-analysis pass. The largest of the four, because C's expression grammar is |
+| `irgen/ExprToIr.cpp` | `genCode()` / `genCodePtr()` for the `Expr` nodes that name or produce a value directly: variables, literals, calls, member access, subscript, cast, `sizeof`, unary |
+| `irgen/OperatorToIr.cpp` | Assignment, arithmetic, increment/decrement, bitwise, shift. Each operator and its compound-assignment twin share one `ops::` function, called from `genBinaryCode` / `genCompoundAssignPtr` |
+| `irgen/LogicToIr.cpp` | `&&`, `\|\|`, `!`, the six comparisons, and `?:` — the operators whose result is `int` regardless of operand type. Also where lcc's three documented deviations from C live: `&&`, `\|\|`, and `?:` are lowered eagerly with `select` |
+| `irgen/ExprTypeQuery.cpp` | The `getExpr*` / `getLValue*` queries for every `Expr` node — lcc's stand-in for a semantic-analysis pass. Answers what type an expression *has*; emits no instructions, which is why it is separate from the three lowering files above |
 | `irgen/StmtToIr.cpp` | `genCode()` for every `Stmt` node, plus `FuncBody` (a statement list). Where lcc's basic-block structure is built: if/else joins, loop header/body/latch, switch dispatch, break/continue targets |
 | `irgen/DeclToIr.cpp` | `genCode()` for `Program`, `FuncDecl`, `VarDecl`, `TypeDecl`, `TypedefDecl`. `VarDecl::genCode` reads as a decision table — resolve bounds, build the nested `ArrayType`, pick storage, initialize — and delegates the initializing itself to the two services below |
 | `irgen/TypeToIr.cpp` | `VarType::getType()` for each type node — builtin, pointer, array, struct, union, enum, typedef alias. Materialization only; emits no instructions |
@@ -187,7 +190,8 @@ Everything **generated** lives in `src/generated/` and is never edited by hand: 
 | ------ | ---------- |
 | New token or literal form | `frontend/Lexer.l` |
 | New syntax | `frontend/Parser.y`, then a node in `ast/Nodes.hpp`, its `genCode()` in the matching `irgen/*ToIr.cpp`, and its destructor in `ast/Ownership.cpp` |
-| Different IR for existing syntax | that node’s `genCode()` in `irgen/ExprToIr.cpp` / `StmtToIr.cpp` / `DeclToIr.cpp`, an operator in `irgen/Operators.cpp`, a conversion in `irgen/TypeConversion.cpp`, or an IR idiom in `irgen/IrIdioms.cpp` |
+| Different IR for existing syntax | that node’s `genCode()` in the matching `irgen/*ToIr.cpp`, an operator in `irgen/Operators.cpp`, a conversion in `irgen/TypeConversion.cpp`, or an IR idiom in `irgen/IrIdioms.cpp` |
+| What type an expression has | `irgen/ExprTypeQuery.cpp`, or `types/VarTypeQuery.cpp` if the question is about a `VarType` rather than an `Expr` |
 | Array bounds or an array initializer | `irgen/ArrayInitializer.cpp` |
 | Block-scope `static` | `irgen/StaticLocal.cpp` |
 | New IR pass | `opt/passes/`, registered in `opt/IrOptimizer.cpp` |
