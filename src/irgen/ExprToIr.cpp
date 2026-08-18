@@ -129,13 +129,14 @@ const char* AddressOf::nonLValueErrorMessage() const {
 }
 
 llvm::Value* Variable::genCode(CodeGenerator& generator) {
-  llvm::Value* var = generator.findVariable(varName_);
+  llvm::Value* var = generator.symbols().findVariable(varName_);
   if (var != nullptr) {
     return iridiom::createLoad(generator.getBuilder(), var,
-                               generator.findVariableType(varName_), generator);
+                               generator.symbols().findVariableType(varName_),
+                               generator);
   }
 
-  var = generator.findConstant(varName_);
+  var = generator.symbols().findConstant(varName_);
   if (var != nullptr) {
     return var;
   }
@@ -149,12 +150,12 @@ llvm::Value* Variable::genCode(CodeGenerator& generator) {
 }
 
 llvm::Value* Variable::genCodePtr(CodeGenerator& generator) {
-  llvm::Value* var = generator.findVariable(varName_);
+  llvm::Value* var = generator.symbols().findVariable(varName_);
   if (var != nullptr) {
     return var;
   }
 
-  var = generator.findConstant(varName_);
+  var = generator.symbols().findConstant(varName_);
   if (var != nullptr) {
     throw std::logic_error(varName_ + " is const, not left value!");
   }
@@ -227,7 +228,7 @@ llvm::Value* CommaExpr::genCodePtr(CodeGenerator& generator) {
 }
 
 llvm::Value* FuncCall::genCode(CodeGenerator& generator) {
-  llvm::Function* func = generator.findFunction(funcName_);
+  llvm::Function* func = generator.symbols().findFunction(funcName_);
   if (func == nullptr) {
     throw std::logic_error("Function " + funcName_ + " is not defined!");
   }
@@ -246,7 +247,8 @@ llvm::Value* FuncCall::genCode(CodeGenerator& generator) {
   for (auto* argIter = func->arg_begin(); argIter < func->arg_end();
        ++argIter, ++index) {
     llvm::Value* arg = argList_->at(index)->genCode(generator);
-    VarType* paramVarType = generator.findFuncParamType(funcName_, index);
+    VarType* paramVarType =
+        generator.symbols().findFuncParamType(funcName_, index);
     arg = convert::typeCast(
         generator.getBuilder(), arg, argIter->getType(),
         argList_->at(index)->getExprTypeId(generator),
@@ -386,8 +388,8 @@ llvm::Value* SizeOf::genCode(CodeGenerator& generator) {
       return generator.getBuilder().getInt64(generator.getTypeSize(type));
     }
 
-    if (generator.findVariable(identifier_) != nullptr) {
-      VarType* varType = generator.findVariableType(identifier_);
+    if (generator.symbols().findVariable(identifier_) != nullptr) {
+      VarType* varType = generator.symbols().findVariableType(identifier_);
       return generator.getBuilder().getInt64(
           generator.getTypeSize(vartype::memoryAccessType(varType, generator)));
     }

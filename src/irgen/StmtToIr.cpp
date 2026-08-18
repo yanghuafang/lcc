@@ -86,7 +86,7 @@ llvm::Value* IfStmt::genCode(CodeGenerator& generator) {
   func->insert(func->end(), thenBlock);
   generator.getBuilder().SetInsertPoint(thenBlock);
   if (thenStmt_ != nullptr) {
-    ScopedSymbolTable thenScope(generator);
+    ScopedSymbolTable thenScope(generator.symbols());
     generateStmt(generator, thenStmt_);
   }
   iridiom::terminateBlockByBr(generator.getBuilder(), endBlock);
@@ -94,7 +94,7 @@ llvm::Value* IfStmt::genCode(CodeGenerator& generator) {
   func->insert(func->end(), elseBlock);
   generator.getBuilder().SetInsertPoint(elseBlock);
   if (elseStmt_ != nullptr) {
-    ScopedSymbolTable elseScope(generator);
+    ScopedSymbolTable elseScope(generator.symbols());
     generateStmt(generator, elseStmt_);
   }
   iridiom::terminateBlockByBr(generator.getBuilder(), endBlock);
@@ -189,15 +189,15 @@ llvm::Value* SwitchStmt::genCode(CodeGenerator& generator) {
     }
   }
 
-  ScopedSymbolTable switchScope(generator);
+  ScopedSymbolTable switchScope(generator.symbols());
   for (size_t i = 0; i < caseStmtList_->size(); ++i) {
     func->insert(func->end(), caseBlocks[i]);
     generator.getBuilder().SetInsertPoint(caseBlocks[i]);
 
-    generator.enterSwitch(caseBlocks.back());
-    generator.setSwitchFallthroughBlock(caseBlocks[i + 1]);
+    generator.controlFlow().enterSwitch(caseBlocks.back());
+    generator.controlFlow().setSwitchFallthroughBlock(caseBlocks[i + 1]);
     caseStmtList_->at(i)->genCode(generator);
-    generator.leaveSwitch();
+    generator.controlFlow().leaveSwitch();
   }
 
   if (caseBlocks.back()->hasNPredecessorsOrMore(1)) {
@@ -227,7 +227,8 @@ llvm::Value* CaseStmt::genCode(CodeGenerator& generator) {
   }
 
   // No break: fall through to the next case (or switch.end on the last case).
-  llvm::BasicBlock* fallthroughBlock = generator.getSwitchFallthroughBlock();
+  llvm::BasicBlock* fallthroughBlock =
+      generator.controlFlow().getSwitchFallthroughBlock();
   if (fallthroughBlock == nullptr) {
     throw std::logic_error("Case fall-through outside switch!");
   }
@@ -251,7 +252,7 @@ llvm::Value* ForStmt::genCode(CodeGenerator& generator) {
 
   std::unique_ptr<ScopedSymbolTable> initScope;
   if (initial_ != nullptr) {
-    initScope = std::make_unique<ScopedSymbolTable>(generator);
+    initScope = std::make_unique<ScopedSymbolTable>(generator.symbols());
     generateStmt(generator, initial_);
   }
 
@@ -275,10 +276,10 @@ llvm::Value* ForStmt::genCode(CodeGenerator& generator) {
   func->insert(func->end(), loopBlock);
   generator.getBuilder().SetInsertPoint(loopBlock);
   if (loopBody_ != nullptr) {
-    generator.enterLoop(updateBlock, endBlock);
-    ScopedSymbolTable loopScope(generator);
+    generator.controlFlow().enterLoop(updateBlock, endBlock);
+    ScopedSymbolTable loopScope(generator.symbols());
     generateStmt(generator, loopBody_);
-    generator.leaveLoop();
+    generator.controlFlow().leaveLoop();
   }
 
   iridiom::terminateBlockByBr(generator.getBuilder(), updateBlock);
@@ -317,10 +318,10 @@ llvm::Value* DoStmt::genCode(CodeGenerator& generator) {
   func->insert(func->end(), loopBlock);
   generator.getBuilder().SetInsertPoint(loopBlock);
   if (loopBody_ != nullptr) {
-    generator.enterLoop(conditionBlock, endBlock);
-    ScopedSymbolTable loopScope(generator);
+    generator.controlFlow().enterLoop(conditionBlock, endBlock);
+    ScopedSymbolTable loopScope(generator.symbols());
     generateStmt(generator, loopBody_);
-    generator.leaveLoop();
+    generator.controlFlow().leaveLoop();
   }
 
   iridiom::terminateBlockByBr(generator.getBuilder(), conditionBlock);
@@ -370,10 +371,10 @@ llvm::Value* WhileStmt::genCode(CodeGenerator& generator) {
   func->insert(func->end(), loopBlock);
   generator.getBuilder().SetInsertPoint(loopBlock);
   if (loopBody_ != nullptr) {
-    generator.enterLoop(conditionBlock, endBlock);
-    ScopedSymbolTable loopScope(generator);
+    generator.controlFlow().enterLoop(conditionBlock, endBlock);
+    ScopedSymbolTable loopScope(generator.symbols());
     generateStmt(generator, loopBody_);
-    generator.leaveLoop();
+    generator.controlFlow().leaveLoop();
   }
 
   iridiom::terminateBlockByBr(generator.getBuilder(), conditionBlock);
@@ -386,7 +387,8 @@ llvm::Value* WhileStmt::genCode(CodeGenerator& generator) {
 
 llvm::Value* ContinueStmt::genCode(CodeGenerator& generator) {
   generator.setDebugLocation(loc());
-  llvm::BasicBlock* continueToBlock = generator.getContinueBlock();
+  llvm::BasicBlock* continueToBlock =
+      generator.controlFlow().getContinueBlock();
   if (continueToBlock == nullptr) {
     throw std::logic_error("Continue must be in a loop!");
   }
@@ -397,7 +399,7 @@ llvm::Value* ContinueStmt::genCode(CodeGenerator& generator) {
 
 llvm::Value* BreakStmt::genCode(CodeGenerator& generator) {
   generator.setDebugLocation(loc());
-  llvm::BasicBlock* breakToBlock = generator.getBreakBlock();
+  llvm::BasicBlock* breakToBlock = generator.controlFlow().getBreakBlock();
   if (breakToBlock == nullptr) {
     throw std::logic_error("Break must be in switch or loop!");
   }
@@ -418,7 +420,8 @@ llvm::Value* ReturnStmt::genCode(CodeGenerator& generator) {
         generator.getBuilder(), retVal_->genCode(generator),
         func->getReturnType(), retVal_->getExprTypeId(generator),
         vartype::resolvedVarTypeToTypeId(
-            generator.findFuncRetType(func->getName().str()), generator));
+            generator.symbols().findFuncRetType(func->getName().str()),
+            generator));
     if (retVal == nullptr) {
       throw std::logic_error(
           "The type of return value does not match, and can not be casted to "
@@ -438,7 +441,7 @@ llvm::Value* ReturnStmt::genCode(CodeGenerator& generator) {
 
 llvm::Value* Block::genCode(CodeGenerator& generator) {
   ScopedDebugLexicalBlock debugScope(generator, loc());
-  ScopedSymbolTable symScope(generator);
+  ScopedSymbolTable symScope(generator.symbols());
   for (Stmt* stmt : *content_) {
     if (generator.getBuilder().GetInsertBlock()->getTerminator() != nullptr) {
       // Stop code generation if encounter a terminator, such as "break".

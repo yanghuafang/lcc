@@ -78,7 +78,7 @@ BuiltinType::TypeId BinaryExpr::getExprTypeId(CodeGenerator& generator) {
 }
 
 VarType* Variable::getExprVarType(CodeGenerator& generator) {
-  return generator.findVariableType(varName_);
+  return generator.symbols().findVariableType(varName_);
 }
 
 VarType* Variable::getLValueVarType(CodeGenerator& generator) {
@@ -100,7 +100,7 @@ VarType* CommaExpr::getExprVarType(CodeGenerator& generator) {
 }
 
 VarType* FuncCall::getExprVarType(CodeGenerator& generator) {
-  return generator.findFuncRetType(funcName_);
+  return generator.symbols().findFuncRetType(funcName_);
 }
 
 VarType* StructRef::getExprVarType(CodeGenerator& generator) {

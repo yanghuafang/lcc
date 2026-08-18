@@ -147,9 +147,9 @@ void defineBlockStaticVar(CodeGenerator& generator, AST::VarInit* var,
     emitLocalStaticLazyInitEpilogue(generator, guard, contBlock);
   }
 
-  if (!generator.addVariable(var->varName_, globalVar, varType)) {
+  if (!generator.symbols().addVariable(var->varName_, globalVar, varType)) {
     globalVar->eraseFromParent();
-    if (generator.hasTypedefAliasInCurrentScope(var->varName_)) {
+    if (generator.symbols().hasTypedefAliasInCurrentScope(var->varName_)) {
       throw std::logic_error("It is not allowed to use typedef name " +
                              var->varName_ +
                              " as a variable in the same scope!");

@@ -107,8 +107,8 @@ llvm::Value* FuncDecl::genCode(CodeGenerator& generator) {
   for (Param* param : *paramList_) {
     paramVarTypes.push_back(param->varType_);
   }
-  generator.setFuncSignature(funcName_, retType_, paramVarTypes);
-  generator.addFunction(funcName_, func);
+  generator.symbols().setFuncSignature(funcName_, retType_, paramVarTypes);
+  generator.symbols().addFunction(funcName_, func);
 
   // LLVM merges symbols with the same name in one module. A prior declaration
   // and a later definition therefore share one llvm::Function; we detect that
@@ -159,7 +159,7 @@ llvm::Value* FuncDecl::genCode(CodeGenerator& generator) {
     }
 
     // Allocate symbol table for function parameters.
-    ScopedSymbolTable paramScope(generator);
+    ScopedSymbolTable paramScope(generator.symbols());
 
     size_t index = 0;
     for (auto* paramIter = func->arg_begin(); paramIter < func->arg_end();
@@ -168,8 +168,9 @@ llvm::Value* FuncDecl::genCode(CodeGenerator& generator) {
       llvm::AllocaInst* allocaInst = iridiom::createEntryBlockAlloca(
           func, paramList_->at(index)->varName_, paramTypes[index]);
       generator.getBuilder().CreateStore(paramIter, allocaInst);
-      generator.addVariable(paramList_->at(index)->varName_, allocaInst,
-                            paramList_->at(index)->varType_);
+      generator.symbols().addVariable(paramList_->at(index)->varName_,
+                                      allocaInst,
+                                      paramList_->at(index)->varType_);
       if (subprogram != nullptr) {
         generator.declareDebugAlloca(
             allocaInst, paramList_->at(index)->varName_, paramTypes[index],
@@ -178,7 +179,7 @@ llvm::Value* FuncDecl::genCode(CodeGenerator& generator) {
     }
 
     {
-      ScopedSymbolTable bodyScope(generator);
+      ScopedSymbolTable bodyScope(generator.symbols());
       funcBody_->genCode(generator);
     }
     generator.leaveFunction();
@@ -252,9 +253,10 @@ llvm::Value* VarDecl::genCode(CodeGenerator& generator) {
 
       llvm::AllocaInst* allocaInst = iridiom::createEntryBlockAlloca(
           generator.getCurrentFunction(), var->varName_, llvmVarType);
-      if (!generator.addVariable(var->varName_, allocaInst, varType)) {
+      if (!generator.symbols().addVariable(var->varName_, allocaInst,
+                                           varType)) {
         allocaInst->eraseFromParent();
-        if (generator.hasTypedefAliasInCurrentScope(var->varName_)) {
+        if (generator.symbols().hasTypedefAliasInCurrentScope(var->varName_)) {
           throw std::logic_error("It is not allowed to use typedef name " +
                                  var->varName_ +
                                  " as a variable in the same scope!");
@@ -328,8 +330,8 @@ llvm::Value* VarDecl::genCode(CodeGenerator& generator) {
       auto* globalVar = new llvm::GlobalVariable(
           generator.getModule(), llvmVarType, varType_->isConst_, linkage,
           initializer, var->varName_);
-      if (!generator.addVariable(var->varName_, globalVar, varType)) {
-        if (generator.hasTypedefAliasInCurrentScope(var->varName_)) {
+      if (!generator.symbols().addVariable(var->varName_, globalVar, varType)) {
+        if (generator.symbols().hasTypedefAliasInCurrentScope(var->varName_)) {
           throw std::logic_error("It is not allowed to use typedef name " +
                                  var->varName_ +
                                  " as a variable in the same scope!");
@@ -357,7 +359,7 @@ llvm::Value* TypeDecl::genCode(CodeGenerator& generator) {
     throw std::logic_error("Failed to define type " + varType_->typeName_);
   }
 
-  if (!generator.addType(varType_->typeName_, type)) {
+  if (!generator.symbols().addType(varType_->typeName_, type)) {
     throw std::logic_error("It is not allowed to redefine type " +
                            varType_->typeName_);
   }
@@ -387,14 +389,14 @@ llvm::Value* TypedefDecl::genCode(CodeGenerator& generator) {
     throw std::logic_error("Failed to define typedef " + aliasName_);
   }
 
-  if (!generator.addTypedefAlias(aliasName_, underlyingType_)) {
+  if (!generator.symbols().addTypedefAlias(aliasName_, underlyingType_)) {
     throw std::logic_error("It is not allowed to redefine typedef " +
                            aliasName_);
   }
 
   auto registerTypeName = [&](const std::string& typeName) {
     if (generator.findType(typeName) == nullptr) {
-      if (!generator.addType(typeName, llvmType)) {
+      if (!generator.symbols().addType(typeName, llvmType)) {
         throw std::logic_error("It is not allowed to redefine type " +
                                typeName);
       }

@@ -148,7 +148,9 @@ lcc/
 │   │   ├── IrIdioms.*           # alloca, block terminator, load/store
 │   │   ├── ArrayInitializer.*   # array bounds; brace/string init, local and global
 │   │   ├── StaticLocal.*        # block-scope static: module global + lazy-init guard
-│   │   ├── CodeGenerator.*      # LLVM context/module, scoped symbol tables
+│   │   ├── SymbolTable.*        # scoped name lookup (no IR emitted)
+│   │   ├── ControlFlowContext.* # where break and continue jump to
+│   │   ├── CodeGenerator.*      # LLVM context/module; composes the two above
 │   │   └── DebugInfoBuilder.*   # DWARF debug info (-g)
 │   ├── opt/                     # middle-end (LLVM New Pass Manager)
 │   │   ├── IrOptimizer.*        # pass pipeline

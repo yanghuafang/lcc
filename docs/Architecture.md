@@ -139,7 +139,7 @@ Two properties are worth stating because they are easy to lose:
 
 ### `irgen/` — AST to LLVM IR
 
-`irgen/` is **seven walkers, five emission services, and one shared context.**
+`irgen/` is **seven walkers, five emission services, two bookkeeping subsystems, and one shared context.**
 
 The walk is split by node category — the same `Decl` / `Stmt` / `Expr` / `VarType` taxonomy the grammar and `ast/Nodes.hpp` already use, so the file to open follows from the kind of node you are chasing. `Expr` is four files rather than one, because C's expression grammar is the largest part of the language. All seven define members of classes declared in `ast/Nodes.hpp`, so none of them has a header of its own.
 
@@ -153,7 +153,7 @@ The walk is split by node category — the same `Decl` / `Stmt` / `Expr` / `VarT
 | `irgen/DeclToIr.cpp` | `genCode()` for `Program`, `FuncDecl`, `VarDecl`, `TypeDecl`, `TypedefDecl`. `VarDecl::genCode` reads as a decision table — resolve bounds, build the nested `ArrayType`, pick storage, initialize — and delegates the initializing itself to the two services below |
 | `irgen/TypeToIr.cpp` | `VarType::getType()` for each type node — builtin, pointer, array, struct, union, enum, typedef alias. Materialization only; emits no instructions |
 
-The services below are called from any of the four, which is why they have headers and the walkers do not.
+The services below are called from any of the seven, which is why they have headers and the walkers do not.
 
 | Service | Responsibility |
 | ------ | ---------------- |
@@ -162,8 +162,18 @@ The services below are called from any of the four, which is why they have heade
 | `irgen/IrIdioms.cpp` / `.hpp` | `namespace iridiom` — the IR shapes lcc repeats: entry-block alloca, guarded block terminator, load/store through an lvalue |
 | `irgen/ArrayInitializer.cpp` / `.hpp` | `namespace arrayinit` — array declarator bound inference, and the four array initializer shapes: local/global x brace/string. A global initializer is *assembled* as an `llvm::Constant`, a local one *emitted* as GEP/store pairs |
 | `irgen/StaticLocal.cpp` / `.hpp` | `namespace staticlocal` — block-scope `static`: one module global per (function, name), plus the lazy-init guard that splits a basic block when the initializer is not constant. The only place a *declaration* creates control flow |
-| `irgen/CodeGenerator.cpp` / `.hpp` | Shared context: `LLVMContext`, `IRBuilder`, `Module`, and scoped symbol tables for variables, types, typedef aliases, constants, and function signatures. Implements `TypeEnv`, and drives `opt/` and `backend/` |
 | `irgen/DebugInfoBuilder.cpp` / `.hpp` | DWARF via `DIBuilder` when `-g` is set |
+
+Two of those are pure bookkeeping — they record what the walk has seen and emit no IR at all, which is what makes them readable, and testable, without a compiler around them.
+
+| Subsystem | Responsibility |
+| ------ | ---------------- |
+| `irgen/SymbolTable.cpp` / `.hpp` | C's name lookup: a stack of scopes walked innermost-outward, so an inner declaration shadows an outer one. Variables, functions, types, and enum constants share one map discriminated by a tag; typedef aliases get their own, so a typedef name and a variable of the same name do not collide. Also the unscoped `llvm::StructType*` → AST registries that member access reads back, and the recorded function signatures a call site casts against. `ScopedSymbolTable` lives here, beside the stack it balances |
+| `irgen/ControlFlowContext.cpp` / `.hpp` | Where `break` and `continue` jump to. Neither statement carries a target, so a loop pushes both and a switch pushes only the break target; each statement reads the innermost entry. This is why nesting a loop inside a switch inside a loop needs no special handling in `StmtToIr.cpp` |
+
+| Context | Responsibility |
+| ------ | ---------------- |
+| `irgen/CodeGenerator.cpp` / `.hpp` | What genuinely needs LLVM: `LLVMContext`, `IRBuilder`, `Module`, the function currently being emitted, and the global-initializer insert point. Composes the two subsystems above, reached through `symbols()` and `controlFlow()`. Implements `TypeEnv` — those seven overrides forward into `symbols()` so that `types/` and the irgen services never have to know a `SymbolTable` exists |
 
 ### `opt/` and `backend/` — middle end and back end
 
@@ -192,6 +202,8 @@ Everything **generated** lives in `src/generated/` and is never edited by hand: 
 | New syntax | `frontend/Parser.y`, then a node in `ast/Nodes.hpp`, its `genCode()` in the matching `irgen/*ToIr.cpp`, and its destructor in `ast/Ownership.cpp` |
 | Different IR for existing syntax | that node’s `genCode()` in the matching `irgen/*ToIr.cpp`, an operator in `irgen/Operators.cpp`, a conversion in `irgen/TypeConversion.cpp`, or an IR idiom in `irgen/IrIdioms.cpp` |
 | What type an expression has | `irgen/ExprTypeQuery.cpp`, or `types/VarTypeQuery.cpp` if the question is about a `VarType` rather than an `Expr` |
+| Scope or name lookup | `irgen/SymbolTable.cpp` |
+| `break` / `continue` targets | `irgen/ControlFlowContext.cpp` |
 | Array bounds or an array initializer | `irgen/ArrayInitializer.cpp` |
 | Block-scope `static` | `irgen/StaticLocal.cpp` |
 | New IR pass | `opt/passes/`, registered in `opt/IrOptimizer.cpp` |
