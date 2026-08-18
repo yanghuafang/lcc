@@ -86,14 +86,18 @@ jobs:
     name: Sanitizers
     runs-on: ubuntu-24.04
     env:
-      # Leak detection is off on purpose. LeakSanitizer rides along with ASan on
-      # Linux, and lcc still has two known leaks it would fail on: an orphaned
-      # llvm::BasicBlock in SwitchStmt::genCode, and the AST nodes held by a
-      # partial AST::Decls when a parse fails. Neither is a memory *error*, which
-      # is what this job is for. Turn this on once both are fixed — and expect to
-      # check whether LLVM's own exit-time allocations need suppressing, since
-      # lcc never calls llvm_shutdown().
-      ASAN_OPTIONS: detect_leaks=0
+      # LeakSanitizer rides along with ASan on Linux, and is only useful now that
+      # the leaks it would have tripped over are gone: the orphaned
+      # llvm::BasicBlock in SwitchStmt::genCode is fixed, and main holds an
+      # llvm_shutdown_obj so LLVM's own ManagedStatic registries are released at
+      # exit. This is the only place any of that is verified — LeakSanitizer does
+      # not run on macOS, so a developer build there cannot check it.
+      #
+      # One known leak remains and is deliberately not covered: the AST nodes a
+      # partial AST::Decls holds when a parse fails. No test in the suite fails
+      # to parse, so this job never reaches it. Adding such a test means fixing
+      # that leak first.
+      ASAN_OPTIONS: detect_leaks=1
       # A UBSan report is only actionable with a stack trace, and the runtime
       # needs to be told to collect one; the build already passes
       # -fno-sanitize-recover, so the process aborts on the first finding.
