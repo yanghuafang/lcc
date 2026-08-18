@@ -16,6 +16,15 @@
 // their own conversion rules; irgen/ExprToIr.cpp holds everything that is not
 // an operator at all.
 //
+// == This file is not irgen/Operators.hpp ==
+//
+// Everything here is an AST member: it reads lhs_ and rhs_, evaluates them,
+// and asks them their C types. The instruction each operator finally becomes —
+// sdiv vs udiv, a GEP for pointer arithmetic, the usual arithmetic conversions
+// applied first — is one level down in irgen/Operators.hpp (`ops::`), which
+// sees only llvm::Value* and AST::BuiltinTypeId and never an AST node. That
+// header explains why the rules live apart from the walk.
+//
 // == Why every operator appears twice ==
 //
 // `a + b` and `a += b` compute the same thing and differ only in what they do

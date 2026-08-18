@@ -22,10 +22,10 @@ class Type;
 //   node::genCode()     ->  LLVM IR via CodeGenerator, convert, and ops
 //   node::genGraph()    ->  Graphviz DOT fragments (written by DotFileWriter)
 //
-// The nodes declared here are implemented across several files: the four
-// irgen/*ToIr.cpp walkers, split by node category (genCode / genCodePtr and the
-// type queries feeding them), dot/AstToDot.cpp (genGraph), and
-// ast/Ownership.cpp (destructors).
+// The nodes declared here are implemented across several files: the seven
+// walkers under irgen/, split by node category (genCode / genCodePtr, with the
+// type queries that feed them in irgen/ExprTypeQuery.cpp), dot/AstToDot.cpp
+// (genGraph), and ast/Ownership.cpp (destructors).
 //
 // There is no separate semantic-analysis pass. getExprTypeId() and
 // getExprVarType() supply C type information while genCode() emits IR.
@@ -37,16 +37,23 @@ class Type;
 // tears down one translation unit.
 //
 // This header is one file rather than four (Decls/Stmts/Exprs/Types, mirroring
-// the walkers) because the hierarchy will not separate: Expr derives from Stmt,
-// statements hold Expr*, expressions and declarations both hold VarType*. Any
-// split would need complete types across every boundary, and every consumer
-// includes all four anyway. The banners below serve that navigation instead:
+// the node categories) because the hierarchy will not separate: Expr derives
+// from Stmt, statements hold Expr*, expressions and declarations both hold
+// VarType*. Any split would need complete types across every boundary, and
+// every consumer includes all four anyway. The banners below serve that
+// navigation instead:
 //
 //   Core          Node, Program, Stmt base
 //   Declarations  -> irgen/DeclToIr.cpp
 //   Types         -> irgen/TypeToIr.cpp
 //   Statements    -> irgen/StmtToIr.cpp
-//   Expressions   -> irgen/ExprToIr.cpp
+//   Expressions   -> irgen/ExprToIr.cpp       variables, literals, calls,
+//                                             member access, subscript, cast,
+//                                             sizeof, unary
+//                    irgen/OperatorToIr.cpp   assign, arithmetic, inc/dec,
+//                                             bitwise, shift
+//                    irgen/LogicToIr.cpp      &&, ||, !, comparisons, ?:
+//                    irgen/ExprTypeQuery.cpp  getExpr*/getLValue* for all three
 
 // ===========================================================================
 // Forward declarations and container aliases
@@ -795,7 +802,8 @@ class Block : public Stmt {
 };
 
 // ===========================================================================
-// Expressions — Expr : Stmt         lowered in irgen/ExprToIr.cpp
+// Expressions — Expr : Stmt         lowered in irgen/ExprToIr.cpp,
+//                                   OperatorToIr.cpp, and LogicToIr.cpp
 //
 // The largest section: 58 classes, because C's expression grammar is the
 // largest part of the language. Expr derives from Stmt because a bare

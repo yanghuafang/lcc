@@ -108,7 +108,7 @@ llvm::Value* castToBool(llvm::IRBuilder<>& builder, llvm::Value* value) {
     return value;
   }
   // `if (a < b)` reaches here holding the int the comparison operators are
-  // required to produce (boolToInt in irgen/ExprToIr.cpp), so the bit we want
+  // required to produce (boolToInt in irgen/LogicToIr.cpp), so the bit we want
   // is one zext away. Take it back rather than testing the widened value
   // against zero: without this, every comparison used as a condition would
   // emit icmp -> zext i1 to i32 -> icmp ne i32, and read as three
