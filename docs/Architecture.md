@@ -52,6 +52,8 @@ the file name is the unabbreviated version of the same idea:
 | `convert::` | `irgen/TypeConversion.hpp` |
 | `ops::` | `irgen/Operators.hpp` |
 | `iridiom::` | `irgen/IrIdioms.hpp` |
+| `arrayinit::` | `irgen/ArrayInitializer.hpp` |
+| `staticlocal::` | `irgen/StaticLocal.hpp` |
 | `vartype::` | `types/VarTypeQuery.hpp` |
 | `typerules::` | `types/TypeRules.hpp` |
 | `dotfile::` | `dot/DotFileWriter.hpp` |
@@ -137,7 +139,7 @@ Two properties are worth stating because they are easy to lose:
 
 ### `irgen/` — AST to LLVM IR
 
-`irgen/` is **four walkers, three emission services, and one shared context.**
+`irgen/` is **four walkers, five emission services, and one shared context.**
 
 The walk is split by node category — the same `Decl` / `Stmt` / `Expr` / `VarType` taxonomy the grammar and `ast/Nodes.hpp` already use, so the file to open follows from the kind of node you are chasing. All four define members of classes declared in `ast/Nodes.hpp`, so none of them has a header of its own.
 
@@ -145,7 +147,7 @@ The walk is split by node category — the same `Decl` / `Stmt` / `Expr` / `VarT
 | ------ | ---------------- |
 | `irgen/ExprToIr.cpp` | `genCode()` / `genCodePtr()` for every `Expr` node, plus the `getExpr*` / `getLValue*` type queries that stand in for a semantic-analysis pass. The largest of the four, because C's expression grammar is |
 | `irgen/StmtToIr.cpp` | `genCode()` for every `Stmt` node, plus `FuncBody` (a statement list). Where lcc's basic-block structure is built: if/else joins, loop header/body/latch, switch dispatch, break/continue targets |
-| `irgen/DeclToIr.cpp` | `genCode()` for `Program`, `FuncDecl`, `VarDecl`, `TypeDecl`, `TypedefDecl` — and everything `VarDecl::genCode` delegates to: array declarator bounds, brace/string initializers, block-scope statics with their lazy-init guard |
+| `irgen/DeclToIr.cpp` | `genCode()` for `Program`, `FuncDecl`, `VarDecl`, `TypeDecl`, `TypedefDecl`. `VarDecl::genCode` reads as a decision table — resolve bounds, build the nested `ArrayType`, pick storage, initialize — and delegates the initializing itself to the two services below |
 | `irgen/TypeToIr.cpp` | `VarType::getType()` for each type node — builtin, pointer, array, struct, union, enum, typedef alias. Materialization only; emits no instructions |
 
 The services below are called from any of the four, which is why they have headers and the walkers do not.
@@ -155,6 +157,8 @@ The services below are called from any of the four, which is why they have heade
 | `irgen/Operators.cpp` / `.hpp` | `namespace ops` — one function per C binary operator (arithmetic, bitwise/shift, comparison), each shared by the operator and its compound-assignment twin |
 | `irgen/TypeConversion.cpp` / `.hpp` | `namespace convert` — emits C's conversions: casts, promotions, and the usual arithmetic conversions applied to an operand pair. The emission half of `types/TypeRules.hpp`, which decides what those conversions should be |
 | `irgen/IrIdioms.cpp` / `.hpp` | `namespace iridiom` — the IR shapes lcc repeats: entry-block alloca, guarded block terminator, load/store through an lvalue |
+| `irgen/ArrayInitializer.cpp` / `.hpp` | `namespace arrayinit` — array declarator bound inference, and the four array initializer shapes: local/global x brace/string. A global initializer is *assembled* as an `llvm::Constant`, a local one *emitted* as GEP/store pairs |
+| `irgen/StaticLocal.cpp` / `.hpp` | `namespace staticlocal` — block-scope `static`: one module global per (function, name), plus the lazy-init guard that splits a basic block when the initializer is not constant. The only place a *declaration* creates control flow |
 | `irgen/CodeGenerator.cpp` / `.hpp` | Shared context: `LLVMContext`, `IRBuilder`, `Module`, and scoped symbol tables for variables, types, typedef aliases, constants, and function signatures. Implements `TypeEnv`, and drives `opt/` and `backend/` |
 | `irgen/DebugInfoBuilder.cpp` / `.hpp` | DWARF via `DIBuilder` when `-g` is set |
 
@@ -184,6 +188,8 @@ Everything **generated** lives in `src/generated/` and is never edited by hand: 
 | New token or literal form | `frontend/Lexer.l` |
 | New syntax | `frontend/Parser.y`, then a node in `ast/Nodes.hpp`, its `genCode()` in the matching `irgen/*ToIr.cpp`, and its destructor in `ast/Ownership.cpp` |
 | Different IR for existing syntax | that node’s `genCode()` in `irgen/ExprToIr.cpp` / `StmtToIr.cpp` / `DeclToIr.cpp`, an operator in `irgen/Operators.cpp`, a conversion in `irgen/TypeConversion.cpp`, or an IR idiom in `irgen/IrIdioms.cpp` |
+| Array bounds or an array initializer | `irgen/ArrayInitializer.cpp` |
+| Block-scope `static` | `irgen/StaticLocal.cpp` |
 | New IR pass | `opt/passes/`, registered in `opt/IrOptimizer.cpp` |
 | New machine pass | `backend/passes/`, spliced in `backend/TargetBackend.cpp` |
 | New CLI flag | `driver/main.cpp`, then document in [Usage.md](Usage.md) |

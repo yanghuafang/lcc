@@ -138,11 +138,13 @@ lcc/
 │   ├── irgen/                   # AST -> LLVM IR
 │   │   ├── ExprToIr.cpp         # walker: genCode() for every Expr node
 │   │   ├── StmtToIr.cpp         # walker: statements, basic blocks, break/continue
-│   │   ├── DeclToIr.cpp         # walker: declarations, initializers, block statics
+│   │   ├── DeclToIr.cpp         # walker: declarations and their storage
 │   │   ├── TypeToIr.cpp         # walker: AST VarType -> llvm::Type
 │   │   ├── Operators.*          # one function per C operator (arithmetic, bitwise, compare)
 │   │   ├── TypeConversion.*     # emits C conversions (pairs with types/TypeRules)
 │   │   ├── IrIdioms.*           # alloca, block terminator, load/store
+│   │   ├── ArrayInitializer.*   # array bounds; brace/string init, local and global
+│   │   ├── StaticLocal.*        # block-scope static: module global + lazy-init guard
 │   │   ├── CodeGenerator.*      # LLVM context/module, scoped symbol tables
 │   │   └── DebugInfoBuilder.*   # DWARF debug info (-g)
 │   ├── opt/                     # middle-end (LLVM New Pass Manager)
