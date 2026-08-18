@@ -82,6 +82,7 @@ Other flags:
 |------|--------|
 | `--parse` | Regenerate `src/generated/Parser.counterexamples` (Bison `-Wcounterexamples`) before building; combinable with a build mode, e.g. `./build-lcc.sh --debug --parse` |
 | `--asan` | Build `lcc` with AddressSanitizer (`-DLCC_ASAN=ON`) |
+| `--ubsan` | Build `lcc` with UndefinedBehaviorSanitizer (`-DLCC_UBSAN=ON`); combinable with `--asan` |
 | `--werror` | Fail the build on any compiler warning (`-DLCC_WERROR=ON`) |
 
 ### Warnings and sanitizers
@@ -112,6 +113,22 @@ CI runs exactly this on Ubuntu. Note that it sets `ASAN_OPTIONS=detect_leaks=0`:
 LeakSanitizer comes along with ASan on Linux, and `lcc` has two known leaks it
 would stop on — an orphaned `llvm::BasicBlock` in `SwitchStmt::genCode`, and the
 AST nodes a partial `AST::Decls` holds when a parse fails.
+
+`--ubsan` covers what ASan does not: signed overflow and out-of-range shifts in
+the constant folder and the integer conversions, and out-of-range `enum` and
+`bool` values loaded out of the AST and the generated parser. The two compose,
+which is how CI builds them:
+
+```bash
+./build-lcc.sh --asan --ubsan
+UBSAN_OPTIONS=print_stacktrace=1 ./compile-tests.sh
+```
+
+The build passes `-fno-sanitize-recover=all`, so a finding aborts `lcc` rather
+than printing and continuing — without it a failure only shows up as noise in
+the log. `vptr` checking is switched off: it needs RTTI on both sides of a cast,
+and the packaged LLVM builds are often `-fno-rtti`, which would flag every
+downcast of an `llvm::Value`.
 
 ### Manual build (optional)
 

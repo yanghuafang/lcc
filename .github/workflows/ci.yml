@@ -78,10 +78,12 @@ jobs:
         run: ./bench.sh --smoke
 
   # lcc compiling the suite while instrumented, which is where a use-after-free
-  # on the AST or a stale llvm::Value* would show up. One platform is enough:
-  # the findings are host-independent, and an ASan build is the slowest job here.
+  # on the AST, a stale llvm::Value*, or signed overflow in the constant folder
+  # would show up. ASan and UBSan share one job because they compose into a
+  # single build, and that build is the slowest thing in this file. One platform
+  # is enough: the findings are host-independent.
   asan:
-    name: AddressSanitizer
+    name: Sanitizers
     runs-on: ubuntu-24.04
     env:
       # Leak detection is off on purpose. LeakSanitizer rides along with ASan on
@@ -92,6 +94,10 @@ jobs:
       # check whether LLVM's own exit-time allocations need suppressing, since
       # lcc never calls llvm_shutdown().
       ASAN_OPTIONS: detect_leaks=0
+      # A UBSan report is only actionable with a stack trace, and the runtime
+      # needs to be told to collect one; the build already passes
+      # -fno-sanitize-recover, so the process aborts on the first finding.
+      UBSAN_OPTIONS: print_stacktrace=1
     steps:
       - uses: actions/checkout@v4
 
@@ -99,14 +105,14 @@ jobs:
         working-directory: scripts
         run: ./install-deps-ubuntu.sh
 
-      - name: Build lcc with ASan
+      - name: Build lcc with ASan and UBSan
         working-directory: scripts
-        run: ./build-lcc.sh --asan
+        run: ./build-lcc.sh --asan --ubsan
 
       # Both modes: -O0 and -O2 take different paths through the middle end, and
       # only the instrumented lcc process matters here — the programs it emits
-      # are not themselves built with ASan.
-      - name: Compile tests under ASan
+      # are not themselves built with the sanitizers.
+      - name: Compile tests under sanitizers
         working-directory: scripts
         run: |
           ./compile-tests.sh

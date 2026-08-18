@@ -14,6 +14,9 @@
 #                                            bison's explanation of each grammar
 #                                            conflict — see docs/ParserConflicts.md
 #   --asan                                   build lcc with AddressSanitizer
+#   --ubsan                                  build lcc with
+#                                            UndefinedBehaviorSanitizer;
+#                                            combinable with --asan
 #   --werror                                 fail the build on any warning
 #
 # Override the job count with LCC_BUILD_JOBS=N.
@@ -24,6 +27,7 @@ build_type="Release"
 build_mode=""
 parse_counterexamples=false
 asan=OFF
+ubsan=OFF
 werror=OFF
 
 while [[ $# -gt 0 ]]; do
@@ -63,6 +67,10 @@ while [[ $# -gt 0 ]]; do
       asan=ON
       shift
       ;;
+    --ubsan)
+      ubsan=ON
+      shift
+      ;;
     --werror)
       werror=ON
       shift
@@ -70,7 +78,7 @@ while [[ $# -gt 0 ]]; do
     *)
       echo "Unknown option: $1" >&2
       echo "Usage: $0 [--debug|--release|--relwithdebinfo] [--parse] [--asan]" \
-           "[--werror]" >&2
+           "[--ubsan] [--werror]" >&2
       exit 1
       ;;
   esac
@@ -87,6 +95,7 @@ cmake -S ../ -B ../../lcc-build \
   -DCMAKE_BUILD_TYPE="${build_type}" \
   -DLLVM_DIR="${LLVM_DIR}" \
   -DLCC_ASAN="${asan}" \
+  -DLCC_UBSAN="${ubsan}" \
   -DLCC_WERROR="${werror}" \
   -DCMAKE_EXE_LINKER_FLAGS="" \
   -DCMAKE_SHARED_LINKER_FLAGS="" \
