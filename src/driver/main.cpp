@@ -1,3 +1,5 @@
+#include <llvm/Support/ManagedStatic.h>
+
 #include <argparse/argparse.hpp>
 #include <cstdio>
 #include <iostream>
@@ -60,6 +62,22 @@ class AstRootOwner {
 }  // namespace
 
 int main(int argc, char* argv[]) {
+  // Tears down LLVM's ManagedStatic registries — the legacy pass registry that
+  // TargetBackend's PassManager populates, and the command-line option table
+  // inside libLLVM — on the way out. LLVM allocates these lazily on first use
+  // and never frees them itself, so without this they are still reachable-but
+  // -owned-by-nobody at exit, which is what LeakSanitizer reports.
+  //
+  // Declared before every other local in main so it is destroyed *last*: the
+  // registries must outlive CodeGenerator's LLVMContext and the AST, and
+  // shutting them down while LLVM objects are still alive is undefined. Being
+  // first also covers the early `return` paths below, which RAII would
+  // otherwise be the only thing to catch.
+  //
+  // This does not free everything LLVM allocates — only the ManagedStatic set.
+  // Anything owned by an LLVMContext is freed when that context is destroyed.
+  llvm::llvm_shutdown_obj shutdown;
+
   // Arguments parsing...
 
   argparse::ArgumentParser parser("lcc");
