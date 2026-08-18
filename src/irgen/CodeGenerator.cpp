@@ -3,6 +3,7 @@
 #include <llvm/IR/DebugInfoMetadata.h>
 #include <llvm/IR/Function.h>
 #include <llvm/IR/Instructions.h>
+#include <llvm/IR/Module.h>
 #include <llvm/IR/Verifier.h>
 #include <llvm/Support/raw_ostream.h>
 
@@ -15,39 +16,22 @@
 
 CodeGenerator::CodeGenerator()
     : builder_(context_),
-      module_(new llvm::Module("lcc", context_)),
-      structTypeTable_(new StructTypeTable),
-      unionTypeTable_(new UnionTypeTable),
+      module_(std::make_unique<llvm::Module>("lcc", context_)),
       globalBlock_(nullptr),
       globalFunc_(nullptr),
       currentBlock_(nullptr),
       currentFunc_(nullptr) {}
 
-CodeGenerator::~CodeGenerator() {
-  // Scope stacks may be unbalanced after a failed lowering; drain owned tables
-  // and drop non-owning debug-scope metadata.
-  while (!symbolTableStack_.empty()) {
-    delete symbolTableStack_.back();
-    symbolTableStack_.pop_back();
-  }
-  while (!typedefTableStack_.empty()) {
-    delete typedefTableStack_.back();
-    typedefTableStack_.pop_back();
-  }
-
-  debugScopeStack_.clear();
-
-  delete structTypeTable_;
-  structTypeTable_ = nullptr;
-  delete unionTypeTable_;
-  unionTypeTable_ = nullptr;
-  delete module_;
-  module_ = nullptr;
-}
+// Out of line, not `= default` in the header: module_ and debugInfo_ are
+// unique_ptrs to types the header only forward-declares, so the deleters have
+// to be instantiated where those types are complete. Every member cleans up
+// after itself, including the scope stacks — which may still be non-empty here
+// if a lowering threw partway through a nested scope.
+CodeGenerator::~CodeGenerator() = default;
 
 void CodeGenerator::pushSymbolTable() {
-  symbolTableStack_.push_back(new SymbolTable);
-  typedefTableStack_.push_back(new TypedefTable);
+  symbolTableStack_.emplace_back();
+  typedefTableStack_.emplace_back();
 }
 
 void CodeGenerator::popSymbolTable() {
@@ -55,11 +39,9 @@ void CodeGenerator::popSymbolTable() {
     return;
   }
 
-  delete symbolTableStack_.back();
   symbolTableStack_.pop_back();
 
   if (!typedefTableStack_.empty()) {
-    delete typedefTableStack_.back();
     typedefTableStack_.pop_back();
   }
 }
@@ -73,15 +55,16 @@ llvm::TypeSize CodeGenerator::getTypeSize(llvm::Type* type) {
   return module_->getDataLayout().getTypeAllocSize(type);
 }
 
+// Innermost scope first. Reverse iterators rather than `end() - 1` walking down
+// to `begin()`: that form has to step one past begin() to end the loop, and
+// forming an iterator before the first element is undefined even when it is
+// never dereferenced. rbegin()/rend() expresses the same walk with no
+// out-of-range iterator in it, and needs no empty-stack guard either.
 llvm::Type* CodeGenerator::findType(const std::string& typeName) {
-  if (symbolTableStack_.empty()) {
-    return nullptr;
-  }
-
-  for (auto iter = symbolTableStack_.end() - 1;
-       iter >= symbolTableStack_.begin(); --iter) {
-    auto pairIter = (*iter)->find(typeName);
-    if (pairIter != (*iter)->end()) {
+  for (auto iter = symbolTableStack_.rbegin(); iter != symbolTableStack_.rend();
+       ++iter) {
+    auto pairIter = iter->find(typeName);
+    if (pairIter != iter->end()) {
       return pairIter->second.getType();
     }
   }
@@ -94,26 +77,21 @@ bool CodeGenerator::addType(const std::string& typeName, llvm::Type* type) {
     return false;
   }
 
-  SymbolTable* topSymbolTable = symbolTableStack_.back();
-  auto pairIter = topSymbolTable->find(typeName);
-  if (pairIter != topSymbolTable->end()) {
+  SymbolTable& topSymbolTable = symbolTableStack_.back();
+  if (topSymbolTable.find(typeName) != topSymbolTable.end()) {
     // Type already exists!
     return false;
   }
 
-  (*topSymbolTable)[typeName] = Symbol(type);
+  topSymbolTable[typeName] = Symbol(type);
   return true;
 }
 
 AST::VarType* CodeGenerator::findTypedefAlias(const std::string& aliasName) {
-  if (typedefTableStack_.empty()) {
-    return nullptr;
-  }
-
-  for (auto iter = typedefTableStack_.end() - 1;
-       iter >= typedefTableStack_.begin(); --iter) {
-    auto pairIter = (*iter)->find(aliasName);
-    if (pairIter != (*iter)->end()) {
+  for (auto iter = typedefTableStack_.rbegin();
+       iter != typedefTableStack_.rend(); ++iter) {
+    auto pairIter = iter->find(aliasName);
+    if (pairIter != iter->end()) {
       return pairIter->second;
     }
   }
@@ -127,35 +105,30 @@ bool CodeGenerator::addTypedefAlias(const std::string& aliasName,
     return false;
   }
 
-  TypedefTable* topTable = typedefTableStack_.back();
-  auto pairIter = topTable->find(aliasName);
-  if (pairIter != topTable->end()) {
+  TypedefTable& topTable = typedefTableStack_.back();
+  if (topTable.find(aliasName) != topTable.end()) {
     return false;
   }
 
-  (*topTable)[aliasName] = varType;
+  topTable[aliasName] = varType;
   return true;
 }
 
 bool CodeGenerator::hasTypedefAliasInCurrentScope(
-    const std::string& aliasName) {
+    const std::string& aliasName) const {
   if (typedefTableStack_.empty()) {
     return false;
   }
 
-  TypedefTable* topTable = typedefTableStack_.back();
-  return topTable->find(aliasName) != topTable->end();
+  const TypedefTable& topTable = typedefTableStack_.back();
+  return topTable.find(aliasName) != topTable.end();
 }
 
 llvm::Value* CodeGenerator::findVariable(const std::string& varName) {
-  if (symbolTableStack_.empty()) {
-    return nullptr;
-  }
-
-  for (auto iter = symbolTableStack_.end() - 1;
-       iter >= symbolTableStack_.begin(); --iter) {
-    auto pairIter = (*iter)->find(varName);
-    if (pairIter != (*iter)->end()) {
+  for (auto iter = symbolTableStack_.rbegin(); iter != symbolTableStack_.rend();
+       ++iter) {
+    auto pairIter = iter->find(varName);
+    if (pairIter != iter->end()) {
       return pairIter->second.getVariable();
     }
   }
@@ -169,9 +142,8 @@ bool CodeGenerator::addVariable(const std::string& varName, llvm::Value* var,
     return false;
   }
 
-  SymbolTable* topSymbolTable = symbolTableStack_.back();
-  auto pairIter = topSymbolTable->find(varName);
-  if (pairIter != topSymbolTable->end()) {
+  SymbolTable& topSymbolTable = symbolTableStack_.back();
+  if (topSymbolTable.find(varName) != topSymbolTable.end()) {
     // Variable already exists!
     return false;
   }
@@ -180,19 +152,15 @@ bool CodeGenerator::addVariable(const std::string& varName, llvm::Value* var,
     return false;
   }
 
-  (*topSymbolTable)[varName] = Symbol(var, false, varType);
+  topSymbolTable[varName] = Symbol(var, false, varType);
   return true;
 }
 
 AST::VarType* CodeGenerator::findVariableType(const std::string& varName) {
-  if (symbolTableStack_.empty()) {
-    return nullptr;
-  }
-
-  for (auto iter = symbolTableStack_.end() - 1;
-       iter >= symbolTableStack_.begin(); --iter) {
-    auto pairIter = (*iter)->find(varName);
-    if (pairIter != (*iter)->end()) {
+  for (auto iter = symbolTableStack_.rbegin(); iter != symbolTableStack_.rend();
+       ++iter) {
+    auto pairIter = iter->find(varName);
+    if (pairIter != iter->end()) {
       return pairIter->second.getVarType();
     }
   }
@@ -227,14 +195,10 @@ AST::VarType* CodeGenerator::findFuncParamType(const std::string& funcName,
 }
 
 llvm::Value* CodeGenerator::findConstant(const std::string& varName) {
-  if (symbolTableStack_.empty()) {
-    return nullptr;
-  }
-
-  for (auto iter = symbolTableStack_.end() - 1;
-       iter >= symbolTableStack_.begin(); --iter) {
-    auto pairIter = (*iter)->find(varName);
-    if (pairIter != (*iter)->end()) {
+  for (auto iter = symbolTableStack_.rbegin(); iter != symbolTableStack_.rend();
+       ++iter) {
+    auto pairIter = iter->find(varName);
+    if (pairIter != iter->end()) {
       return pairIter->second.getConstant();
     }
   }
@@ -247,20 +211,19 @@ bool CodeGenerator::addConstant(const std::string& varName, llvm::Value* var) {
     return false;
   }
 
-  SymbolTable* topSymbolTable = symbolTableStack_.back();
-  auto pairIter = topSymbolTable->find(varName);
-  if (pairIter != topSymbolTable->end()) {
+  SymbolTable& topSymbolTable = symbolTableStack_.back();
+  if (topSymbolTable.find(varName) != topSymbolTable.end()) {
     // Variable already exists!
     return false;
   }
 
-  (*topSymbolTable)[varName] = Symbol(var, true);
+  topSymbolTable[varName] = Symbol(var, true);
   return true;
 }
 
 AST::StructType* CodeGenerator::findStructType(llvm::StructType* type) {
-  auto pairIter = structTypeTable_->find(type);
-  if (pairIter != structTypeTable_->end()) {
+  auto pairIter = structTypeTable_.find(type);
+  if (pairIter != structTypeTable_.end()) {
     return pairIter->second;
   }
 
@@ -269,19 +232,14 @@ AST::StructType* CodeGenerator::findStructType(llvm::StructType* type) {
 
 bool CodeGenerator::addStructType(llvm::StructType* llvmType,
                                   AST::StructType* astType) {
-  auto pairIter = structTypeTable_->find(llvmType);
-  if (pairIter != structTypeTable_->end()) {
-    // Reflection on llvmType already exist!
-    return false;
-  }
-
-  (*structTypeTable_)[llvmType] = astType;
-  return true;
+  // try_emplace leaves an existing entry alone and says so, which is exactly
+  // the find-then-insert this used to spell out in two lookups.
+  return structTypeTable_.try_emplace(llvmType, astType).second;
 }
 
 AST::UnionType* CodeGenerator::findUnionType(llvm::StructType* type) {
-  auto pairIter = unionTypeTable_->find(type);
-  if (pairIter != unionTypeTable_->end()) {
+  auto pairIter = unionTypeTable_.find(type);
+  if (pairIter != unionTypeTable_.end()) {
     return pairIter->second;
   }
 
@@ -290,25 +248,14 @@ AST::UnionType* CodeGenerator::findUnionType(llvm::StructType* type) {
 
 bool CodeGenerator::addUnionType(llvm::StructType* llvmType,
                                  AST::UnionType* astType) {
-  auto pairIter = unionTypeTable_->find(llvmType);
-  if (pairIter != unionTypeTable_->end()) {
-    // Reflection on llvmType already exist!
-    return false;
-  }
-
-  (*unionTypeTable_)[llvmType] = astType;
-  return true;
+  return unionTypeTable_.try_emplace(llvmType, astType).second;
 }
 
 llvm::Function* CodeGenerator::findFunction(const std::string& funcName) {
-  if (symbolTableStack_.empty()) {
-    return nullptr;
-  }
-
-  for (auto iter = symbolTableStack_.end() - 1;
-       iter >= symbolTableStack_.begin(); --iter) {
-    auto pairIter = (*iter)->find(funcName);
-    if (pairIter != (*iter)->end()) {
+  for (auto iter = symbolTableStack_.rbegin(); iter != symbolTableStack_.rend();
+       ++iter) {
+    auto pairIter = iter->find(funcName);
+    if (pairIter != iter->end()) {
       return pairIter->second.getFunction();
     }
   }
@@ -322,18 +269,19 @@ bool CodeGenerator::addFunction(const std::string& funcName,
     return false;
   }
 
-  SymbolTable* topSymbolTable = symbolTableStack_.back();
-  auto pairIter = topSymbolTable->find(funcName);
-  if (pairIter != topSymbolTable->end()) {
+  SymbolTable& topSymbolTable = symbolTableStack_.back();
+  if (topSymbolTable.find(funcName) != topSymbolTable.end()) {
     // funcName already exists!
     return false;
   }
 
-  (*topSymbolTable)[funcName] = Symbol(func);
+  topSymbolTable[funcName] = Symbol(func);
   return true;
 }
 
-llvm::Function* CodeGenerator::getCurrentFunction() { return currentFunc_; }
+llvm::Function* CodeGenerator::getCurrentFunction() const {
+  return currentFunc_;
+}
 
 void CodeGenerator::enterFunction(llvm::Function* func) { currentFunc_ = func; }
 
@@ -382,11 +330,11 @@ void CodeGenerator::setSwitchFallthroughBlock(
   switchFallthroughBlock_ = fallthroughBlock;
 }
 
-llvm::BasicBlock* CodeGenerator::getSwitchFallthroughBlock() {
+llvm::BasicBlock* CodeGenerator::getSwitchFallthroughBlock() const {
   return switchFallthroughBlock_;
 }
 
-llvm::BasicBlock* CodeGenerator::getContinueBlock() {
+llvm::BasicBlock* CodeGenerator::getContinueBlock() const {
   if (continueBlockStack_.empty()) {
     return nullptr;
   }
@@ -394,7 +342,7 @@ llvm::BasicBlock* CodeGenerator::getContinueBlock() {
   return continueBlockStack_.back();
 }
 
-llvm::BasicBlock* CodeGenerator::getBreakBlock() {
+llvm::BasicBlock* CodeGenerator::getBreakBlock() const {
   if (breakBlockStack_.empty()) {
     return nullptr;
   }
@@ -466,7 +414,7 @@ void CodeGenerator::popDebugLexicalBlock() {
   }
 }
 
-llvm::DIScope* CodeGenerator::getCurrentDebugScope() {
+llvm::DIScope* CodeGenerator::getCurrentDebugScope() const {
   if (!debugScopeStack_.empty()) {
     return debugScopeStack_.back();
   }
@@ -529,7 +477,7 @@ void CodeGenerator::buildModule(AST::Program* root, bool generateDebugInfo,
   // temporary internal function/block, emit globals, then erase it.
   globalFunc_ = llvm::Function::Create(
       llvm::FunctionType::get(builder_.getVoidTy(), false),
-      llvm::GlobalValue::InternalLinkage, "globalFunc", module_);
+      llvm::GlobalValue::InternalLinkage, "globalFunc", module_.get());
   globalBlock_ = llvm::BasicBlock::Create(context_, "globalBlock", globalFunc_);
 
   root->genCode(*this);

@@ -6,6 +6,7 @@
 #include <map>
 #include <memory>
 #include <string>
+#include <variant>
 #include <vector>
 
 #include "types/TypeEnv.hpp"
@@ -123,7 +124,7 @@ class CodeGenerator : public TypeEnv {
   bool addTypedefAlias(const std::string& aliasName, AST::VarType* varType);
 
   // True when aliasName is a typedef in the innermost scope only.
-  bool hasTypedefAliasInCurrentScope(const std::string& aliasName);
+  bool hasTypedefAliasInCurrentScope(const std::string& aliasName) const;
 
   // Find variable from stack of symbol tables.
   llvm::Value* findVariable(const std::string& varName);
@@ -176,7 +177,7 @@ class CodeGenerator : public TypeEnv {
   bool addFunction(const std::string& funcName, llvm::Function* func);
 
   // Get current function while parsing.
-  llvm::Function* getCurrentFunction();
+  llvm::Function* getCurrentFunction() const;
 
   void enterFunction(llvm::Function* func);
 
@@ -198,13 +199,13 @@ class CodeGenerator : public TypeEnv {
   void setSwitchFallthroughBlock(llvm::BasicBlock* fallthroughBlock);
 
   // Fall-through target for the case body currently being generated.
-  llvm::BasicBlock* getSwitchFallthroughBlock();
+  llvm::BasicBlock* getSwitchFallthroughBlock() const;
 
   // Get the destination block of the continue block on top of continue stack.
-  llvm::BasicBlock* getContinueBlock();
+  llvm::BasicBlock* getContinueBlock() const;
 
   // Get the destination block of the break block on top of break stack.
-  llvm::BasicBlock* getBreakBlock();
+  llvm::BasicBlock* getBreakBlock() const;
 
   // Switch insert point to global block for global variable declaration.
   void switchInsertPointToGlobalBlock();
@@ -218,8 +219,8 @@ class CodeGenerator : public TypeEnv {
   void buildModule(AST::Program* root, bool generateDebugInfo = false,
                    const std::string& sourcePath = "");
 
-  bool isDebugInfoEnabled() const { return debugInfo_ != nullptr; }
-  DebugInfoBuilder* debugInfo() { return debugInfo_.get(); }
+  bool isDebugInfoEnabled() const noexcept { return debugInfo_ != nullptr; }
+  DebugInfoBuilder* debugInfo() noexcept { return debugInfo_.get(); }
 
   // Attach the node's source line to the next IR instructions (-g, inside a
   // function).
@@ -228,7 +229,7 @@ class CodeGenerator : public TypeEnv {
   // Nested { } scopes for DWARF lexical blocks (used by Block::genCode).
   void pushDebugLexicalBlock(const AST::SourceLoc& loc);
   void popDebugLexicalBlock();
-  llvm::DIScope* getCurrentDebugScope();
+  llvm::DIScope* getCurrentDebugScope() const;
 
   void declareDebugAlloca(
       llvm::AllocaInst* alloca, const std::string& name, llvm::Type* llvmType,
@@ -239,53 +240,76 @@ class CodeGenerator : public TypeEnv {
   // order; llvm::Module and llvm::IRBuilder require a live LLVMContext.
   llvm::LLVMContext context_;
   llvm::IRBuilder<> builder_;
-  // Top-level container for all LLVM IR in this compilation unit.
-  llvm::Module* module_;
+  // Top-level container for all LLVM IR in this compilation unit. Owned here,
+  // and declared above every member that refers into it (debugInfo_ holds a
+  // DIBuilder over this module) so reverse-order destruction tears the two down
+  // in the order LLVM requires.
+  std::unique_ptr<llvm::Module> module_;
 
-  // One map stores functions, types, variables, and constants (see SymbolType).
+  // One map stores functions, types, variables, and constants.
+  //
+  // The alternative stored is the discriminator: an unset Symbol holds
+  // monostate, and each getter asks the variant for one specific alternative
+  // and yields nullptr when the symbol is something else. That is the same
+  // behaviour a hand-rolled tag plus a void* gives, minus the pointer casts —
+  // llvm::Function derives from llvm::Value, so round-tripping one through
+  // void* and casting back to the other is the kind of mistake a tag can only
+  // catch by convention, and the variant by construction.
+  //
+  // Variable and Constant wrap llvm::Value* in distinct types because they are
+  // distinct alternatives holding the same pointer type, which a variant
+  // cannot tell apart on its own.
   class Symbol {
    public:
-    // Member init lists follow declaration order (type_ before content_),
-    // which is the order C++ actually runs them in regardless of what is
-    // written here. Harmless while no initializer reads another member, but
-    // -Wreorder-ctor flags it because that stops being true silently.
-    Symbol() : type_(SymbolType::UNDEFINED), content_(nullptr) {}
-    Symbol(llvm::Function* func)
-        : type_(SymbolType::FUNCTION), content_(func) {}
-    Symbol(llvm::Type* type) : type_(SymbolType::TYPE), content_(type) {}
+    Symbol() = default;
+    explicit Symbol(llvm::Function* func)
+        : content_(std::in_place_type<llvm::Function*>, func) {}
+    explicit Symbol(llvm::Type* type)
+        : content_(std::in_place_type<llvm::Type*>, type) {}
     Symbol(llvm::Value* value, bool isConst, AST::VarType* varType = nullptr)
-        : type_(isConst ? SymbolType::CONSTANT : SymbolType::VARIABLE),
-          content_(value),
+        : content_(isConst ? Content{std::in_place_type<Constant>, value}
+                           : Content{std::in_place_type<Variable>, value}),
           varType_(varType) {}
 
-    llvm::Function* getFunction() {
-      return type_ == SymbolType::FUNCTION
-                 ? static_cast<llvm::Function*>(content_)
-                 : nullptr;
+    llvm::Function* getFunction() const noexcept {
+      const auto* func = std::get_if<llvm::Function*>(&content_);
+      return func != nullptr ? *func : nullptr;
     }
 
-    llvm::Type* getType() {
-      return type_ == SymbolType::TYPE ? static_cast<llvm::Type*>(content_)
-                                       : nullptr;
+    llvm::Type* getType() const noexcept {
+      const auto* type = std::get_if<llvm::Type*>(&content_);
+      return type != nullptr ? *type : nullptr;
     }
 
-    llvm::Value* getVariable() {
-      return type_ == SymbolType::VARIABLE ? static_cast<llvm::Value*>(content_)
-                                           : nullptr;
+    llvm::Value* getVariable() const noexcept {
+      const auto* variable = std::get_if<Variable>(&content_);
+      return variable != nullptr ? variable->value : nullptr;
     }
 
-    llvm::Value* getConstant() {
-      return type_ == SymbolType::CONSTANT ? static_cast<llvm::Value*>(content_)
-                                           : nullptr;
+    llvm::Value* getConstant() const noexcept {
+      const auto* constant = std::get_if<Constant>(&content_);
+      return constant != nullptr ? constant->value : nullptr;
     }
 
-    AST::VarType* getVarType() { return varType_; }
+    AST::VarType* getVarType() const noexcept { return varType_; }
 
    private:
-    enum SymbolType { UNDEFINED = 0, FUNCTION, TYPE, VARIABLE, CONSTANT };
+    // Constructors rather than aggregates: std::in_place_type below
+    // direct-initializes the alternative, and parenthesized aggregate
+    // initialization is a C++20 feature.
+    struct Variable {
+      explicit Variable(llvm::Value* val) noexcept : value(val) {}
+      llvm::Value* value;
+    };
+    struct Constant {
+      explicit Constant(llvm::Value* val) noexcept : value(val) {}
+      llvm::Value* value;
+    };
 
-    SymbolType type_;
-    void* content_;
+    using Content = std::variant<std::monostate, llvm::Function*, llvm::Type*,
+                                 Variable, Constant>;
+
+    Content content_;
     AST::VarType* varType_ = nullptr;
   };
 
@@ -296,10 +320,14 @@ class CodeGenerator : public TypeEnv {
   using StructTypeTable = std::map<llvm::StructType*, AST::StructType*>;
   using UnionTypeTable = std::map<llvm::StructType*, AST::UnionType*>;
 
-  std::vector<SymbolTable*> symbolTableStack_;
-  std::vector<TypedefTable*> typedefTableStack_;
-  StructTypeTable* structTypeTable_;
-  UnionTypeTable* unionTypeTable_;
+  // Held by value: a scope is pushed and popped, never shared, so there is
+  // nothing for a pointer to express here except a chance to leak one. The
+  // stacks own their tables, and unwinding out of a half-finished walk drains
+  // them without help from ~CodeGenerator.
+  std::vector<SymbolTable> symbolTableStack_;
+  std::vector<TypedefTable> typedefTableStack_;
+  StructTypeTable structTypeTable_;
+  UnionTypeTable unionTypeTable_;
 
   // To store target block for continue statement.
   std::vector<llvm::BasicBlock*> continueBlockStack_;
