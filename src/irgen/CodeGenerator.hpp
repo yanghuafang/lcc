@@ -53,9 +53,10 @@ class DebugInfoBuilder;
 //    of the generator, not a parameter.
 //
 // 2. Which function is being emitted — enterFunction / leaveFunction /
-//    getCurrentFunction. Kept here rather than beside the jump targets because
-//    it is what creates basic blocks and entry-block allocas, and because
-//    leaveFunction also drops the DWARF lexical scopes, which are per-function.
+//    getCurrentFunction, paired by ScopedFunction below. Kept here rather than
+//    beside the jump targets because it is what creates basic blocks and
+//    entry-block allocas, and because leaveFunction also drops the DWARF
+//    lexical scopes, which are per-function.
 //
 // 3. Debug info — thin forwarding to DebugInfoBuilder, no-ops without -g, so
 //    the walkers never branch on whether debug info is enabled.
@@ -74,7 +75,8 @@ class DebugInfoBuilder;
 // One structural quirk worth knowing: global initializers need an insert point
 // even though they belong to no function, so buildModule() creates a throwaway
 // function and block for them and erases it afterwards. That is what
-// switchInsertPointToGlobalBlock / ...ToCurrentBlock switch between.
+// switchInsertPointToGlobalBlock / ...ToCurrentBlock switch between, and what
+// ScopedGlobalInsertPoint below pairs.
 class CodeGenerator : public TypeEnv {
  public:
   CodeGenerator();
@@ -198,6 +200,46 @@ class ScopedDebugLexicalBlock {
 
   ScopedDebugLexicalBlock(const ScopedDebugLexicalBlock&) = delete;
   ScopedDebugLexicalBlock& operator=(const ScopedDebugLexicalBlock&) = delete;
+
+ private:
+  CodeGenerator& generator_;
+};
+
+// The function currently being emitted, for the length of a scope. Walkers do
+// not call enterFunction / leaveFunction by hand: a function body throws in a
+// dozen places, and leaveFunction is also what drops the per-function DWARF
+// lexical scopes, so an escaped exception used to carry both into whatever was
+// emitted next.
+class ScopedFunction {
+ public:
+  ScopedFunction(CodeGenerator& generator, llvm::Function* func)
+      : generator_(generator) {
+    generator_.enterFunction(func);
+  }
+  ~ScopedFunction() { generator_.leaveFunction(); }
+
+  ScopedFunction(const ScopedFunction&) = delete;
+  ScopedFunction& operator=(const ScopedFunction&) = delete;
+
+ private:
+  CodeGenerator& generator_;
+};
+
+// Emit into the module's global-initializer block for the length of a scope,
+// then put the builder back. What runs in between is an initializer expression,
+// which throws when its value will not convert — and the two call sites had
+// already drifted apart on that point, one restoring the insert point before
+// its null check and the other after. A guard makes the question unaskable.
+class ScopedGlobalInsertPoint {
+ public:
+  explicit ScopedGlobalInsertPoint(CodeGenerator& generator)
+      : generator_(generator) {
+    generator_.switchInsertPointToGlobalBlock();
+  }
+  ~ScopedGlobalInsertPoint() { generator_.switchInsertPointToCurrentBlock(); }
+
+  ScopedGlobalInsertPoint(const ScopedGlobalInsertPoint&) = delete;
+  ScopedGlobalInsertPoint& operator=(const ScopedGlobalInsertPoint&) = delete;
 
  private:
   CodeGenerator& generator_;

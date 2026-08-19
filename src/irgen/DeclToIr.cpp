@@ -151,9 +151,9 @@ llvm::Value* FuncDecl::genCode(CodeGenerator& generator) {
     llvm::BasicBlock* funcBlock =
         llvm::BasicBlock::Create(generator.getContext(), "entry", func);
     generator.getBuilder().SetInsertPoint(funcBlock);
-    // enterFunction before param debug info: setDebugLocation uses
+    // Entered before param debug info: setDebugLocation uses
     // getCurrentFunction().
-    generator.enterFunction(func);
+    ScopedFunction funcScope(generator, func);
 
     if (subprogram != nullptr) {
       generator.setDebugLocation(loc());
@@ -183,7 +183,6 @@ llvm::Value* FuncDecl::genCode(CodeGenerator& generator) {
       ScopedSymbolTable bodyScope(generator.symbols());
       funcBody_->genCode(generator);
     }
-    generator.leaveFunction();
   }
 
   return nullptr;
@@ -287,16 +286,20 @@ llvm::Value* VarDecl::genCode(CodeGenerator& generator) {
         initializer = arrayinit::buildGlobalStringArrayInitializer(
             elemLlvmType, arrayInfo.length, strInit->str_);
       } else if (var->initialExpr_ != nullptr) {
-        generator.switchInsertPointToGlobalBlock();
-        llvm::Value* initialExpr = convert::typeCast(
-            generator.getBuilder(), var->initialExpr_->genCode(generator),
-            llvmVarType, var->initialExpr_->getExprTypeId(generator),
-            vartype::resolvedVarTypeToTypeId(varType, generator));
+        llvm::Value* initialExpr = nullptr;
+        {
+          // A file-scope initializer is emitted into the module's global block,
+          // since there is no function to emit it into.
+          ScopedGlobalInsertPoint globalInsertPoint(generator);
+          initialExpr = convert::typeCast(
+              generator.getBuilder(), var->initialExpr_->genCode(generator),
+              llvmVarType, var->initialExpr_->getExprTypeId(generator),
+              vartype::resolvedVarTypeToTypeId(varType, generator));
+        }
         if (initialExpr == nullptr) {
           throw std::logic_error("It failed to init variable " + var->varName_ +
                                  " with value of different type!");
         }
-        generator.switchInsertPointToCurrentBlock();
         initializer =
             arrayinit::asConstant(initialExpr, "Global variable initializer");
       } else {
