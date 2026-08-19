@@ -1,4 +1,4 @@
-#include "irgen/ArrayInitializer.hpp"
+#include "irgen/Arrays.hpp"
 
 #include <llvm/IR/Constants.h>
 #include <llvm/IR/DerivedTypes.h>
@@ -16,12 +16,12 @@
 #include "irgen/TypeConversion.hpp"
 #include "types/VarTypeQuery.hpp"
 
-// See irgen/ArrayInitializer.hpp for the four-shape table this file implements.
+// See irgen/Arrays.hpp for the four-shape table this file implements.
 //
 // Like the walkers it was split from, this sits at global scope rather than
 // inside namespace AST: none of it is an AST member, so AST types are named
 // explicitly throughout.
-namespace arrayinit {
+namespace arrays {
 
 // Declared in the header because both the global initializer path here and
 // VarDecl::genCode's scalar path have to prove a value is compile-time
@@ -34,9 +34,7 @@ llvm::Constant* asConstant(llvm::Value* value, const std::string& context) {
   return constant;
 }
 
-bool isInferredArrayBound(size_t bound) {
-  return bound == AST::kInferredArrayBound;
-}
+bool isInferredBound(size_t bound) { return bound == AST::kInferredArrayBound; }
 
 bool isCharElementType(AST::VarType* baseType) {
   return vartype::varTypeToTypeId(baseType) == AST::BuiltinTypeId::CHAR;
@@ -179,7 +177,7 @@ llvm::Constant* exprToGlobalInitConstant(CodeGenerator& generator,
   return asConstant(value, "Global array initializer element");
 }
 
-llvm::Constant* buildGlobalArrayInitializer(
+llvm::Constant* buildGlobal1DInitializer(
     CodeGenerator& generator, AST::VarType* elemVarType,
     llvm::Type* elemLlvmType, size_t length,
     const std::vector<AST::Expr*>& flatInit) {
@@ -198,7 +196,7 @@ llvm::Constant* buildGlobalArrayInitializer(
                                   elements);
 }
 
-llvm::Constant* buildGlobal2DArrayInitializer(
+llvm::Constant* buildGlobal2DInitializer(
     CodeGenerator& generator, const ArrayTypeInfo& info,
     llvm::Type* llvmArrayType, llvm::Type* elemLlvmType,
     const std::vector<AST::Expr*>& flatInit) {
@@ -228,13 +226,13 @@ llvm::Constant* buildGlobal2DArrayInitializer(
                                   rowConstants);
 }
 
-void storeLocalFlatArrayInitializer(CodeGenerator& generator,
-                                    llvm::Value* storagePtr,
-                                    llvm::Type* llvmArrayType,
-                                    AST::VarType* elemVarType,
-                                    llvm::Type* elemLlvmType,
-                                    const std::vector<size_t>& dims,
-                                    const std::vector<AST::Expr*>& flatInit) {
+void storeLocalFlatInitializer(CodeGenerator& generator,
+                               llvm::Value* storagePtr,
+                               llvm::Type* llvmArrayType,
+                               AST::VarType* elemVarType,
+                               llvm::Type* elemLlvmType,
+                               const std::vector<size_t>& dims,
+                               const std::vector<AST::Expr*>& flatInit) {
   llvm::IRBuilder<>& builder = generator.getBuilder();
   llvm::IntegerType* indexType = builder.getInt32Ty();
   llvm::Value* zeroIndex = llvm::ConstantInt::get(indexType, 0);
@@ -271,7 +269,7 @@ void storeLocalFlatArrayInitializer(CodeGenerator& generator,
   }
 }
 
-// Owns the nesting buildArrayVarType builds, until the finished chain is handed
+// Owns the nesting buildVarType builds, until the finished chain is handed
 // back to the caller. AST::releaseArrayTypeChain stops at the first non-array
 // node, so unwinding frees only the ArrayType prefix and leaves the base type
 // VarDecl shares across its VarList intact.
@@ -286,21 +284,21 @@ using OwnedArrayTypeChain =
 
 }  // namespace
 
-std::vector<size_t> resolveArrayBounds(const AST::VarInit* var,
-                                       AST::VarType* baseType) {
+std::vector<size_t> resolveBounds(const AST::VarInit* var,
+                                  AST::VarType* baseType) {
   std::vector<size_t> bounds = var->arrayBounds_;
   if (bounds.empty()) {
     return bounds;
   }
 
   for (size_t i = 1; i < bounds.size(); ++i) {
-    if (isInferredArrayBound(bounds[i])) {
+    if (isInferredBound(bounds[i])) {
       throw std::logic_error("Only the first array dimension may be inferred.");
     }
   }
 
   for (size_t i = 0; i < bounds.size(); ++i) {
-    if (!isInferredArrayBound(bounds[i])) {
+    if (!isInferredBound(bounds[i])) {
       continue;
     }
 
@@ -337,11 +335,11 @@ std::vector<size_t> resolveArrayBounds(const AST::VarInit* var,
 // The nesting is owned while it is built, because the caller cannot clean up
 // after a failure it never receives a pointer from: by the time a later bound
 // rejects the declarator, the earlier ones have already allocated.
-AST::VarType* buildArrayVarType(AST::VarType* baseType,
-                                const std::vector<size_t>& bounds) {
+AST::VarType* buildVarType(AST::VarType* baseType,
+                           const std::vector<size_t>& bounds) {
   OwnedArrayTypeChain chain(baseType);
   for (auto it = bounds.rbegin(); it != bounds.rend(); ++it) {
-    if (isInferredArrayBound(*it)) {
+    if (isInferredBound(*it)) {
       throw std::logic_error("Unresolved inferred array bound.");
     }
     // Construct first: should the allocation throw, `chain` still owns the
@@ -354,7 +352,7 @@ AST::VarType* buildArrayVarType(AST::VarType* baseType,
   return chain.release();
 }
 
-Array1DInfo get1DArrayInfo(AST::VarType* varType) {
+Info1D get1DInfo(AST::VarType* varType) {
   ArrayTypeInfo info = getArrayTypeInfo(varType);
   if (info.dims.size() != 1) {
     throw std::logic_error("Expected a one-dimensional array type.");
@@ -362,11 +360,9 @@ Array1DInfo get1DArrayInfo(AST::VarType* varType) {
   return {info.elemVarType, info.dims[0]};
 }
 
-void storeBraceArrayInitializer(CodeGenerator& generator,
-                                llvm::Value* storagePtr,
-                                llvm::Type* llvmArrayType,
-                                AST::VarType* varType,
-                                const AST::InitList& initList) {
+void storeBraceInitializer(CodeGenerator& generator, llvm::Value* storagePtr,
+                           llvm::Type* llvmArrayType, AST::VarType* varType,
+                           const AST::InitList& initList) {
   ArrayTypeInfo info = getArrayTypeInfo(varType);
   llvm::Type* elemLlvmType = info.elemVarType->getType(generator);
   if (elemLlvmType == nullptr) {
@@ -375,18 +371,16 @@ void storeBraceArrayInitializer(CodeGenerator& generator,
 
   if (info.dims.size() == 1) {
     std::vector<AST::Expr*> flat = flatten1DInit(initList, info.dims[0]);
-    storeLocalFlatArrayInitializer(generator, storagePtr, llvmArrayType,
-                                   info.elemVarType, elemLlvmType, info.dims,
-                                   flat);
+    storeLocalFlatInitializer(generator, storagePtr, llvmArrayType,
+                              info.elemVarType, elemLlvmType, info.dims, flat);
     return;
   }
 
   if (info.dims.size() == 2) {
     std::vector<AST::Expr*> flat =
         flatten2DInit(initList, info.dims[0], info.dims[1]);
-    storeLocalFlatArrayInitializer(generator, storagePtr, llvmArrayType,
-                                   info.elemVarType, elemLlvmType, info.dims,
-                                   flat);
+    storeLocalFlatInitializer(generator, storagePtr, llvmArrayType,
+                              info.elemVarType, elemLlvmType, info.dims, flat);
     return;
   }
 
@@ -395,10 +389,10 @@ void storeBraceArrayInitializer(CodeGenerator& generator,
       "yet.");
 }
 
-llvm::Constant* buildBraceArrayInitializer(CodeGenerator& generator,
-                                           AST::VarType* varType,
-                                           llvm::Type* llvmVarType,
-                                           const AST::InitList& initList) {
+llvm::Constant* buildBraceInitializer(CodeGenerator& generator,
+                                      AST::VarType* varType,
+                                      llvm::Type* llvmVarType,
+                                      const AST::InitList& initList) {
   ArrayTypeInfo info = getArrayTypeInfo(varType);
   llvm::Type* elemLlvmType = info.elemVarType->getType(generator);
   if (elemLlvmType == nullptr) {
@@ -407,15 +401,15 @@ llvm::Constant* buildBraceArrayInitializer(CodeGenerator& generator,
 
   if (info.dims.size() == 1) {
     std::vector<AST::Expr*> flat = flatten1DInit(initList, info.dims[0]);
-    return buildGlobalArrayInitializer(generator, info.elemVarType,
-                                       elemLlvmType, info.dims[0], flat);
+    return buildGlobal1DInitializer(generator, info.elemVarType, elemLlvmType,
+                                    info.dims[0], flat);
   }
 
   if (info.dims.size() == 2) {
     std::vector<AST::Expr*> flat =
         flatten2DInit(initList, info.dims[0], info.dims[1]);
-    return buildGlobal2DArrayInitializer(generator, info, llvmVarType,
-                                         elemLlvmType, flat);
+    return buildGlobal2DInitializer(generator, info, llvmVarType, elemLlvmType,
+                                    flat);
   }
 
   throw std::logic_error(
@@ -423,9 +417,9 @@ llvm::Constant* buildBraceArrayInitializer(CodeGenerator& generator,
       "yet.");
 }
 
-llvm::Constant* buildGlobalStringArrayInitializer(llvm::Type* charLlvmType,
-                                                  size_t length,
-                                                  const std::string& str) {
+llvm::Constant* buildGlobalStringInitializer(llvm::Type* charLlvmType,
+                                             size_t length,
+                                             const std::string& str) {
   validateStringFitsArray(str, length);
 
   std::vector<llvm::Constant*> elements;
@@ -442,11 +436,11 @@ llvm::Constant* buildGlobalStringArrayInitializer(llvm::Type* charLlvmType,
                                   elements);
 }
 
-void storeLocalStringArrayInitializer(CodeGenerator& generator,
-                                      llvm::Value* storagePtr,
-                                      llvm::Type* llvmArrayType,
-                                      llvm::Type* charLlvmType, size_t length,
-                                      const std::string& str) {
+void storeLocalStringInitializer(CodeGenerator& generator,
+                                 llvm::Value* storagePtr,
+                                 llvm::Type* llvmArrayType,
+                                 llvm::Type* charLlvmType, size_t length,
+                                 const std::string& str) {
   validateStringFitsArray(str, length);
 
   llvm::IRBuilder<>& builder = generator.getBuilder();
@@ -478,4 +472,4 @@ void storeLocalStringArrayInitializer(CodeGenerator& generator,
   }
 }
 
-}  // namespace arrayinit
+}  // namespace arrays

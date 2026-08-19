@@ -35,7 +35,7 @@ class CodeGenerator;
 // the only place in irgen/ where a *declaration* creates control flow, and the
 // reason this does not simply live beside the alloca path in DeclToIr.cpp.
 //
-// Depends on irgen/ArrayInitializer.hpp — a block-scope static array needs the
+// Depends on irgen/Arrays.hpp — a block-scope static array needs the
 // same four initializer shapes as any other array. The dependency runs one way
 // only.
 namespace staticlocal {

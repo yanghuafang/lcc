@@ -146,7 +146,7 @@ lcc/
 │   │   ├── Operators.*          # one function per C operator (arithmetic, bitwise, compare)
 │   │   ├── TypeConversion.*     # emits C conversions (pairs with types/TypeRules)
 │   │   ├── IrIdioms.*           # alloca, block terminator, load/store
-│   │   ├── ArrayInitializer.*   # array bounds; brace/string init, local and global
+│   │   ├── Arrays.*             # array bounds, the type they build, brace/string init
 │   │   ├── StaticLocal.*        # block-scope static: module global + lazy-init guard
 │   │   ├── SymbolTable.*        # scoped name lookup (no IR emitted)
 │   │   ├── ControlFlowContext.* # where break and continue jump to

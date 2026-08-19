@@ -52,7 +52,7 @@ the file name is the unabbreviated version of the same idea:
 | `convert::` | `irgen/TypeConversion.hpp` |
 | `ops::` | `irgen/Operators.hpp` |
 | `iridiom::` | `irgen/IrIdioms.hpp` |
-| `arrayinit::` | `irgen/ArrayInitializer.hpp` |
+| `arrays::` | `irgen/Arrays.hpp` |
 | `staticlocal::` | `irgen/StaticLocal.hpp` |
 | `vartype::` | `types/VarTypeQuery.hpp` |
 | `typerules::` | `types/TypeRules.hpp` |
@@ -160,7 +160,7 @@ The services below are called from any of the seven, which is why they have head
 | `irgen/Operators.cpp` / `.hpp` | `namespace ops` — one function per C binary operator (arithmetic, bitwise/shift, comparison), each shared by the operator and its compound-assignment twin |
 | `irgen/TypeConversion.cpp` / `.hpp` | `namespace convert` — emits C's conversions: casts, promotions, and the usual arithmetic conversions applied to an operand pair. The emission half of `types/TypeRules.hpp`, which decides what those conversions should be |
 | `irgen/IrIdioms.cpp` / `.hpp` | `namespace iridiom` — the IR shapes lcc repeats: entry-block alloca, guarded block terminator, load/store through an lvalue |
-| `irgen/ArrayInitializer.cpp` / `.hpp` | `namespace arrayinit` — array declarator bound inference, and the four array initializer shapes: local/global x brace/string. A global initializer is *assembled* as an `llvm::Constant`, a local one *emitted* as GEP/store pairs |
+| `irgen/Arrays.cpp` / `.hpp` | `namespace arrays` — everything an array declarator needs: bound inference, the nested `ArrayType` those bounds denote, and the four initializer shapes (local/global x brace/string). A global initializer is *assembled* as an `llvm::Constant`, a local one *emitted* as GEP/store pairs |
 | `irgen/StaticLocal.cpp` / `.hpp` | `namespace staticlocal` — block-scope `static`: one module global per (function, name), plus the lazy-init guard that splits a basic block when the initializer is not constant. The only place a *declaration* creates control flow |
 | `irgen/DebugInfoBuilder.cpp` / `.hpp` | DWARF via `DIBuilder` when `-g` is set |
 
@@ -204,7 +204,7 @@ Everything **generated** lives in `src/generated/` and is never edited by hand: 
 | What type an expression has | `irgen/ExprTypeQuery.cpp`, or `types/VarTypeQuery.cpp` if the question is about a `VarType` rather than an `Expr` |
 | Scope or name lookup | `irgen/SymbolTable.cpp` |
 | `break` / `continue` targets | `irgen/ControlFlowContext.cpp` |
-| Array bounds or an array initializer | `irgen/ArrayInitializer.cpp` |
+| Array bounds or an array initializer | `irgen/Arrays.cpp` |
 | Block-scope `static` | `irgen/StaticLocal.cpp` |
 | New IR pass | `opt/passes/`, registered in `opt/IrOptimizer.cpp` |
 | New machine pass | `backend/passes/`, spliced in `backend/TargetBackend.cpp` |
