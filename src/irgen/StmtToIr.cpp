@@ -270,10 +270,9 @@ llvm::Value* SwitchStmt::genCode(CodeGenerator& generator) {
     blocks.attach(caseBlocks[i]);
     generator.getBuilder().SetInsertPoint(caseBlocks[i]);
 
-    generator.controlFlow().enterSwitch(caseBlocks.back());
+    ScopedSwitch switchTargets(generator.controlFlow(), caseBlocks.back());
     generator.controlFlow().setSwitchFallthroughBlock(caseBlocks[i + 1]);
     caseStmtList_->at(i)->genCode(generator);
-    generator.controlFlow().leaveSwitch();
   }
 
   if (caseBlocks.back()->hasNPredecessorsOrMore(1)) {
@@ -311,7 +310,7 @@ llvm::Value* CaseStmt::genCode(CodeGenerator& generator) {
 }
 
 // CFG: init -> for.cond -> for.loop / for.end; for.loop -> for.update ->
-// for.cond. enterLoop wires continue to for.update and break to for.end.
+// for.cond. ScopedLoop wires continue to for.update and break to for.end.
 llvm::Value* ForStmt::genCode(CodeGenerator& generator) {
   generator.setDebugLocation(loc());
   DetachedBlocks blocks(generator);
@@ -346,10 +345,9 @@ llvm::Value* ForStmt::genCode(CodeGenerator& generator) {
   blocks.attach(loopBlock);
   generator.getBuilder().SetInsertPoint(loopBlock);
   if (loopBody_ != nullptr) {
-    generator.controlFlow().enterLoop(updateBlock, endBlock);
+    ScopedLoop loopTargets(generator.controlFlow(), updateBlock, endBlock);
     ScopedSymbolTable loopScope(generator.symbols());
     generateStmt(generator, loopBody_);
-    generator.controlFlow().leaveLoop();
   }
 
   iridiom::terminateBlockByBr(generator.getBuilder(), updateBlock);
@@ -370,7 +368,7 @@ llvm::Value* ForStmt::genCode(CodeGenerator& generator) {
 
 // CFG: do.loop -> do.cond -> do.loop / do.end. The only structural difference
 // from while is which block the entry branch targets — the body, not the test —
-// which is exactly what makes the body run at least once. enterLoop wires
+// which is exactly what makes the body run at least once. ScopedLoop wires
 // continue to do.cond and break to do.end.
 llvm::Value* DoStmt::genCode(CodeGenerator& generator) {
   generator.setDebugLocation(loc());
@@ -385,10 +383,9 @@ llvm::Value* DoStmt::genCode(CodeGenerator& generator) {
   blocks.attach(loopBlock);
   generator.getBuilder().SetInsertPoint(loopBlock);
   if (loopBody_ != nullptr) {
-    generator.controlFlow().enterLoop(conditionBlock, endBlock);
+    ScopedLoop loopTargets(generator.controlFlow(), conditionBlock, endBlock);
     ScopedSymbolTable loopScope(generator.symbols());
     generateStmt(generator, loopBody_);
-    generator.controlFlow().leaveLoop();
   }
 
   iridiom::terminateBlockByBr(generator.getBuilder(), conditionBlock);
@@ -410,7 +407,7 @@ llvm::Value* DoStmt::genCode(CodeGenerator& generator) {
   return nullptr;
 }
 
-// enterLoop wires continue to the condition block and break to while.end.
+// ScopedLoop wires continue to the condition block and break to while.end.
 llvm::Value* WhileStmt::genCode(CodeGenerator& generator) {
   generator.setDebugLocation(loc());
   DetachedBlocks blocks(generator);
@@ -435,10 +432,9 @@ llvm::Value* WhileStmt::genCode(CodeGenerator& generator) {
   blocks.attach(loopBlock);
   generator.getBuilder().SetInsertPoint(loopBlock);
   if (loopBody_ != nullptr) {
-    generator.controlFlow().enterLoop(conditionBlock, endBlock);
+    ScopedLoop loopTargets(generator.controlFlow(), conditionBlock, endBlock);
     ScopedSymbolTable loopScope(generator.symbols());
     generateStmt(generator, loopBody_);
-    generator.controlFlow().leaveLoop();
   }
 
   iridiom::terminateBlockByBr(generator.getBuilder(), conditionBlock);

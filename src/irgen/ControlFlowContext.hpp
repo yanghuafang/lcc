@@ -57,3 +57,48 @@ class ControlFlowContext {
 
   llvm::BasicBlock* switchFallthroughBlock_ = nullptr;
 };
+
+// RAII guards for the two stacks above, and the way StmtToIr.cpp is meant to
+// reach them: nothing calls enterLoop / leaveLoop or enterSwitch / leaveSwitch
+// by hand. They live here rather than at the call sites for the reason
+// ScopedSymbolTable lives beside its stack in irgen/SymbolTable.hpp — the
+// pairing is visible next to what it balances, and a body that throws partway
+// through cannot leave a target pushed behind it.
+//
+// Two guards rather than one because the constructs push different things: a
+// loop pushes continue and break, a switch pushes only break. That asymmetry is
+// the whole reason `continue` inside a switch reaches the enclosing loop, so it
+// is worth two types that cannot be confused for each other.
+class ScopedLoop {
+ public:
+  ScopedLoop(ControlFlowContext& controlFlow, llvm::BasicBlock* continueBlock,
+             llvm::BasicBlock* breakBlock)
+      : controlFlow_(controlFlow) {
+    controlFlow_.enterLoop(continueBlock, breakBlock);
+  }
+  ~ScopedLoop() { controlFlow_.leaveLoop(); }
+
+  ScopedLoop(const ScopedLoop&) = delete;
+  ScopedLoop& operator=(const ScopedLoop&) = delete;
+
+ private:
+  ControlFlowContext& controlFlow_;
+};
+
+// Scoped to one case body, not to the whole switch: every case pushes the same
+// break target, and leaveSwitch is also what clears the fall-through block that
+// setSwitchFallthroughBlock set for that body.
+class ScopedSwitch {
+ public:
+  ScopedSwitch(ControlFlowContext& controlFlow, llvm::BasicBlock* breakBlock)
+      : controlFlow_(controlFlow) {
+    controlFlow_.enterSwitch(breakBlock);
+  }
+  ~ScopedSwitch() { controlFlow_.leaveSwitch(); }
+
+  ScopedSwitch(const ScopedSwitch&) = delete;
+  ScopedSwitch& operator=(const ScopedSwitch&) = delete;
+
+ private:
+  ControlFlowContext& controlFlow_;
+};
