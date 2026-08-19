@@ -170,33 +170,33 @@ llvm::Value* Variable::genCodePtr(CodeGenerator& generator) {
 
 llvm::Value* Constant::genCode(CodeGenerator& generator) {
   switch (typeId_) {
-    case BuiltinType::TypeId::CHAR:
+    case BuiltinTypeId::CHAR:
       return generator.getBuilder().getInt8(charValue_);
-    case BuiltinType::TypeId::INT:
+    case BuiltinTypeId::INT:
       return generator.getBuilder().getInt32(intValue_);
-    case BuiltinType::TypeId::UINT: {
+    case BuiltinTypeId::UINT: {
       llvm::IntegerType* int32Type =
           llvm::Type::getInt32Ty(generator.getContext());
       llvm::ConstantInt* constInt =
           llvm::ConstantInt::get(int32Type, uintValue_);
       return constInt;
     }
-    case BuiltinType::TypeId::LONG:
+    case BuiltinTypeId::LONG:
       return generator.getBuilder().getInt64(longValue_);
-    case BuiltinType::TypeId::ULONG: {
+    case BuiltinTypeId::ULONG: {
       llvm::IntegerType* int64Type =
           llvm::Type::getInt64Ty(generator.getContext());
       llvm::ConstantInt* constInt =
           llvm::ConstantInt::get(int64Type, ulongValue_);
       return constInt;
     }
-    case BuiltinType::TypeId::FLOAT:
+    case BuiltinTypeId::FLOAT:
       return llvm::ConstantFP::get(generator.getBuilder().getFloatTy(),
                                    floatValue_);
-    case BuiltinType::TypeId::DOUBLE:
+    case BuiltinTypeId::DOUBLE:
       return llvm::ConstantFP::get(generator.getBuilder().getDoubleTy(),
                                    doubleValue_);
-    case BuiltinType::TypeId::BOOL:
+    case BuiltinTypeId::BOOL:
       return generator.getBuilder().getInt1(boolValue_);
     default:
       throw std::logic_error("const type " +
@@ -272,13 +272,12 @@ llvm::Value* FuncCall::genCode(CodeGenerator& generator) {
       if (arg->getType()->isIntegerTy()) {
         arg = convert::typeUpgrade(
             generator.getBuilder(), arg, generator.getBuilder().getInt32Ty(),
-            argList_->at(index)->getExprTypeId(generator),
-            BuiltinType::TypeId::INT);
+            argList_->at(index)->getExprTypeId(generator), BuiltinTypeId::INT);
       } else if (arg->getType()->isFloatingPointTy()) {
         arg = convert::typeUpgrade(
             generator.getBuilder(), arg, generator.getBuilder().getDoubleTy(),
             argList_->at(index)->getExprTypeId(generator),
-            BuiltinType::TypeId::DOUBLE);
+            BuiltinTypeId::DOUBLE);
       }
 
       args.push_back(arg);

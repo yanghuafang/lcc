@@ -207,7 +207,7 @@ llvm::Value* TernaryCondition::genTernarySelect(
   llvm::Value* trueVal = evalBranch(trueExpr_);
   llvm::Value* falseVal = evalBranch(falseExpr_);
   bool isUnsigned = false;
-  BuiltinType::TypeId resultTypeId = BuiltinType::TypeId::UNKNOWN;
+  BuiltinTypeId resultTypeId = BuiltinTypeId::UNKNOWN;
   if (trueVal->getType() == falseVal->getType() ||
       convert::typeUpgrade(generator.getBuilder(), trueVal, falseVal,
                            trueExpr_->getExprTypeId(generator),

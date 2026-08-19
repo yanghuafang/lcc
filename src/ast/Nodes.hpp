@@ -475,11 +475,9 @@ class VarType : public Node {
 
 class BuiltinType : public VarType {
  public:
-  using TypeId = BuiltinTypeId;
+  BuiltinTypeId typeId_;
 
-  TypeId typeId_;
-
-  BuiltinType(TypeId typeId, const std::string& typeName)
+  BuiltinType(BuiltinTypeId typeId, const std::string& typeName)
       : VarType(typeName), typeId_(typeId) {}
   ~BuiltinType() override {}
 
@@ -834,8 +832,8 @@ class Expr : public Stmt {
 
   virtual VarType* getExprVarType(CodeGenerator& generator);
   virtual VarType* getLValueVarType(CodeGenerator& generator);
-  virtual BuiltinType::TypeId getExprTypeId(CodeGenerator& generator);
-  BuiltinType::TypeId getLValueTypeId(CodeGenerator& generator);
+  virtual BuiltinTypeId getExprTypeId(CodeGenerator& generator);
+  BuiltinTypeId getLValueTypeId(CodeGenerator& generator);
 
   // Rvalue form of an lvalue expression: evaluate genCodePtr(), then load
   // through it. This is the whole of genCode() for every node whose value is
@@ -844,8 +842,8 @@ class Expr : public Stmt {
   // rather than a helper local to one lowering file.
   llvm::Value* loadFromLValuePtr(CodeGenerator& generator);
 
-  static BuiltinType::TypeId binaryExprTypeId(Expr* lhs, Expr* rhs,
-                                              CodeGenerator& generator);
+  static BuiltinTypeId binaryExprTypeId(Expr* lhs, Expr* rhs,
+                                        CodeGenerator& generator);
   static bool binaryIsUnsigned(Expr* lhs, Expr* rhs, CodeGenerator& generator);
 };
 
@@ -908,7 +906,7 @@ class BinaryExpr : public LhsRhsExpr {
  public:
   ~BinaryExpr() override {}
 
-  BuiltinType::TypeId getExprTypeId(CodeGenerator& generator) override;
+  BuiltinTypeId getExprTypeId(CodeGenerator& generator) override;
   llvm::Value* genCodePtr(CodeGenerator& generator) override;
 };
 
@@ -930,7 +928,7 @@ class Variable : public Expr {
 
 class Constant : public Expr {
  public:
-  BuiltinType::TypeId typeId_;
+  BuiltinTypeId typeId_;
   char charValue_;
   int intValue_;
   unsigned int uintValue_;
@@ -941,7 +939,7 @@ class Constant : public Expr {
   bool boolValue_;
 
   Constant()
-      : typeId_(BuiltinType::TypeId::UNKNOWN),
+      : typeId_(BuiltinTypeId::UNKNOWN),
         charValue_('\0'),
         intValue_(0),
         uintValue_(0),
@@ -951,40 +949,40 @@ class Constant : public Expr {
         doubleValue_(0.0),
         boolValue_(false) {}
   Constant(char charValue) : Constant() {
-    typeId_ = BuiltinType::TypeId::CHAR;
+    typeId_ = BuiltinTypeId::CHAR;
     charValue_ = charValue;
   }
   Constant(int intValue) : Constant() {
-    typeId_ = BuiltinType::TypeId::INT;
+    typeId_ = BuiltinTypeId::INT;
     intValue_ = intValue;
   }
   Constant(unsigned int uintValue) : Constant() {
-    typeId_ = BuiltinType::TypeId::UINT;
+    typeId_ = BuiltinTypeId::UINT;
     uintValue_ = uintValue;
   }
   Constant(long longValue) : Constant() {
-    typeId_ = BuiltinType::TypeId::LONG;
+    typeId_ = BuiltinTypeId::LONG;
     longValue_ = longValue;
   }
   Constant(unsigned long ulongValue) : Constant() {
-    typeId_ = BuiltinType::TypeId::ULONG;
+    typeId_ = BuiltinTypeId::ULONG;
     ulongValue_ = ulongValue;
   }
   Constant(float floatValue) : Constant() {
-    typeId_ = BuiltinType::TypeId::FLOAT;
+    typeId_ = BuiltinTypeId::FLOAT;
     floatValue_ = floatValue;
   }
   Constant(double doubleValue) : Constant() {
-    typeId_ = BuiltinType::TypeId::DOUBLE;
+    typeId_ = BuiltinTypeId::DOUBLE;
     doubleValue_ = doubleValue;
   }
   Constant(bool boolValue) : Constant() {
-    typeId_ = BuiltinType::TypeId::BOOL;
+    typeId_ = BuiltinTypeId::BOOL;
     boolValue_ = boolValue;
   }
   ~Constant() override {}
 
-  BuiltinType::TypeId getExprTypeId(CodeGenerator& generator) override;
+  BuiltinTypeId getExprTypeId(CodeGenerator& generator) override;
 
   llvm::Value* genCode(CodeGenerator& generator) override;
   llvm::Value* genCodePtr(CodeGenerator& generator) override;
@@ -999,7 +997,7 @@ class ConstStr : public Constant {
   ConstStr(const std::string& str) : str_(str) {}
   ~ConstStr() override {}
 
-  BuiltinType::TypeId getExprTypeId(CodeGenerator& generator) override;
+  BuiltinTypeId getExprTypeId(CodeGenerator& generator) override;
 
   llvm::Value* genCode(CodeGenerator& generator) override;
   llvm::Value* genCodePtr(CodeGenerator& generator) override;
@@ -1124,7 +1122,7 @@ class SizeOf : public Expr {
       : varType_(nullptr), expr_(nullptr), identifier_(identifier) {}
   ~SizeOf() override;
 
-  BuiltinType::TypeId getExprTypeId(CodeGenerator& generator) override;
+  BuiltinTypeId getExprTypeId(CodeGenerator& generator) override;
 
   llvm::Value* genCode(CodeGenerator& generator) override;
   llvm::Value* genCodePtr(CodeGenerator& generator) override;
@@ -1153,7 +1151,7 @@ class UnaryMinus : public ThrowingUnaryExpr {
   ~UnaryMinus() override {}
 
   VarType* getExprVarType(CodeGenerator& generator) override;
-  BuiltinType::TypeId getExprTypeId(CodeGenerator& generator) override;
+  BuiltinTypeId getExprTypeId(CodeGenerator& generator) override;
 
   llvm::Value* genCode(CodeGenerator& generator) override;
 
@@ -1548,7 +1546,7 @@ class LogicExpr : public LhsRhsExpr {
                                  int floatCmpPred, const char* unsupportedOp);
 
  public:
-  BuiltinType::TypeId getExprTypeId(CodeGenerator& generator) override;
+  BuiltinTypeId getExprTypeId(CodeGenerator& generator) override;
 
   llvm::Value* genCodePtr(CodeGenerator& generator) override;
 };
@@ -1584,7 +1582,7 @@ class LogicNot : public ThrowingUnaryExpr {
   LogicNot(Expr* operand) : ThrowingUnaryExpr(operand) {}
   ~LogicNot() override {}
 
-  BuiltinType::TypeId getExprTypeId(CodeGenerator& generator) override;
+  BuiltinTypeId getExprTypeId(CodeGenerator& generator) override;
 
   llvm::Value* genCode(CodeGenerator& generator) override;
 

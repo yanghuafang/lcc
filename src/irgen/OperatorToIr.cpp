@@ -120,11 +120,11 @@ llvm::Value* UnaryExpr::genIncDecCode(CodeGenerator& generator, bool increment,
         increment ? ops::createAdd(generator.getBuilder(), value, oneValue,
                                    lvalueVarType, nullptr, generator,
                                    operand_->getLValueTypeId(generator),
-                                   BuiltinType::TypeId::INT)
+                                   BuiltinTypeId::INT)
                   : ops::createSub(generator.getBuilder(), value, oneValue,
                                    lvalueVarType, nullptr, generator,
                                    operand_->getLValueTypeId(generator),
-                                   BuiltinType::TypeId::INT);
+                                   BuiltinTypeId::INT);
     generator.getBuilder().CreateStore(updated, operand);
     return returnOperandPtr ? operand : value;
   }

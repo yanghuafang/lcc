@@ -2769,79 +2769,79 @@ yyreduce:
 
   case 54: /* BuiltinType: CHAR  */
 #line 402 "frontend/Parser.y"
-                                { (yyval.builtinType) = new AST::BuiltinType(AST::BuiltinType::TypeId::CHAR, "char"); }
+                                { (yyval.builtinType) = new AST::BuiltinType(AST::BuiltinTypeId::CHAR, "char"); }
 #line 2774 "generated/Parser.cpp"
     break;
 
   case 55: /* BuiltinType: SHORT  */
 #line 403 "frontend/Parser.y"
-                                { (yyval.builtinType) = new AST::BuiltinType(AST::BuiltinType::TypeId::SHORT, "short"); }
+                                { (yyval.builtinType) = new AST::BuiltinType(AST::BuiltinTypeId::SHORT, "short"); }
 #line 2780 "generated/Parser.cpp"
     break;
 
   case 56: /* BuiltinType: INT  */
 #line 404 "frontend/Parser.y"
-                                { (yyval.builtinType) = new AST::BuiltinType(AST::BuiltinType::TypeId::INT, "int"); }
+                                { (yyval.builtinType) = new AST::BuiltinType(AST::BuiltinTypeId::INT, "int"); }
 #line 2786 "generated/Parser.cpp"
     break;
 
   case 57: /* BuiltinType: LONG  */
 #line 405 "frontend/Parser.y"
-                                { (yyval.builtinType) = new AST::BuiltinType(AST::BuiltinType::TypeId::LONG, "long"); }
+                                { (yyval.builtinType) = new AST::BuiltinType(AST::BuiltinTypeId::LONG, "long"); }
 #line 2792 "generated/Parser.cpp"
     break;
 
   case 58: /* BuiltinType: UNSIGNED  */
 #line 406 "frontend/Parser.y"
-                                { (yyval.builtinType) = new AST::BuiltinType(AST::BuiltinType::TypeId::UINT, "uint"); }
+                                { (yyval.builtinType) = new AST::BuiltinType(AST::BuiltinTypeId::UINT, "uint"); }
 #line 2798 "generated/Parser.cpp"
     break;
 
   case 59: /* BuiltinType: UNSIGNED CHAR  */
 #line 407 "frontend/Parser.y"
-                                { (yyval.builtinType) = new AST::BuiltinType(AST::BuiltinType::TypeId::UCHAR, "uchar"); }
+                                { (yyval.builtinType) = new AST::BuiltinType(AST::BuiltinTypeId::UCHAR, "uchar"); }
 #line 2804 "generated/Parser.cpp"
     break;
 
   case 60: /* BuiltinType: UNSIGNED SHORT  */
 #line 408 "frontend/Parser.y"
-                                { (yyval.builtinType) = new AST::BuiltinType(AST::BuiltinType::TypeId::USHORT, "ushort"); }
+                                { (yyval.builtinType) = new AST::BuiltinType(AST::BuiltinTypeId::USHORT, "ushort"); }
 #line 2810 "generated/Parser.cpp"
     break;
 
   case 61: /* BuiltinType: UNSIGNED INT  */
 #line 409 "frontend/Parser.y"
-                                { (yyval.builtinType) = new AST::BuiltinType(AST::BuiltinType::TypeId::UINT, "uint"); }
+                                { (yyval.builtinType) = new AST::BuiltinType(AST::BuiltinTypeId::UINT, "uint"); }
 #line 2816 "generated/Parser.cpp"
     break;
 
   case 62: /* BuiltinType: UNSIGNED LONG  */
 #line 410 "frontend/Parser.y"
-                                { (yyval.builtinType) = new AST::BuiltinType(AST::BuiltinType::TypeId::ULONG, "ulong"); }
+                                { (yyval.builtinType) = new AST::BuiltinType(AST::BuiltinTypeId::ULONG, "ulong"); }
 #line 2822 "generated/Parser.cpp"
     break;
 
   case 63: /* BuiltinType: FLOAT  */
 #line 411 "frontend/Parser.y"
-                                { (yyval.builtinType) = new AST::BuiltinType(AST::BuiltinType::TypeId::FLOAT, "float"); }
+                                { (yyval.builtinType) = new AST::BuiltinType(AST::BuiltinTypeId::FLOAT, "float"); }
 #line 2828 "generated/Parser.cpp"
     break;
 
   case 64: /* BuiltinType: DOUBLE  */
 #line 412 "frontend/Parser.y"
-                                { (yyval.builtinType) = new AST::BuiltinType(AST::BuiltinType::TypeId::DOUBLE, "double"); }
+                                { (yyval.builtinType) = new AST::BuiltinType(AST::BuiltinTypeId::DOUBLE, "double"); }
 #line 2834 "generated/Parser.cpp"
     break;
 
   case 65: /* BuiltinType: BOOL  */
 #line 413 "frontend/Parser.y"
-                                { (yyval.builtinType) = new AST::BuiltinType(AST::BuiltinType::TypeId::BOOL, "bool"); }
+                                { (yyval.builtinType) = new AST::BuiltinType(AST::BuiltinTypeId::BOOL, "bool"); }
 #line 2840 "generated/Parser.cpp"
     break;
 
   case 66: /* BuiltinType: VOID  */
 #line 414 "frontend/Parser.y"
-                                { (yyval.builtinType) = new AST::BuiltinType(AST::BuiltinType::TypeId::VOID, "void"); }
+                                { (yyval.builtinType) = new AST::BuiltinType(AST::BuiltinTypeId::VOID, "void"); }
 #line 2846 "generated/Parser.cpp"
     break;
 

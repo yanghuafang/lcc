@@ -399,19 +399,19 @@ Param:      VarType IDENTIFIER  { $$ = new AST::Param($1, *$2); }
             ;
 
 BuiltinType:
-            CHAR                { $$ = new AST::BuiltinType(AST::BuiltinType::TypeId::CHAR, "char"); }
-            | SHORT             { $$ = new AST::BuiltinType(AST::BuiltinType::TypeId::SHORT, "short"); }
-            | INT               { $$ = new AST::BuiltinType(AST::BuiltinType::TypeId::INT, "int"); }
-            | LONG              { $$ = new AST::BuiltinType(AST::BuiltinType::TypeId::LONG, "long"); }
-            | UNSIGNED          { $$ = new AST::BuiltinType(AST::BuiltinType::TypeId::UINT, "uint"); }
-            | UNSIGNED CHAR     { $$ = new AST::BuiltinType(AST::BuiltinType::TypeId::UCHAR, "uchar"); }
-            | UNSIGNED SHORT    { $$ = new AST::BuiltinType(AST::BuiltinType::TypeId::USHORT, "ushort"); }
-            | UNSIGNED INT      { $$ = new AST::BuiltinType(AST::BuiltinType::TypeId::UINT, "uint"); }
-            | UNSIGNED LONG     { $$ = new AST::BuiltinType(AST::BuiltinType::TypeId::ULONG, "ulong"); }
-            | FLOAT             { $$ = new AST::BuiltinType(AST::BuiltinType::TypeId::FLOAT, "float"); }
-            | DOUBLE            { $$ = new AST::BuiltinType(AST::BuiltinType::TypeId::DOUBLE, "double"); }
-            | BOOL              { $$ = new AST::BuiltinType(AST::BuiltinType::TypeId::BOOL, "bool"); }
-            | VOID              { $$ = new AST::BuiltinType(AST::BuiltinType::TypeId::VOID, "void"); }
+            CHAR                { $$ = new AST::BuiltinType(AST::BuiltinTypeId::CHAR, "char"); }
+            | SHORT             { $$ = new AST::BuiltinType(AST::BuiltinTypeId::SHORT, "short"); }
+            | INT               { $$ = new AST::BuiltinType(AST::BuiltinTypeId::INT, "int"); }
+            | LONG              { $$ = new AST::BuiltinType(AST::BuiltinTypeId::LONG, "long"); }
+            | UNSIGNED          { $$ = new AST::BuiltinType(AST::BuiltinTypeId::UINT, "uint"); }
+            | UNSIGNED CHAR     { $$ = new AST::BuiltinType(AST::BuiltinTypeId::UCHAR, "uchar"); }
+            | UNSIGNED SHORT    { $$ = new AST::BuiltinType(AST::BuiltinTypeId::USHORT, "ushort"); }
+            | UNSIGNED INT      { $$ = new AST::BuiltinType(AST::BuiltinTypeId::UINT, "uint"); }
+            | UNSIGNED LONG     { $$ = new AST::BuiltinType(AST::BuiltinTypeId::ULONG, "ulong"); }
+            | FLOAT             { $$ = new AST::BuiltinType(AST::BuiltinTypeId::FLOAT, "float"); }
+            | DOUBLE            { $$ = new AST::BuiltinType(AST::BuiltinTypeId::DOUBLE, "double"); }
+            | BOOL              { $$ = new AST::BuiltinType(AST::BuiltinTypeId::BOOL, "bool"); }
+            | VOID              { $$ = new AST::BuiltinType(AST::BuiltinTypeId::VOID, "void"); }
             ;
 
  /* FieldDecls */

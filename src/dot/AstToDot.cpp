@@ -711,35 +711,35 @@ std::pair<std::string, std::string> Constant::genGraph() {
   std::string boolValue;
 
   switch (typeId_) {
-    case BuiltinType::TypeId::CHAR:
+    case BuiltinTypeId::CHAR:
       node = "char_" + id;
       tree += node + " [label = \"" + std::to_string(charValue_) + "\"]\n";
       break;
-    case BuiltinType::TypeId::INT:
+    case BuiltinTypeId::INT:
       node = "int_" + id;
       tree += node + " [label = \"" + std::to_string(intValue_) + "\"]\n";
       break;
-    case BuiltinType::TypeId::UINT:
+    case BuiltinTypeId::UINT:
       node = "uint_" + id;
       tree += node + " [label = \"" + std::to_string(uintValue_) + "\"]\n";
       break;
-    case BuiltinType::TypeId::LONG:
+    case BuiltinTypeId::LONG:
       node = "long_" + id;
       tree += node + " [label = \"" + std::to_string(longValue_) + "\"]\n";
       break;
-    case BuiltinType::TypeId::ULONG:
+    case BuiltinTypeId::ULONG:
       node = "ulong_" + id;
       tree += node + " [label = \"" + std::to_string(ulongValue_) + "\"]\n";
       break;
-    case BuiltinType::TypeId::FLOAT:
+    case BuiltinTypeId::FLOAT:
       node = "float_" + id;
       tree += node + " [label = \"" + std::to_string(floatValue_) + "\"]\n";
       break;
-    case BuiltinType::TypeId::DOUBLE:
+    case BuiltinTypeId::DOUBLE:
       node = "double_" + id;
       tree += node + " [label = \"" + std::to_string(doubleValue_) + "\"]\n";
       break;
-    case BuiltinType::TypeId::BOOL:
+    case BuiltinTypeId::BOOL:
       node = "bool_" + id;
       boolValue = boolValue_ ? "true" : "false";
       tree += node + " [label = \"" + boolValue + "\"]\n";

@@ -41,26 +41,26 @@ VarType* Expr::getExprVarType(CodeGenerator& generator) { return nullptr; }
 
 VarType* Expr::getLValueVarType(CodeGenerator& generator) { return nullptr; }
 
-BuiltinType::TypeId Expr::getExprTypeId(CodeGenerator& generator) {
+BuiltinTypeId Expr::getExprTypeId(CodeGenerator& generator) {
   VarType* varType = getExprVarType(generator);
   if (varType != nullptr) {
     return vartype::resolvedVarTypeToTypeId(varType, generator);
   }
 
-  return BuiltinType::TypeId::UNKNOWN;
+  return BuiltinTypeId::UNKNOWN;
 }
 
-BuiltinType::TypeId Expr::getLValueTypeId(CodeGenerator& generator) {
+BuiltinTypeId Expr::getLValueTypeId(CodeGenerator& generator) {
   VarType* varType = getLValueVarType(generator);
   if (varType != nullptr) {
     return vartype::resolvedVarTypeToTypeId(varType, generator);
   }
 
-  return BuiltinType::TypeId::UNKNOWN;
+  return BuiltinTypeId::UNKNOWN;
 }
 
-BuiltinType::TypeId Expr::binaryExprTypeId(Expr* lhs, Expr* rhs,
-                                           CodeGenerator& generator) {
+BuiltinTypeId Expr::binaryExprTypeId(Expr* lhs, Expr* rhs,
+                                     CodeGenerator& generator) {
   bool isUnsigned = false;
   return typerules::usualArithmeticConversion(
       lhs->getExprTypeId(generator), rhs->getExprTypeId(generator), isUnsigned);
@@ -73,7 +73,7 @@ bool Expr::binaryIsUnsigned(Expr* lhs, Expr* rhs, CodeGenerator& generator) {
   return isUnsigned;
 }
 
-BuiltinType::TypeId BinaryExpr::getExprTypeId(CodeGenerator& generator) {
+BuiltinTypeId BinaryExpr::getExprTypeId(CodeGenerator& generator) {
   return binaryExprTypeId(lhs_, rhs_, generator);
 }
 
@@ -85,14 +85,14 @@ VarType* Variable::getLValueVarType(CodeGenerator& generator) {
   return getExprVarType(generator);
 }
 
-BuiltinType::TypeId Constant::getExprTypeId(CodeGenerator& generator) {
+BuiltinTypeId Constant::getExprTypeId(CodeGenerator& generator) {
   (void)generator;
   return typeId_;
 }
 
-BuiltinType::TypeId ConstStr::getExprTypeId(CodeGenerator& generator) {
+BuiltinTypeId ConstStr::getExprTypeId(CodeGenerator& generator) {
   (void)generator;
-  return BuiltinType::TypeId::UNKNOWN;
+  return BuiltinTypeId::UNKNOWN;
 }
 
 VarType* CommaExpr::getExprVarType(CodeGenerator& generator) {
@@ -155,9 +155,9 @@ VarType* TypeCast::getExprVarType(CodeGenerator& generator) {
   return varType_;
 }
 
-BuiltinType::TypeId SizeOf::getExprTypeId(CodeGenerator& generator) {
+BuiltinTypeId SizeOf::getExprTypeId(CodeGenerator& generator) {
   (void)generator;
-  return BuiltinType::TypeId::LONG;
+  return BuiltinTypeId::LONG;
 }
 
 VarType* UnaryPlus::getExprVarType(CodeGenerator& generator) {
@@ -168,7 +168,7 @@ VarType* UnaryMinus::getExprVarType(CodeGenerator& generator) {
   return operand_->getExprVarType(generator);
 }
 
-BuiltinType::TypeId UnaryMinus::getExprTypeId(CodeGenerator& generator) {
+BuiltinTypeId UnaryMinus::getExprTypeId(CodeGenerator& generator) {
   return operand_->getExprTypeId(generator);
 }
 
@@ -236,15 +236,15 @@ VarType* LhsRhsAssign::getLValueVarType(CodeGenerator& generator) {
 // override the base Expr::getExprTypeId() answers UNKNOWN, which fails
 // typeUpgrade's integer test and makes `(a < b) * 3` throw "Mul with
 // unsupported types!". genCode() widens the i1 to match (see boolToInt).
-BuiltinType::TypeId LogicExpr::getExprTypeId(CodeGenerator& generator) {
+BuiltinTypeId LogicExpr::getExprTypeId(CodeGenerator& generator) {
   (void)generator;
-  return BuiltinType::TypeId::INT;
+  return BuiltinTypeId::INT;
 }
 
 // C: `!x` has type int, like the binary logic operators above.
-BuiltinType::TypeId LogicNot::getExprTypeId(CodeGenerator& generator) {
+BuiltinTypeId LogicNot::getExprTypeId(CodeGenerator& generator) {
   (void)generator;
-  return BuiltinType::TypeId::INT;
+  return BuiltinTypeId::INT;
 }
 
 }  // namespace AST
