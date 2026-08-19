@@ -1,12 +1,16 @@
+#include <llvm/ADT/Twine.h>
 #include <llvm/IR/BasicBlock.h>
 #include <llvm/IR/Constants.h>
 #include <llvm/IR/Function.h>
 #include <llvm/IR/IRBuilder.h>
 #include <llvm/IR/Value.h>
 
+#include <algorithm>
+#include <cassert>
 #include <exception>
 #include <memory>
 #include <stdexcept>
+#include <vector>
 
 #include "ast/Nodes.hpp"
 #include "irgen/CodeGenerator.hpp"
@@ -34,6 +38,83 @@ llvm::Value* generateStmt(CodeGenerator& generator, Stmt* stmt) {
   generator.setDebugLocation(stmt->loc());
   return stmt->genCode(generator);
 }
+
+// Owns the basic blocks a lowering has created but not yet attached to its
+// function.
+//
+// llvm::BasicBlock::Create with no parent argument returns a *detached* block:
+// it belongs to no Function, so nothing in LLVM owns it and only an explicit
+// delete frees it. Every lowering below opens a window on that state, because
+// each builds its whole CFG skeleton up front and only then walks the
+// sub-statements that fill the blocks in — and everything inside that window
+// throws: a non-scalar condition, an unknown identifier, an operand pair no
+// operator accepts. Bare pointers leaked every block not yet inserted, and
+// because driver/main.cpp catches what pipeline::genIr throws and returns 6,
+// the process unwinds and exits normally, so that leak is a real one rather
+// than memory an abort would have left to the OS.
+//
+// The blocks therefore live here instead of in bare pointers, and the call
+// sites read as they did before: create() hands back the same raw pointer to
+// wire branches with, attach() gives one block to the function, which owns it
+// from then on, and drop() deletes one that turned out to have no
+// predecessors. Whatever is left at scope exit — the throwing path, and only
+// the throwing path — is deleted here.
+//
+// Scope-local by design, like ScopedSymbolTable: neither copyable nor movable.
+class DetachedBlocks final {
+ public:
+  explicit DetachedBlocks(CodeGenerator& generator) noexcept
+      : context_(generator.getContext()),
+        func_(generator.getCurrentFunction()) {}
+
+  DetachedBlocks(const DetachedBlocks&) = delete;
+  DetachedBlocks& operator=(const DetachedBlocks&) = delete;
+  DetachedBlocks(DetachedBlocks&&) = delete;
+  DetachedBlocks& operator=(DetachedBlocks&&) = delete;
+
+  // A new block with no parent. Ownership stays here until attach() or drop().
+  // Takes a Twine because that is how LLVM names a value without materializing
+  // the concatenation its callers pass.
+  llvm::BasicBlock* create(const llvm::Twine& name) {
+    blocks_.push_back(std::unique_ptr<llvm::BasicBlock>(
+        llvm::BasicBlock::Create(context_, name)));
+    return blocks_.back().get();
+  }
+
+  // Append the block to the function, which owns it from here on. release()
+  // runs before the insert only because ilist splicing does not allocate and
+  // so cannot throw; there is no window between the two.
+  void attach(llvm::BasicBlock* block) {
+    if (func_ == nullptr) {
+      throw std::logic_error("Basic block emitted outside a function body!");
+    }
+    func_->insert(func_->end(), take(block).release());
+  }
+
+  // Delete a block nothing branches to. Every caller checks
+  // hasNPredecessorsOrMore(1) first, so no instruction can still refer to it.
+  void drop(llvm::BasicBlock* block) { take(block); }
+
+ private:
+  // Lift one block out of the pool. A linear scan over at most 2n entries for
+  // an n-case switch, and three or four for every other lowering, which is
+  // cheaper than the map that would index them.
+  std::unique_ptr<llvm::BasicBlock> take(llvm::BasicBlock* block) {
+    const auto it =
+        std::find_if(blocks_.begin(), blocks_.end(),
+                     [block](const std::unique_ptr<llvm::BasicBlock>& owned) {
+                       return owned.get() == block;
+                     });
+    assert(it != blocks_.end() && "block was not created by this pool");
+    std::unique_ptr<llvm::BasicBlock> owned = std::move(*it);
+    blocks_.erase(it);
+    return owned;
+  }
+
+  llvm::LLVMContext& context_;
+  llvm::Function* func_;
+  std::vector<std::unique_ptr<llvm::BasicBlock>> blocks_;
+};
 
 }  // namespace
 
@@ -72,18 +153,15 @@ llvm::Value* IfStmt::genCode(CodeGenerator& generator) {
         "IfStmt condition must be either int, or float, or pointer.");
   }
 
-  llvm::Function* func = generator.getCurrentFunction();
-  llvm::BasicBlock* thenBlock =
-      llvm::BasicBlock::Create(generator.getContext(), "then");
-  llvm::BasicBlock* elseBlock =
-      llvm::BasicBlock::Create(generator.getContext(), "else");
-  llvm::BasicBlock* endBlock =
-      llvm::BasicBlock::Create(generator.getContext(), "if.end");
+  DetachedBlocks blocks(generator);
+  llvm::BasicBlock* thenBlock = blocks.create("then");
+  llvm::BasicBlock* elseBlock = blocks.create("else");
+  llvm::BasicBlock* endBlock = blocks.create("if.end");
 
-  // Detached blocks are attached with Function::insert (LLVM 20+); same pattern
-  // in switch/loop lowering below.
+  // Detached blocks are attached through the pool above, which hands them to
+  // Function::insert (LLVM 20+); same pattern in switch/loop lowering below.
   generator.getBuilder().CreateCondBr(condition, thenBlock, elseBlock);
-  func->insert(func->end(), thenBlock);
+  blocks.attach(thenBlock);
   generator.getBuilder().SetInsertPoint(thenBlock);
   if (thenStmt_ != nullptr) {
     ScopedSymbolTable thenScope(generator.symbols());
@@ -91,7 +169,7 @@ llvm::Value* IfStmt::genCode(CodeGenerator& generator) {
   }
   iridiom::terminateBlockByBr(generator.getBuilder(), endBlock);
 
-  func->insert(func->end(), elseBlock);
+  blocks.attach(elseBlock);
   generator.getBuilder().SetInsertPoint(elseBlock);
   if (elseStmt_ != nullptr) {
     ScopedSymbolTable elseScope(generator.symbols());
@@ -100,12 +178,12 @@ llvm::Value* IfStmt::genCode(CodeGenerator& generator) {
   iridiom::terminateBlockByBr(generator.getBuilder(), endBlock);
 
   if (endBlock->hasNPredecessorsOrMore(1)) {
-    func->insert(func->end(), endBlock);
+    blocks.attach(endBlock);
     generator.getBuilder().SetInsertPoint(endBlock);
   } else {
-    // Both arms returned, so nothing branches here. Same ownership rule as the
-    // switch.end block below: detached means unowned, so drop it.
-    delete endBlock;
+    // Both arms returned, so nothing branches here, and no instruction refers
+    // to it either — so it is dropped rather than attached.
+    blocks.drop(endBlock);
   }
 
   return nullptr;
@@ -113,7 +191,7 @@ llvm::Value* IfStmt::genCode(CodeGenerator& generator) {
 
 llvm::Value* SwitchStmt::genCode(CodeGenerator& generator) {
   generator.setDebugLocation(loc());
-  llvm::Function* func = generator.getCurrentFunction();
+  DetachedBlocks blocks(generator);
   llvm::Value* matcher = matcher_->genCode(generator);
 
   // Lowered as an if/else-if chain, not LLVM's `switch` instruction. That
@@ -141,14 +219,12 @@ llvm::Value* SwitchStmt::genCode(CodeGenerator& generator) {
   // generator's switch stack — that is the whole difference between the two.
 
   std::vector<llvm::BasicBlock*> caseBlocks;
-  caseBlocks.reserve(caseStmtList_->size());
+  caseBlocks.reserve(caseStmtList_->size() + 1);
   for (size_t i = 0; i < caseStmtList_->size(); ++i) {
-    caseBlocks.push_back(llvm::BasicBlock::Create(generator.getContext(),
-                                                  "case." + std::to_string(i)));
+    caseBlocks.push_back(blocks.create("case." + std::to_string(i)));
   }
 
-  caseBlocks.push_back(
-      llvm::BasicBlock::Create(generator.getContext(), "switch.end"));
+  caseBlocks.push_back(blocks.create("switch.end"));
 
   std::vector<llvm::BasicBlock*> comparisionBlocks;
   // The first comparison code should be in current insertion block.
@@ -158,8 +234,8 @@ llvm::Value* SwitchStmt::genCode(CodeGenerator& generator) {
   // per case instead would leave the final test branching to a block that is
   // never inserted into the function.
   for (size_t i = 1; i < caseStmtList_->size(); ++i) {
-    comparisionBlocks.push_back(llvm::BasicBlock::Create(
-        generator.getContext(), "switch.compare." + std::to_string(i - 1)));
+    comparisionBlocks.push_back(
+        blocks.create("switch.compare." + std::to_string(i - 1)));
   }
 
   // comparisionBlocks and caseBlocks hold the same block after switch
@@ -171,7 +247,7 @@ llvm::Value* SwitchStmt::genCode(CodeGenerator& generator) {
       // The first comparison is already in current insertion block.
       // So only set insertion block and insertion point since the second
       // comparison.
-      func->insert(func->end(), comparisionBlocks[i]);
+      blocks.attach(comparisionBlocks[i]);
       generator.getBuilder().SetInsertPoint(comparisionBlocks[i]);
     }
 
@@ -191,7 +267,7 @@ llvm::Value* SwitchStmt::genCode(CodeGenerator& generator) {
 
   ScopedSymbolTable switchScope(generator.symbols());
   for (size_t i = 0; i < caseStmtList_->size(); ++i) {
-    func->insert(func->end(), caseBlocks[i]);
+    blocks.attach(caseBlocks[i]);
     generator.getBuilder().SetInsertPoint(caseBlocks[i]);
 
     generator.controlFlow().enterSwitch(caseBlocks.back());
@@ -201,14 +277,12 @@ llvm::Value* SwitchStmt::genCode(CodeGenerator& generator) {
   }
 
   if (caseBlocks.back()->hasNPredecessorsOrMore(1)) {
-    func->insert(func->end(), caseBlocks.back());
+    blocks.attach(caseBlocks.back());
     generator.getBuilder().SetInsertPoint(caseBlocks.back());
   } else {
-    // Every case returned, so nothing branches here. A detached block belongs
-    // to no Function and is therefore owned by nobody; drop it rather than leak
-    // it. Having no predecessors also means nothing refers to it, so this is
-    // safe.
-    delete caseBlocks.back();
+    // Every case returned, so nothing branches here. Having no predecessors
+    // also means no instruction refers to it, so dropping it is safe.
+    blocks.drop(caseBlocks.back());
   }
 
   return nullptr;
@@ -240,15 +314,11 @@ llvm::Value* CaseStmt::genCode(CodeGenerator& generator) {
 // for.cond. enterLoop wires continue to for.update and break to for.end.
 llvm::Value* ForStmt::genCode(CodeGenerator& generator) {
   generator.setDebugLocation(loc());
-  llvm::Function* func = generator.getCurrentFunction();
-  llvm::BasicBlock* conditionBlock =
-      llvm::BasicBlock::Create(generator.getContext(), "for.cond");
-  llvm::BasicBlock* updateBlock =
-      llvm::BasicBlock::Create(generator.getContext(), "for.update");
-  llvm::BasicBlock* endBlock =
-      llvm::BasicBlock::Create(generator.getContext(), "for.end");
-  llvm::BasicBlock* loopBlock =
-      llvm::BasicBlock::Create(generator.getContext(), "for.loop");
+  DetachedBlocks blocks(generator);
+  llvm::BasicBlock* conditionBlock = blocks.create("for.cond");
+  llvm::BasicBlock* updateBlock = blocks.create("for.update");
+  llvm::BasicBlock* endBlock = blocks.create("for.end");
+  llvm::BasicBlock* loopBlock = blocks.create("for.loop");
 
   std::unique_ptr<ScopedSymbolTable> initScope;
   if (initial_ != nullptr) {
@@ -258,7 +328,7 @@ llvm::Value* ForStmt::genCode(CodeGenerator& generator) {
 
   iridiom::terminateBlockByBr(generator.getBuilder(), conditionBlock);
 
-  func->insert(func->end(), conditionBlock);
+  blocks.attach(conditionBlock);
   generator.getBuilder().SetInsertPoint(conditionBlock);
   if (condition_ != nullptr) {
     llvm::Value* condition = condition_->genCode(generator);
@@ -273,7 +343,7 @@ llvm::Value* ForStmt::genCode(CodeGenerator& generator) {
     generator.getBuilder().CreateBr(loopBlock);
   }
 
-  func->insert(func->end(), loopBlock);
+  blocks.attach(loopBlock);
   generator.getBuilder().SetInsertPoint(loopBlock);
   if (loopBody_ != nullptr) {
     generator.controlFlow().enterLoop(updateBlock, endBlock);
@@ -284,7 +354,7 @@ llvm::Value* ForStmt::genCode(CodeGenerator& generator) {
 
   iridiom::terminateBlockByBr(generator.getBuilder(), updateBlock);
 
-  func->insert(func->end(), updateBlock);
+  blocks.attach(updateBlock);
   generator.getBuilder().SetInsertPoint(updateBlock);
   if (update_ != nullptr) {
     update_->genCode(generator);
@@ -292,7 +362,7 @@ llvm::Value* ForStmt::genCode(CodeGenerator& generator) {
 
   generator.getBuilder().CreateBr(conditionBlock);
 
-  func->insert(func->end(), endBlock);
+  blocks.attach(endBlock);
   generator.getBuilder().SetInsertPoint(endBlock);
 
   return nullptr;
@@ -304,18 +374,15 @@ llvm::Value* ForStmt::genCode(CodeGenerator& generator) {
 // continue to do.cond and break to do.end.
 llvm::Value* DoStmt::genCode(CodeGenerator& generator) {
   generator.setDebugLocation(loc());
-  llvm::Function* func = generator.getCurrentFunction();
-  llvm::BasicBlock* conditionBlock =
-      llvm::BasicBlock::Create(generator.getContext(), "do.cond");
-  llvm::BasicBlock* loopBlock =
-      llvm::BasicBlock::Create(generator.getContext(), "do.loop");
-  llvm::BasicBlock* endBlock =
-      llvm::BasicBlock::Create(generator.getContext(), "do.end");
+  DetachedBlocks blocks(generator);
+  llvm::BasicBlock* conditionBlock = blocks.create("do.cond");
+  llvm::BasicBlock* loopBlock = blocks.create("do.loop");
+  llvm::BasicBlock* endBlock = blocks.create("do.end");
 
   // Unconditional branch to loop block.
   generator.getBuilder().CreateBr(loopBlock);
 
-  func->insert(func->end(), loopBlock);
+  blocks.attach(loopBlock);
   generator.getBuilder().SetInsertPoint(loopBlock);
   if (loopBody_ != nullptr) {
     generator.controlFlow().enterLoop(conditionBlock, endBlock);
@@ -326,7 +393,7 @@ llvm::Value* DoStmt::genCode(CodeGenerator& generator) {
 
   iridiom::terminateBlockByBr(generator.getBuilder(), conditionBlock);
 
-  func->insert(func->end(), conditionBlock);
+  blocks.attach(conditionBlock);
   generator.getBuilder().SetInsertPoint(conditionBlock);
   llvm::Value* condition = condition_->genCode(generator);
   condition = convert::castToBool(generator.getBuilder(), condition);
@@ -337,7 +404,7 @@ llvm::Value* DoStmt::genCode(CodeGenerator& generator) {
 
   generator.getBuilder().CreateCondBr(condition, loopBlock, endBlock);
 
-  func->insert(func->end(), endBlock);
+  blocks.attach(endBlock);
   generator.getBuilder().SetInsertPoint(endBlock);
 
   return nullptr;
@@ -346,18 +413,15 @@ llvm::Value* DoStmt::genCode(CodeGenerator& generator) {
 // enterLoop wires continue to the condition block and break to while.end.
 llvm::Value* WhileStmt::genCode(CodeGenerator& generator) {
   generator.setDebugLocation(loc());
-  llvm::Function* func = generator.getCurrentFunction();
-  llvm::BasicBlock* conditionBlock =
-      llvm::BasicBlock::Create(generator.getContext(), "while.cond");
-  llvm::BasicBlock* loopBlock =
-      llvm::BasicBlock::Create(generator.getContext(), "while.loop");
-  llvm::BasicBlock* endBlock =
-      llvm::BasicBlock::Create(generator.getContext(), "while.end");
+  DetachedBlocks blocks(generator);
+  llvm::BasicBlock* conditionBlock = blocks.create("while.cond");
+  llvm::BasicBlock* loopBlock = blocks.create("while.loop");
+  llvm::BasicBlock* endBlock = blocks.create("while.end");
 
   // Unconditional branch to condition block.
   generator.getBuilder().CreateBr(conditionBlock);
 
-  func->insert(func->end(), conditionBlock);
+  blocks.attach(conditionBlock);
   generator.getBuilder().SetInsertPoint(conditionBlock);
   llvm::Value* condition = condition_->genCode(generator);
   condition = convert::castToBool(generator.getBuilder(), condition);
@@ -368,7 +432,7 @@ llvm::Value* WhileStmt::genCode(CodeGenerator& generator) {
 
   generator.getBuilder().CreateCondBr(condition, loopBlock, endBlock);
 
-  func->insert(func->end(), loopBlock);
+  blocks.attach(loopBlock);
   generator.getBuilder().SetInsertPoint(loopBlock);
   if (loopBody_ != nullptr) {
     generator.controlFlow().enterLoop(conditionBlock, endBlock);
@@ -379,7 +443,7 @@ llvm::Value* WhileStmt::genCode(CodeGenerator& generator) {
 
   iridiom::terminateBlockByBr(generator.getBuilder(), conditionBlock);
 
-  func->insert(func->end(), endBlock);
+  blocks.attach(endBlock);
   generator.getBuilder().SetInsertPoint(endBlock);
 
   return nullptr;
