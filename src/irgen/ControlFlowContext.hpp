@@ -20,9 +20,12 @@ class BasicBlock;
 // stack, which the switch never touched, while `break` reads the break stack,
 // which it did.
 //
-// The one piece that is not a stack is the switch fall-through block: C's
-// fall-through is a property of the case body currently being lowered, not of
-// an enclosing construct, so there is only ever one, and leaveSwitch clears it.
+// The fall-through block is a stack for the same reason, though it took a bug
+// to see it. C's fall-through is a property of the case body currently being
+// lowered — and case bodies nest, because a `switch` inside a `case` is
+// ordinary C. A single slot got that wrong: the inner switch cleared the outer
+// case's target on its way out, and the outer body was left with nowhere to
+// fall through to.
 //
 // Split out of CodeGenerator, where it sat beside an LLVMContext and a Module.
 // Like SymbolTable, this emits no IR — it only records which llvm::BasicBlock a
@@ -35,15 +38,16 @@ class ControlFlowContext {
 
   void leaveLoop();
 
-  // Push a switch's break target. Fall-through uses setSwitchFallthroughBlock
-  // rather than a stack; see above.
-  void enterSwitch(llvm::BasicBlock* breakBlock);
+  // Push a switch's break target, and the fall-through target of the one case
+  // body about to be lowered. Both are popped together, so a case body cannot
+  // outlive the successor it falls into.
+  void enterSwitch(llvm::BasicBlock* breakBlock,
+                   llvm::BasicBlock* fallthroughBlock);
 
   void leaveSwitch();
 
-  // Target for the case body currently being lowered.
-  void setSwitchFallthroughBlock(llvm::BasicBlock* fallthroughBlock);
-
+  // Successor of the case body currently being lowered — the innermost one, so
+  // a switch nested inside a case does not disturb the case that contains it.
   llvm::BasicBlock* getSwitchFallthroughBlock() const;
 
   // Innermost enclosing targets, or null outside any loop / switch.
@@ -55,7 +59,7 @@ class ControlFlowContext {
   std::vector<llvm::BasicBlock*> continueBlockStack_;
   std::vector<llvm::BasicBlock*> breakBlockStack_;
 
-  llvm::BasicBlock* switchFallthroughBlock_ = nullptr;
+  std::vector<llvm::BasicBlock*> fallthroughBlockStack_;
 };
 
 // RAII guards for the two stacks above, and the way StmtToIr.cpp is meant to
@@ -85,14 +89,16 @@ class ScopedLoop {
   ControlFlowContext& controlFlow_;
 };
 
-// Scoped to one case body, not to the whole switch: every case pushes the same
-// break target, and leaveSwitch is also what clears the fall-through block that
-// setSwitchFallthroughBlock set for that body.
+// Scoped to one case body, not to the whole switch. Every case pushes the same
+// break target, but the fall-through target is that body's own successor —
+// which is exactly what makes a switch nested inside a case work, since the
+// inner one pushes and pops above the outer one rather than over it.
 class ScopedSwitch {
  public:
-  ScopedSwitch(ControlFlowContext& controlFlow, llvm::BasicBlock* breakBlock)
+  ScopedSwitch(ControlFlowContext& controlFlow, llvm::BasicBlock* breakBlock,
+               llvm::BasicBlock* fallthroughBlock)
       : controlFlow_(controlFlow) {
-    controlFlow_.enterSwitch(breakBlock);
+    controlFlow_.enterSwitch(breakBlock, fallthroughBlock);
   }
   ~ScopedSwitch() { controlFlow_.leaveSwitch(); }
 

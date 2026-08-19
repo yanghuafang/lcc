@@ -213,9 +213,9 @@ llvm::Value* SwitchStmt::genCode(CodeGenerator& generator) {
   // only in the sense that its label never matches a value.
   //
   // Fallthrough is why bodies do not branch to switch.end when they finish:
-  // each body is told its *successor* body (caseBlocks[i + 1]) via
-  // setSwitchFallthroughBlock, and running off the end of a case falls into the
-  // next one. `break` is what jumps to switch.end, which it finds on the
+  // each body is told its *successor* body (caseBlocks[i + 1]) by the
+  // ScopedSwitch that wraps it, and running off the end of a case falls into
+  // the next one. `break` is what jumps to switch.end, which it finds on the
   // generator's switch stack — that is the whole difference between the two.
 
   std::vector<llvm::BasicBlock*> caseBlocks;
@@ -270,8 +270,8 @@ llvm::Value* SwitchStmt::genCode(CodeGenerator& generator) {
     blocks.attach(caseBlocks[i]);
     generator.getBuilder().SetInsertPoint(caseBlocks[i]);
 
-    ScopedSwitch switchTargets(generator.controlFlow(), caseBlocks.back());
-    generator.controlFlow().setSwitchFallthroughBlock(caseBlocks[i + 1]);
+    ScopedSwitch switchTargets(generator.controlFlow(), caseBlocks.back(),
+                               caseBlocks[i + 1]);
     caseStmtList_->at(i)->genCode(generator);
   }
 

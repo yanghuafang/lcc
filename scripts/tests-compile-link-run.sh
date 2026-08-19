@@ -56,6 +56,7 @@ tests=(
   "39.break_continue_hierarchy.c"
   "41.zero_init_global.c"
   "42.switch_no_default.c"
+  "43.nested_switch.c"
 )
 
 # AST graphs come from tests/graphs/, not from the suite above.
