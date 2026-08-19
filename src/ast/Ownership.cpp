@@ -17,15 +17,15 @@
 
 namespace AST {
 
-// VarInit::buildVarType() nests one ArrayType per declarator bound around the
-// VarType that VarDecl owns and shares across every name in its VarList. Delete
-// only the ArrayType prefix, unlinking as we go, so that shared tail is left
-// for VarDecl to destroy exactly once.
+// arrayinit::buildArrayVarType() nests one ArrayType per declarator bound
+// around the VarType that VarDecl owns and shares across every name in its
+// VarList. Delete only the ArrayType prefix, unlinking as we go, so that shared
+// tail is left for VarDecl to destroy exactly once.
 //
 // Declared in ast/Nodes.hpp rather than kept file-local to this one caller,
 // because the same rule has to hold before the chain is finished: if a bound
-// turns out to be unresolved partway through buildVarType, the prefix built so
-// far is unwound with this, and the shared tail must survive that too.
+// turns out to be unresolved partway through the build, the prefix so far is
+// unwound with this, and the shared tail must survive that too.
 void releaseArrayTypeChain(VarType* built) noexcept {
   while (built != nullptr && built->isArrayType()) {
     auto* arrayType = static_cast<ArrayType*>(built);

@@ -385,9 +385,9 @@ class VarInit : public Node {
   std::vector<size_t> arrayBounds_;
   Expr* initialExpr_;
   InitList* initList_;
-  // Per-name array type from buildVarType(); addVariable() keeps this pointer
-  // for the rest of codegen. Only the ArrayType wrappers are owned here—the
-  // leaf base type remains VarDecl::varType_.
+  // Per-name array type from arrayinit::buildArrayVarType(); addVariable()
+  // keeps this pointer for the rest of codegen. Only the ArrayType wrappers
+  // are owned here—the leaf base type remains VarDecl::varType_.
   VarType* arrayVarType_;
 
   VarInit(const std::string& varName, const std::vector<size_t>& arrayBounds,
@@ -402,16 +402,13 @@ class VarInit : public Node {
   llvm::Value* genCode(CodeGenerator& generator) override { return nullptr; }
   std::pair<std::string, std::string> genGraph() override;
 
-  VarType* buildVarType(VarType* baseType) const;
-  static VarType* buildVarType(VarType* baseType,
-                               const std::vector<size_t>& bounds);
   bool hasBraceInit() const { return initList_ != nullptr; }
 };
 
-// Delete the ArrayType prefix buildVarType() nests around a VarDecl's base
-// type, unlinking as it goes so that shared tail survives. Defined in
-// ast/Ownership.cpp beside ~VarInit, which applies the rule to a finished
-// chain; irgen/DeclToIr.cpp applies it to a partly built one.
+// Delete the ArrayType prefix arrayinit::buildArrayVarType() nests around a
+// VarDecl's base type, unlinking as it goes so that shared tail survives.
+// Defined in ast/Ownership.cpp beside ~VarInit, which applies the rule to a
+// finished chain; irgen/ArrayInitializer.cpp applies it to a partly built one.
 void releaseArrayTypeChain(VarType* built) noexcept;
 
 class TypeDecl : public Decl {

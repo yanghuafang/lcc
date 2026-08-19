@@ -17,7 +17,10 @@ class Value;
 }  // namespace llvm
 
 // Array declarator bounds and array initializers — everything VarDecl::genCode
-// delegates to once a declarator turns out to have [ ] on it.
+// delegates to once a declarator turns out to have [ ] on it. Three steps, in
+// the order the walker calls them: resolveArrayBounds fills in an inferred
+// [ ], buildArrayVarType turns the bounds into a type, and one of the four
+// builders below initializes the storage.
 //
 // Split out of irgen/DeclToIr.cpp, where it was over half the file. The walker
 // there is about declarations; how `int a[][5] = {{1},{2,3}}` picks its row
@@ -65,6 +68,20 @@ llvm::Constant* asConstant(llvm::Value* value, const std::string& context);
 // read off the initializer. Only the first dimension may be inferred.
 std::vector<size_t> resolveArrayBounds(const AST::VarInit* var,
                                        AST::VarType* baseType);
+
+// The type a declarator denotes: one ArrayType per bound, nested innermost
+// first around baseType, so `int a[8][5]` gives int[8][5] — a[i] is int[5] and
+// a[i][j] is int.
+//
+// Takes bounds already resolved above and throws on any still inferred. The
+// two are one step split in half, because resolving needs the initializer and
+// this does not.
+//
+// The caller owns the returned chain down to, but not including, baseType:
+// that is what AST::VarInit::arrayVarType_ holds and ~VarInit releases through
+// AST::releaseArrayTypeChain.
+AST::VarType* buildArrayVarType(AST::VarType* baseType,
+                                const std::vector<size_t>& bounds);
 
 Array1DInfo get1DArrayInfo(AST::VarType* varType);
 

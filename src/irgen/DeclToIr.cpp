@@ -8,7 +8,6 @@
 #include <llvm/IR/Module.h>
 #include <llvm/IR/Value.h>
 
-#include <memory>
 #include <stdexcept>
 #include <string>
 #include <vector>
@@ -30,8 +29,9 @@
 // choose storage — alloca, block-scope static, or file-scope global — and then
 // initialize it. What it initializes *with* lives next door rather than here:
 //
-//   irgen/ArrayInitializer.hpp  bound inference, and the four array initializer
-//                               shapes (local/global x brace/string)
+//   irgen/ArrayInitializer.hpp  bound inference, the array type those bounds
+//                               denote, and the four initializer shapes
+//                               (local/global x brace/string)
 //   irgen/StaticLocal.hpp       block-scope statics, including the lazy-init
 //                               guard that splits a basic block mid-declaration
 //
@@ -39,22 +39,6 @@
 // left the decision table above readable on its own.
 
 namespace AST {
-
-namespace {
-
-// Owns the nesting VarInit::buildVarType() builds, until the finished chain is
-// handed back to the caller. AST::releaseArrayTypeChain stops at the first
-// non-array node, so unwinding frees only the ArrayType prefix and leaves the
-// base type VarDecl shares across its VarList intact.
-struct ArrayTypeChainDeleter {
-  void operator()(VarType* chain) const noexcept {
-    releaseArrayTypeChain(chain);
-  }
-};
-
-using OwnedArrayTypeChain = std::unique_ptr<VarType, ArrayTypeChainDeleter>;
-
-}  // namespace
 
 llvm::Value* InitElement::genCode(CodeGenerator& generator) {
   (void)generator;
@@ -205,33 +189,6 @@ llvm::Value* FuncDecl::genCode(CodeGenerator& generator) {
   return nullptr;
 }
 
-VarType* VarInit::buildVarType(VarType* baseType) const {
-  return buildVarType(baseType, arrayBounds_);
-}
-
-// C declarator int a[8][5] yields bounds [8,5]; nest ArrayType inside-out
-// (innermost bound first) so a[i] has type int[5] and a[i][j] is int.
-//
-// The nesting is owned while it is built, because the caller cannot clean up
-// after a failure it never receives a pointer from: by the time a later bound
-// rejects the declarator, the earlier ones have already allocated.
-VarType* VarInit::buildVarType(VarType* baseType,
-                               const std::vector<size_t>& bounds) {
-  OwnedArrayTypeChain chain(baseType);
-  for (auto it = bounds.rbegin(); it != bounds.rend(); ++it) {
-    if (arrayinit::isInferredArrayBound(*it)) {
-      throw std::logic_error("Unresolved inferred array bound.");
-    }
-    // Construct first: should the allocation throw, `chain` still owns the
-    // prefix and unwinds it. On success `nested` owns that prefix instead, so
-    // `chain` has to let go of it rather than reset over it.
-    auto* nested = new ArrayType(chain.get(), *it);
-    chain.release();
-    chain.reset(nested);
-  }
-  return chain.release();
-}
-
 // Per VarInit: resolve bounds → build nested ArrayType → alloca, block-static
 // global, or file-scope global; then brace init, string literal, scalar expr.
 llvm::Value* VarDecl::genCode(CodeGenerator& generator) {
@@ -263,7 +220,7 @@ llvm::Value* VarDecl::genCode(CodeGenerator& generator) {
       }
     }
 
-    var->arrayVarType_ = var->buildVarType(varType_, resolvedBounds);
+    var->arrayVarType_ = arrayinit::buildArrayVarType(varType_, resolvedBounds);
     VarType* varType = var->arrayVarType_;
     llvm::Type* llvmVarType = varType->getType(generator);
     if (llvmVarType == nullptr) {
