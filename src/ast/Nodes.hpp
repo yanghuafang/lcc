@@ -408,6 +408,12 @@ class VarInit : public Node {
   bool hasBraceInit() const { return initList_ != nullptr; }
 };
 
+// Delete the ArrayType prefix buildVarType() nests around a VarDecl's base
+// type, unlinking as it goes so that shared tail survives. Defined in
+// ast/Ownership.cpp beside ~VarInit, which applies the rule to a finished
+// chain; irgen/DeclToIr.cpp applies it to a partly built one.
+void releaseArrayTypeChain(VarType* built) noexcept;
+
 class TypeDecl : public Decl {
  public:
   VarType* varType_;
