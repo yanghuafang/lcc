@@ -134,6 +134,7 @@ lcc/
 │   ├── types/                   # What a type is; emits no instructions
 │   │   ├── TypeEnv.hpp          # type environment interface (AST VarType -> llvm::Type)
 │   │   ├── TypeRules.*          # C type rules: promotion, conversion, signedness
+│   │   ├── BuiltinTypeMap.*     # C scalar width table: BuiltinTypeId -> llvm::Type
 │   │   └── VarTypeQuery.*       # AST VarType -> BuiltinTypeId / llvm::Type queries
 │   ├── irgen/                   # AST -> LLVM IR
 │   │   ├── ExprToIr.cpp         # walker: variables, literals, calls, member access

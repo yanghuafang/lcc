@@ -56,6 +56,7 @@ the file name is the unabbreviated version of the same idea:
 | `staticlocal::` | `irgen/StaticLocal.hpp` |
 | `vartype::` | `types/VarTypeQuery.hpp` |
 | `typerules::` | `types/TypeRules.hpp` |
+| `builtinmap::` | `types/BuiltinTypeMap.hpp` |
 | `dotfile::` | `dot/DotFileWriter.hpp` |
 
 This is why the modules under `types/` and `irgen/` each carry their own
@@ -135,7 +136,8 @@ Two properties are worth stating because they are easy to lose:
 | ------ | ---------------- |
 | `types/TypeEnv.hpp` | Abstract interface: the type environment an AST `VarType` needs to become an `llvm::Type` (context, tag/typedef lookup, aggregate mapping, sizes). Excludes `IRBuilder`, so resolving a type cannot emit instructions |
 | `types/TypeRules.cpp` / `.hpp` | `namespace typerules` — C type rules LLVM cannot express: signedness predicates, integer promotion, usual arithmetic conversion. A leaf: pure functions over `BuiltinTypeId`, with no LLVM or AST dependency |
-| `types/VarTypeQuery.cpp` / `.hpp` | `namespace vartype` — what type an AST node denotes: `VarType` → `BuiltinTypeId`, typedef resolution, and the pointee/element types that opaque pointers force load/store/GEP to read from the AST. Emits no instructions |
+| `types/VarTypeQuery.cpp` / `.hpp` | `namespace vartype` — what type an AST node denotes: `VarType` → `BuiltinTypeId`, typedef resolution, and the pointee/element types that opaque pointers force load/store/GEP to read from the AST. Every function takes an AST `VarType`; none emits instructions |
+| `types/BuiltinTypeMap.cpp` / `.hpp` | `namespace builtinmap` — C's scalar width table: `BuiltinTypeId` → `llvm::Type` (`char` → `i8`, `int` → `i32`, …). Takes a bare `LLVMContext` rather than a `TypeEnv`, which is what lets `irgen/TypeConversion.cpp` read it |
 
 ### `irgen/` — AST to LLVM IR
 

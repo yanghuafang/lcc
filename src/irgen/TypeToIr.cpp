@@ -7,7 +7,7 @@
 
 #include "ast/Nodes.hpp"
 #include "irgen/CodeGenerator.hpp"
-#include "types/VarTypeQuery.hpp"
+#include "types/BuiltinTypeMap.hpp"
 
 // AST types -> llvm::Type: getType() for each VarType node in ast/Nodes.hpp —
 // builtin, pointer, array, struct, union, enum, and typedef alias.
@@ -49,7 +49,7 @@ VarType* UnionType::getMemberVarType(const std::string& memberName) {
 
 llvm::Type* BuiltinType::getType(TypeEnv& env) {
   if (llvmType_ == nullptr) {
-    llvmType_ = vartype::builtinTypeIdToLlvmType(typeId_, env.getContext());
+    llvmType_ = builtinmap::toLlvmType(typeId_, env.getContext());
   }
 
   return llvmType_;
