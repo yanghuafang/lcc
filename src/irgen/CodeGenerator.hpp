@@ -77,7 +77,7 @@ class DebugInfoBuilder;
 // function and block for them and erases it afterwards. That is what
 // switchInsertPointToGlobalBlock / ...ToCurrentBlock switch between, and what
 // ScopedGlobalInsertPoint below pairs.
-class CodeGenerator : public TypeEnv {
+class CodeGenerator final : public TypeEnv {
  public:
   CodeGenerator();
   ~CodeGenerator() override;
