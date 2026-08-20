@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <string_view>
 
 namespace AST {
 
@@ -49,10 +50,10 @@ class TypeEnv {
   [[nodiscard]] virtual llvm::TypeSize getTypeSize(llvm::Type* type) = 0;
 
   // Struct/union/enum tags, innermost scope first.
-  [[nodiscard]] virtual llvm::Type* findType(const std::string& typeName) = 0;
+  [[nodiscard]] virtual llvm::Type* findType(std::string_view typeName) = 0;
 
   [[nodiscard]] virtual AST::VarType* findTypedefAlias(
-      const std::string& aliasName) = 0;
+      std::string_view aliasName) = 0;
 
   virtual bool addStructType(llvm::StructType* llvmType,
                              AST::StructType* astType) = 0;

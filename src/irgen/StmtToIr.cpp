@@ -480,8 +480,7 @@ llvm::Value* ReturnStmt::genCode(CodeGenerator& generator) {
         generator.getBuilder(), retVal_->genCode(generator),
         func->getReturnType(), retVal_->getExprTypeId(generator),
         vartype::resolvedVarTypeToTypeId(
-            generator.symbols().findFuncRetType(func->getName().str()),
-            generator));
+            generator.symbols().findFuncRetType(func->getName()), generator));
     if (retVal == nullptr) {
       throw std::logic_error(
           "The type of return value does not match, and can not be casted to "

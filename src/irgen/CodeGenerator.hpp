@@ -5,6 +5,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "irgen/ControlFlowContext.hpp"
@@ -100,12 +101,12 @@ class CodeGenerator final : public TypeEnv {
 
   // --- TypeEnv, forwarded to symbols() ---
 
-  [[nodiscard]] llvm::Type* findType(const std::string& typeName) override {
+  [[nodiscard]] llvm::Type* findType(std::string_view typeName) override {
     return symbols_.findType(typeName);
   }
 
   [[nodiscard]] AST::VarType* findTypedefAlias(
-      const std::string& aliasName) override {
+      std::string_view aliasName) override {
     return symbols_.findTypedefAlias(aliasName);
   }
 
