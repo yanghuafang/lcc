@@ -2847,7 +2847,7 @@ yyreduce:
 
   case 67: /* FieldDecls: FieldDecls FieldDecl  */
 #line 420 "frontend/Parser.y"
-                                { (yyval.fieldDecls) = (yyvsp[-1].fieldDecls); if ((yyvsp[0].fieldDecl) != NULL) (yyval.fieldDecls)->push_back((yyvsp[0].fieldDecl)); }
+                                { (yyval.fieldDecls) = (yyvsp[-1].fieldDecls); if ((yyvsp[0].fieldDecl) != nullptr) (yyval.fieldDecls)->push_back((yyvsp[0].fieldDecl)); }
 #line 2852 "generated/Parser.cpp"
     break;
 
@@ -2865,7 +2865,7 @@ yyreduce:
 
   case 70: /* FieldDecl: SEMICOLON  */
 #line 426 "frontend/Parser.y"
-                                { (yyval.fieldDecl) = NULL; }
+                                { (yyval.fieldDecl) = nullptr; }
 #line 2870 "generated/Parser.cpp"
     break;
 
@@ -2919,7 +2919,7 @@ yyreduce:
 
   case 79: /* Stmts: Stmts Stmt  */
 #line 452 "frontend/Parser.y"
-                                { (yyval.stmts) = (yyvsp[-1].stmts); if ((yyvsp[0].stmt) != NULL) (yyval.stmts)->push_back((yyvsp[0].stmt)); }
+                                { (yyval.stmts) = (yyvsp[-1].stmts); if ((yyvsp[0].stmt) != nullptr) (yyval.stmts)->push_back((yyvsp[0].stmt)); }
 #line 2924 "generated/Parser.cpp"
     break;
 
@@ -3003,7 +3003,7 @@ yyreduce:
 
   case 93: /* Stmt: SEMICOLON  */
 #line 468 "frontend/Parser.y"
-                                { (yyval.stmt) = NULL; }
+                                { (yyval.stmt) = nullptr; }
 #line 3008 "generated/Parser.cpp"
     break;
 
@@ -3049,7 +3049,7 @@ yyreduce:
 
   case 100: /* CaseStmt: DEFAULT COLON Stmts  */
 #line 496 "frontend/Parser.y"
-                                { (yyval.caseStmt) = new AST::CaseStmt(NULL, (yyvsp[0].stmts));
+                                { (yyval.caseStmt) = new AST::CaseStmt(nullptr, (yyvsp[0].stmts));
                                   (yyval.caseStmt)->setLoc((yylsp[-2]).first_line, (yylsp[-2]).first_column); }
 #line 3055 "generated/Parser.cpp"
     break;
@@ -3063,7 +3063,7 @@ yyreduce:
 
   case 102: /* ForStmt: FOR LPARENTHESES SEMICOLON Expr SEMICOLON Expr RPARENTHESES Stmt  */
 #line 504 "frontend/Parser.y"
-                                { (yyval.forStmt) = new AST::ForStmt(NULL, (yyvsp[-4].expr), (yyvsp[-2].expr), (yyvsp[0].stmt));
+                                { (yyval.forStmt) = new AST::ForStmt(nullptr, (yyvsp[-4].expr), (yyvsp[-2].expr), (yyvsp[0].stmt));
                                   (yyval.forStmt)->setLoc((yylsp[-7]).first_line, (yylsp[-7]).first_column); }
 #line 3069 "generated/Parser.cpp"
     break;

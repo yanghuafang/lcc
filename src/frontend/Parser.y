@@ -417,13 +417,13 @@ BuiltinType:
  /* FieldDecls */
 
 FieldDecls: FieldDecls FieldDecl
-                                { $$ = $1; if ($2 != NULL) $$->push_back($2); }
+                                { $$ = $1; if ($2 != nullptr) $$->push_back($2); }
             |                   { $$ = new AST::FieldDecls(); }
             ;
 
 FieldDecl:  VarType MemberList SEMICOLON
                                 { $$ = new AST::FieldDecl($1, $2); }
-            | SEMICOLON         { $$ = NULL; }
+            | SEMICOLON         { $$ = nullptr; }
             ;
 
  /* MemberList */
@@ -449,7 +449,7 @@ Enum:       IDENTIFIER          { $$ = new AST::Enum(*$1); }
 
  /* Stmts */
 
-Stmts:      Stmts Stmt          { $$ = $1; if ($2 != NULL) $$->push_back($2); }
+Stmts:      Stmts Stmt          { $$ = $1; if ($2 != nullptr) $$->push_back($2); }
             |                   { $$ = new AST::Stmts(); }
             ;
 
@@ -465,7 +465,7 @@ Stmt:       Expr SEMICOLON      { $$ = $1; $$->setLoc(@1.first_line, @1.first_co
             | Block             { $$ = $1; }
             | TypeDecl          { $$ = $1; }
             | VarDecl           { $$ = $1; }
-            | SEMICOLON         { $$ = NULL; }
+            | SEMICOLON         { $$ = nullptr; }
             ;
 
 IfStmt:     IF LPARENTHESES Expr RPARENTHESES Stmt ELSE Stmt
@@ -493,7 +493,7 @@ CaseStmt:   CASE Expr COLON Stmts
                                 { $$ = new AST::CaseStmt($2, $4);
                                   $$->setLoc(@1.first_line, @1.first_column); }
             | DEFAULT COLON Stmts
-                                { $$ = new AST::CaseStmt(NULL, $3);
+                                { $$ = new AST::CaseStmt(nullptr, $3);
                                   $$->setLoc(@1.first_line, @1.first_column); }
             ;
 
@@ -501,7 +501,7 @@ ForStmt:    FOR LPARENTHESES Expr SEMICOLON Expr SEMICOLON Expr RPARENTHESES Stm
                                 { $$ = new AST::ForStmt($3, $5, $7, $9);
                                   $$->setLoc(@1.first_line, @1.first_column); }
             | FOR LPARENTHESES SEMICOLON Expr SEMICOLON Expr RPARENTHESES Stmt
-                                { $$ = new AST::ForStmt(NULL, $4, $6, $8);
+                                { $$ = new AST::ForStmt(nullptr, $4, $6, $8);
                                   $$->setLoc(@1.first_line, @1.first_column); }
             | FOR LPARENTHESES VarDecl Expr SEMICOLON Expr RPARENTHESES Stmt
                                 { $$ = new AST::ForStmt($3, $4, $6, $8);
