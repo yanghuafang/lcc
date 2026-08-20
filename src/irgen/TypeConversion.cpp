@@ -150,12 +150,10 @@ llvm::Value* typeUpgrade(llvm::IRBuilder<>& builder, llvm::Value* value,
 
 bool typeUpgrade(llvm::IRBuilder<>& builder, llvm::Value*& lhs,
                  llvm::Value*& rhs, BuiltinTypeId lhsTypeId,
-                 BuiltinTypeId rhsTypeId, BuiltinTypeId& resultTypeId,
-                 bool& isUnsigned) {
+                 BuiltinTypeId rhsTypeId, BuiltinTypeId& resultTypeId) {
   if (typerules::isIntegerTypeId(lhsTypeId) &&
       typerules::isIntegerTypeId(rhsTypeId)) {
-    resultTypeId =
-        typerules::usualArithmeticConversion(lhsTypeId, rhsTypeId, isUnsigned);
+    resultTypeId = typerules::usualArithmeticConversion(lhsTypeId, rhsTypeId);
     llvm::Type* destType =
         builtinmap::toLlvmType(resultTypeId, builder.getContext());
     lhs = typeCast(builder, lhs, destType, lhsTypeId, resultTypeId);
@@ -164,8 +162,7 @@ bool typeUpgrade(llvm::IRBuilder<>& builder, llvm::Value*& lhs,
   }
   if (typerules::isFloatingTypeId(lhsTypeId) ||
       typerules::isFloatingTypeId(rhsTypeId)) {
-    resultTypeId =
-        typerules::usualArithmeticConversion(lhsTypeId, rhsTypeId, isUnsigned);
+    resultTypeId = typerules::usualArithmeticConversion(lhsTypeId, rhsTypeId);
     llvm::Type* destType =
         builtinmap::toLlvmType(resultTypeId, builder.getContext());
     lhs = typeCast(builder, lhs, destType, lhsTypeId, resultTypeId);
@@ -173,16 +170,14 @@ bool typeUpgrade(llvm::IRBuilder<>& builder, llvm::Value*& lhs,
     return true;
   }
   if (lhs->getType()->isIntegerTy() && rhs->getType()->isFloatingPointTy()) {
-    resultTypeId =
-        typerules::usualArithmeticConversion(lhsTypeId, rhsTypeId, isUnsigned);
+    resultTypeId = typerules::usualArithmeticConversion(lhsTypeId, rhsTypeId);
     lhs = typeCast(builder, lhs,
                    builtinmap::toLlvmType(resultTypeId, builder.getContext()),
                    lhsTypeId, resultTypeId);
     return true;
   }
   if (lhs->getType()->isFloatingPointTy() && rhs->getType()->isIntegerTy()) {
-    resultTypeId =
-        typerules::usualArithmeticConversion(lhsTypeId, rhsTypeId, isUnsigned);
+    resultTypeId = typerules::usualArithmeticConversion(lhsTypeId, rhsTypeId);
     rhs = typeCast(builder, rhs,
                    builtinmap::toLlvmType(resultTypeId, builder.getContext()),
                    rhsTypeId, resultTypeId);

@@ -5,6 +5,7 @@
 #include <stdexcept>
 
 #include "irgen/TypeConversion.hpp"
+#include "types/TypeRules.hpp"
 #include "types/VarTypeQuery.hpp"
 
 using AST::BuiltinTypeId;
@@ -15,12 +16,12 @@ llvm::Value* createCompare(llvm::IRBuilder<>& builder, IntCmpPred intPred,
                            llvm::CmpInst::Predicate floatPred, llvm::Value* lhs,
                            llvm::Value* rhs, BuiltinTypeId lhsTypeId,
                            BuiltinTypeId rhsTypeId) {
-  bool isUnsigned = false;
   BuiltinTypeId resultTypeId = BuiltinTypeId::UNKNOWN;
   if (convert::typeUpgrade(builder, lhs, rhs, lhsTypeId, rhsTypeId,
-                           resultTypeId, isUnsigned)) {
+                           resultTypeId)) {
     if (lhs->getType()->isIntegerTy()) {
-      return createIntegerCmp(builder, intPred, lhs, rhs, isUnsigned);
+      return createIntegerCmp(builder, intPred, lhs, rhs,
+                              typerules::isUnsignedTypeId(resultTypeId));
     }
     return builder.CreateFCmp(floatPred, lhs, rhs);
   }
@@ -111,10 +112,9 @@ llvm::Value* createAdd(llvm::IRBuilder<>& builder, llvm::Value* lhs,
     return builder.CreateGEP(elementTy, rhs, lhs);
   }
 
-  bool isUnsigned = false;
   BuiltinTypeId resultTypeId = BuiltinTypeId::UNKNOWN;
   if (convert::typeUpgrade(builder, lhs, rhs, lhsTypeId, rhsTypeId,
-                           resultTypeId, isUnsigned)) {
+                           resultTypeId)) {
     if (lhs->getType()->isIntegerTy()) {
       return builder.CreateAdd(lhs, rhs);
     }
@@ -142,10 +142,9 @@ llvm::Value* createSub(llvm::IRBuilder<>& builder, llvm::Value* lhs,
     return builder.CreatePtrDiff(elementTy, lhs, rhs);
   }
 
-  bool isUnsigned = false;
   BuiltinTypeId resultTypeId = BuiltinTypeId::UNKNOWN;
   if (convert::typeUpgrade(builder, lhs, rhs, lhsTypeId, rhsTypeId,
-                           resultTypeId, isUnsigned)) {
+                           resultTypeId)) {
     if (lhs->getType()->isIntegerTy()) {
       return builder.CreateSub(lhs, rhs);
     }
@@ -158,10 +157,9 @@ llvm::Value* createSub(llvm::IRBuilder<>& builder, llvm::Value* lhs,
 llvm::Value* createMul(llvm::IRBuilder<>& builder, llvm::Value* lhs,
                        llvm::Value* rhs, BuiltinTypeId lhsTypeId,
                        BuiltinTypeId rhsTypeId) {
-  bool isUnsigned = false;
   BuiltinTypeId resultTypeId = BuiltinTypeId::UNKNOWN;
   if (convert::typeUpgrade(builder, lhs, rhs, lhsTypeId, rhsTypeId,
-                           resultTypeId, isUnsigned)) {
+                           resultTypeId)) {
     if (lhs->getType()->isIntegerTy()) {
       return builder.CreateMul(lhs, rhs);
     }
@@ -175,10 +173,9 @@ llvm::Value* createMul(llvm::IRBuilder<>& builder, llvm::Value* lhs,
 llvm::Value* createDiv(llvm::IRBuilder<>& builder, llvm::Value* lhs,
                        llvm::Value* rhs, BuiltinTypeId lhsTypeId,
                        BuiltinTypeId rhsTypeId, bool isUnsigned) {
-  bool unusedUnsigned = false;
   BuiltinTypeId resultTypeId = BuiltinTypeId::UNKNOWN;
   if (convert::typeUpgrade(builder, lhs, rhs, lhsTypeId, rhsTypeId,
-                           resultTypeId, unusedUnsigned)) {
+                           resultTypeId)) {
     if (lhs->getType()->isIntegerTy()) {
       return isUnsigned ? builder.CreateUDiv(lhs, rhs)
                         : builder.CreateSDiv(lhs, rhs);
@@ -193,10 +190,9 @@ llvm::Value* createMod(llvm::IRBuilder<>& builder, llvm::Value* lhs,
                        llvm::Value* rhs, BuiltinTypeId lhsTypeId,
                        BuiltinTypeId rhsTypeId, bool isUnsigned) {
   if (lhs->getType()->isIntegerTy() && rhs->getType()->isIntegerTy()) {
-    bool unusedUnsigned = false;
     BuiltinTypeId resultTypeId = BuiltinTypeId::UNKNOWN;
     if (convert::typeUpgrade(builder, lhs, rhs, lhsTypeId, rhsTypeId,
-                             resultTypeId, unusedUnsigned)) {
+                             resultTypeId)) {
       return isUnsigned ? builder.CreateURem(lhs, rhs)
                         : builder.CreateSRem(lhs, rhs);
     }
@@ -209,10 +205,9 @@ llvm::Value* createBitwiseAnd(llvm::IRBuilder<>& builder, llvm::Value* lhs,
                               llvm::Value* rhs, BuiltinTypeId lhsTypeId,
                               BuiltinTypeId rhsTypeId) {
   if (lhs->getType()->isIntegerTy() && rhs->getType()->isIntegerTy()) {
-    bool isUnsigned = false;
     BuiltinTypeId resultTypeId = BuiltinTypeId::UNKNOWN;
     if (convert::typeUpgrade(builder, lhs, rhs, lhsTypeId, rhsTypeId,
-                             resultTypeId, isUnsigned)) {
+                             resultTypeId)) {
       return builder.CreateAnd(lhs, rhs);
     }
   }
@@ -224,10 +219,9 @@ llvm::Value* createBitwiseOr(llvm::IRBuilder<>& builder, llvm::Value* lhs,
                              llvm::Value* rhs, BuiltinTypeId lhsTypeId,
                              BuiltinTypeId rhsTypeId) {
   if (lhs->getType()->isIntegerTy() && rhs->getType()->isIntegerTy()) {
-    bool isUnsigned = false;
     BuiltinTypeId resultTypeId = BuiltinTypeId::UNKNOWN;
     if (convert::typeUpgrade(builder, lhs, rhs, lhsTypeId, rhsTypeId,
-                             resultTypeId, isUnsigned)) {
+                             resultTypeId)) {
       return builder.CreateOr(lhs, rhs);
     }
   }
@@ -239,10 +233,9 @@ llvm::Value* createBitwiseXor(llvm::IRBuilder<>& builder, llvm::Value* lhs,
                               llvm::Value* rhs, BuiltinTypeId lhsTypeId,
                               BuiltinTypeId rhsTypeId) {
   if (lhs->getType()->isIntegerTy() && rhs->getType()->isIntegerTy()) {
-    bool isUnsigned = false;
     BuiltinTypeId resultTypeId = BuiltinTypeId::UNKNOWN;
     if (convert::typeUpgrade(builder, lhs, rhs, lhsTypeId, rhsTypeId,
-                             resultTypeId, isUnsigned)) {
+                             resultTypeId)) {
       return builder.CreateXor(lhs, rhs);
     }
   }
@@ -254,10 +247,9 @@ llvm::Value* createShl(llvm::IRBuilder<>& builder, llvm::Value* lhs,
                        llvm::Value* rhs, BuiltinTypeId lhsTypeId,
                        BuiltinTypeId rhsTypeId) {
   if (lhs->getType()->isIntegerTy() && rhs->getType()->isIntegerTy()) {
-    bool isUnsigned = false;
     BuiltinTypeId resultTypeId = BuiltinTypeId::UNKNOWN;
     if (convert::typeUpgrade(builder, lhs, rhs, lhsTypeId, rhsTypeId,
-                             resultTypeId, isUnsigned)) {
+                             resultTypeId)) {
       return builder.CreateShl(lhs, rhs);
     }
   }
@@ -269,10 +261,9 @@ llvm::Value* createShr(llvm::IRBuilder<>& builder, llvm::Value* lhs,
                        llvm::Value* rhs, BuiltinTypeId lhsTypeId,
                        BuiltinTypeId rhsTypeId, bool isUnsigned) {
   if (lhs->getType()->isIntegerTy() && rhs->getType()->isIntegerTy()) {
-    bool unusedUnsigned = false;
     BuiltinTypeId resultTypeId = BuiltinTypeId::UNKNOWN;
     if (convert::typeUpgrade(builder, lhs, rhs, lhsTypeId, rhsTypeId,
-                             resultTypeId, unusedUnsigned)) {
+                             resultTypeId)) {
       return isUnsigned ? builder.CreateLShr(lhs, rhs)
                         : builder.CreateAShr(lhs, rhs);
     }

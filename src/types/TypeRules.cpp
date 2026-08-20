@@ -12,20 +12,6 @@ namespace {
 
 using AST::BuiltinTypeId;
 
-// usualArithmeticConversion reports signedness through a reference, which an
-// assertion cannot pass directly. A constexpr function can, so these two
-// wrappers split its answer into the halves the assertions ask about.
-constexpr BuiltinTypeId conversionOf(BuiltinTypeId lhs, BuiltinTypeId rhs) {
-  bool isUnsigned = false;
-  return typerules::usualArithmeticConversion(lhs, rhs, isUnsigned);
-}
-
-constexpr bool conversionIsUnsigned(BuiltinTypeId lhs, BuiltinTypeId rhs) {
-  bool isUnsigned = false;
-  typerules::usualArithmeticConversion(lhs, rhs, isUnsigned);
-  return isUnsigned;
-}
-
 // --- Predicates -------------------------------------------------------------
 
 static_assert(typerules::isUnsignedTypeId(BuiltinTypeId::UINT));
@@ -57,37 +43,52 @@ static_assert(typerules::integerPromotion(BuiltinTypeId::LONG) ==
 // --- The conversion ladder --------------------------------------------------
 
 // `char a, b; a + b` has type int, which is why lcc emits an i32 add there.
-static_assert(conversionOf(BuiltinTypeId::CHAR, BuiltinTypeId::CHAR) ==
+static_assert(typerules::usualArithmeticConversion(BuiltinTypeId::CHAR,
+                                                   BuiltinTypeId::CHAR) ==
               BuiltinTypeId::INT);
-static_assert(conversionOf(BuiltinTypeId::INT, BuiltinTypeId::INT) ==
+static_assert(typerules::usualArithmeticConversion(BuiltinTypeId::INT,
+                                                   BuiltinTypeId::INT) ==
               BuiltinTypeId::INT);
-static_assert(conversionOf(BuiltinTypeId::INT, BuiltinTypeId::UINT) ==
+static_assert(typerules::usualArithmeticConversion(BuiltinTypeId::INT,
+                                                   BuiltinTypeId::UINT) ==
               BuiltinTypeId::UINT);
-static_assert(conversionOf(BuiltinTypeId::LONG, BuiltinTypeId::INT) ==
+static_assert(typerules::usualArithmeticConversion(BuiltinTypeId::LONG,
+                                                   BuiltinTypeId::INT) ==
               BuiltinTypeId::LONG);
-static_assert(conversionOf(BuiltinTypeId::ULONG, BuiltinTypeId::INT) ==
+static_assert(typerules::usualArithmeticConversion(BuiltinTypeId::ULONG,
+                                                   BuiltinTypeId::INT) ==
               BuiltinTypeId::ULONG);
 // float never survives a binary operation; either floating operand gives
 // double.
-static_assert(conversionOf(BuiltinTypeId::FLOAT, BuiltinTypeId::INT) ==
+static_assert(typerules::usualArithmeticConversion(BuiltinTypeId::FLOAT,
+                                                   BuiltinTypeId::INT) ==
               BuiltinTypeId::DOUBLE);
-static_assert(conversionOf(BuiltinTypeId::FLOAT, BuiltinTypeId::FLOAT) ==
+static_assert(typerules::usualArithmeticConversion(BuiltinTypeId::FLOAT,
+                                                   BuiltinTypeId::FLOAT) ==
               BuiltinTypeId::DOUBLE);
 // The documented LP64 simplification: long could represent every unsigned int
 // on this target, yet the pair converts to unsigned long rather than long.
-static_assert(conversionOf(BuiltinTypeId::LONG, BuiltinTypeId::UINT) ==
+static_assert(typerules::usualArithmeticConversion(BuiltinTypeId::LONG,
+                                                   BuiltinTypeId::UINT) ==
               BuiltinTypeId::ULONG);
 
 // The ladder is symmetric in its operands.
-static_assert(conversionOf(BuiltinTypeId::INT, BuiltinTypeId::LONG) ==
-              conversionOf(BuiltinTypeId::LONG, BuiltinTypeId::INT));
-static_assert(conversionOf(BuiltinTypeId::UINT, BuiltinTypeId::LONG) ==
-              conversionOf(BuiltinTypeId::LONG, BuiltinTypeId::UINT));
+static_assert(typerules::usualArithmeticConversion(BuiltinTypeId::INT,
+                                                   BuiltinTypeId::LONG) ==
+              typerules::usualArithmeticConversion(BuiltinTypeId::LONG,
+                                                   BuiltinTypeId::INT));
+static_assert(typerules::usualArithmeticConversion(BuiltinTypeId::UINT,
+                                                   BuiltinTypeId::LONG) ==
+              typerules::usualArithmeticConversion(BuiltinTypeId::LONG,
+                                                   BuiltinTypeId::UINT));
 
 // --- Signedness of the result -----------------------------------------------
 
-static_assert(conversionIsUnsigned(BuiltinTypeId::INT, BuiltinTypeId::UINT));
-static_assert(!conversionIsUnsigned(BuiltinTypeId::INT, BuiltinTypeId::LONG));
-static_assert(!conversionIsUnsigned(BuiltinTypeId::FLOAT, BuiltinTypeId::UINT));
+static_assert(typerules::isUnsignedTypeId(typerules::usualArithmeticConversion(
+    BuiltinTypeId::INT, BuiltinTypeId::UINT)));
+static_assert(!typerules::isUnsignedTypeId(typerules::usualArithmeticConversion(
+    BuiltinTypeId::INT, BuiltinTypeId::LONG)));
+static_assert(!typerules::isUnsignedTypeId(typerules::usualArithmeticConversion(
+    BuiltinTypeId::FLOAT, BuiltinTypeId::UINT)));
 
 }  // namespace

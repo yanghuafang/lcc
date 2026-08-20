@@ -94,38 +94,33 @@ using AST::BuiltinTypeId;
 // is a deliberate simplification, and it is why the check below tests
 // isUnsignedTypeId on either operand rather than comparing widths.
 //
-// isUnsigned is an out-parameter rather than derived from the result because
-// callers need it to pick the LLVM opcode — udiv vs sdiv, lshr vs ashr, icmp
-// ult vs slt — and LLVM's integer types carry no signedness of their own.
-constexpr BuiltinTypeId usualArithmeticConversion(BuiltinTypeId lhsTypeId,
-                                                  BuiltinTypeId rhsTypeId,
-                                                  bool& isUnsigned) {
+// Signedness is not reported separately. A caller choosing udiv over sdiv,
+// lshr over ashr, or icmp ult over slt asks isUnsignedTypeId() about the type
+// returned here. This took a `bool&` out-parameter until that was checked: on
+// every rung above, an unsigned result and an unsigned answer occur together,
+// so the second output only restated the first.
+[[nodiscard]] constexpr BuiltinTypeId usualArithmeticConversion(
+    BuiltinTypeId lhsTypeId, BuiltinTypeId rhsTypeId) {
   lhsTypeId = integerPromotion(lhsTypeId);
   rhsTypeId = integerPromotion(rhsTypeId);
 
   if (isFloatingTypeId(lhsTypeId) || isFloatingTypeId(rhsTypeId)) {
-    isUnsigned = false;
     return BuiltinTypeId::DOUBLE;
   }
 
   if (lhsTypeId == BuiltinTypeId::ULONG || rhsTypeId == BuiltinTypeId::ULONG) {
-    isUnsigned = true;
     return BuiltinTypeId::ULONG;
   }
   if (lhsTypeId == BuiltinTypeId::LONG || rhsTypeId == BuiltinTypeId::LONG) {
     if (isUnsignedTypeId(lhsTypeId) || isUnsignedTypeId(rhsTypeId)) {
-      isUnsigned = true;
       return BuiltinTypeId::ULONG;
     }
-    isUnsigned = false;
     return BuiltinTypeId::LONG;
   }
   if (isUnsignedTypeId(lhsTypeId) || isUnsignedTypeId(rhsTypeId)) {
-    isUnsigned = true;
     return BuiltinTypeId::UINT;
   }
 
-  isUnsigned = false;
   return BuiltinTypeId::INT;
 }
 

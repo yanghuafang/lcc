@@ -45,12 +45,13 @@ llvm::Value* typeUpgrade(llvm::IRBuilder<>& builder, llvm::Value* value,
                          AST::BuiltinTypeId dstTypeId);
 
 // Applies the usual arithmetic conversions to a binary operand pair in place,
-// reporting the common type and its signedness. Returns false when the operands
-// are not both arithmetic, which is how the operator lowering in
-// irgen/Operators.hpp detects the pointer cases it must handle itself.
+// reporting the common type. Returns false when the operands are not both
+// arithmetic, which is how the operator lowering in irgen/Operators.hpp detects
+// the pointer cases it must handle itself. A caller that needs the signedness
+// of resultTypeId asks typerules::isUnsignedTypeId() for it.
 bool typeUpgrade(llvm::IRBuilder<>& builder, llvm::Value*& lhs,
                  llvm::Value*& rhs, AST::BuiltinTypeId lhsTypeId,
-                 AST::BuiltinTypeId rhsTypeId, AST::BuiltinTypeId& resultTypeId,
-                 bool& isUnsigned);
+                 AST::BuiltinTypeId rhsTypeId,
+                 AST::BuiltinTypeId& resultTypeId);
 
 }  // namespace convert

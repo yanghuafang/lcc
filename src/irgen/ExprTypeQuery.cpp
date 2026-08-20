@@ -65,16 +65,12 @@ BuiltinTypeId Expr::getLValueTypeId(CodeGenerator& generator) const {
 
 BuiltinTypeId Expr::binaryExprTypeId(Expr* lhs, Expr* rhs,
                                      CodeGenerator& generator) {
-  bool isUnsigned = false;
-  return typerules::usualArithmeticConversion(
-      lhs->getExprTypeId(generator), rhs->getExprTypeId(generator), isUnsigned);
+  return typerules::usualArithmeticConversion(lhs->getExprTypeId(generator),
+                                              rhs->getExprTypeId(generator));
 }
 
 bool Expr::binaryIsUnsigned(Expr* lhs, Expr* rhs, CodeGenerator& generator) {
-  bool isUnsigned = false;
-  typerules::usualArithmeticConversion(
-      lhs->getExprTypeId(generator), rhs->getExprTypeId(generator), isUnsigned);
-  return isUnsigned;
+  return typerules::isUnsignedTypeId(binaryExprTypeId(lhs, rhs, generator));
 }
 
 BuiltinTypeId BinaryExpr::getExprTypeId(CodeGenerator& generator) const {
