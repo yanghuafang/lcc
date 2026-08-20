@@ -7,7 +7,8 @@ On both macOS and Ubuntu:
 - **LLVM 20** (libraries and tools such as `llvm-dwarfdump`)
 - **flex**, **bison** — CMake runs both in `src/` on every configure, so they are required even though the generated sources are committed
 - **argparse** (CMake `find_package` or FetchContent fallback)
-- **graphviz** (`dot` for AST images)
+- **graphviz** (`dot` for AST images, and Doxygen's hierarchy diagrams)
+- **doxygen** (API reference via `scripts/docs.sh`; not needed to build `lcc`)
 - A system C/C++ linker (**`clang`** or **`gcc`**) to link `.o` files produced by `lcc`
 - **CMake 3.22+** (`cmake_minimum_required` in the project)
 - **C++17** (`CMAKE_CXX_STANDARD` in `CMakeLists.txt`; required by LLVM 20 headers)
@@ -28,7 +29,7 @@ Or manually — install [Homebrew](https://brew.sh) if needed, then the packages
 
 ```bash
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-brew install flex bison llvm@20 argparse graphviz cmake
+brew install flex bison llvm@20 argparse graphviz doxygen cmake
 ```
 
 ### Ubuntu 24.04 / 26.04 LTS
@@ -45,7 +46,7 @@ Or manually:
 
 ```bash
 sudo apt-get update
-sudo apt-get install -y build-essential cmake flex bison graphviz clang git \
+sudo apt-get install -y build-essential cmake flex bison graphviz doxygen clang git \
   llvm-20 llvm-20-dev llvm-20-tools clang-format-20 clang-tidy-20 libargparse-dev
 ```
 

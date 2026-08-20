@@ -2,9 +2,9 @@
 
 # install-deps-macos.sh — install lcc's build dependencies via Homebrew.
 #
-# LLVM 20, flex, bison, argparse, graphviz, cmake. Homebrew keeps llvm@20 and
-# the newer flex/bison keg-only, which is why build-env.sh adds them to PATH
-# explicitly instead of relying on the default one.
+# LLVM 20, flex, bison, argparse, graphviz, doxygen, cmake. Homebrew keeps
+# llvm@20 and the newer flex/bison keg-only, which is why build-env.sh adds
+# them to PATH explicitly instead of relying on the default one.
 
 set -euo pipefail
 
@@ -31,6 +31,6 @@ fi
 # flex/bison are keg-only on macOS; build-env.sh prepends their Homebrew bins to
 # PATH. argparse is optional (CMake FetchContent falls back), but the formula
 # exists, so install it to match the CMake find_package path.
-brew install flex bison llvm@20 argparse graphviz cmake
+brew install flex bison llvm@20 argparse graphviz doxygen cmake
 
 echo "macOS dependencies installed. Build with: ./build-lcc.sh"

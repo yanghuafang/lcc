@@ -167,7 +167,8 @@ lcc/
 ├── tests/             # 41 suite programs (+1 study fixture); each prints "<name> PASS" or "FAIL"
 │   └── graphs/        # Assertion-free fixtures, one per language area, for AST graphs only
 ├── benchmarks/        # Larger workloads for bench.sh (M15)
-├── scripts/           # build-lcc.sh, compile/link/run-tests.sh, format.sh, tidy.sh, bench
+├── scripts/           # build-lcc.sh, compile/link/run-tests.sh, format.sh,
+│                   # tidy.sh, docs.sh, bench
 ├── docs/              # Guides (start with LearningPlan.md)
 ├── debug/             # Committed IR / asm goldens for the suite; AST graphs in debug/graphs/
 ├── CMakeLists.txt     # flex/bison codegen + LLVM configuration
@@ -203,7 +204,8 @@ lcc/
 | flex, bison | required at **configure** time — CMake regenerates the lexer and parser on every run |
 | a system linker (`clang` or `gcc`) | links lcc's PIC objects |
 | argparse | used if installed; CMake downloads it otherwise |
-| graphviz | supplies `dot`, which the test scripts call to render AST images |
+| graphviz | supplies `dot`, which the test scripts call to render AST images, and which Doxygen uses for the hierarchy diagrams |
+| doxygen | builds the API reference with `scripts/docs.sh`; optional for building `lcc` itself |
 
 Setup commands: [docs/Install.md](docs/Install.md).
 

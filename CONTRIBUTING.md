@@ -13,7 +13,7 @@ Because `lcc` is primarily a **learning resource**, clarity and small, reviewabl
 
 ## Prerequisites
 
-`lcc` targets **macOS** (Homebrew) and **Ubuntu 24.04 / 26.04**. You need LLVM 20, flex, bison, argparse, graphviz, CMake 3.22+, a C++17 compiler, and a system linker (`clang` or `gcc`).
+`lcc` targets **macOS** (Homebrew) and **Ubuntu 24.04 / 26.04**. You need LLVM 20, flex, bison, argparse, graphviz, doxygen, CMake 3.22+, a C++17 compiler, and a system linker (`clang` or `gcc`).
 
 Install dependencies with the helper scripts:
 
@@ -81,6 +81,7 @@ Use an existing test such as [`tests/25.quick_sort.c`](tests/25.quick_sort.c) as
   ```bash
   ./scripts/format.sh   # clang-format + strip trailing whitespace
   ./scripts/tidy.sh     # clang-tidy; --fix applies what it can
+  ./scripts/docs.sh     # Doxygen API reference; --open shows it
   ```
 
   `format.sh` also covers `Lexer.l` / `Parser.y`, which clang-format cannot parse. Both skip `src/generated/`; never format flex/bison output, since the next build reverts it and the diff is thousands of phantom lines.

@@ -14,21 +14,21 @@ class Module;
 
 }  // namespace llvm
 
-// Legacy MachineFunctionPass that operates on fully lowered MIR (after register
-// allocation and prologue/epilogue insertion), NOT on LLVM IR. It counts real
-// machine instructions per function and writes a summary; it never mutates MIR,
-// so the emitted object/assembly is byte-for-byte unchanged.
-//
-// Operating on MIR is why this pass lives under backend/ rather than beside the
-// New PM IR passes in opt/passes/: a machine pass registers through the legacy
-// codegen PassManager and TargetPassConfig in backend/TargetBackend.cpp, not
-// through PassBuilder. Enabled with -machine-stats; see docs/LlvmTools.md
-// (M17).
+/// Legacy MachineFunctionPass that operates on fully lowered MIR (after
+/// register allocation and prologue/epilogue insertion), NOT on LLVM IR. It
+/// counts real machine instructions per function and writes a summary; it never
+/// mutates MIR, so the emitted object/assembly is byte-for-byte unchanged.
+///
+/// Operating on MIR is why this pass lives under backend/ rather than beside
+/// the New PM IR passes in opt/passes/: a machine pass registers through the
+/// legacy codegen PassManager and TargetPassConfig in
+/// backend/TargetBackend.cpp, not through PassBuilder. Enabled with
+/// -machine-stats; see docs/LlvmTools.md (M17).
 class MachineInstrStatsPass final : public llvm::MachineFunctionPass {
  public:
-  // LLVM identifies a legacy pass by this member's address; the value is
-  // unused. New PM passes (FoldAddZeroPass, IrInstructionStatsPass) need no
-  // such ID.
+  /// LLVM identifies a legacy pass by this member's address; the value is
+  /// unused. New PM passes (FoldAddZeroPass, IrInstructionStatsPass) need no
+  /// such ID.
   static char ID;
 
   explicit MachineInstrStatsPass(std::string outputPath = "-");

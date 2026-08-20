@@ -46,6 +46,14 @@ jobs:
         working-directory: scripts
         run: ./tidy.sh
 
+      # Doxygen exits 0 after warning about a broken \param or reference, so
+      # docs.sh gates on the warning log instead. One platform, for the same
+      # reason as clang-tidy: the findings do not depend on the host.
+      - name: Documentation check
+        if: matrix.os == 'ubuntu-24.04'
+        working-directory: scripts
+        run: ./docs.sh
+
       - name: Compile tests
         working-directory: scripts
         run: ./compile-tests.sh

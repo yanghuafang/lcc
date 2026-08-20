@@ -17,43 +17,45 @@ class Type;
 
 }  // namespace llvm
 
-// Abstract Syntax Tree for lcc (single-pass compilation):
-//   Lexer.l / Parser.y  ->  AST nodes in namespace AST
-//   node::genCode()     ->  LLVM IR via CodeGenerator, convert, and ops
-//   node::genGraph()    ->  Graphviz DOT fragments (written by DotFileWriter)
-//
-// The nodes declared here are implemented across several files: the seven
-// walkers under irgen/, split by node category (genCode / genCodePtr, with the
-// type queries that feed them in irgen/ExprTypeQuery.cpp), dot/AstToDot.cpp
-// (genGraph), and ast/Ownership.cpp (destructors).
-//
-// There is no separate semantic-analysis pass. getExprTypeId() and
-// getExprVarType() supply C type information while genCode() emits IR.
-// LLVM 20+ opaque pointers: load/store/GEP pointee types come from VarType
-// (see types/VarTypeQuery.hpp), not from llvm::Type* on pointer values.
-//
-// Ownership: Parser allocates nodes with new; each parent owns its child
-// pointers and deletes them in ~Node overrides. delete Program (g_root)
-// tears down one translation unit.
-//
-// This header is one file rather than four (Decls/Stmts/Exprs/Types, mirroring
-// the node categories) because the hierarchy will not separate: Expr derives
-// from Stmt, statements hold Expr*, expressions and declarations both hold
-// VarType*. Any split would need complete types across every boundary, and
-// every consumer includes all four anyway. The banners below serve that
-// navigation instead:
-//
-//   Core          Node, Program, Stmt base
-//   Declarations  -> irgen/DeclToIr.cpp
-//   Types         -> irgen/TypeToIr.cpp
-//   Statements    -> irgen/StmtToIr.cpp
-//   Expressions   -> irgen/ExprToIr.cpp       variables, literals, calls,
-//                                             member access, subscript, cast,
-//                                             sizeof, unary
-//                    irgen/OperatorToIr.cpp   assign, arithmetic, inc/dec,
-//                                             bitwise, shift
-//                    irgen/LogicToIr.cpp      &&, ||, !, comparisons, ?:
-//                    irgen/ExprTypeQuery.cpp  getExpr*/getLValue* for all three
+/// \file
+/// Abstract Syntax Tree for lcc (single-pass compilation):
+///   Lexer.l / Parser.y  ->  AST nodes in namespace AST
+///   node::genCode()     ->  LLVM IR via CodeGenerator, convert, and ops
+///   node::genGraph()    ->  Graphviz DOT fragments (written by DotFileWriter)
+///
+/// The nodes declared here are implemented across several files: the seven
+/// walkers under irgen/, split by node category (genCode / genCodePtr, with the
+/// type queries that feed them in irgen/ExprTypeQuery.cpp), dot/AstToDot.cpp
+/// (genGraph), and ast/Ownership.cpp (destructors).
+///
+/// There is no separate semantic-analysis pass. getExprTypeId() and
+/// getExprVarType() supply C type information while genCode() emits IR.
+/// LLVM 20+ opaque pointers: load/store/GEP pointee types come from VarType
+/// (see types/VarTypeQuery.hpp), not from llvm::Type* on pointer values.
+///
+/// Ownership: Parser allocates nodes with new; each parent owns its child
+/// pointers and deletes them in ~Node overrides. delete Program (g_root)
+/// tears down one translation unit.
+///
+/// This header is one file rather than four (Decls/Stmts/Exprs/Types, mirroring
+/// the node categories) because the hierarchy will not separate: Expr derives
+/// from Stmt, statements hold Expr*, expressions and declarations both hold
+/// VarType*. Any split would need complete types across every boundary, and
+/// every consumer includes all four anyway. The banners below serve that
+/// navigation instead:
+///
+///   Core          Node, Program, Stmt base
+///   Declarations  -> irgen/DeclToIr.cpp
+///   Types         -> irgen/TypeToIr.cpp
+///   Statements    -> irgen/StmtToIr.cpp
+///   Expressions   -> irgen/ExprToIr.cpp       variables, literals, calls,
+///                                             member access, subscript, cast,
+///                                             sizeof, unary
+///                    irgen/OperatorToIr.cpp   assign, arithmetic, inc/dec,
+///                                             bitwise, shift
+///                    irgen/LogicToIr.cpp      &&, ||, !, comparisons, ?:
+///                    irgen/ExprTypeQuery.cpp  getExpr*/getLValue* for all
+///                    three
 
 // ===========================================================================
 // Forward declarations and container aliases
@@ -225,12 +227,12 @@ struct SourceLoc {
 // ast/Ownership.cpp.
 // ===========================================================================
 
-// Parser-filled source position for -g; flex fills yylloc, Parser.y copies into
-// setLoc().
+/// Parser-filled source position for -g; flex fills yylloc, Parser.y copies
+/// into setLoc().
 class Node {
  public:
   Node() = default;
-  // Virtual so delete g_root (Program*) runs the concrete destructor chain.
+  /// Virtual so delete g_root (Program*) runs the concrete destructor chain.
   virtual ~Node();
 
   // Nodes own their children as raw pointers and delete them in
@@ -252,11 +254,11 @@ class Node {
 
   [[nodiscard]] const SourceLoc& loc() const noexcept { return loc_; }
 
-  // Interface to generate IR code.
+  /// Interface to generate IR code.
   virtual llvm::Value* genCode(CodeGenerator& generator) = 0;
 
-  // Generate Graphviz DOT for this subtree (implemented in dot/AstToDot.cpp,
-  // not used by codegen). Returns (rootNodeId, dotFragment).
+  /// Generate Graphviz DOT for this subtree (implemented in dot/AstToDot.cpp,
+  /// not used by codegen). Returns (rootNodeId, dotFragment).
   [[nodiscard]] virtual std::pair<std::string, std::string> genGraph()
       const = 0;
 
@@ -264,7 +266,7 @@ class Node {
   SourceLoc loc_;
 };
 
-// Grammar Root
+/// Grammar Root
 class Program final : public Node {
  public:
   Decls* decls_;
@@ -276,10 +278,10 @@ class Program final : public Node {
   std::pair<std::string, std::string> genGraph() const override;
 };
 
-// Stmt is the base of Decl, Block, and Expr so a Block can hold any of them.
-// In C, a bare expression is a valid statement (expression statement), so Expr
-// inherits Stmt even though expressions are also used inside larger
-// expressions.
+/// Stmt is the base of Decl, Block, and Expr so a Block can hold any of them.
+/// In C, a bare expression is a valid statement (expression statement), so Expr
+/// inherits Stmt even though expressions are also used inside larger
+/// expressions.
 class Stmt : public Node {
  public:
   Stmt() = default;
@@ -329,7 +331,7 @@ class Param final : public Node {
       : varType_(varType), varName_(varName) {}
   ~Param() override;
 
-  // Code already generated in FuncDecl::genCode.
+  /// Code already generated in FuncDecl::genCode.
   llvm::Value* genCode(CodeGenerator& generator) override { return nullptr; }
   std::pair<std::string, std::string> genGraph() const override;
 };
@@ -341,7 +343,7 @@ class ParamList final : public std::vector<Param*>, public Node {
   ParamList() = default;
   ~ParamList() override;
 
-  // Code already generated in FuncDecl::genCode.
+  /// Code already generated in FuncDecl::genCode.
   llvm::Value* genCode(CodeGenerator& generator) override { return nullptr; }
   std::pair<std::string, std::string> genGraph() const override;
 
@@ -373,7 +375,7 @@ class VarDecl final : public Decl {
   std::pair<std::string, std::string> genGraph() const override;
 };
 
-// One element of a brace initializer: scalar expr or nested InitList (2D row).
+/// One element of a brace initializer: scalar expr or nested InitList (2D row).
 class InitElement final : public Node {
  public:
   Expr* expr_;
@@ -389,17 +391,17 @@ class InitElement final : public Node {
   std::pair<std::string, std::string> genGraph() const override;
 };
 
-// One name in a declaration list (int a[4], b = 1). Holds declarator suffix
-// (arrayBounds_) and initializer separate from the shared VarType base type.
+/// One name in a declaration list (int a[4], b = 1). Holds declarator suffix
+/// (arrayBounds_) and initializer separate from the shared VarType base type.
 class VarInit final : public Node {
  public:
   std::string varName_;
   std::vector<size_t> arrayBounds_;
   Expr* initialExpr_;
   InitList* initList_;
-  // Per-name array type from arrays::buildVarType(); addVariable()
-  // keeps this pointer for the rest of codegen. Only the ArrayType wrappers
-  // are owned here—the leaf base type remains VarDecl::varType_.
+  /// Per-name array type from arrays::buildVarType(); addVariable()
+  /// keeps this pointer for the rest of codegen. Only the ArrayType wrappers
+  /// are owned here—the leaf base type remains VarDecl::varType_.
   VarType* arrayVarType_ = nullptr;
 
   explicit VarInit(const std::string& varName,
@@ -417,10 +419,10 @@ class VarInit final : public Node {
   [[nodiscard]] bool hasBraceInit() const { return initList_ != nullptr; }
 };
 
-// Delete the ArrayType prefix arrays::buildVarType() nests around a
-// VarDecl's base type, unlinking as it goes so that shared tail survives.
-// Defined in ast/Ownership.cpp beside ~VarInit, which applies the rule to a
-// finished chain; irgen/Arrays.cpp applies it to a partly built one.
+/// Delete the ArrayType prefix arrays::buildVarType() nests around a
+/// VarDecl's base type, unlinking as it goes so that shared tail survives.
+/// Defined in ast/Ownership.cpp beside ~VarInit, which applies the rule to a
+/// finished chain; irgen/Arrays.cpp applies it to a partly built one.
 void releaseArrayTypeChain(VarType* built) noexcept;
 
 class TypeDecl final : public Decl {
@@ -486,12 +488,12 @@ class VarType : public Node {
   void setConst() { isConst_ = true; }
 
  protected:
-  // Memoized result of getType(), filled by the derived overrides in
-  // irgen/TypeToIr.cpp the first time a type is materialized. Unlike isConst_
-  // and typeName_ above, this is not part of the tree the parser builds — it
-  // is a cache, and the reason getType() is the one query on a type node that
-  // cannot be const. Nothing outside the hierarchy reads it, so nothing
-  // outside can be tempted to trust it before it is filled.
+  /// Memoized result of getType(), filled by the derived overrides in
+  /// irgen/TypeToIr.cpp the first time a type is materialized. Unlike isConst_
+  /// and typeName_ above, this is not part of the tree the parser builds — it
+  /// is a cache, and the reason getType() is the one query on a type node that
+  /// cannot be const. Nothing outside the hierarchy reads it, so nothing
+  /// outside can be tempted to trust it before it is filled.
   llvm::Type* llvmType_ = nullptr;
 };
 
@@ -539,8 +541,8 @@ class PointerType final : public VarType {
   VarType* getElementVarType() const noexcept override { return baseType_; }
 };
 
-// One array dimension; chained ArrayType nodes model multidim types.
-// getElementVarType() peels the outermost dimension (used by Subscript).
+/// One array dimension; chained ArrayType nodes model multidim types.
+/// getElementVarType() peels the outermost dimension (used by Subscript).
 class ArrayType final : public VarType {
  public:
   VarType* baseType_;
@@ -686,7 +688,7 @@ class Enum final : public Node {
       : name_(name), hasValue_(hasValue), value_(value) {}
   ~Enum() override = default;
 
-  // Code already generated in EnumType::getType
+  /// Code already generated in EnumType::getType
   llvm::Value* genCode(CodeGenerator& generator) override { return nullptr; }
   std::pair<std::string, std::string> genGraph() const override;
 };
@@ -843,13 +845,13 @@ class Expr : public Stmt {
   Expr() = default;
   ~Expr() override = default;
 
-  // Rvalue vs lvalue codegen (central to understanding lcc):
-  //   genCode()    -> the value at an expression (often load from an address)
-  //   genCodePtr() -> address of a modifiable location (alloca, GEP, param
-  //   slot)
-  // Assignments take the lhs via genCodePtr(); most operators use genCode() on
-  // children. Address-of (&) reads genCodePtr(); dereference (*) loads
-  // genCode().
+  /// Rvalue vs lvalue codegen (central to understanding lcc):
+  ///   genCode()    -> the value at an expression (often load from an address)
+  ///   genCodePtr() -> address of a modifiable location (alloca, GEP, param
+  ///   slot)
+  /// Assignments take the lhs via genCodePtr(); most operators use genCode() on
+  /// children. Address-of (&) reads genCodePtr(); dereference (*) loads
+  /// genCode().
   virtual llvm::Value* genCodePtr(CodeGenerator& generator) = 0;
 
   [[nodiscard]] virtual VarType* getExprVarType(CodeGenerator& generator) const;
@@ -859,11 +861,11 @@ class Expr : public Stmt {
       CodeGenerator& generator) const;
   [[nodiscard]] BuiltinTypeId getLValueTypeId(CodeGenerator& generator) const;
 
-  // Rvalue form of an lvalue expression: evaluate genCodePtr(), then load
-  // through it. This is the whole of genCode() for every node whose value is
-  // just "what is stored at my own address" — member access, subscript,
-  // dereference, assignment, prefix inc/dec — which is why it is a member here
-  // rather than a helper local to one lowering file.
+  /// Rvalue form of an lvalue expression: evaluate genCodePtr(), then load
+  /// through it. This is the whole of genCode() for every node whose value is
+  /// just "what is stored at my own address" — member access, subscript,
+  /// dereference, assignment, prefix inc/dec — which is why it is a member here
+  /// rather than a helper local to one lowering file.
   llvm::Value* loadFromLValuePtr(CodeGenerator& generator);
 
   static BuiltinTypeId binaryExprTypeId(Expr* lhs, Expr* rhs,
@@ -905,8 +907,8 @@ class UnaryExpr : public Expr {
   ~UnaryExpr() override;
 };
 
-// Unary operators that cannot appear as lvalues (!, ~, postfix ++/--, etc.).
-// Prefix ++/-- use UnaryExpr directly because they return an lvalue pointer.
+/// Unary operators that cannot appear as lvalues (!, ~, postfix ++/--, etc.).
+/// Prefix ++/-- use UnaryExpr directly because they return an lvalue pointer.
 class ThrowingUnaryExpr : public UnaryExpr {
  protected:
   explicit ThrowingUnaryExpr(Expr* operand) : UnaryExpr(operand) {}
@@ -1061,7 +1063,7 @@ class FuncCall final : public Expr {
   std::pair<std::string, std::string> genGraph() const override;
 };
 
-// For structObj.member
+/// For structObj.member
 class StructRef final : public Expr {
  public:
   Expr* struct_;
@@ -1080,7 +1082,7 @@ class StructRef final : public Expr {
   std::pair<std::string, std::string> genGraph() const override;
 };
 
-// For structPtr->member
+/// For structPtr->member
 class StructDeref final : public Expr {
  public:
   Expr* structPtr_;
@@ -1099,8 +1101,8 @@ class StructDeref final : public Expr {
   std::pair<std::string, std::string> genGraph() const override;
 };
 
-// Indexing: genCodePtr uses array_->genCode() (rvalue/decay) plus pointer
-// arithmetic; getLValueVarType peels one ArrayType so m[i][j] chains.
+/// Indexing: genCodePtr uses array_->genCode() (rvalue/decay) plus pointer
+/// arithmetic; getLValueVarType peels one ArrayType so m[i][j] chains.
 class Subscript final : public Expr {
  public:
   Expr* array_;
@@ -1369,8 +1371,8 @@ class PrefixDec final : public UnaryExpr {
   std::pair<std::string, std::string> genGraph() const override;
 };
 
-// Groups compound assignment operators in the grammar; behavior lives in
-// LhsRhsAssign::genCompoundAssignPtr and each subclass's genCodePtr.
+/// Groups compound assignment operators in the grammar; behavior lives in
+/// LhsRhsAssign::genCompoundAssignPtr and each subclass's genCodePtr.
 class CompoundAssign : public LhsRhsAssign {
  protected:
   explicit CompoundAssign(Expr* lhs, Expr* rhs) : LhsRhsAssign(lhs, rhs) {}
