@@ -192,7 +192,8 @@ class CodeGenerator : public TypeEnv {
 // balances.
 class ScopedDebugLexicalBlock {
  public:
-  ScopedDebugLexicalBlock(CodeGenerator& generator, const AST::SourceLoc& loc)
+  explicit ScopedDebugLexicalBlock(CodeGenerator& generator,
+                                   const AST::SourceLoc& loc)
       : generator_(generator) {
     generator_.pushDebugLexicalBlock(loc);
   }
@@ -212,7 +213,7 @@ class ScopedDebugLexicalBlock {
 // emitted next.
 class ScopedFunction {
  public:
-  ScopedFunction(CodeGenerator& generator, llvm::Function* func)
+  explicit ScopedFunction(CodeGenerator& generator, llvm::Function* func)
       : generator_(generator) {
     generator_.enterFunction(func);
   }

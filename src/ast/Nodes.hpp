@@ -256,7 +256,7 @@ class Program : public Node {
  public:
   Decls* decls_;
 
-  Program(Decls* decls) : decls_(decls) {}
+  explicit Program(Decls* decls) : decls_(decls) {}
   ~Program() override;
 
   llvm::Value* genCode(CodeGenerator& generator) override;
@@ -295,8 +295,8 @@ class FuncDecl : public Decl {
   FuncBody* funcBody_;
   bool isStatic_;
 
-  FuncDecl(VarType* retType, const std::string& funcName, ParamList* paramList,
-           FuncBody* funcBody = nullptr)
+  explicit FuncDecl(VarType* retType, const std::string& funcName,
+                    ParamList* paramList, FuncBody* funcBody = nullptr)
       : retType_(retType),
         funcName_(funcName),
         paramList_(paramList),
@@ -313,7 +313,7 @@ class Param : public Node {
   VarType* varType_;
   std::string varName_;
 
-  Param(VarType* varType, const std::string& varName = "")
+  explicit Param(VarType* varType, const std::string& varName = "")
       : varType_(varType), varName_(varName) {}
   ~Param() override;
 
@@ -340,7 +340,7 @@ class FuncBody : public Node {
  public:
   Stmts* content_;
 
-  FuncBody(Stmts* content) : content_(content) {}
+  explicit FuncBody(Stmts* content) : content_(content) {}
   ~FuncBody() override;
 
   llvm::Value* genCode(CodeGenerator& generator) override;
@@ -353,7 +353,7 @@ class VarDecl : public Decl {
   VarList* varList_;
   bool isStatic_;
 
-  VarDecl(VarType* varType, VarList* varList)
+  explicit VarDecl(VarType* varType, VarList* varList)
       : varType_(varType), varList_(varList), isStatic_(false) {}
   ~VarDecl() override;
 
@@ -390,8 +390,9 @@ class VarInit : public Node {
   // are owned here—the leaf base type remains VarDecl::varType_.
   VarType* arrayVarType_;
 
-  VarInit(const std::string& varName, const std::vector<size_t>& arrayBounds,
-          Expr* initialExpr = nullptr, InitList* initList = nullptr)
+  explicit VarInit(const std::string& varName,
+                   const std::vector<size_t>& arrayBounds,
+                   Expr* initialExpr = nullptr, InitList* initList = nullptr)
       : varName_(varName),
         arrayBounds_(arrayBounds),
         initialExpr_(initialExpr),
@@ -415,7 +416,7 @@ class TypeDecl : public Decl {
  public:
   VarType* varType_;
 
-  TypeDecl(VarType* varType) : varType_(varType) {}
+  explicit TypeDecl(VarType* varType) : varType_(varType) {}
   ~TypeDecl() override;
 
   llvm::Value* genCode(CodeGenerator& generator) override;
@@ -427,7 +428,7 @@ class TypedefDecl : public Decl {
   VarType* underlyingType_;
   std::string aliasName_;
 
-  TypedefDecl(VarType* underlyingType, const std::string& aliasName)
+  explicit TypedefDecl(VarType* underlyingType, const std::string& aliasName)
       : underlyingType_(underlyingType), aliasName_(aliasName) {}
   ~TypedefDecl() override;
 
@@ -451,7 +452,7 @@ class VarType : public Node {
   std::string typeName_;  // User defined type name.
   llvm::Type* llvmType_;
 
-  VarType(const std::string& typeName)
+  explicit VarType(const std::string& typeName)
       : isConst_(false), typeName_(typeName), llvmType_(nullptr) {}
   ~VarType() override;
 
@@ -477,7 +478,7 @@ class BuiltinType : public VarType {
  public:
   BuiltinTypeId typeId_;
 
-  BuiltinType(BuiltinTypeId typeId, const std::string& typeName)
+  explicit BuiltinType(BuiltinTypeId typeId, const std::string& typeName)
       : VarType(typeName), typeId_(typeId) {}
   ~BuiltinType() override = default;
 
@@ -498,7 +499,7 @@ class PointerType : public VarType {
  public:
   VarType* baseType_;
 
-  PointerType(VarType* baseType)
+  explicit PointerType(VarType* baseType)
       : VarType(baseType->typeName_ + "*"), baseType_(baseType) {}
   ~PointerType() override;
 
@@ -524,7 +525,7 @@ class ArrayType : public VarType {
   VarType* baseType_;
   size_t length_;
 
-  ArrayType(VarType* baseType, size_t length)
+  explicit ArrayType(VarType* baseType, size_t length)
       : VarType(baseType->typeName_ + "[" + std::to_string(length) + "]"),
         baseType_(baseType),
         length_(length) {}
@@ -548,7 +549,7 @@ class ArrayType : public VarType {
 /* Identifier is name of user defined type */
 class DefinedType : public VarType {
  public:
-  DefinedType(const std::string& typeName) : VarType(typeName) {}
+  explicit DefinedType(const std::string& typeName) : VarType(typeName) {}
   ~DefinedType() override = default;
 
   std::pair<std::string, std::string> genGraph() override;
@@ -568,7 +569,7 @@ class StructType : public VarType {
  public:
   FieldDecls* structBody_;
 
-  StructType(FieldDecls* structBody, const std::string& structTypeName)
+  explicit StructType(FieldDecls* structBody, const std::string& structTypeName)
       : VarType(structTypeName), structBody_(structBody) {}
   ~StructType() override;
 
@@ -596,7 +597,7 @@ class UnionType : public VarType {
  public:
   FieldDecls* unionBody_;
 
-  UnionType(FieldDecls* unionBody, const std::string& unionTypeName)
+  explicit UnionType(FieldDecls* unionBody, const std::string& unionTypeName)
       : VarType(unionTypeName), unionBody_(unionBody) {}
   ~UnionType() override;
 
@@ -625,7 +626,7 @@ class FieldDecl : public Decl {
   VarType* varType_;
   MemberList* memberList_;
 
-  FieldDecl(VarType* varType, MemberList* memberList)
+  explicit FieldDecl(VarType* varType, MemberList* memberList)
       : varType_(varType), memberList_(memberList) {}
   ~FieldDecl() override;
 
@@ -637,7 +638,7 @@ class EnumType : public VarType {
  public:
   EnumList* enumList_;
 
-  EnumType(EnumList* enumList, const std::string& enumTypeName)
+  explicit EnumType(EnumList* enumList, const std::string& enumTypeName)
       : VarType(enumTypeName), enumList_(enumList) {}
   ~EnumType() override;
 
@@ -660,7 +661,7 @@ class Enum : public Node {
   bool hasValue_;
   int value_;
 
-  Enum(const std::string& name, bool hasValue = false, int value = 0)
+  explicit Enum(const std::string& name, bool hasValue = false, int value = 0)
       : name_(name), hasValue_(hasValue), value_(value) {}
   ~Enum() override = default;
 
@@ -684,7 +685,7 @@ class IfStmt : public Stmt {
   Stmt* thenStmt_;
   Stmt* elseStmt_;
 
-  IfStmt(Expr* condition, Stmt* thenStmt, Stmt* elseStmt = nullptr)
+  explicit IfStmt(Expr* condition, Stmt* thenStmt, Stmt* elseStmt = nullptr)
       : condition_(condition), thenStmt_(thenStmt), elseStmt_(elseStmt) {}
   ~IfStmt() override;
 
@@ -697,7 +698,7 @@ class SwitchStmt : public Stmt {
   Expr* matcher_;
   CaseStmtList* caseStmtList_;
 
-  SwitchStmt(Expr* matcher, CaseStmtList* caseStmtList)
+  explicit SwitchStmt(Expr* matcher, CaseStmtList* caseStmtList)
       : matcher_(matcher), caseStmtList_(caseStmtList) {}
   ~SwitchStmt() override;
 
@@ -710,7 +711,7 @@ class CaseStmt : public Stmt {
   Expr* condition_;
   Stmts* content_;
 
-  CaseStmt(Expr* condition, Stmts* content)
+  explicit CaseStmt(Expr* condition, Stmts* content)
       : condition_(condition), content_(content) {}
   ~CaseStmt() override;
 
@@ -725,7 +726,7 @@ class ForStmt : public Stmt {
   Expr* update_;
   Stmt* loopBody_;
 
-  ForStmt(Stmt* initial, Expr* condition, Expr* update, Stmt* loopBody)
+  explicit ForStmt(Stmt* initial, Expr* condition, Expr* update, Stmt* loopBody)
       : initial_(initial),
         condition_(condition),
         update_(update),
@@ -741,7 +742,7 @@ class DoStmt : public Stmt {
   Stmt* loopBody_;
   Expr* condition_;
 
-  DoStmt(Stmt* loopBody, Expr* condition)
+  explicit DoStmt(Stmt* loopBody, Expr* condition)
       : loopBody_(loopBody), condition_(condition) {}
   ~DoStmt() override;
 
@@ -754,7 +755,7 @@ class WhileStmt : public Stmt {
   Expr* condition_;
   Stmt* loopBody_;
 
-  WhileStmt(Expr* condition, Stmt* loopBody)
+  explicit WhileStmt(Expr* condition, Stmt* loopBody)
       : condition_(condition), loopBody_(loopBody) {}
   ~WhileStmt() override;
 
@@ -784,7 +785,7 @@ class ReturnStmt : public Stmt {
  public:
   Expr* retVal_;
 
-  ReturnStmt(Expr* retVal = nullptr) : retVal_(retVal) {}
+  explicit ReturnStmt(Expr* retVal = nullptr) : retVal_(retVal) {}
   ~ReturnStmt() override;
 
   llvm::Value* genCode(CodeGenerator& generator) override;
@@ -795,7 +796,7 @@ class Block : public Stmt {
  public:
   Stmts* content_;
 
-  Block(Stmts* content) : content_(content) {};
+  explicit Block(Stmts* content) : content_(content) {};
   ~Block() override;
 
   llvm::Value* genCode(CodeGenerator& generator) override;
@@ -861,7 +862,7 @@ class LhsRhsExpr : public Expr {
   Expr* lhs_;
   Expr* rhs_;
 
-  LhsRhsExpr(Expr* lhs, Expr* rhs) : lhs_(lhs), rhs_(rhs) {}
+  explicit LhsRhsExpr(Expr* lhs, Expr* rhs) : lhs_(lhs), rhs_(rhs) {}
   ~LhsRhsExpr() override;
 };
 
@@ -869,7 +870,7 @@ class UnaryExpr : public Expr {
  protected:
   Expr* operand_;
 
-  UnaryExpr(Expr* operand) : operand_(operand) {}
+  explicit UnaryExpr(Expr* operand) : operand_(operand) {}
 
   llvm::Value* genIncDecCode(CodeGenerator& generator, bool increment,
                              bool returnOperandPtr,
@@ -883,7 +884,7 @@ class UnaryExpr : public Expr {
 // Prefix ++/-- use UnaryExpr directly because they return an lvalue pointer.
 class ThrowingUnaryExpr : public UnaryExpr {
  protected:
-  ThrowingUnaryExpr(Expr* operand) : UnaryExpr(operand) {}
+  explicit ThrowingUnaryExpr(Expr* operand) : UnaryExpr(operand) {}
 
   virtual const char* nonLValueErrorMessage() const = 0;
 
@@ -895,7 +896,7 @@ class ThrowingUnaryExpr : public UnaryExpr {
 
 class BinaryExpr : public LhsRhsExpr {
  protected:
-  BinaryExpr(Expr* lhs, Expr* rhs) : LhsRhsExpr(lhs, rhs) {}
+  explicit BinaryExpr(Expr* lhs, Expr* rhs) : LhsRhsExpr(lhs, rhs) {}
 
   virtual const char* nonLValueErrorMessage() const = 0;
 
@@ -914,7 +915,7 @@ class Variable : public Expr {
  public:
   std::string varName_;
 
-  Variable(const std::string& varName) : varName_(varName) {}
+  explicit Variable(const std::string& varName) : varName_(varName) {}
   ~Variable() override = default;
 
   VarType* getExprVarType(CodeGenerator& generator) override;
@@ -948,35 +949,35 @@ class Constant : public Expr {
         floatValue_(0.0f),
         doubleValue_(0.0),
         boolValue_(false) {}
-  Constant(char charValue) : Constant() {
+  explicit Constant(char charValue) : Constant() {
     typeId_ = BuiltinTypeId::CHAR;
     charValue_ = charValue;
   }
-  Constant(int intValue) : Constant() {
+  explicit Constant(int intValue) : Constant() {
     typeId_ = BuiltinTypeId::INT;
     intValue_ = intValue;
   }
-  Constant(unsigned int uintValue) : Constant() {
+  explicit Constant(unsigned int uintValue) : Constant() {
     typeId_ = BuiltinTypeId::UINT;
     uintValue_ = uintValue;
   }
-  Constant(long longValue) : Constant() {
+  explicit Constant(long longValue) : Constant() {
     typeId_ = BuiltinTypeId::LONG;
     longValue_ = longValue;
   }
-  Constant(unsigned long ulongValue) : Constant() {
+  explicit Constant(unsigned long ulongValue) : Constant() {
     typeId_ = BuiltinTypeId::ULONG;
     ulongValue_ = ulongValue;
   }
-  Constant(float floatValue) : Constant() {
+  explicit Constant(float floatValue) : Constant() {
     typeId_ = BuiltinTypeId::FLOAT;
     floatValue_ = floatValue;
   }
-  Constant(double doubleValue) : Constant() {
+  explicit Constant(double doubleValue) : Constant() {
     typeId_ = BuiltinTypeId::DOUBLE;
     doubleValue_ = doubleValue;
   }
-  Constant(bool boolValue) : Constant() {
+  explicit Constant(bool boolValue) : Constant() {
     typeId_ = BuiltinTypeId::BOOL;
     boolValue_ = boolValue;
   }
@@ -994,7 +995,7 @@ class ConstStr : public Constant {
  public:
   std::string str_;
 
-  ConstStr(const std::string& str) : str_(str) {}
+  explicit ConstStr(const std::string& str) : str_(str) {}
   ~ConstStr() override = default;
 
   BuiltinTypeId getExprTypeId(CodeGenerator& generator) override;
@@ -1007,7 +1008,7 @@ class ConstStr : public Constant {
 
 class CommaExpr : public LhsRhsExpr {
  public:
-  CommaExpr(Expr* lhs, Expr* rhs) : LhsRhsExpr(lhs, rhs) {}
+  explicit CommaExpr(Expr* lhs, Expr* rhs) : LhsRhsExpr(lhs, rhs) {}
   ~CommaExpr() override = default;
 
   VarType* getExprVarType(CodeGenerator& generator) override;
@@ -1023,7 +1024,7 @@ class FuncCall : public Expr {
   std::string funcName_;
   ExprList* argList_;
 
-  FuncCall(const std::string& funcName, ExprList* argList)
+  explicit FuncCall(const std::string& funcName, ExprList* argList)
       : funcName_(funcName), argList_(argList) {}
   ~FuncCall() override;
 
@@ -1041,7 +1042,7 @@ class StructRef : public Expr {
   Expr* struct_;
   std::string memberName_;
 
-  StructRef(Expr* structObj, const std::string& memberName)
+  explicit StructRef(Expr* structObj, const std::string& memberName)
       : struct_(structObj), memberName_(memberName) {}
   ~StructRef() override;
 
@@ -1060,7 +1061,7 @@ class StructDeref : public Expr {
   Expr* structPtr_;
   std::string memberName_;
 
-  StructDeref(Expr* structPtr, const std::string& memberName)
+  explicit StructDeref(Expr* structPtr, const std::string& memberName)
       : structPtr_(structPtr), memberName_(memberName) {}
   ~StructDeref() override;
 
@@ -1080,7 +1081,7 @@ class Subscript : public Expr {
   Expr* array_;
   Expr* index_;
 
-  Subscript(Expr* array, Expr* index) : array_(array), index_(index) {}
+  explicit Subscript(Expr* array, Expr* index) : array_(array), index_(index) {}
   ~Subscript() override;
 
   VarType* getExprVarType(CodeGenerator& generator) override;
@@ -1097,7 +1098,7 @@ class TypeCast : public Expr {
   VarType* varType_;
   Expr* operand_;
 
-  TypeCast(VarType* varType, Expr* operand)
+  explicit TypeCast(VarType* varType, Expr* operand)
       : varType_(varType), operand_(operand) {}
   ~TypeCast() override;
 
@@ -1115,10 +1116,11 @@ class SizeOf : public Expr {
   Expr* expr_;
   std::string identifier_;
 
-  SizeOf(VarType* varType)
+  explicit SizeOf(VarType* varType)
       : varType_(varType), expr_(nullptr), identifier_("") {}
-  SizeOf(Expr* expr) : varType_(nullptr), expr_(expr), identifier_("") {}
-  SizeOf(std::string& identifier)
+  explicit SizeOf(Expr* expr)
+      : varType_(nullptr), expr_(expr), identifier_("") {}
+  explicit SizeOf(std::string& identifier)
       : varType_(nullptr), expr_(nullptr), identifier_(identifier) {}
   ~SizeOf() override;
 
@@ -1132,7 +1134,7 @@ class SizeOf : public Expr {
 
 class UnaryPlus : public ThrowingUnaryExpr {
  public:
-  UnaryPlus(Expr* operand) : ThrowingUnaryExpr(operand) {}
+  explicit UnaryPlus(Expr* operand) : ThrowingUnaryExpr(operand) {}
   ~UnaryPlus() override = default;
 
   VarType* getExprVarType(CodeGenerator& generator) override;
@@ -1147,7 +1149,7 @@ class UnaryPlus : public ThrowingUnaryExpr {
 
 class UnaryMinus : public ThrowingUnaryExpr {
  public:
-  UnaryMinus(Expr* operand) : ThrowingUnaryExpr(operand) {}
+  explicit UnaryMinus(Expr* operand) : ThrowingUnaryExpr(operand) {}
   ~UnaryMinus() override = default;
 
   VarType* getExprVarType(CodeGenerator& generator) override;
@@ -1164,7 +1166,7 @@ class UnaryMinus : public ThrowingUnaryExpr {
 /* for *pointer */
 class PointerDeref : public UnaryExpr {
  public:
-  PointerDeref(Expr* operand) : UnaryExpr(operand) {}
+  explicit PointerDeref(Expr* operand) : UnaryExpr(operand) {}
   ~PointerDeref() override = default;
 
   VarType* getExprVarType(CodeGenerator& generator) override;
@@ -1179,7 +1181,7 @@ class PointerDeref : public UnaryExpr {
 /* for &variable */
 class AddressOf : public ThrowingUnaryExpr {
  public:
-  AddressOf(Expr* operand) : ThrowingUnaryExpr(operand) {}
+  explicit AddressOf(Expr* operand) : ThrowingUnaryExpr(operand) {}
   ~AddressOf() override = default;
 
   llvm::Value* genCode(CodeGenerator& generator) override;
@@ -1192,7 +1194,7 @@ class AddressOf : public ThrowingUnaryExpr {
 
 class LhsRhsAssign : public LhsRhsExpr {
  protected:
-  LhsRhsAssign(Expr* lhs, Expr* rhs) : LhsRhsExpr(lhs, rhs) {}
+  explicit LhsRhsAssign(Expr* lhs, Expr* rhs) : LhsRhsExpr(lhs, rhs) {}
 
   llvm::Value* genSimpleAssignPtr(CodeGenerator& generator);
 
@@ -1207,7 +1209,7 @@ class LhsRhsAssign : public LhsRhsExpr {
 
 class Assign : public LhsRhsAssign {
  public:
-  Assign(Expr* lhs, Expr* rhs) : LhsRhsAssign(lhs, rhs) {}
+  explicit Assign(Expr* lhs, Expr* rhs) : LhsRhsAssign(lhs, rhs) {}
   ~Assign() override = default;
 
   VarType* getExprVarType(CodeGenerator& generator) override;
@@ -1219,7 +1221,7 @@ class Assign : public LhsRhsAssign {
 
 class Add : public BinaryExpr {
  public:
-  Add(Expr* lhs, Expr* rhs) : BinaryExpr(lhs, rhs) {}
+  explicit Add(Expr* lhs, Expr* rhs) : BinaryExpr(lhs, rhs) {}
   ~Add() override = default;
 
   llvm::Value* genCode(CodeGenerator& generator) override;
@@ -1232,7 +1234,7 @@ class Add : public BinaryExpr {
 
 class Sub : public BinaryExpr {
  public:
-  Sub(Expr* lhs, Expr* rhs) : BinaryExpr(lhs, rhs) {}
+  explicit Sub(Expr* lhs, Expr* rhs) : BinaryExpr(lhs, rhs) {}
   ~Sub() override = default;
 
   llvm::Value* genCode(CodeGenerator& generator) override;
@@ -1245,7 +1247,7 @@ class Sub : public BinaryExpr {
 
 class Mul : public BinaryExpr {
  public:
-  Mul(Expr* lhs, Expr* rhs) : BinaryExpr(lhs, rhs) {}
+  explicit Mul(Expr* lhs, Expr* rhs) : BinaryExpr(lhs, rhs) {}
   ~Mul() override = default;
 
   llvm::Value* genCode(CodeGenerator& generator) override;
@@ -1258,7 +1260,7 @@ class Mul : public BinaryExpr {
 
 class Div : public BinaryExpr {
  public:
-  Div(Expr* lhs, Expr* rhs) : BinaryExpr(lhs, rhs) {}
+  explicit Div(Expr* lhs, Expr* rhs) : BinaryExpr(lhs, rhs) {}
   ~Div() override = default;
 
   llvm::Value* genCode(CodeGenerator& generator) override;
@@ -1271,7 +1273,7 @@ class Div : public BinaryExpr {
 
 class Mod : public BinaryExpr {
  public:
-  Mod(Expr* lhs, Expr* rhs) : BinaryExpr(lhs, rhs) {}
+  explicit Mod(Expr* lhs, Expr* rhs) : BinaryExpr(lhs, rhs) {}
   ~Mod() override = default;
 
   llvm::Value* genCode(CodeGenerator& generator) override;
@@ -1284,7 +1286,7 @@ class Mod : public BinaryExpr {
 
 class PostfixInc : public ThrowingUnaryExpr {
  public:
-  PostfixInc(Expr* operand) : ThrowingUnaryExpr(operand) {}
+  explicit PostfixInc(Expr* operand) : ThrowingUnaryExpr(operand) {}
   ~PostfixInc() override = default;
 
   VarType* getExprVarType(CodeGenerator& generator) override;
@@ -1300,7 +1302,7 @@ class PostfixInc : public ThrowingUnaryExpr {
 
 class PostfixDec : public ThrowingUnaryExpr {
  public:
-  PostfixDec(Expr* operand) : ThrowingUnaryExpr(operand) {}
+  explicit PostfixDec(Expr* operand) : ThrowingUnaryExpr(operand) {}
   ~PostfixDec() override = default;
 
   VarType* getExprVarType(CodeGenerator& generator) override;
@@ -1316,7 +1318,7 @@ class PostfixDec : public ThrowingUnaryExpr {
 
 class PrefixInc : public UnaryExpr {
  public:
-  PrefixInc(Expr* operand) : UnaryExpr(operand) {}
+  explicit PrefixInc(Expr* operand) : UnaryExpr(operand) {}
   ~PrefixInc() override = default;
 
   VarType* getExprVarType(CodeGenerator& generator) override;
@@ -1330,7 +1332,7 @@ class PrefixInc : public UnaryExpr {
 
 class PrefixDec : public UnaryExpr {
  public:
-  PrefixDec(Expr* operand) : UnaryExpr(operand) {}
+  explicit PrefixDec(Expr* operand) : UnaryExpr(operand) {}
   ~PrefixDec() override = default;
 
   VarType* getExprVarType(CodeGenerator& generator) override;
@@ -1346,7 +1348,7 @@ class PrefixDec : public UnaryExpr {
 // LhsRhsAssign::genCompoundAssignPtr and each subclass's genCodePtr.
 class CompoundAssign : public LhsRhsAssign {
  protected:
-  CompoundAssign(Expr* lhs, Expr* rhs) : LhsRhsAssign(lhs, rhs) {}
+  explicit CompoundAssign(Expr* lhs, Expr* rhs) : LhsRhsAssign(lhs, rhs) {}
 
  public:
   ~CompoundAssign() override = default;
@@ -1354,7 +1356,7 @@ class CompoundAssign : public LhsRhsAssign {
 
 class AddAssign : public CompoundAssign {
  public:
-  AddAssign(Expr* lhs, Expr* rhs) : CompoundAssign(lhs, rhs) {}
+  explicit AddAssign(Expr* lhs, Expr* rhs) : CompoundAssign(lhs, rhs) {}
   ~AddAssign() override = default;
 
   llvm::Value* genCodePtr(CodeGenerator& generator) override;
@@ -1364,7 +1366,7 @@ class AddAssign : public CompoundAssign {
 
 class SubAssign : public CompoundAssign {
  public:
-  SubAssign(Expr* lhs, Expr* rhs) : CompoundAssign(lhs, rhs) {}
+  explicit SubAssign(Expr* lhs, Expr* rhs) : CompoundAssign(lhs, rhs) {}
   ~SubAssign() override = default;
 
   llvm::Value* genCodePtr(CodeGenerator& generator) override;
@@ -1374,7 +1376,7 @@ class SubAssign : public CompoundAssign {
 
 class MulAssign : public CompoundAssign {
  public:
-  MulAssign(Expr* lhs, Expr* rhs) : CompoundAssign(lhs, rhs) {}
+  explicit MulAssign(Expr* lhs, Expr* rhs) : CompoundAssign(lhs, rhs) {}
   ~MulAssign() override = default;
 
   llvm::Value* genCodePtr(CodeGenerator& generator) override;
@@ -1384,7 +1386,7 @@ class MulAssign : public CompoundAssign {
 
 class DivAssign : public CompoundAssign {
  public:
-  DivAssign(Expr* lhs, Expr* rhs) : CompoundAssign(lhs, rhs) {}
+  explicit DivAssign(Expr* lhs, Expr* rhs) : CompoundAssign(lhs, rhs) {}
   ~DivAssign() override = default;
 
   llvm::Value* genCodePtr(CodeGenerator& generator) override;
@@ -1394,7 +1396,7 @@ class DivAssign : public CompoundAssign {
 
 class ModAssign : public CompoundAssign {
  public:
-  ModAssign(Expr* lhs, Expr* rhs) : CompoundAssign(lhs, rhs) {}
+  explicit ModAssign(Expr* lhs, Expr* rhs) : CompoundAssign(lhs, rhs) {}
   ~ModAssign() override = default;
 
   llvm::Value* genCodePtr(CodeGenerator& generator) override;
@@ -1404,7 +1406,7 @@ class ModAssign : public CompoundAssign {
 
 class BitwiseAnd : public BinaryExpr {
  public:
-  BitwiseAnd(Expr* lhs, Expr* rhs) : BinaryExpr(lhs, rhs) {}
+  explicit BitwiseAnd(Expr* lhs, Expr* rhs) : BinaryExpr(lhs, rhs) {}
   ~BitwiseAnd() override = default;
 
   llvm::Value* genCode(CodeGenerator& generator) override;
@@ -1417,7 +1419,7 @@ class BitwiseAnd : public BinaryExpr {
 
 class BitwiseOr : public BinaryExpr {
  public:
-  BitwiseOr(Expr* lhs, Expr* rhs) : BinaryExpr(lhs, rhs) {}
+  explicit BitwiseOr(Expr* lhs, Expr* rhs) : BinaryExpr(lhs, rhs) {}
   ~BitwiseOr() override = default;
 
   llvm::Value* genCode(CodeGenerator& generator) override;
@@ -1430,7 +1432,7 @@ class BitwiseOr : public BinaryExpr {
 
 class BitwiseXor : public BinaryExpr {
  public:
-  BitwiseXor(Expr* lhs, Expr* rhs) : BinaryExpr(lhs, rhs) {}
+  explicit BitwiseXor(Expr* lhs, Expr* rhs) : BinaryExpr(lhs, rhs) {}
   ~BitwiseXor() override = default;
 
   llvm::Value* genCode(CodeGenerator& generator) override;
@@ -1443,7 +1445,7 @@ class BitwiseXor : public BinaryExpr {
 
 class BitwiseNot : public ThrowingUnaryExpr {
  public:
-  BitwiseNot(Expr* operand) : ThrowingUnaryExpr(operand) {}
+  explicit BitwiseNot(Expr* operand) : ThrowingUnaryExpr(operand) {}
   ~BitwiseNot() override = default;
 
   llvm::Value* genCode(CodeGenerator& generator) override;
@@ -1456,7 +1458,7 @@ class BitwiseNot : public ThrowingUnaryExpr {
 
 class BitwiseAndAssign : public CompoundAssign {
  public:
-  BitwiseAndAssign(Expr* lhs, Expr* rhs) : CompoundAssign(lhs, rhs) {}
+  explicit BitwiseAndAssign(Expr* lhs, Expr* rhs) : CompoundAssign(lhs, rhs) {}
   ~BitwiseAndAssign() override = default;
 
   llvm::Value* genCodePtr(CodeGenerator& generator) override;
@@ -1466,7 +1468,7 @@ class BitwiseAndAssign : public CompoundAssign {
 
 class BitwiseOrAssign : public CompoundAssign {
  public:
-  BitwiseOrAssign(Expr* lhs, Expr* rhs) : CompoundAssign(lhs, rhs) {}
+  explicit BitwiseOrAssign(Expr* lhs, Expr* rhs) : CompoundAssign(lhs, rhs) {}
   ~BitwiseOrAssign() override = default;
 
   llvm::Value* genCodePtr(CodeGenerator& generator) override;
@@ -1476,7 +1478,7 @@ class BitwiseOrAssign : public CompoundAssign {
 
 class BitwiseXorAssign : public CompoundAssign {
  public:
-  BitwiseXorAssign(Expr* lhs, Expr* rhs) : CompoundAssign(lhs, rhs) {}
+  explicit BitwiseXorAssign(Expr* lhs, Expr* rhs) : CompoundAssign(lhs, rhs) {}
   ~BitwiseXorAssign() override = default;
 
   llvm::Value* genCodePtr(CodeGenerator& generator) override;
@@ -1486,7 +1488,7 @@ class BitwiseXorAssign : public CompoundAssign {
 
 class LeftShift : public BinaryExpr {
  public:
-  LeftShift(Expr* lhs, Expr* rhs) : BinaryExpr(lhs, rhs) {}
+  explicit LeftShift(Expr* lhs, Expr* rhs) : BinaryExpr(lhs, rhs) {}
   ~LeftShift() override = default;
 
   llvm::Value* genCode(CodeGenerator& generator) override;
@@ -1499,7 +1501,7 @@ class LeftShift : public BinaryExpr {
 
 class RightShift : public BinaryExpr {
  public:
-  RightShift(Expr* lhs, Expr* rhs) : BinaryExpr(lhs, rhs) {}
+  explicit RightShift(Expr* lhs, Expr* rhs) : BinaryExpr(lhs, rhs) {}
   ~RightShift() override = default;
 
   llvm::Value* genCode(CodeGenerator& generator) override;
@@ -1512,7 +1514,7 @@ class RightShift : public BinaryExpr {
 
 class LeftShiftAssign : public CompoundAssign {
  public:
-  LeftShiftAssign(Expr* lhs, Expr* rhs) : CompoundAssign(lhs, rhs) {}
+  explicit LeftShiftAssign(Expr* lhs, Expr* rhs) : CompoundAssign(lhs, rhs) {}
   ~LeftShiftAssign() override = default;
 
   llvm::Value* genCodePtr(CodeGenerator& generator) override;
@@ -1522,7 +1524,7 @@ class LeftShiftAssign : public CompoundAssign {
 
 class RightShiftAssign : public CompoundAssign {
  public:
-  RightShiftAssign(Expr* lhs, Expr* rhs) : CompoundAssign(lhs, rhs) {}
+  explicit RightShiftAssign(Expr* lhs, Expr* rhs) : CompoundAssign(lhs, rhs) {}
   ~RightShiftAssign() override = default;
 
   llvm::Value* genCodePtr(CodeGenerator& generator) override;
@@ -1532,7 +1534,7 @@ class RightShiftAssign : public CompoundAssign {
 
 class LogicExpr : public LhsRhsExpr {
  protected:
-  LogicExpr(Expr* lhs, Expr* rhs) : LhsRhsExpr(lhs, rhs) {}
+  explicit LogicExpr(Expr* lhs, Expr* rhs) : LhsRhsExpr(lhs, rhs) {}
 
   virtual const char* nonLValueErrorMessage() const = 0;
 
@@ -1553,7 +1555,7 @@ class LogicExpr : public LhsRhsExpr {
 
 class LogicAnd : public LogicExpr {
  public:
-  LogicAnd(Expr* lhs, Expr* rhs) : LogicExpr(lhs, rhs) {}
+  explicit LogicAnd(Expr* lhs, Expr* rhs) : LogicExpr(lhs, rhs) {}
   ~LogicAnd() override = default;
 
   llvm::Value* genCode(CodeGenerator& generator) override;
@@ -1566,7 +1568,7 @@ class LogicAnd : public LogicExpr {
 
 class LogicOr : public LogicExpr {
  public:
-  LogicOr(Expr* lhs, Expr* rhs) : LogicExpr(lhs, rhs) {}
+  explicit LogicOr(Expr* lhs, Expr* rhs) : LogicExpr(lhs, rhs) {}
   ~LogicOr() override = default;
 
   llvm::Value* genCode(CodeGenerator& generator) override;
@@ -1579,7 +1581,7 @@ class LogicOr : public LogicExpr {
 
 class LogicNot : public ThrowingUnaryExpr {
  public:
-  LogicNot(Expr* operand) : ThrowingUnaryExpr(operand) {}
+  explicit LogicNot(Expr* operand) : ThrowingUnaryExpr(operand) {}
   ~LogicNot() override = default;
 
   BuiltinTypeId getExprTypeId(CodeGenerator& generator) override;
@@ -1594,7 +1596,7 @@ class LogicNot : public ThrowingUnaryExpr {
 
 class LogicEq : public LogicExpr {
  public:
-  LogicEq(Expr* lhs, Expr* rhs) : LogicExpr(lhs, rhs) {}
+  explicit LogicEq(Expr* lhs, Expr* rhs) : LogicExpr(lhs, rhs) {}
   ~LogicEq() override = default;
 
   llvm::Value* genCode(CodeGenerator& generator) override;
@@ -1607,7 +1609,7 @@ class LogicEq : public LogicExpr {
 
 class LogicNotEq : public LogicExpr {
  public:
-  LogicNotEq(Expr* lhs, Expr* rhs) : LogicExpr(lhs, rhs) {}
+  explicit LogicNotEq(Expr* lhs, Expr* rhs) : LogicExpr(lhs, rhs) {}
   ~LogicNotEq() override = default;
 
   llvm::Value* genCode(CodeGenerator& generator) override;
@@ -1620,7 +1622,7 @@ class LogicNotEq : public LogicExpr {
 
 class LogicLessThan : public LogicExpr {
  public:
-  LogicLessThan(Expr* lhs, Expr* rhs) : LogicExpr(lhs, rhs) {}
+  explicit LogicLessThan(Expr* lhs, Expr* rhs) : LogicExpr(lhs, rhs) {}
   ~LogicLessThan() override = default;
 
   llvm::Value* genCode(CodeGenerator& generator) override;
@@ -1633,7 +1635,7 @@ class LogicLessThan : public LogicExpr {
 
 class LogicLessEq : public LogicExpr {
  public:
-  LogicLessEq(Expr* lhs, Expr* rhs) : LogicExpr(lhs, rhs) {}
+  explicit LogicLessEq(Expr* lhs, Expr* rhs) : LogicExpr(lhs, rhs) {}
   ~LogicLessEq() override = default;
 
   llvm::Value* genCode(CodeGenerator& generator) override;
@@ -1646,7 +1648,7 @@ class LogicLessEq : public LogicExpr {
 
 class LogicGreaterThan : public LogicExpr {
  public:
-  LogicGreaterThan(Expr* lhs, Expr* rhs) : LogicExpr(lhs, rhs) {}
+  explicit LogicGreaterThan(Expr* lhs, Expr* rhs) : LogicExpr(lhs, rhs) {}
   ~LogicGreaterThan() override = default;
 
   llvm::Value* genCode(CodeGenerator& generator) override;
@@ -1659,7 +1661,7 @@ class LogicGreaterThan : public LogicExpr {
 
 class LogicGreaterEq : public LogicExpr {
  public:
-  LogicGreaterEq(Expr* lhs, Expr* rhs) : LogicExpr(lhs, rhs) {}
+  explicit LogicGreaterEq(Expr* lhs, Expr* rhs) : LogicExpr(lhs, rhs) {}
   ~LogicGreaterEq() override = default;
 
   llvm::Value* genCode(CodeGenerator& generator) override;
@@ -1676,7 +1678,7 @@ class TernaryCondition : public Expr {
   Expr* trueExpr_;
   Expr* falseExpr_;
 
-  TernaryCondition(Expr* condition, Expr* trueExpr, Expr* falseExpr)
+  explicit TernaryCondition(Expr* condition, Expr* trueExpr, Expr* falseExpr)
       : condition_(condition), trueExpr_(trueExpr), falseExpr_(falseExpr) {}
   ~TernaryCondition() override;
 

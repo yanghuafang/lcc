@@ -5,6 +5,19 @@
 # people learning compilers. Each disabled family is listed with its reason, so
 # the exclusions can be re-argued rather than rediscovered.
 #
+# Only one check is taken from the google- family: google-explicit-constructor.
+# AST nodes are always built as `new Node(child)` from the grammar actions, so
+# no constructor in ast/Nodes.hpp is meant to convert; Constant alone declared
+# eight single-argument ones, over char, int, long, float, double and their
+# unsigned variants. The rest of that family is naming and formatting rules
+# this project does not follow.
+#
+# Note what the check does not reach: it flags only constructors callable with
+# exactly one argument. The headers also mark the multi-argument constructors
+# explicit, because C++11 lets those fire implicitly through
+# copy-list-initialization -- `f({lhs, rhs})` and `Add a = {lhs, rhs}` both
+# select one. No check enforces that half, so it falls to review.
+#
 # Deliberately NOT enabled:
 #
 #   modernize-use-trailing-return-type
@@ -37,6 +50,7 @@
 
 Checks: >
   -*,
+  google-explicit-constructor,
   modernize-deprecated-headers,
   modernize-use-auto,
   modernize-use-bool-literals,

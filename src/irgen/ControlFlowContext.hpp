@@ -75,8 +75,9 @@ class ControlFlowContext {
 // is worth two types that cannot be confused for each other.
 class ScopedLoop {
  public:
-  ScopedLoop(ControlFlowContext& controlFlow, llvm::BasicBlock* continueBlock,
-             llvm::BasicBlock* breakBlock)
+  explicit ScopedLoop(ControlFlowContext& controlFlow,
+                      llvm::BasicBlock* continueBlock,
+                      llvm::BasicBlock* breakBlock)
       : controlFlow_(controlFlow) {
     controlFlow_.enterLoop(continueBlock, breakBlock);
   }
@@ -95,8 +96,9 @@ class ScopedLoop {
 // inner one pushes and pops above the outer one rather than over it.
 class ScopedSwitch {
  public:
-  ScopedSwitch(ControlFlowContext& controlFlow, llvm::BasicBlock* breakBlock,
-               llvm::BasicBlock* fallthroughBlock)
+  explicit ScopedSwitch(ControlFlowContext& controlFlow,
+                        llvm::BasicBlock* breakBlock,
+                        llvm::BasicBlock* fallthroughBlock)
       : controlFlow_(controlFlow) {
     controlFlow_.enterSwitch(breakBlock, fallthroughBlock);
   }

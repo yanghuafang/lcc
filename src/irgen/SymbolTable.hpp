@@ -137,7 +137,8 @@ class SymbolTable {
         : content_(std::in_place_type<llvm::Function*>, func) {}
     explicit Symbol(llvm::Type* type)
         : content_(std::in_place_type<llvm::Type*>, type) {}
-    Symbol(llvm::Value* value, bool isConst, AST::VarType* varType = nullptr)
+    explicit Symbol(llvm::Value* value, bool isConst,
+                    AST::VarType* varType = nullptr)
         : content_(isConst ? Content{std::in_place_type<Constant>, value}
                            : Content{std::in_place_type<Variable>, value}),
           varType_(varType) {}
