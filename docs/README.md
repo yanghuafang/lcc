@@ -27,6 +27,14 @@ Guides for using and extending the **lcc** teaching compiler. The [root README](
 | [Language.md](Language.md) | Supported C subset, limitations, manual linkage declarations |
 | [ParserConflicts.md](ParserConflicts.md) | Parser shift/reduce and reduce/reduce conflicts (Bison) |
 
+## Generated API reference
+
+The headers under `src/` carry Doxygen comments, and `scripts/docs.sh` renders them to `../../lcc-build/docs/html/index.html` — beside the build tree, for the same reason object files go there.
+
+The prose is the same either way: the comments in the headers are the source, and reading them in place is often quicker. What the generated site adds is the two things a header cannot show — inheritance and collaboration diagrams for the `Node` hierarchy, which runs six levels deep across 90 classes, and a link from every declaration to the places that use it.
+
+Configuration is [Doxyfile](Doxyfile), which lists only the settings that differ from Doxygen's defaults, each with its reason.
+
 ## Implementation notes
 
 How each half of the compiler was built, and what was deliberately left out. Both are closed records — the work they describe is complete.

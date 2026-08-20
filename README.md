@@ -192,7 +192,7 @@ lcc/
 | [docs/FrontendNotes.md](docs/FrontendNotes.md) | How the front-end reached its current feature set; deferred language work |
 | [docs/MiddleBackendNotes.md](docs/MiddleBackendNotes.md) | What each middle/back-end milestone built, with acceptance criteria |
 
-[docs/README.md](docs/README.md) indexes the same guides with a milestone-to-doc map.
+[docs/README.md](docs/README.md) indexes the same guides with a milestone-to-doc map. `scripts/docs.sh` renders the header comments into a browsable API reference, with diagrams of the six-level `Node` hierarchy that the sources cannot show.
 
 ## Requirements
 
