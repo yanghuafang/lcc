@@ -229,7 +229,7 @@ struct SourceLoc {
 // setLoc().
 class Node {
  public:
-  Node() {}
+  Node() = default;
   // Virtual so delete g_root (Program*) runs the concrete destructor chain.
   virtual ~Node();
 
@@ -269,8 +269,8 @@ class Program : public Node {
 // expressions.
 class Stmt : public Node {
  public:
-  Stmt() {}
-  ~Stmt() override {}
+  Stmt() = default;
+  ~Stmt() override = default;
 };
 
 // ===========================================================================
@@ -283,8 +283,8 @@ class Stmt : public Node {
 
 class Decl : public Stmt {
  public:
-  Decl() {}
-  ~Decl() override {}
+  Decl() = default;
+  ~Decl() override = default;
 };
 
 class FuncDecl : public Decl {
@@ -479,7 +479,7 @@ class BuiltinType : public VarType {
 
   BuiltinType(BuiltinTypeId typeId, const std::string& typeName)
       : VarType(typeName), typeId_(typeId) {}
-  ~BuiltinType() override {}
+  ~BuiltinType() override = default;
 
   std::pair<std::string, std::string> genGraph() override;
 
@@ -549,7 +549,7 @@ class ArrayType : public VarType {
 class DefinedType : public VarType {
  public:
   DefinedType(const std::string& typeName) : VarType(typeName) {}
-  ~DefinedType() override {}
+  ~DefinedType() override = default;
 
   std::pair<std::string, std::string> genGraph() override;
 
@@ -662,7 +662,7 @@ class Enum : public Node {
 
   Enum(const std::string& name, bool hasValue = false, int value = 0)
       : name_(name), hasValue_(hasValue), value_(value) {}
-  ~Enum() override {}
+  ~Enum() override = default;
 
   // Code already generated in EnumType::getType
   llvm::Value* genCode(CodeGenerator& generator) override { return nullptr; }
@@ -764,8 +764,8 @@ class WhileStmt : public Stmt {
 
 class ContinueStmt : public Stmt {
  public:
-  ContinueStmt() {}
-  ~ContinueStmt() override {}
+  ContinueStmt() = default;
+  ~ContinueStmt() override = default;
 
   llvm::Value* genCode(CodeGenerator& generator) override;
   std::pair<std::string, std::string> genGraph() override;
@@ -773,8 +773,8 @@ class ContinueStmt : public Stmt {
 
 class BreakStmt : public Stmt {
  public:
-  BreakStmt() {}
-  ~BreakStmt() override {}
+  BreakStmt() = default;
+  ~BreakStmt() override = default;
 
   llvm::Value* genCode(CodeGenerator& generator) override;
   std::pair<std::string, std::string> genGraph() override;
@@ -818,8 +818,8 @@ class Block : public Stmt {
 
 class Expr : public Stmt {
  public:
-  Expr() {}
-  ~Expr() override {};
+  Expr() = default;
+  ~Expr() override = default;
 
   // Rvalue vs lvalue codegen (central to understanding lcc):
   //   genCode()    -> the value at an expression (often load from an address)
@@ -888,7 +888,7 @@ class ThrowingUnaryExpr : public UnaryExpr {
   virtual const char* nonLValueErrorMessage() const = 0;
 
  public:
-  ~ThrowingUnaryExpr() override {}
+  ~ThrowingUnaryExpr() override = default;
 
   llvm::Value* genCodePtr(CodeGenerator& generator) override;
 };
@@ -904,7 +904,7 @@ class BinaryExpr : public LhsRhsExpr {
       const std::function<llvm::Value*(llvm::Value*, llvm::Value*)>& applyOp);
 
  public:
-  ~BinaryExpr() override {}
+  ~BinaryExpr() override = default;
 
   BuiltinTypeId getExprTypeId(CodeGenerator& generator) override;
   llvm::Value* genCodePtr(CodeGenerator& generator) override;
@@ -915,7 +915,7 @@ class Variable : public Expr {
   std::string varName_;
 
   Variable(const std::string& varName) : varName_(varName) {}
-  ~Variable() override {}
+  ~Variable() override = default;
 
   VarType* getExprVarType(CodeGenerator& generator) override;
   VarType* getLValueVarType(CodeGenerator& generator) override;
@@ -980,7 +980,7 @@ class Constant : public Expr {
     typeId_ = BuiltinTypeId::BOOL;
     boolValue_ = boolValue;
   }
-  ~Constant() override {}
+  ~Constant() override = default;
 
   BuiltinTypeId getExprTypeId(CodeGenerator& generator) override;
 
@@ -995,7 +995,7 @@ class ConstStr : public Constant {
   std::string str_;
 
   ConstStr(const std::string& str) : str_(str) {}
-  ~ConstStr() override {}
+  ~ConstStr() override = default;
 
   BuiltinTypeId getExprTypeId(CodeGenerator& generator) override;
 
@@ -1008,7 +1008,7 @@ class ConstStr : public Constant {
 class CommaExpr : public LhsRhsExpr {
  public:
   CommaExpr(Expr* lhs, Expr* rhs) : LhsRhsExpr(lhs, rhs) {}
-  ~CommaExpr() override {}
+  ~CommaExpr() override = default;
 
   VarType* getExprVarType(CodeGenerator& generator) override;
 
@@ -1133,7 +1133,7 @@ class SizeOf : public Expr {
 class UnaryPlus : public ThrowingUnaryExpr {
  public:
   UnaryPlus(Expr* operand) : ThrowingUnaryExpr(operand) {}
-  ~UnaryPlus() override {}
+  ~UnaryPlus() override = default;
 
   VarType* getExprVarType(CodeGenerator& generator) override;
 
@@ -1148,7 +1148,7 @@ class UnaryPlus : public ThrowingUnaryExpr {
 class UnaryMinus : public ThrowingUnaryExpr {
  public:
   UnaryMinus(Expr* operand) : ThrowingUnaryExpr(operand) {}
-  ~UnaryMinus() override {}
+  ~UnaryMinus() override = default;
 
   VarType* getExprVarType(CodeGenerator& generator) override;
   BuiltinTypeId getExprTypeId(CodeGenerator& generator) override;
@@ -1165,7 +1165,7 @@ class UnaryMinus : public ThrowingUnaryExpr {
 class PointerDeref : public UnaryExpr {
  public:
   PointerDeref(Expr* operand) : UnaryExpr(operand) {}
-  ~PointerDeref() override {}
+  ~PointerDeref() override = default;
 
   VarType* getExprVarType(CodeGenerator& generator) override;
   VarType* getLValueVarType(CodeGenerator& generator) override;
@@ -1180,7 +1180,7 @@ class PointerDeref : public UnaryExpr {
 class AddressOf : public ThrowingUnaryExpr {
  public:
   AddressOf(Expr* operand) : ThrowingUnaryExpr(operand) {}
-  ~AddressOf() override {}
+  ~AddressOf() override = default;
 
   llvm::Value* genCode(CodeGenerator& generator) override;
 
@@ -1208,7 +1208,7 @@ class LhsRhsAssign : public LhsRhsExpr {
 class Assign : public LhsRhsAssign {
  public:
   Assign(Expr* lhs, Expr* rhs) : LhsRhsAssign(lhs, rhs) {}
-  ~Assign() override {}
+  ~Assign() override = default;
 
   VarType* getExprVarType(CodeGenerator& generator) override;
 
@@ -1220,7 +1220,7 @@ class Assign : public LhsRhsAssign {
 class Add : public BinaryExpr {
  public:
   Add(Expr* lhs, Expr* rhs) : BinaryExpr(lhs, rhs) {}
-  ~Add() override {}
+  ~Add() override = default;
 
   llvm::Value* genCode(CodeGenerator& generator) override;
 
@@ -1233,7 +1233,7 @@ class Add : public BinaryExpr {
 class Sub : public BinaryExpr {
  public:
   Sub(Expr* lhs, Expr* rhs) : BinaryExpr(lhs, rhs) {}
-  ~Sub() override {}
+  ~Sub() override = default;
 
   llvm::Value* genCode(CodeGenerator& generator) override;
 
@@ -1246,7 +1246,7 @@ class Sub : public BinaryExpr {
 class Mul : public BinaryExpr {
  public:
   Mul(Expr* lhs, Expr* rhs) : BinaryExpr(lhs, rhs) {}
-  ~Mul() override {}
+  ~Mul() override = default;
 
   llvm::Value* genCode(CodeGenerator& generator) override;
 
@@ -1259,7 +1259,7 @@ class Mul : public BinaryExpr {
 class Div : public BinaryExpr {
  public:
   Div(Expr* lhs, Expr* rhs) : BinaryExpr(lhs, rhs) {}
-  ~Div() override {}
+  ~Div() override = default;
 
   llvm::Value* genCode(CodeGenerator& generator) override;
 
@@ -1272,7 +1272,7 @@ class Div : public BinaryExpr {
 class Mod : public BinaryExpr {
  public:
   Mod(Expr* lhs, Expr* rhs) : BinaryExpr(lhs, rhs) {}
-  ~Mod() override {}
+  ~Mod() override = default;
 
   llvm::Value* genCode(CodeGenerator& generator) override;
 
@@ -1285,7 +1285,7 @@ class Mod : public BinaryExpr {
 class PostfixInc : public ThrowingUnaryExpr {
  public:
   PostfixInc(Expr* operand) : ThrowingUnaryExpr(operand) {}
-  ~PostfixInc() override {}
+  ~PostfixInc() override = default;
 
   VarType* getExprVarType(CodeGenerator& generator) override;
   VarType* getLValueVarType(CodeGenerator& generator) override;
@@ -1301,7 +1301,7 @@ class PostfixInc : public ThrowingUnaryExpr {
 class PostfixDec : public ThrowingUnaryExpr {
  public:
   PostfixDec(Expr* operand) : ThrowingUnaryExpr(operand) {}
-  ~PostfixDec() override {}
+  ~PostfixDec() override = default;
 
   VarType* getExprVarType(CodeGenerator& generator) override;
   VarType* getLValueVarType(CodeGenerator& generator) override;
@@ -1317,7 +1317,7 @@ class PostfixDec : public ThrowingUnaryExpr {
 class PrefixInc : public UnaryExpr {
  public:
   PrefixInc(Expr* operand) : UnaryExpr(operand) {}
-  ~PrefixInc() override {}
+  ~PrefixInc() override = default;
 
   VarType* getExprVarType(CodeGenerator& generator) override;
   VarType* getLValueVarType(CodeGenerator& generator) override;
@@ -1331,7 +1331,7 @@ class PrefixInc : public UnaryExpr {
 class PrefixDec : public UnaryExpr {
  public:
   PrefixDec(Expr* operand) : UnaryExpr(operand) {}
-  ~PrefixDec() override {}
+  ~PrefixDec() override = default;
 
   VarType* getExprVarType(CodeGenerator& generator) override;
   VarType* getLValueVarType(CodeGenerator& generator) override;
@@ -1349,13 +1349,13 @@ class CompoundAssign : public LhsRhsAssign {
   CompoundAssign(Expr* lhs, Expr* rhs) : LhsRhsAssign(lhs, rhs) {}
 
  public:
-  ~CompoundAssign() override {}
+  ~CompoundAssign() override = default;
 };
 
 class AddAssign : public CompoundAssign {
  public:
   AddAssign(Expr* lhs, Expr* rhs) : CompoundAssign(lhs, rhs) {}
-  ~AddAssign() override {}
+  ~AddAssign() override = default;
 
   llvm::Value* genCodePtr(CodeGenerator& generator) override;
 
@@ -1365,7 +1365,7 @@ class AddAssign : public CompoundAssign {
 class SubAssign : public CompoundAssign {
  public:
   SubAssign(Expr* lhs, Expr* rhs) : CompoundAssign(lhs, rhs) {}
-  ~SubAssign() override {}
+  ~SubAssign() override = default;
 
   llvm::Value* genCodePtr(CodeGenerator& generator) override;
 
@@ -1375,7 +1375,7 @@ class SubAssign : public CompoundAssign {
 class MulAssign : public CompoundAssign {
  public:
   MulAssign(Expr* lhs, Expr* rhs) : CompoundAssign(lhs, rhs) {}
-  ~MulAssign() override {}
+  ~MulAssign() override = default;
 
   llvm::Value* genCodePtr(CodeGenerator& generator) override;
 
@@ -1385,7 +1385,7 @@ class MulAssign : public CompoundAssign {
 class DivAssign : public CompoundAssign {
  public:
   DivAssign(Expr* lhs, Expr* rhs) : CompoundAssign(lhs, rhs) {}
-  ~DivAssign() override {}
+  ~DivAssign() override = default;
 
   llvm::Value* genCodePtr(CodeGenerator& generator) override;
 
@@ -1395,7 +1395,7 @@ class DivAssign : public CompoundAssign {
 class ModAssign : public CompoundAssign {
  public:
   ModAssign(Expr* lhs, Expr* rhs) : CompoundAssign(lhs, rhs) {}
-  ~ModAssign() override {}
+  ~ModAssign() override = default;
 
   llvm::Value* genCodePtr(CodeGenerator& generator) override;
 
@@ -1405,7 +1405,7 @@ class ModAssign : public CompoundAssign {
 class BitwiseAnd : public BinaryExpr {
  public:
   BitwiseAnd(Expr* lhs, Expr* rhs) : BinaryExpr(lhs, rhs) {}
-  ~BitwiseAnd() override {}
+  ~BitwiseAnd() override = default;
 
   llvm::Value* genCode(CodeGenerator& generator) override;
 
@@ -1418,7 +1418,7 @@ class BitwiseAnd : public BinaryExpr {
 class BitwiseOr : public BinaryExpr {
  public:
   BitwiseOr(Expr* lhs, Expr* rhs) : BinaryExpr(lhs, rhs) {}
-  ~BitwiseOr() override {}
+  ~BitwiseOr() override = default;
 
   llvm::Value* genCode(CodeGenerator& generator) override;
 
@@ -1431,7 +1431,7 @@ class BitwiseOr : public BinaryExpr {
 class BitwiseXor : public BinaryExpr {
  public:
   BitwiseXor(Expr* lhs, Expr* rhs) : BinaryExpr(lhs, rhs) {}
-  ~BitwiseXor() override {}
+  ~BitwiseXor() override = default;
 
   llvm::Value* genCode(CodeGenerator& generator) override;
 
@@ -1444,7 +1444,7 @@ class BitwiseXor : public BinaryExpr {
 class BitwiseNot : public ThrowingUnaryExpr {
  public:
   BitwiseNot(Expr* operand) : ThrowingUnaryExpr(operand) {}
-  ~BitwiseNot() override {}
+  ~BitwiseNot() override = default;
 
   llvm::Value* genCode(CodeGenerator& generator) override;
 
@@ -1457,7 +1457,7 @@ class BitwiseNot : public ThrowingUnaryExpr {
 class BitwiseAndAssign : public CompoundAssign {
  public:
   BitwiseAndAssign(Expr* lhs, Expr* rhs) : CompoundAssign(lhs, rhs) {}
-  ~BitwiseAndAssign() override {}
+  ~BitwiseAndAssign() override = default;
 
   llvm::Value* genCodePtr(CodeGenerator& generator) override;
 
@@ -1467,7 +1467,7 @@ class BitwiseAndAssign : public CompoundAssign {
 class BitwiseOrAssign : public CompoundAssign {
  public:
   BitwiseOrAssign(Expr* lhs, Expr* rhs) : CompoundAssign(lhs, rhs) {}
-  ~BitwiseOrAssign() override {}
+  ~BitwiseOrAssign() override = default;
 
   llvm::Value* genCodePtr(CodeGenerator& generator) override;
 
@@ -1477,7 +1477,7 @@ class BitwiseOrAssign : public CompoundAssign {
 class BitwiseXorAssign : public CompoundAssign {
  public:
   BitwiseXorAssign(Expr* lhs, Expr* rhs) : CompoundAssign(lhs, rhs) {}
-  ~BitwiseXorAssign() override {}
+  ~BitwiseXorAssign() override = default;
 
   llvm::Value* genCodePtr(CodeGenerator& generator) override;
 
@@ -1487,7 +1487,7 @@ class BitwiseXorAssign : public CompoundAssign {
 class LeftShift : public BinaryExpr {
  public:
   LeftShift(Expr* lhs, Expr* rhs) : BinaryExpr(lhs, rhs) {}
-  ~LeftShift() override {}
+  ~LeftShift() override = default;
 
   llvm::Value* genCode(CodeGenerator& generator) override;
 
@@ -1500,7 +1500,7 @@ class LeftShift : public BinaryExpr {
 class RightShift : public BinaryExpr {
  public:
   RightShift(Expr* lhs, Expr* rhs) : BinaryExpr(lhs, rhs) {}
-  ~RightShift() override {}
+  ~RightShift() override = default;
 
   llvm::Value* genCode(CodeGenerator& generator) override;
 
@@ -1513,7 +1513,7 @@ class RightShift : public BinaryExpr {
 class LeftShiftAssign : public CompoundAssign {
  public:
   LeftShiftAssign(Expr* lhs, Expr* rhs) : CompoundAssign(lhs, rhs) {}
-  ~LeftShiftAssign() override {}
+  ~LeftShiftAssign() override = default;
 
   llvm::Value* genCodePtr(CodeGenerator& generator) override;
 
@@ -1523,7 +1523,7 @@ class LeftShiftAssign : public CompoundAssign {
 class RightShiftAssign : public CompoundAssign {
  public:
   RightShiftAssign(Expr* lhs, Expr* rhs) : CompoundAssign(lhs, rhs) {}
-  ~RightShiftAssign() override {}
+  ~RightShiftAssign() override = default;
 
   llvm::Value* genCodePtr(CodeGenerator& generator) override;
 
@@ -1554,7 +1554,7 @@ class LogicExpr : public LhsRhsExpr {
 class LogicAnd : public LogicExpr {
  public:
   LogicAnd(Expr* lhs, Expr* rhs) : LogicExpr(lhs, rhs) {}
-  ~LogicAnd() override {}
+  ~LogicAnd() override = default;
 
   llvm::Value* genCode(CodeGenerator& generator) override;
 
@@ -1567,7 +1567,7 @@ class LogicAnd : public LogicExpr {
 class LogicOr : public LogicExpr {
  public:
   LogicOr(Expr* lhs, Expr* rhs) : LogicExpr(lhs, rhs) {}
-  ~LogicOr() override {}
+  ~LogicOr() override = default;
 
   llvm::Value* genCode(CodeGenerator& generator) override;
 
@@ -1580,7 +1580,7 @@ class LogicOr : public LogicExpr {
 class LogicNot : public ThrowingUnaryExpr {
  public:
   LogicNot(Expr* operand) : ThrowingUnaryExpr(operand) {}
-  ~LogicNot() override {}
+  ~LogicNot() override = default;
 
   BuiltinTypeId getExprTypeId(CodeGenerator& generator) override;
 
@@ -1595,7 +1595,7 @@ class LogicNot : public ThrowingUnaryExpr {
 class LogicEq : public LogicExpr {
  public:
   LogicEq(Expr* lhs, Expr* rhs) : LogicExpr(lhs, rhs) {}
-  ~LogicEq() override {}
+  ~LogicEq() override = default;
 
   llvm::Value* genCode(CodeGenerator& generator) override;
 
@@ -1608,7 +1608,7 @@ class LogicEq : public LogicExpr {
 class LogicNotEq : public LogicExpr {
  public:
   LogicNotEq(Expr* lhs, Expr* rhs) : LogicExpr(lhs, rhs) {}
-  ~LogicNotEq() override {}
+  ~LogicNotEq() override = default;
 
   llvm::Value* genCode(CodeGenerator& generator) override;
 
@@ -1621,7 +1621,7 @@ class LogicNotEq : public LogicExpr {
 class LogicLessThan : public LogicExpr {
  public:
   LogicLessThan(Expr* lhs, Expr* rhs) : LogicExpr(lhs, rhs) {}
-  ~LogicLessThan() override {}
+  ~LogicLessThan() override = default;
 
   llvm::Value* genCode(CodeGenerator& generator) override;
 
@@ -1634,7 +1634,7 @@ class LogicLessThan : public LogicExpr {
 class LogicLessEq : public LogicExpr {
  public:
   LogicLessEq(Expr* lhs, Expr* rhs) : LogicExpr(lhs, rhs) {}
-  ~LogicLessEq() override {}
+  ~LogicLessEq() override = default;
 
   llvm::Value* genCode(CodeGenerator& generator) override;
 
@@ -1647,7 +1647,7 @@ class LogicLessEq : public LogicExpr {
 class LogicGreaterThan : public LogicExpr {
  public:
   LogicGreaterThan(Expr* lhs, Expr* rhs) : LogicExpr(lhs, rhs) {}
-  ~LogicGreaterThan() override {}
+  ~LogicGreaterThan() override = default;
 
   llvm::Value* genCode(CodeGenerator& generator) override;
 
@@ -1660,7 +1660,7 @@ class LogicGreaterThan : public LogicExpr {
 class LogicGreaterEq : public LogicExpr {
  public:
   LogicGreaterEq(Expr* lhs, Expr* rhs) : LogicExpr(lhs, rhs) {}
-  ~LogicGreaterEq() override {}
+  ~LogicGreaterEq() override = default;
 
   llvm::Value* genCode(CodeGenerator& generator) override;
 
