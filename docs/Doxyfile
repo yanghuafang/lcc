@@ -11,10 +11,13 @@ OUTPUT_DIRECTORY       = ../lcc-build/docs
 
 # src/ is the include root, so stripping it makes documented headers read the
 # way the #include lines do: "irgen/Operators.hpp", not a long absolute path.
-INPUT                  = src
+# The landing page is a file rather than a \mainpage block in a header:
+# Doxygen's index.html is otherwise the project name and nothing else.
+INPUT                  = src docs/ApiMainPage.md
+USE_MDFILE_AS_MAINPAGE = docs/ApiMainPage.md
 STRIP_FROM_PATH        = src
 RECURSIVE              = YES
-FILE_PATTERNS          = *.hpp *.cpp
+FILE_PATTERNS          = *.hpp *.cpp *.md
 
 # flex and bison output. Never edited by hand, regenerated on every configure,
 # and 20k lines of machine-written code that would swamp everything else.
