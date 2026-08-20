@@ -11,16 +11,31 @@
 #include <cstring>
 #include <string>
 
+// Defined in frontend/Parser.y. Both the grammar and the literal helpers below
+// report through it, which is what makes it the one place a front-end
+// diagnostic passes through.
 void yyerror(const char* s);
 
-static int yycolumn = 1;
-
 // Bison %locations reads yylloc per token; yylineno alone does not populate it.
+// Expanded down in the rules section, where the yycolumn it writes is the one
+// declared in the anonymous namespace below.
 #define YY_USER_ACTION                          \
   yylloc.first_line = yylloc.last_line = yylineno; \
   yylloc.first_column = yycolumn;               \
   yylloc.last_column = yycolumn + yyleng - 1;   \
   yycolumn += yyleng;
+
+// Everything this file defines for itself. An anonymous namespace rather than
+// `static` on each definition: it is one mechanism covering functions and
+// file-scope state alike, it is what every other file in this tree uses, and a
+// definition added later cannot forget it the way it can forget a keyword.
+//
+// escapeDecode is what forgetting looked like. It alone had no `static`, so it
+// had external linkage and was exported from the object file -- `nm` showed it
+// as T where every helper beside it was t -- for no reason at all.
+namespace {
+
+int yycolumn = 1;
 
  /* Map the character after '\\' in a char/string escape to its value. */
 char escapeDecode(char c) {
@@ -55,11 +70,11 @@ char escapeDecode(char c) {
 }
 
 // strto* + errno reject overflow and partial parses; sscanf could not.
-static bool parseEndMatches(const char* end, const char* text, size_t len) {
+bool parseEndMatches(const char* end, const char* text, size_t len) {
     return static_cast<size_t>(end - text) == len;
 }
 
-static bool parseSignedLong(const char* text, size_t len, long& out) {
+bool parseSignedLong(const char* text, size_t len, long& out) {
     errno = 0;
     char* end = nullptr;
     const long val = strtol(text, &end, 0);
@@ -71,7 +86,7 @@ static bool parseSignedLong(const char* text, size_t len, long& out) {
     return true;
 }
 
-static bool parseIntLiteral(const char* text, size_t len, int& out) {
+bool parseIntLiteral(const char* text, size_t len, int& out) {
     long val = 0;
     if (!parseSignedLong(text, len, val)) {
         return false;
@@ -84,7 +99,7 @@ static bool parseIntLiteral(const char* text, size_t len, int& out) {
     return true;
 }
 
-static bool parseUnsignedSuffixLiteral(const char* text, size_t len,
+bool parseUnsignedSuffixLiteral(const char* text, size_t len,
                                        unsigned long& out, const char* suffix) {
     const size_t suffixLen = strlen(suffix);
     if (len <= suffixLen ||
@@ -103,7 +118,7 @@ static bool parseUnsignedSuffixLiteral(const char* text, size_t len,
     return true;
 }
 
-static bool parsePlainUnsignedLong(const char* text, size_t len, unsigned long& out) {
+bool parsePlainUnsignedLong(const char* text, size_t len, unsigned long& out) {
     errno = 0;
     char* end = nullptr;
     const unsigned long val = strtoul(text, &end, 0);
@@ -115,7 +130,7 @@ static bool parsePlainUnsignedLong(const char* text, size_t len, unsigned long& 
     return true;
 }
 
-static bool parseUnsignedIntLiteral(const char* text, size_t len, unsigned int& out) {
+bool parseUnsignedIntLiteral(const char* text, size_t len, unsigned int& out) {
     unsigned long val = 0;
     if (!parseUnsignedSuffixLiteral(text, len, val, "u") &&
         !parseUnsignedSuffixLiteral(text, len, val, "U") &&
@@ -130,7 +145,7 @@ static bool parseUnsignedIntLiteral(const char* text, size_t len, unsigned int& 
     return true;
 }
 
-static bool parseLongLiteral(const char* text, size_t len, long& out) {
+bool parseLongLiteral(const char* text, size_t len, long& out) {
     if (len == 0 || (text[len - 1] != 'l' && text[len - 1] != 'L')) {
         yyerror("invalid long integer literal");
         return false;
@@ -146,7 +161,7 @@ static bool parseLongLiteral(const char* text, size_t len, long& out) {
     return true;
 }
 
-static bool parseUnsignedLongLiteral(const char* text, size_t len,
+bool parseUnsignedLongLiteral(const char* text, size_t len,
                                      unsigned long& out) {
     if (parseUnsignedSuffixLiteral(text, len, out, "ul") ||
         parseUnsignedSuffixLiteral(text, len, out, "UL") ||
@@ -158,7 +173,7 @@ static bool parseUnsignedLongLiteral(const char* text, size_t len,
     return false;
 }
 
-static bool parseFloatLiteral(const char* text, size_t len, float& out) {
+bool parseFloatLiteral(const char* text, size_t len, float& out) {
     if (len == 0 || (text[len - 1] != 'f' && text[len - 1] != 'F')) {
         yyerror("invalid float literal");
         return false;
@@ -174,7 +189,7 @@ static bool parseFloatLiteral(const char* text, size_t len, float& out) {
     return true;
 }
 
-static bool parseDoubleLiteral(const char* text, size_t len, double& out) {
+bool parseDoubleLiteral(const char* text, size_t len, double& out) {
     errno = 0;
     char* end = nullptr;
     const double val = strtod(text, &end);
@@ -187,7 +202,7 @@ static bool parseDoubleLiteral(const char* text, size_t len, double& out) {
 }
 
 // Unsuffixed hex: pick the narrowest lcc token that fits (C integer promotion).
-static int returnLexHexConstant(const char* text, size_t len) {
+int returnLexHexConstant(const char* text, size_t len) {
     if (len > 0 && text[0] == '-') {
         long signedVal = 0;
         if (!parseSignedLong(text, len, signedVal)) {
@@ -234,6 +249,8 @@ static int returnLexHexConstant(const char* text, size_t len) {
     yylval.ulongVal = 0;
     return ULONGVAL;
 }
+
+}  // namespace
 %}
 
 %option noyywrap
