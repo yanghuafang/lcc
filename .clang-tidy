@@ -18,6 +18,13 @@
 # copy-list-initialization -- `f({lhs, rhs})` and `Add a = {lhs, rhs}` both
 # select one. No check enforces that half, so it falls to review.
 #
+# One check is taken from the cppcoreguidelines- family:
+# cppcoreguidelines-virtual-class-destructor. Every base here is deleted
+# polymorphically through Node* or TypeEnv*, so each one needs a public virtual
+# destructor; the check holds that. Note that a different check from the same
+# family is deliberately off for the opposite reason -- see
+# cppcoreguidelines-special-member-functions below.
+#
 # Deliberately NOT enabled:
 #
 #   modernize-use-trailing-return-type
@@ -58,6 +65,7 @@
 
 Checks: >
   -*,
+  cppcoreguidelines-virtual-class-destructor,
   google-explicit-constructor,
   modernize-deprecated-headers,
   modernize-use-default-member-init,

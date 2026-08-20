@@ -872,6 +872,8 @@ class LhsRhsExpr : public Expr {
   Expr* rhs_;
 
   explicit LhsRhsExpr(Expr* lhs, Expr* rhs) : lhs_(lhs), rhs_(rhs) {}
+
+ public:
   ~LhsRhsExpr() override;
 };
 
