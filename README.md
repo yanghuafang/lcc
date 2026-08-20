@@ -134,6 +134,7 @@ lcc/
 │   ├── types/                   # What a type is; emits no instructions
 │   │   ├── TypeEnv.hpp          # type environment interface (AST VarType -> llvm::Type)
 │   │   ├── TypeRules.*          # C type rules: promotion, conversion, signedness
+│   │   │                        # (constexpr in the .hpp; .cpp static_asserts them)
 │   │   ├── BuiltinTypeMap.*     # C scalar width table: BuiltinTypeId -> llvm::Type
 │   │   └── VarTypeQuery.*       # AST VarType -> BuiltinTypeId / llvm::Type queries
 │   ├── irgen/                   # AST -> LLVM IR
