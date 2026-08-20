@@ -56,11 +56,7 @@ class ScopedGlobalInitBlock {
 
 CodeGenerator::CodeGenerator()
     : builder_(context_),
-      module_(std::make_unique<llvm::Module>("lcc", context_)),
-      globalBlock_(nullptr),
-      globalFunc_(nullptr),
-      currentBlock_(nullptr),
-      currentFunc_(nullptr) {}
+      module_(std::make_unique<llvm::Module>("lcc", context_)) {}
 
 // Out of line, not `= default` in the header: module_ and debugInfo_ are
 // unique_ptrs to types the header only forward-declares, so the deleters have

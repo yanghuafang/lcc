@@ -16,11 +16,7 @@ using AST::BuiltinTypeId;
 DebugInfoBuilder::DebugInfoBuilder(llvm::Module& module)
     : module_(module),
       context_(module.getContext()),
-      dib_(std::make_unique<llvm::DIBuilder>(module)),
-      compileUnit_(nullptr),
-      file_(nullptr),
-      initialized_(false),
-      typeEnv_(nullptr) {}
+      dib_(std::make_unique<llvm::DIBuilder>(module)) {}
 
 DebugInfoBuilder::~DebugInfoBuilder() = default;
 

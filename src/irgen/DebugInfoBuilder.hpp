@@ -124,10 +124,10 @@ class DebugInfoBuilder {
   llvm::Module& module_;
   llvm::LLVMContext& context_;
   std::unique_ptr<llvm::DIBuilder> dib_;
-  llvm::DICompileUnit* compileUnit_;
-  llvm::DIFile* file_;
-  bool initialized_;
-  TypeEnv* typeEnv_;
+  llvm::DICompileUnit* compileUnit_ = nullptr;
+  llvm::DIFile* file_ = nullptr;
+  bool initialized_ = false;
+  TypeEnv* typeEnv_ = nullptr;
   std::map<llvm::Type*, llvm::DIType*> llvmTypeCache_;
   std::map<AST::StructType*, llvm::DIType*> structTypeCache_;
   std::map<AST::UnionType*, llvm::DIType*> unionTypeCache_;

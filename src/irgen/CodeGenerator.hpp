@@ -177,11 +177,11 @@ class CodeGenerator : public TypeEnv {
   ControlFlowContext controlFlow_;
 
   // Be used to switch insert point to global block.
-  llvm::BasicBlock* globalBlock_;
-  llvm::Function* globalFunc_;
+  llvm::BasicBlock* globalBlock_ = nullptr;
+  llvm::Function* globalFunc_ = nullptr;
   // Be used to switch insert point back to local current block.
-  llvm::BasicBlock* currentBlock_;
-  llvm::Function* currentFunc_;
+  llvm::BasicBlock* currentBlock_ = nullptr;
+  llvm::Function* currentFunc_ = nullptr;
 
   std::unique_ptr<DebugInfoBuilder> debugInfo_;
   std::vector<llvm::DIScope*> debugScopeStack_;

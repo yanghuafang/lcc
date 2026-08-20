@@ -60,6 +60,7 @@ Checks: >
   -*,
   google-explicit-constructor,
   modernize-deprecated-headers,
+  modernize-use-default-member-init,
   modernize-use-auto,
   modernize-use-bool-literals,
   modernize-use-equals-default,
@@ -99,3 +100,10 @@ ExcludeHeaderFilterRegex: 'src/generated/.*'
 
 WarningsAsErrors: ''
 FormatStyle: file
+
+# modernize-use-default-member-init writes `T* p{nullptr}` by default. Every
+# member initializer already in this tree uses assignment -- SourceLoc, the
+# Symbol variant, the option structs -- so pin the option rather than let the
+# check introduce a second spelling.
+CheckOptions:
+  modernize-use-default-member-init.UseAssignment: true

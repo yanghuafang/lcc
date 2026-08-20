@@ -305,15 +305,14 @@ class FuncDecl : public Decl {
   std::string funcName_;
   ParamList* paramList_;
   FuncBody* funcBody_;
-  bool isStatic_;
+  bool isStatic_ = false;
 
   explicit FuncDecl(VarType* retType, const std::string& funcName,
                     ParamList* paramList, FuncBody* funcBody = nullptr)
       : retType_(retType),
         funcName_(funcName),
         paramList_(paramList),
-        funcBody_(funcBody),
-        isStatic_(false) {}
+        funcBody_(funcBody) {}
   ~FuncDecl() override;
 
   llvm::Value* genCode(CodeGenerator& generator) override;
@@ -336,9 +335,9 @@ class Param : public Node {
 
 class ParamList : public std::vector<Param*>, public Node {
  public:
-  bool isVariant_;
+  bool isVariant_ = false;
 
-  ParamList() : isVariant_(false) {}
+  ParamList() = default;
   ~ParamList() override;
 
   // Code already generated in FuncDecl::genCode.
@@ -363,10 +362,10 @@ class VarDecl : public Decl {
  public:
   VarType* varType_;
   VarList* varList_;
-  bool isStatic_;
+  bool isStatic_ = false;
 
   explicit VarDecl(VarType* varType, VarList* varList)
-      : varType_(varType), varList_(varList), isStatic_(false) {}
+      : varType_(varType), varList_(varList) {}
   ~VarDecl() override;
 
   llvm::Value* genCode(CodeGenerator& generator) override;
@@ -400,7 +399,7 @@ class VarInit : public Node {
   // Per-name array type from arrays::buildVarType(); addVariable()
   // keeps this pointer for the rest of codegen. Only the ArrayType wrappers
   // are owned here—the leaf base type remains VarDecl::varType_.
-  VarType* arrayVarType_;
+  VarType* arrayVarType_ = nullptr;
 
   explicit VarInit(const std::string& varName,
                    const std::vector<size_t>& arrayBounds,
@@ -408,8 +407,7 @@ class VarInit : public Node {
       : varName_(varName),
         arrayBounds_(arrayBounds),
         initialExpr_(initialExpr),
-        initList_(initList),
-        arrayVarType_(nullptr) {}
+        initList_(initList) {}
   ~VarInit() override;
 
   llvm::Value* genCode(CodeGenerator& generator) override { return nullptr; }
@@ -460,12 +458,11 @@ class TypedefDecl : public Decl {
 
 class VarType : public Node {
  public:
-  bool isConst_;
+  bool isConst_ = false;
   std::string typeName_;  // User defined type name.
-  llvm::Type* llvmType_;
+  llvm::Type* llvmType_ = nullptr;
 
-  explicit VarType(const std::string& typeName)
-      : isConst_(false), typeName_(typeName), llvmType_(nullptr) {}
+  explicit VarType(const std::string& typeName) : typeName_(typeName) {}
   ~VarType() override;
 
   llvm::Value* genCode(CodeGenerator& generator) override { return nullptr; }
