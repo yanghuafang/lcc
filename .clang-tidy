@@ -64,7 +64,16 @@ Checks: >
 
 # Never analyze flex/bison output; it is machine-generated and regenerated on
 # every configure.
-HeaderFilterRegex: 'src/(?!generated/).*\.hpp$'
+#
+# Two keys rather than one negative-lookahead pattern. clang-tidy matches these
+# with llvm::Regex, which is POSIX ERE and has no lookahead, and a pattern it
+# cannot compile does not fail the run: llvm::Regex::match() returns false for
+# every path instead. The earlier 'src/(?!generated/).*\.hpp$' therefore
+# suppressed every header diagnostic rather than excluding one directory, and
+# so reported clean while analyzing no header at all. Check any change to these
+# two lines by confirming a deliberate slip in a .hpp is still reported.
+HeaderFilterRegex: 'src/.*\.hpp$'
+ExcludeHeaderFilterRegex: 'src/generated/.*'
 
 WarningsAsErrors: ''
 FormatStyle: file
