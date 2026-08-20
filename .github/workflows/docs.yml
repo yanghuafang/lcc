@@ -1,0 +1,54 @@
+name: Docs
+
+# Publishes the Doxygen API reference to GitHub Pages. Nothing generated is
+# committed: the 400-odd HTML files and hierarchy diagrams are rebuilt here on
+# every push to main and handed straight to Pages, so the repository never
+# carries a copy that can go stale or bury a diff.
+#
+# CI already runs ./docs.sh on pull requests, which is where a broken \param or
+# reference gets caught. This workflow is only the publishing half.
+
+on:
+  push:
+    branches: [main]
+  # So a Pages setting change can be re-published without an empty commit.
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# One deployment at a time, and never cancel one midway: a half-published site
+# is worse than a slightly stale one.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-24.04
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+
+      # Deliberately not install-deps-ubuntu.sh: that installs LLVM 20 and the
+      # rest of the build toolchain, none of which Doxygen needs. graphviz is
+      # required because the Doxyfile sets HAVE_DOT.
+      - name: Install Doxygen and graphviz
+        run: sudo apt-get update && sudo apt-get install -y doxygen graphviz
+
+      - name: Generate documentation
+        working-directory: scripts
+        run: ./docs.sh
+
+      # docs.sh writes beside the build tree rather than inside the repo, which
+      # is why this path leaves the workspace.
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: ${{ github.workspace }}/../lcc-build/docs/html
+
+      - id: deploy
+        uses: actions/deploy-pages@v4
