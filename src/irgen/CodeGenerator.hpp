@@ -82,25 +82,30 @@ class CodeGenerator final : public TypeEnv {
   CodeGenerator();
   ~CodeGenerator() override;
 
-  llvm::LLVMContext& getContext() override { return context_; }
-  llvm::IRBuilder<>& getBuilder() { return builder_; }
-  llvm::Module& getModule() { return *module_; }
+  [[nodiscard]] llvm::LLVMContext& getContext() noexcept override {
+    return context_;
+  }
+  [[nodiscard]] llvm::IRBuilder<>& getBuilder() noexcept { return builder_; }
+  [[nodiscard]] llvm::Module& getModule() noexcept { return *module_; }
 
   // Scoped name lookup: variables, functions, types, typedefs, constants.
-  SymbolTable& symbols() noexcept { return symbols_; }
+  [[nodiscard]] SymbolTable& symbols() noexcept { return symbols_; }
 
   // Where break and continue jump to.
-  ControlFlowContext& controlFlow() noexcept { return controlFlow_; }
+  [[nodiscard]] ControlFlowContext& controlFlow() noexcept {
+    return controlFlow_;
+  }
 
-  llvm::TypeSize getTypeSize(llvm::Type* type) override;
+  [[nodiscard]] llvm::TypeSize getTypeSize(llvm::Type* type) override;
 
   // --- TypeEnv, forwarded to symbols() ---
 
-  llvm::Type* findType(const std::string& typeName) override {
+  [[nodiscard]] llvm::Type* findType(const std::string& typeName) override {
     return symbols_.findType(typeName);
   }
 
-  AST::VarType* findTypedefAlias(const std::string& aliasName) override {
+  [[nodiscard]] AST::VarType* findTypedefAlias(
+      const std::string& aliasName) override {
     return symbols_.findTypedefAlias(aliasName);
   }
 
@@ -108,7 +113,8 @@ class CodeGenerator final : public TypeEnv {
     return symbols_.addConstant(varName, var);
   }
 
-  AST::StructType* findStructType(llvm::StructType* type) override {
+  [[nodiscard]] AST::StructType* findStructType(
+      llvm::StructType* type) override {
     return symbols_.findStructType(type);
   }
 
@@ -117,7 +123,7 @@ class CodeGenerator final : public TypeEnv {
     return symbols_.addStructType(llvmType, astType);
   }
 
-  AST::UnionType* findUnionType(llvm::StructType* type) override {
+  [[nodiscard]] AST::UnionType* findUnionType(llvm::StructType* type) override {
     return symbols_.findUnionType(type);
   }
 
@@ -128,7 +134,7 @@ class CodeGenerator final : public TypeEnv {
 
   // --- The function currently being emitted ---
 
-  llvm::Function* getCurrentFunction() const;
+  [[nodiscard]] llvm::Function* getCurrentFunction() const noexcept;
 
   void enterFunction(llvm::Function* func);
 
@@ -146,8 +152,12 @@ class CodeGenerator final : public TypeEnv {
   void buildModule(AST::Program* root, bool generateDebugInfo = false,
                    const std::string& sourcePath = "");
 
-  bool isDebugInfoEnabled() const noexcept { return debugInfo_ != nullptr; }
-  DebugInfoBuilder* debugInfo() noexcept { return debugInfo_.get(); }
+  [[nodiscard]] bool isDebugInfoEnabled() const noexcept {
+    return debugInfo_ != nullptr;
+  }
+  [[nodiscard]] DebugInfoBuilder* debugInfo() noexcept {
+    return debugInfo_.get();
+  }
 
   // Attach the node's source line to the next IR instructions (-g, inside a
   // function).
@@ -156,7 +166,7 @@ class CodeGenerator final : public TypeEnv {
   // Nested { } scopes for DWARF lexical blocks (used by Block::genCode).
   void pushDebugLexicalBlock(const AST::SourceLoc& loc);
   void popDebugLexicalBlock();
-  llvm::DIScope* getCurrentDebugScope() const;
+  [[nodiscard]] llvm::DIScope* getCurrentDebugScope() const;
 
   void declareDebugAlloca(
       llvm::AllocaInst* alloca, const std::string& name, llvm::Type* llvmType,

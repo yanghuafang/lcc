@@ -44,24 +44,27 @@ class TypeEnv {
  public:
   virtual ~TypeEnv() = default;
 
-  virtual llvm::LLVMContext& getContext() = 0;
+  [[nodiscard]] virtual llvm::LLVMContext& getContext() noexcept = 0;
 
-  virtual llvm::TypeSize getTypeSize(llvm::Type* type) = 0;
+  [[nodiscard]] virtual llvm::TypeSize getTypeSize(llvm::Type* type) = 0;
 
   // Struct/union/enum tags, innermost scope first.
-  virtual llvm::Type* findType(const std::string& typeName) = 0;
+  [[nodiscard]] virtual llvm::Type* findType(const std::string& typeName) = 0;
 
-  virtual AST::VarType* findTypedefAlias(const std::string& aliasName) = 0;
+  [[nodiscard]] virtual AST::VarType* findTypedefAlias(
+      const std::string& aliasName) = 0;
 
   virtual bool addStructType(llvm::StructType* llvmType,
                              AST::StructType* astType) = 0;
 
-  virtual AST::StructType* findStructType(llvm::StructType* type) = 0;
+  [[nodiscard]] virtual AST::StructType* findStructType(
+      llvm::StructType* type) = 0;
 
   virtual bool addUnionType(llvm::StructType* llvmType,
                             AST::UnionType* astType) = 0;
 
-  virtual AST::UnionType* findUnionType(llvm::StructType* type) = 0;
+  [[nodiscard]] virtual AST::UnionType* findUnionType(
+      llvm::StructType* type) = 0;
 
   // Enum members become integer constants in the current scope, so defining an
   // enum type has this one side effect on the symbol table.

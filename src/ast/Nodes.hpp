@@ -250,14 +250,15 @@ class Node {
     loc_.col = col;
   }
 
-  const SourceLoc& loc() const { return loc_; }
+  [[nodiscard]] const SourceLoc& loc() const noexcept { return loc_; }
 
   // Interface to generate IR code.
   virtual llvm::Value* genCode(CodeGenerator& generator) = 0;
 
   // Generate Graphviz DOT for this subtree (implemented in dot/AstToDot.cpp,
   // not used by codegen). Returns (rootNodeId, dotFragment).
-  virtual std::pair<std::string, std::string> genGraph() const = 0;
+  [[nodiscard]] virtual std::pair<std::string, std::string> genGraph()
+      const = 0;
 
  protected:
   SourceLoc loc_;
@@ -382,7 +383,7 @@ class InitElement final : public Node {
   explicit InitElement(InitList* nested) : expr_(nullptr), nested_(nested) {}
   ~InitElement() override;
 
-  bool isNested() const { return nested_ != nullptr; }
+  [[nodiscard]] bool isNested() const noexcept { return nested_ != nullptr; }
 
   llvm::Value* genCode(CodeGenerator& generator) override;
   std::pair<std::string, std::string> genGraph() const override;
@@ -413,7 +414,7 @@ class VarInit final : public Node {
   llvm::Value* genCode(CodeGenerator& generator) override { return nullptr; }
   std::pair<std::string, std::string> genGraph() const override;
 
-  bool hasBraceInit() const { return initList_ != nullptr; }
+  [[nodiscard]] bool hasBraceInit() const { return initList_ != nullptr; }
 };
 
 // Delete the ArrayType prefix arrays::buildVarType() nests around a
@@ -469,16 +470,19 @@ class VarType : public Node {
 
   virtual llvm::Type* getType(TypeEnv& env) = 0;
 
-  virtual bool isBuiltinType() const = 0;
-  virtual bool isPointerType() const = 0;
-  virtual bool isArrayType() const = 0;
-  virtual bool isDefinedType() const = 0;
-  virtual bool isStructType() const = 0;
-  virtual bool isUnionType() const = 0;
-  virtual bool isEnumType() const = 0;
+  [[nodiscard]] virtual bool isBuiltinType() const noexcept = 0;
+  [[nodiscard]] virtual bool isPointerType() const noexcept = 0;
+  [[nodiscard]] virtual bool isArrayType() const noexcept = 0;
+  [[nodiscard]] virtual bool isDefinedType() const noexcept = 0;
+  [[nodiscard]] virtual bool isStructType() const noexcept = 0;
+  [[nodiscard]] virtual bool isUnionType() const noexcept = 0;
+  [[nodiscard]] virtual bool isEnumType() const noexcept = 0;
 
-  virtual VarType* getElementVarType() const { return nullptr; }
-  virtual VarType* getMemberVarType(const std::string& memberName) const;
+  [[nodiscard]] virtual VarType* getElementVarType() const noexcept {
+    return nullptr;
+  }
+  [[nodiscard]] virtual VarType* getMemberVarType(
+      const std::string& memberName) const;
 
   void setConst() { isConst_ = true; }
 };
@@ -495,13 +499,13 @@ class BuiltinType final : public VarType {
 
   llvm::Type* getType(TypeEnv& env) override;
 
-  bool isBuiltinType() const override { return true; }
-  bool isPointerType() const override { return false; }
-  bool isArrayType() const override { return false; }
-  bool isDefinedType() const override { return false; }
-  bool isStructType() const override { return false; }
-  bool isUnionType() const override { return false; }
-  bool isEnumType() const override { return false; }
+  bool isBuiltinType() const noexcept override { return true; }
+  bool isPointerType() const noexcept override { return false; }
+  bool isArrayType() const noexcept override { return false; }
+  bool isDefinedType() const noexcept override { return false; }
+  bool isStructType() const noexcept override { return false; }
+  bool isUnionType() const noexcept override { return false; }
+  bool isEnumType() const noexcept override { return false; }
 };
 
 class PointerType final : public VarType {
@@ -516,15 +520,15 @@ class PointerType final : public VarType {
 
   llvm::Type* getType(TypeEnv& env) override;
 
-  bool isBuiltinType() const override { return false; }
-  bool isPointerType() const override { return true; }
-  bool isArrayType() const override { return false; }
-  bool isDefinedType() const override { return false; }
-  bool isStructType() const override { return false; }
-  bool isUnionType() const override { return false; }
-  bool isEnumType() const override { return false; }
+  bool isBuiltinType() const noexcept override { return false; }
+  bool isPointerType() const noexcept override { return true; }
+  bool isArrayType() const noexcept override { return false; }
+  bool isDefinedType() const noexcept override { return false; }
+  bool isStructType() const noexcept override { return false; }
+  bool isUnionType() const noexcept override { return false; }
+  bool isEnumType() const noexcept override { return false; }
 
-  VarType* getElementVarType() const override { return baseType_; }
+  VarType* getElementVarType() const noexcept override { return baseType_; }
 };
 
 // One array dimension; chained ArrayType nodes model multidim types.
@@ -544,15 +548,15 @@ class ArrayType final : public VarType {
 
   llvm::Type* getType(TypeEnv& env) override;
 
-  bool isBuiltinType() const override { return false; }
-  bool isPointerType() const override { return false; }
-  bool isArrayType() const override { return true; }
-  bool isDefinedType() const override { return false; }
-  bool isStructType() const override { return false; }
-  bool isUnionType() const override { return false; }
-  bool isEnumType() const override { return false; }
+  bool isBuiltinType() const noexcept override { return false; }
+  bool isPointerType() const noexcept override { return false; }
+  bool isArrayType() const noexcept override { return true; }
+  bool isDefinedType() const noexcept override { return false; }
+  bool isStructType() const noexcept override { return false; }
+  bool isUnionType() const noexcept override { return false; }
+  bool isEnumType() const noexcept override { return false; }
 
-  VarType* getElementVarType() const override { return baseType_; }
+  VarType* getElementVarType() const noexcept override { return baseType_; }
 };
 
 /* Identifier is name of user defined type */
@@ -565,13 +569,13 @@ class DefinedType final : public VarType {
 
   llvm::Type* getType(TypeEnv& env) override;
 
-  bool isBuiltinType() const override { return false; }
-  bool isPointerType() const override { return false; }
-  bool isArrayType() const override { return false; }
-  bool isDefinedType() const override { return true; }
-  bool isStructType() const override { return false; }
-  bool isUnionType() const override { return false; }
-  bool isEnumType() const override { return false; }
+  bool isBuiltinType() const noexcept override { return false; }
+  bool isPointerType() const noexcept override { return false; }
+  bool isArrayType() const noexcept override { return false; }
+  bool isDefinedType() const noexcept override { return true; }
+  bool isStructType() const noexcept override { return false; }
+  bool isUnionType() const noexcept override { return false; }
+  bool isEnumType() const noexcept override { return false; }
 };
 
 class StructType final : public VarType {
@@ -586,20 +590,20 @@ class StructType final : public VarType {
 
   llvm::Type* getType(TypeEnv& env) override;
 
-  bool isBuiltinType() const override { return false; }
-  bool isPointerType() const override { return false; }
-  bool isArrayType() const override { return false; }
-  bool isDefinedType() const override { return false; }
-  bool isStructType() const override { return true; }
-  bool isUnionType() const override { return false; }
-  bool isEnumType() const override { return false; }
+  bool isBuiltinType() const noexcept override { return false; }
+  bool isPointerType() const noexcept override { return false; }
+  bool isArrayType() const noexcept override { return false; }
+  bool isDefinedType() const noexcept override { return false; }
+  bool isStructType() const noexcept override { return true; }
+  bool isUnionType() const noexcept override { return false; }
+  bool isEnumType() const noexcept override { return false; }
 
   VarType* getMemberVarType(const std::string& memberName) const override;
 
   llvm::Type* genTypeHead(TypeEnv& env,
                           const std::string& typeName = "anonymous");
   llvm::Type* genTypeBody(TypeEnv& env);
-  size_t getMemberIndex(const std::string& memberName) const;
+  [[nodiscard]] size_t getMemberIndex(const std::string& memberName) const;
 };
 
 class UnionType final : public VarType {
@@ -614,13 +618,13 @@ class UnionType final : public VarType {
 
   llvm::Type* getType(TypeEnv& env) override;
 
-  bool isBuiltinType() const override { return false; }
-  bool isPointerType() const override { return false; }
-  bool isArrayType() const override { return false; }
-  bool isDefinedType() const override { return false; }
-  bool isStructType() const override { return false; }
-  bool isUnionType() const override { return true; }
-  bool isEnumType() const override { return false; }
+  bool isBuiltinType() const noexcept override { return false; }
+  bool isPointerType() const noexcept override { return false; }
+  bool isArrayType() const noexcept override { return false; }
+  bool isDefinedType() const noexcept override { return false; }
+  bool isStructType() const noexcept override { return false; }
+  bool isUnionType() const noexcept override { return true; }
+  bool isEnumType() const noexcept override { return false; }
 
   VarType* getMemberVarType(const std::string& memberName) const override;
 
@@ -655,13 +659,13 @@ class EnumType final : public VarType {
 
   llvm::Type* getType(TypeEnv& env) override;
 
-  bool isBuiltinType() const override { return false; }
-  bool isPointerType() const override { return false; }
-  bool isArrayType() const override { return false; }
-  bool isDefinedType() const override { return false; }
-  bool isStructType() const override { return false; }
-  bool isUnionType() const override { return false; }
-  bool isEnumType() const override { return true; }
+  bool isBuiltinType() const noexcept override { return false; }
+  bool isPointerType() const noexcept override { return false; }
+  bool isArrayType() const noexcept override { return false; }
+  bool isDefinedType() const noexcept override { return false; }
+  bool isStructType() const noexcept override { return false; }
+  bool isUnionType() const noexcept override { return false; }
+  bool isEnumType() const noexcept override { return true; }
 };
 
 class Enum final : public Node {
@@ -840,10 +844,12 @@ class Expr : public Stmt {
   // genCode().
   virtual llvm::Value* genCodePtr(CodeGenerator& generator) = 0;
 
-  virtual VarType* getExprVarType(CodeGenerator& generator) const;
-  virtual VarType* getLValueVarType(CodeGenerator& generator) const;
-  virtual BuiltinTypeId getExprTypeId(CodeGenerator& generator) const;
-  BuiltinTypeId getLValueTypeId(CodeGenerator& generator) const;
+  [[nodiscard]] virtual VarType* getExprVarType(CodeGenerator& generator) const;
+  [[nodiscard]] virtual VarType* getLValueVarType(
+      CodeGenerator& generator) const;
+  [[nodiscard]] virtual BuiltinTypeId getExprTypeId(
+      CodeGenerator& generator) const;
+  [[nodiscard]] BuiltinTypeId getLValueTypeId(CodeGenerator& generator) const;
 
   // Rvalue form of an lvalue expression: evaluate genCodePtr(), then load
   // through it. This is the whole of genCode() for every node whose value is
@@ -897,7 +903,7 @@ class ThrowingUnaryExpr : public UnaryExpr {
  protected:
   explicit ThrowingUnaryExpr(Expr* operand) : UnaryExpr(operand) {}
 
-  virtual const char* nonLValueErrorMessage() const = 0;
+  [[nodiscard]] virtual const char* nonLValueErrorMessage() const = 0;
 
  public:
   ~ThrowingUnaryExpr() override = default;
@@ -909,7 +915,7 @@ class BinaryExpr : public LhsRhsExpr {
  protected:
   explicit BinaryExpr(Expr* lhs, Expr* rhs) : LhsRhsExpr(lhs, rhs) {}
 
-  virtual const char* nonLValueErrorMessage() const = 0;
+  [[nodiscard]] virtual const char* nonLValueErrorMessage() const = 0;
 
   llvm::Value* genBinaryCode(
       CodeGenerator& generator,
@@ -1547,7 +1553,7 @@ class LogicExpr : public LhsRhsExpr {
  protected:
   explicit LogicExpr(Expr* lhs, Expr* rhs) : LhsRhsExpr(lhs, rhs) {}
 
-  virtual const char* nonLValueErrorMessage() const = 0;
+  [[nodiscard]] virtual const char* nonLValueErrorMessage() const = 0;
 
   llvm::Value* genBoolBinaryCode(
       CodeGenerator& generator,

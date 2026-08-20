@@ -86,7 +86,7 @@ class SourceFile {
   SourceFile(const SourceFile&) = delete;
   SourceFile& operator=(const SourceFile&) = delete;
 
-  bool isOpen() const noexcept { return file_ != nullptr; }
+  [[nodiscard]] bool isOpen() const noexcept { return file_ != nullptr; }
 
   // The parse is over and the pipeline never reads stdin, so release the
   // descriptor as soon as yyparse() returns rather than holding it for the rest

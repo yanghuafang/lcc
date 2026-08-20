@@ -61,39 +61,40 @@ class SymbolTable {
 
   // --- Types (struct/union/enum tags) ---
 
-  llvm::Type* findType(const std::string& typeName);
+  [[nodiscard]] llvm::Type* findType(const std::string& typeName);
 
   // False if the name is already taken in the *current* scope.
   bool addType(const std::string& typeName, llvm::Type* type);
 
   // --- Typedef aliases ---
 
-  AST::VarType* findTypedefAlias(const std::string& aliasName);
+  [[nodiscard]] AST::VarType* findTypedefAlias(const std::string& aliasName);
 
   bool addTypedefAlias(const std::string& aliasName, AST::VarType* varType);
 
   // True when aliasName is a typedef in the innermost scope only.
-  bool hasTypedefAliasInCurrentScope(const std::string& aliasName) const;
+  [[nodiscard]] bool hasTypedefAliasInCurrentScope(
+      const std::string& aliasName) const;
 
   // --- Variables ---
 
-  llvm::Value* findVariable(const std::string& varName);
+  [[nodiscard]] llvm::Value* findVariable(const std::string& varName);
 
   bool addVariable(const std::string& varName, llvm::Value* var,
                    AST::VarType* varType = nullptr);
 
   // The C type recorded alongside the variable's storage.
-  AST::VarType* findVariableType(const std::string& varName);
+  [[nodiscard]] AST::VarType* findVariableType(const std::string& varName);
 
   // --- Constants (enum members) ---
 
-  llvm::Value* findConstant(const std::string& varName);
+  [[nodiscard]] llvm::Value* findConstant(const std::string& varName);
 
   bool addConstant(const std::string& varName, llvm::Value* var);
 
   // --- Functions ---
 
-  llvm::Function* findFunction(const std::string& funcName);
+  [[nodiscard]] llvm::Function* findFunction(const std::string& funcName);
 
   bool addFunction(const std::string& funcName, llvm::Function* func);
 
@@ -102,17 +103,18 @@ class SymbolTable {
   void setFuncSignature(const std::string& funcName, AST::VarType* retType,
                         const std::vector<AST::VarType*>& paramTypes);
 
-  AST::VarType* findFuncRetType(const std::string& funcName);
+  [[nodiscard]] AST::VarType* findFuncRetType(const std::string& funcName);
 
-  AST::VarType* findFuncParamType(const std::string& funcName, size_t index);
+  [[nodiscard]] AST::VarType* findFuncParamType(const std::string& funcName,
+                                                size_t index);
 
   // --- Aggregate registries (unscoped; llvm::StructType* -> AST node) ---
 
-  AST::StructType* findStructType(llvm::StructType* type);
+  [[nodiscard]] AST::StructType* findStructType(llvm::StructType* type);
 
   bool addStructType(llvm::StructType* llvmType, AST::StructType* astType);
 
-  AST::UnionType* findUnionType(llvm::StructType* type);
+  [[nodiscard]] AST::UnionType* findUnionType(llvm::StructType* type);
 
   bool addUnionType(llvm::StructType* llvmType, AST::UnionType* astType);
 
@@ -143,27 +145,27 @@ class SymbolTable {
                            : Content{std::in_place_type<Variable>, value}),
           varType_(varType) {}
 
-    llvm::Function* getFunction() const noexcept {
+    [[nodiscard]] llvm::Function* getFunction() const noexcept {
       const auto* func = std::get_if<llvm::Function*>(&content_);
       return func != nullptr ? *func : nullptr;
     }
 
-    llvm::Type* getType() const noexcept {
+    [[nodiscard]] llvm::Type* getType() const noexcept {
       const auto* type = std::get_if<llvm::Type*>(&content_);
       return type != nullptr ? *type : nullptr;
     }
 
-    llvm::Value* getVariable() const noexcept {
+    [[nodiscard]] llvm::Value* getVariable() const noexcept {
       const auto* variable = std::get_if<Variable>(&content_);
       return variable != nullptr ? variable->value : nullptr;
     }
 
-    llvm::Value* getConstant() const noexcept {
+    [[nodiscard]] llvm::Value* getConstant() const noexcept {
       const auto* constant = std::get_if<Constant>(&content_);
       return constant != nullptr ? constant->value : nullptr;
     }
 
-    AST::VarType* getVarType() const noexcept { return varType_; }
+    [[nodiscard]] AST::VarType* getVarType() const noexcept { return varType_; }
 
    private:
     // Constructors rather than aggregates: std::in_place_type below

@@ -74,7 +74,7 @@ llvm::TypeSize CodeGenerator::getTypeSize(llvm::Type* type) {
   return module_->getDataLayout().getTypeAllocSize(type);
 }
 
-llvm::Function* CodeGenerator::getCurrentFunction() const {
+llvm::Function* CodeGenerator::getCurrentFunction() const noexcept {
   return currentFunc_;
 }
 

@@ -40,9 +40,8 @@ class Value;
 namespace iridiom {
 
 // C locals go in the entry block so mem2reg can promote them to registers.
-llvm::AllocaInst* createEntryBlockAlloca(llvm::Function* func,
-                                         const std::string& varName,
-                                         llvm::Type* varType);
+[[nodiscard]] llvm::AllocaInst* createEntryBlockAlloca(
+    llvm::Function* func, const std::string& varName, llvm::Type* varType);
 
 // Branch to basicBlock unless the current block already ends in a terminator
 // (e.g. a return or break already closed it). Returns nullptr in that case.
@@ -51,17 +50,20 @@ llvm::BranchInst* terminateBlockByBr(llvm::IRBuilder<>& builder,
 
 // ptr is from genCodePtr(); lvalueVarType is the C type of that location. An
 // array rvalue decays to a pointer instead of being loaded.
-llvm::Value* createLoad(llvm::IRBuilder<>& builder, llvm::Value* ptr,
-                        AST::VarType* lvalueVarType, TypeEnv& env);
+[[nodiscard]] llvm::Value* createLoad(llvm::IRBuilder<>& builder,
+                                      llvm::Value* ptr,
+                                      AST::VarType* lvalueVarType,
+                                      TypeEnv& env);
 
 // Store rhs through lhs, converting to the lvalue's type first.
-llvm::Value* createAssign(
+[[nodiscard]] llvm::Value* createAssign(
     llvm::IRBuilder<>& builder, llvm::Value* lhs, llvm::Value* rhs,
     AST::VarType* lhsVarType, TypeEnv& env,
     AST::BuiltinTypeId srcTypeId = AST::BuiltinTypeId::UNKNOWN,
     AST::BuiltinTypeId dstTypeId = AST::BuiltinTypeId::UNKNOWN);
 
 // The constant 1 at a given width, for ++ and --.
-llvm::Value* getOneValue(llvm::IRBuilder<>& builder, size_t valueBitWidth);
+[[nodiscard]] llvm::Value* getOneValue(llvm::IRBuilder<>& builder,
+                                       size_t valueBitWidth);
 
 }  // namespace iridiom

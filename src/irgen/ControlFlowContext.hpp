@@ -48,12 +48,12 @@ class ControlFlowContext {
 
   // Successor of the case body currently being lowered — the innermost one, so
   // a switch nested inside a case does not disturb the case that contains it.
-  llvm::BasicBlock* getSwitchFallthroughBlock() const;
+  [[nodiscard]] llvm::BasicBlock* getSwitchFallthroughBlock() const noexcept;
 
   // Innermost enclosing targets, or null outside any loop / switch.
-  llvm::BasicBlock* getContinueBlock() const;
+  [[nodiscard]] llvm::BasicBlock* getContinueBlock() const noexcept;
 
-  llvm::BasicBlock* getBreakBlock() const;
+  [[nodiscard]] llvm::BasicBlock* getBreakBlock() const noexcept;
 
  private:
   std::vector<llvm::BasicBlock*> continueBlockStack_;

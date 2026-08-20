@@ -59,63 +59,79 @@ enum class IntCmpPred { EQ, NE, LT, LE, GT, GE };
 // One function for `==` and for `<`, `<=`, `>`, `>=`: the ladder is identical
 // and only the predicate differs, so it takes both the integer predicate and
 // the floating-point one rather than existing twice.
-llvm::Value* createCompare(llvm::IRBuilder<>& builder, IntCmpPred intPred,
-                           llvm::CmpInst::Predicate floatPred, llvm::Value* lhs,
-                           llvm::Value* rhs, AST::BuiltinTypeId lhsTypeId,
-                           AST::BuiltinTypeId rhsTypeId);
+[[nodiscard]] llvm::Value* createCompare(llvm::IRBuilder<>& builder,
+                                         IntCmpPred intPred,
+                                         llvm::CmpInst::Predicate floatPred,
+                                         llvm::Value* lhs, llvm::Value* rhs,
+                                         AST::BuiltinTypeId lhsTypeId,
+                                         AST::BuiltinTypeId rhsTypeId);
 
 // createCompare fixed at equality, throwing rather than returning null. Used by
 // `==` and by switch-case matching in irgen/StmtToIr.cpp.
-llvm::Value* createCmpEq(llvm::IRBuilder<>& builder, llvm::Value* lhs,
-                         llvm::Value* rhs, AST::BuiltinTypeId lhsTypeId,
-                         AST::BuiltinTypeId rhsTypeId);
+[[nodiscard]] llvm::Value* createCmpEq(llvm::IRBuilder<>& builder,
+                                       llvm::Value* lhs, llvm::Value* rhs,
+                                       AST::BuiltinTypeId lhsTypeId,
+                                       AST::BuiltinTypeId rhsTypeId);
 
-llvm::Value* createIntegerCmp(llvm::IRBuilder<>& builder, IntCmpPred pred,
-                              llvm::Value* lhs, llvm::Value* rhs,
-                              bool isUnsigned);
+[[nodiscard]] llvm::Value* createIntegerCmp(llvm::IRBuilder<>& builder,
+                                            IntCmpPred pred, llvm::Value* lhs,
+                                            llvm::Value* rhs, bool isUnsigned);
 
-llvm::Value* createAdd(llvm::IRBuilder<>& builder, llvm::Value* lhs,
-                       llvm::Value* rhs, AST::VarType* lhsVarType,
-                       AST::VarType* rhsVarType, TypeEnv& env,
-                       AST::BuiltinTypeId lhsTypeId,
-                       AST::BuiltinTypeId rhsTypeId);
+[[nodiscard]] llvm::Value* createAdd(llvm::IRBuilder<>& builder,
+                                     llvm::Value* lhs, llvm::Value* rhs,
+                                     AST::VarType* lhsVarType,
+                                     AST::VarType* rhsVarType, TypeEnv& env,
+                                     AST::BuiltinTypeId lhsTypeId,
+                                     AST::BuiltinTypeId rhsTypeId);
 
-llvm::Value* createSub(llvm::IRBuilder<>& builder, llvm::Value* lhs,
-                       llvm::Value* rhs, AST::VarType* lhsVarType,
-                       AST::VarType* rhsVarType, TypeEnv& env,
-                       AST::BuiltinTypeId lhsTypeId,
-                       AST::BuiltinTypeId rhsTypeId);
+[[nodiscard]] llvm::Value* createSub(llvm::IRBuilder<>& builder,
+                                     llvm::Value* lhs, llvm::Value* rhs,
+                                     AST::VarType* lhsVarType,
+                                     AST::VarType* rhsVarType, TypeEnv& env,
+                                     AST::BuiltinTypeId lhsTypeId,
+                                     AST::BuiltinTypeId rhsTypeId);
 
-llvm::Value* createMul(llvm::IRBuilder<>& builder, llvm::Value* lhs,
-                       llvm::Value* rhs, AST::BuiltinTypeId lhsTypeId,
-                       AST::BuiltinTypeId rhsTypeId);
+[[nodiscard]] llvm::Value* createMul(llvm::IRBuilder<>& builder,
+                                     llvm::Value* lhs, llvm::Value* rhs,
+                                     AST::BuiltinTypeId lhsTypeId,
+                                     AST::BuiltinTypeId rhsTypeId);
 
-llvm::Value* createDiv(llvm::IRBuilder<>& builder, llvm::Value* lhs,
-                       llvm::Value* rhs, AST::BuiltinTypeId lhsTypeId,
-                       AST::BuiltinTypeId rhsTypeId, bool isUnsigned);
+[[nodiscard]] llvm::Value* createDiv(llvm::IRBuilder<>& builder,
+                                     llvm::Value* lhs, llvm::Value* rhs,
+                                     AST::BuiltinTypeId lhsTypeId,
+                                     AST::BuiltinTypeId rhsTypeId,
+                                     bool isUnsigned);
 
-llvm::Value* createMod(llvm::IRBuilder<>& builder, llvm::Value* lhs,
-                       llvm::Value* rhs, AST::BuiltinTypeId lhsTypeId,
-                       AST::BuiltinTypeId rhsTypeId, bool isUnsigned);
+[[nodiscard]] llvm::Value* createMod(llvm::IRBuilder<>& builder,
+                                     llvm::Value* lhs, llvm::Value* rhs,
+                                     AST::BuiltinTypeId lhsTypeId,
+                                     AST::BuiltinTypeId rhsTypeId,
+                                     bool isUnsigned);
 
-llvm::Value* createBitwiseAnd(llvm::IRBuilder<>& builder, llvm::Value* lhs,
-                              llvm::Value* rhs, AST::BuiltinTypeId lhsTypeId,
-                              AST::BuiltinTypeId rhsTypeId);
+[[nodiscard]] llvm::Value* createBitwiseAnd(llvm::IRBuilder<>& builder,
+                                            llvm::Value* lhs, llvm::Value* rhs,
+                                            AST::BuiltinTypeId lhsTypeId,
+                                            AST::BuiltinTypeId rhsTypeId);
 
-llvm::Value* createBitwiseOr(llvm::IRBuilder<>& builder, llvm::Value* lhs,
-                             llvm::Value* rhs, AST::BuiltinTypeId lhsTypeId,
-                             AST::BuiltinTypeId rhsTypeId);
+[[nodiscard]] llvm::Value* createBitwiseOr(llvm::IRBuilder<>& builder,
+                                           llvm::Value* lhs, llvm::Value* rhs,
+                                           AST::BuiltinTypeId lhsTypeId,
+                                           AST::BuiltinTypeId rhsTypeId);
 
-llvm::Value* createBitwiseXor(llvm::IRBuilder<>& builder, llvm::Value* lhs,
-                              llvm::Value* rhs, AST::BuiltinTypeId lhsTypeId,
-                              AST::BuiltinTypeId rhsTypeId);
+[[nodiscard]] llvm::Value* createBitwiseXor(llvm::IRBuilder<>& builder,
+                                            llvm::Value* lhs, llvm::Value* rhs,
+                                            AST::BuiltinTypeId lhsTypeId,
+                                            AST::BuiltinTypeId rhsTypeId);
 
-llvm::Value* createShl(llvm::IRBuilder<>& builder, llvm::Value* lhs,
-                       llvm::Value* rhs, AST::BuiltinTypeId lhsTypeId,
-                       AST::BuiltinTypeId rhsTypeId);
+[[nodiscard]] llvm::Value* createShl(llvm::IRBuilder<>& builder,
+                                     llvm::Value* lhs, llvm::Value* rhs,
+                                     AST::BuiltinTypeId lhsTypeId,
+                                     AST::BuiltinTypeId rhsTypeId);
 
-llvm::Value* createShr(llvm::IRBuilder<>& builder, llvm::Value* lhs,
-                       llvm::Value* rhs, AST::BuiltinTypeId lhsTypeId,
-                       AST::BuiltinTypeId rhsTypeId, bool isUnsigned);
+[[nodiscard]] llvm::Value* createShr(llvm::IRBuilder<>& builder,
+                                     llvm::Value* lhs, llvm::Value* rhs,
+                                     AST::BuiltinTypeId lhsTypeId,
+                                     AST::BuiltinTypeId rhsTypeId,
+                                     bool isUnsigned);
 
 }  // namespace ops

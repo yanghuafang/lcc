@@ -55,22 +55,23 @@ struct Info1D {
 
 // True for the `[]` sentinel a declarator leaves behind, before
 // resolveBounds has replaced it with a length from the initializer.
-bool isInferredBound(size_t bound);
+[[nodiscard]] bool isInferredBound(size_t bound);
 
-bool isCharElementType(AST::VarType* baseType);
+[[nodiscard]] bool isCharElementType(AST::VarType* baseType);
 
 // Non-null only when expr is a string literal, which is what distinguishes
 // `char s[] = "hi"` from every other single-expression initializer.
-AST::ConstStr* asConstStr(AST::Expr* expr);
+[[nodiscard]] AST::ConstStr* asConstStr(AST::Expr* expr);
 
 // Value as an llvm::Constant, or std::logic_error naming the context. Every
 // global initializer has to clear this bar, array or not.
-llvm::Constant* asConstant(llvm::Value* value, const std::string& context);
+[[nodiscard]] llvm::Constant* asConstant(llvm::Value* value,
+                                         const std::string& context);
 
 // Declarator bounds with any inferred (`[]`) dimension replaced by a length
 // read off the initializer. Only the first dimension may be inferred.
-std::vector<size_t> resolveBounds(const AST::VarInit* var,
-                                  AST::VarType* baseType);
+[[nodiscard]] std::vector<size_t> resolveBounds(const AST::VarInit* var,
+                                                AST::VarType* baseType);
 
 // The type a declarator denotes: one ArrayType per bound, nested innermost
 // first around baseType, so `int a[8][5]` gives int[8][5] — a[i] is int[5] and
@@ -83,23 +84,21 @@ std::vector<size_t> resolveBounds(const AST::VarInit* var,
 // The caller owns the returned chain down to, but not including, baseType:
 // that is what AST::VarInit::arrayVarType_ holds and ~VarInit releases through
 // AST::releaseArrayTypeChain.
-AST::VarType* buildVarType(AST::VarType* baseType,
-                           const std::vector<size_t>& bounds);
+[[nodiscard]] AST::VarType* buildVarType(AST::VarType* baseType,
+                                         const std::vector<size_t>& bounds);
 
-Info1D get1DInfo(AST::VarType* varType);
+[[nodiscard]] Info1D get1DInfo(AST::VarType* varType);
 
 void storeBraceInitializer(CodeGenerator& generator, llvm::Value* storagePtr,
                            llvm::Type* llvmArrayType, AST::VarType* varType,
                            const AST::InitList& initList);
 
-llvm::Constant* buildBraceInitializer(CodeGenerator& generator,
-                                      AST::VarType* varType,
-                                      llvm::Type* llvmVarType,
-                                      const AST::InitList& initList);
+[[nodiscard]] llvm::Constant* buildBraceInitializer(
+    CodeGenerator& generator, AST::VarType* varType, llvm::Type* llvmVarType,
+    const AST::InitList& initList);
 
-llvm::Constant* buildGlobalStringInitializer(llvm::Type* charLlvmType,
-                                             size_t length,
-                                             const std::string& str);
+[[nodiscard]] llvm::Constant* buildGlobalStringInitializer(
+    llvm::Type* charLlvmType, size_t length, const std::string& str);
 
 void storeLocalStringInitializer(CodeGenerator& generator,
                                  llvm::Value* storagePtr,

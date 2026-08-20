@@ -56,6 +56,13 @@
 #       shallow copy a compile error. The check is per-class and syntactic, so
 #       it goes on reporting derived classes regardless; satisfying it would
 #       mean repeating four declarations in each of them.
+#   modernize-use-nodiscard
+#       Wants [[nodiscard]] on all ~180 const member functions, overrides
+#       included. The attribute is applied here on the declaring base only,
+#       which is where the contract belongs and is sufficient: every call in
+#       this tree dispatches through Node*, Expr*, or VarType*, and a call
+#       through the base warns whether or not the override repeats it. The
+#       remaining findings would be 160 lines of annotation buying nothing.
 #   readability-use-anyofallof
 #       Would replace a four-line `for` in DeclToIr.cpp with std::any_of and a
 #       lambda. The loop is the more approachable form for this audience.
