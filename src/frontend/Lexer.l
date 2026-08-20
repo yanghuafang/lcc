@@ -9,11 +9,7 @@
 #include <climits>
 #include <cstdlib>
 #include <cstring>
-#include <iostream>
-#include <limits>
 #include <string>
-
-#include <stdio.h>
 
 void yyerror(const char* s);
 
