@@ -27,7 +27,7 @@ void DebugInfoBuilder::initialize(const std::string& sourcePath) {
 
   llvm::SmallString<256> dir(sourcePath);
   llvm::sys::path::remove_filename(dir);
-  llvm::StringRef fileName = llvm::sys::path::filename(sourcePath);
+  const llvm::StringRef fileName = llvm::sys::path::filename(sourcePath);
 
   // DIFile uses the user -i path so LLDB resolves the generated C source, not
   // lcc.
@@ -192,7 +192,7 @@ llvm::DIType* DebugInfoBuilder::getOrCreateDIType(llvm::Type* llvmType,
     llvm::DIType* elementDi = getOrCreateDIType(nullptr, elementVarType);
     const uint64_t count = static_cast<AST::ArrayType*>(varType)->length_;
     llvm::Metadata* subrange = dib_->getOrCreateSubrange(0, count);
-    llvm::DINodeArray subscripts = dib_->getOrCreateArray({subrange});
+    const llvm::DINodeArray subscripts = dib_->getOrCreateArray({subrange});
     if (llvmType != nullptr) {
       llvmTypeCache_[llvmType] = dib_->createArrayType(
           module_.getDataLayout().getTypeAllocSizeInBits(llvmType),
@@ -266,7 +266,7 @@ llvm::DIType* DebugInfoBuilder::getOrCreateLlvmType(llvm::Type* type) {
     llvm::DIType* elemDi = getOrCreateLlvmType(elemTy);
     const uint64_t count = type->getArrayNumElements();
     llvm::Metadata* subrange = dib_->getOrCreateSubrange(0, count);
-    llvm::DINodeArray subscripts = dib_->getOrCreateArray({subrange});
+    const llvm::DINodeArray subscripts = dib_->getOrCreateArray({subrange});
     return dib_->createArrayType(
         module_.getDataLayout().getTypeAllocSizeInBits(type),
         module_.getDataLayout().getABITypeAlign(type).value() * 8, elemDi,
@@ -289,7 +289,7 @@ llvm::DIType* DebugInfoBuilder::getOrCreateLlvmType(llvm::Type* type) {
         return getOrCreateUnionDIType(astUnion);
       }
     }
-    std::string name =
+    const std::string name =
         structTy->hasName() ? structTy->getName().str() : "struct";
     return dib_->createBasicType(
         name, module_.getDataLayout().getTypeSizeInBits(type),
@@ -377,7 +377,7 @@ void DebugInfoBuilder::declareAlloca(llvm::AllocaInst* alloca,
   }
 
   llvm::DIType* diType = getOrCreateDIType(llvmType, varType);
-  unsigned useCol = col > 0 ? col : 1;
+  const unsigned useCol = col > 0 ? col : 1;
 
   llvm::DILocalVariable* variable = nullptr;
   if (paramArgNo > 0) {

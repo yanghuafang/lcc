@@ -272,8 +272,8 @@ int main(int argc, char* argv[]) {
   // Generate AST file of GraphViz DOT format for visualization.
   try {
     if (!parser.get<std::string>("-v").empty()) {
-      std::pair<std::string, std::string> tree = g_root->genGraph();
-      std::string graph = "digraph {\n" + tree.second + "}\n";
+      const std::pair<std::string, std::string> tree = g_root->genGraph();
+      const std::string graph = "digraph {\n" + tree.second + "}\n";
       dotfile::write(parser.get<std::string>("-v"), graph);
       std::cout << "Generated AST graph file successfully!" << '\n';
     }

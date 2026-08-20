@@ -370,14 +370,14 @@ void storeBraceInitializer(CodeGenerator& generator, llvm::Value* storagePtr,
   }
 
   if (info.dims.size() == 1) {
-    std::vector<AST::Expr*> flat = flatten1DInit(initList, info.dims[0]);
+    std::vector<AST::Expr*> const flat = flatten1DInit(initList, info.dims[0]);
     storeLocalFlatInitializer(generator, storagePtr, llvmArrayType,
                               info.elemVarType, elemLlvmType, info.dims, flat);
     return;
   }
 
   if (info.dims.size() == 2) {
-    std::vector<AST::Expr*> flat =
+    std::vector<AST::Expr*> const flat =
         flatten2DInit(initList, info.dims[0], info.dims[1]);
     storeLocalFlatInitializer(generator, storagePtr, llvmArrayType,
                               info.elemVarType, elemLlvmType, info.dims, flat);
@@ -400,13 +400,13 @@ llvm::Constant* buildBraceInitializer(CodeGenerator& generator,
   }
 
   if (info.dims.size() == 1) {
-    std::vector<AST::Expr*> flat = flatten1DInit(initList, info.dims[0]);
+    std::vector<AST::Expr*> const flat = flatten1DInit(initList, info.dims[0]);
     return buildGlobal1DInitializer(generator, info.elemVarType, elemLlvmType,
                                     info.dims[0], flat);
   }
 
   if (info.dims.size() == 2) {
-    std::vector<AST::Expr*> flat =
+    std::vector<AST::Expr*> const flat =
         flatten2DInit(initList, info.dims[0], info.dims[1]);
     return buildGlobal2DInitializer(generator, info, llvmVarType, elemLlvmType,
                                     flat);
@@ -424,7 +424,7 @@ llvm::Constant* buildGlobalStringInitializer(llvm::Type* charLlvmType,
 
   std::vector<llvm::Constant*> elements;
   elements.reserve(length);
-  for (unsigned char ch : str) {
+  for (const unsigned char ch : str) {
     elements.push_back(llvm::ConstantInt::get(charLlvmType, ch));
   }
   elements.push_back(llvm::ConstantInt::get(charLlvmType, 0));

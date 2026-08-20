@@ -139,7 +139,7 @@ llvm::Type* StructType::genTypeBody(TypeEnv& env) {
 size_t StructType::getMemberIndex(const std::string& memberName) const {
   size_t index = 0;
   for (FieldDecl* decl : *structBody_) {
-    for (std::string& name : *decl->memberList_) {
+    for (const std::string& name : *decl->memberList_) {
       if (memberName == name) {
         return index;
       }

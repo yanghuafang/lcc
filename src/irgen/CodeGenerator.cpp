@@ -119,7 +119,7 @@ void CodeGenerator::setDebugLocation(const AST::SourceLoc& loc) {
     return;
   }
 
-  unsigned col = loc.col > 0 ? loc.col : 1;
+  const unsigned col = loc.col > 0 ? loc.col : 1;
   llvm::DIScope* scope = getCurrentDebugScope();
   if (scope == nullptr) {
     return;
@@ -137,7 +137,7 @@ void CodeGenerator::pushDebugLexicalBlock(const AST::SourceLoc& loc) {
     return;
   }
 
-  unsigned col = loc.col > 0 ? loc.col : 1;
+  const unsigned col = loc.col > 0 ? loc.col : 1;
   llvm::DIScope* block = debugInfo_->createLexicalBlock(parent, loc.line, col);
   if (block != nullptr) {
     debugScopeStack_.push_back(block);

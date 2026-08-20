@@ -98,7 +98,7 @@ llvm::Value* FuncDecl::genCode(CodeGenerator& generator) {
 
   llvm::FunctionType* funcType =
       llvm::FunctionType::get(retType, paramTypes, paramList_->isVariant_);
-  llvm::GlobalValue::LinkageTypes linkage =
+  const llvm::GlobalValue::LinkageTypes linkage =
       isStatic_ ? llvm::GlobalValue::InternalLinkage
                 : llvm::GlobalValue::ExternalLinkage;
   llvm::Function* func = llvm::Function::Create(funcType, linkage, funcName_,
@@ -142,7 +142,7 @@ llvm::Value* FuncDecl::genCode(CodeGenerator& generator) {
   // token.
   llvm::DISubprogram* subprogram = nullptr;
   if (funcBody_ != nullptr && generator.isDebugInfoEnabled()) {
-    unsigned line = loc().line > 0 ? loc().line : 1;
+    const unsigned line = loc().line > 0 ? loc().line : 1;
     subprogram = generator.debugInfo()->createFunction(
         func, funcName_, line, funcType, retType_, paramVarTypes);
   }
@@ -200,8 +200,9 @@ llvm::Value* VarDecl::genCode(CodeGenerator& generator) {
   }
 
   for (VarInit* var : *varList_) {
-    std::vector<size_t> resolvedBounds = arrays::resolveBounds(var, varType_);
-    bool isArray = !resolvedBounds.empty();
+    const std::vector<size_t> resolvedBounds =
+        arrays::resolveBounds(var, varType_);
+    const bool isArray = !resolvedBounds.empty();
     ConstStr* strInit = arrays::asConstStr(var->initialExpr_);
 
     if (var->hasBraceInit()) {
@@ -309,7 +310,7 @@ llvm::Value* VarDecl::genCode(CodeGenerator& generator) {
         initializer = llvm::Constant::getNullValue(llvmVarType);
       }
 
-      llvm::GlobalValue::LinkageTypes linkage =
+      const llvm::GlobalValue::LinkageTypes linkage =
           isStatic_ ? llvm::GlobalValue::InternalLinkage
                     : llvm::GlobalValue::ExternalLinkage;
       auto* globalVar = new llvm::GlobalVariable(

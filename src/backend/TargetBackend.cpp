@@ -106,7 +106,7 @@ std::unique_ptr<llvm::TargetMachine> createTargetMachine(
     throw std::runtime_error(error);
   }
 
-  llvm::TargetOptions targetOptions;
+  const llvm::TargetOptions targetOptions;
   // Emit position-independent code. A null model lets the target pick its
   // default, which is Static (absolute relocations) on ELF; modern Linux links
   // executables as PIE by default and rejects those, which is why lcc objects

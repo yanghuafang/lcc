@@ -63,6 +63,14 @@
 #       this tree dispatches through Node*, Expr*, or VarType*, and a call
 #       through the base warns whether or not the override repeats it. The
 #       remaining findings would be 160 lines of annotation buying nothing.
+#   misc-const-correctness
+#       Applied to the tree by hand, but not enforced. The check cannot tell a
+#       value from an RAII guard, and wants `const ScopedSymbolTable scope(...)`
+#       on all 21 of them. Those objects are never read: they exist for their
+#       constructor and destructor, and const on one reads as a claim about a
+#       value that nobody was going to use. The 29 findings that really were
+#       values are const; leaving the guards bare costs the enforcement and
+#       keeps the declarations saying what they do.
 #   readability-use-anyofallof
 #       Would replace a four-line `for` in DeclToIr.cpp with std::any_of and a
 #       lambda. The loop is the more approachable form for this audience.

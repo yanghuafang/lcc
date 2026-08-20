@@ -14,8 +14,8 @@ llvm::PreservedAnalyses IrInstructionStatsPass::run(
     return llvm::PreservedAnalyses::all();
   }
 
-  for (llvm::BasicBlock& block : function) {
-    for (llvm::Instruction& inst : block) {
+  for (const llvm::BasicBlock& block : function) {
+    for (const llvm::Instruction& inst : block) {
       if (llvm::isa<llvm::LoadInst>(inst)) {
         ++totals_->loads;
       } else if (llvm::isa<llvm::StoreInst>(inst)) {
