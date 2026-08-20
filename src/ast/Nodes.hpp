@@ -240,8 +240,8 @@ class Node {
   // nodes pointing at one child, each deleting it. Copy assignment would leak
   // the children it overwrote on top of that. Neither is ever wanted -- the
   // grammar actions build the tree once and every walker visits it in place --
-  // so both are deleted here at the root, which is what makes all 100+ node
-  // classes below non-copyable without repeating anything. Deleting the copy
+  // so both are deleted here at the root, which is what makes every node
+  // class below non-copyable without repeating anything. Deleting the copy
   // operations suppresses the implicit move ones too, so a node cannot be
   // moved out of the tree either.
   Node(const Node&) = delete;

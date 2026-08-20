@@ -130,6 +130,48 @@ Two properties are worth stating because they are easy to lose:
 | `ast/Ownership.cpp` | Destructors for every node — the tree's ownership contract, so `delete Program` tears down one translation unit |
 | `ast/BuiltinTypeId.hpp` | The `AST::BuiltinTypeId` enum — records C signedness, which LLVM integer types do not carry. Lives here, not in `types/`, because the AST nodes are what carry it; `types/` builds its rules on top |
 
+#### Why the tree owns raw pointers
+
+Every node owns its children as plain `Node*`, the grammar actions allocate them
+with `new` (140 sites in `Parser.y`), and `ast/Ownership.cpp` frees them with
+`delete` (61 sites). Modern C++ would reach for `std::unique_ptr`, and this is
+the one place lcc does not. The reason is bison, not preference.
+
+lcc uses bison's **C skeleton**: `yyparse()` keeps semantic values in a stack of
+`YYSTYPE`, a `union` of 51 member types, and copies them by assignment. A
+`union` holding a `std::unique_ptr` has its copy assignment implicitly deleted,
+so that stack stops compiling:
+
+```
+error: object of type 'YYSTYPE' cannot be assigned because its copy
+       assignment operator is implicitly deleted
+```
+
+Owning smart pointers therefore require the C++ skeleton — `%skeleton
+"lalr1.cc"` with `%define api.value.type variant` — which rewrites all 640 lines
+of the grammar, the flex interface it shares, `main()`'s use of `yyparse()` and
+`g_root`, and every `Node*` member the seven walkers under `irgen/` read. That
+is a rewrite of the front end rather than a cleanup.
+
+**What holds the invariant instead**, and where it does not:
+
+| Failure | Mechanism |
+| ------ | ---------------- |
+| Leak or double free on the success path | `AstRootOwner` in `driver/main.cpp` — RAII, and constructed *before* `yyparse()` so the failure path is covered too |
+| Leak when a parse fails partway | `%destructor` on 11 declaration groups in `Parser.y`, which bison runs on the symbols still on its stack. **Not complete:** the nodes a partial `AST::Decls` holds still leak. The gap is deliberate and recorded in `.github/workflows/ci.yml`; no test in the suite fails to parse, so CI never reaches it, and adding one means fixing the leak first |
+| Double free through a copied node | `Node`'s copy constructor and copy assignment are deleted, so all 91 node classes are non-copyable and a shallow copy is a compile error |
+| Double free of the shared array-type tail | `AST::releaseArrayTypeChain` unlinks as it walks, and `irgen/Arrays.cpp` holds the chain in a `unique_ptr` with a custom deleter while it is being built |
+| Use-after-free, and leaks already fixed | ASan and UBSan compile the whole suite with an instrumented `lcc`, in both `-O0` and `-O2`. LeakSanitizer rides along on Linux only, so a macOS developer build cannot check it |
+
+**Three kinds of `new` live in `src/`, and only one is the deviation.** The 140
+in the grammar actions are it. Seven others are not manual management: four
+`llvm::GlobalVariable`, which the `llvm::Module` owns from construction; two
+passes handed to a legacy `PassManager`, which takes ownership; and one
+`AST::ArrayType` in `irgen/Arrays.cpp` that the next line wraps in the
+custom-deleter `unique_ptr` above. Everything lcc owns for itself is already a
+`unique_ptr` — the `Module`, the `DIBuilder`, the `TargetMachine`, the detached
+blocks in `StmtToIr.cpp`, the token-string arena in `frontend/TokenStrings.cpp`.
+
 ### `types/` — what a type is
 
 | File | Responsibility |

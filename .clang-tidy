@@ -49,7 +49,7 @@
 #       to avoid temporaries would obscure that, and this runs once per AST node
 #       only under -v, so it is not a path worth optimizing for.
 #   cppcoreguidelines-special-member-functions
-#       Reports every one of the 100+ node classes for declaring a destructor
+#       Reports every one of the node classes for declaring a destructor
 #       without copy operations. The hazard is real, and it is fixed at the
 #       root instead: ast/Nodes.hpp deletes Node's copy constructor and copy
 #       assignment, which makes every node below it non-copyable and every
