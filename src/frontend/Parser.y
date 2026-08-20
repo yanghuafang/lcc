@@ -5,10 +5,8 @@
 
 #include <iostream>
 
-#include <stdio.h>
-
 void yyerror(const char* s) {
-    printf("ERROR: %s\n", s);
+    std::cerr << "ERROR: " << s << '\n';
 }
 
 int yylex(void);
