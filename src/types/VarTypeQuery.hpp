@@ -31,7 +31,7 @@ class Type;
 // BuiltinTypeId and no AST node at all, so it is types/BuiltinTypeMap.hpp now.
 namespace vartype {
 
-AST::BuiltinTypeId varTypeToTypeId(AST::VarType* varType);
+AST::BuiltinTypeId varTypeToTypeId(const AST::VarType* varType);
 
 // Peels DefinedType aliases before the queries below.
 AST::VarType* resolveTypedefVarType(AST::VarType* varType, TypeEnv& env);

@@ -11,19 +11,20 @@ using AST::BuiltinTypeId;
 
 namespace vartype {
 
-BuiltinTypeId varTypeToTypeId(AST::VarType* varType) {
+BuiltinTypeId varTypeToTypeId(const AST::VarType* varType) {
   if (varType == nullptr) {
     return BuiltinTypeId::UNKNOWN;
   }
 
   if (varType->isBuiltinType()) {
-    return static_cast<AST::BuiltinType*>(varType)->typeId_;
+    return static_cast<const AST::BuiltinType*>(varType)->typeId_;
   }
   if (varType->isEnumType()) {
     return BuiltinTypeId::INT;
   }
   if (varType->isArrayType()) {
-    return varTypeToTypeId(static_cast<AST::ArrayType*>(varType)->baseType_);
+    return varTypeToTypeId(
+        static_cast<const AST::ArrayType*>(varType)->baseType_);
   }
 
   return BuiltinTypeId::UNKNOWN;

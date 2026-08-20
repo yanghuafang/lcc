@@ -18,12 +18,12 @@
 
 namespace AST {
 
-VarType* VarType::getMemberVarType(const std::string& memberName) {
+VarType* VarType::getMemberVarType(const std::string& memberName) const {
   (void)memberName;
   return nullptr;
 }
 
-VarType* StructType::getMemberVarType(const std::string& memberName) {
+VarType* StructType::getMemberVarType(const std::string& memberName) const {
   for (FieldDecl* decl : *structBody_) {
     for (const std::string& name : *decl->memberList_) {
       if (memberName == name) {
@@ -35,7 +35,7 @@ VarType* StructType::getMemberVarType(const std::string& memberName) {
   return nullptr;
 }
 
-VarType* UnionType::getMemberVarType(const std::string& memberName) {
+VarType* UnionType::getMemberVarType(const std::string& memberName) const {
   for (FieldDecl* decl : *unionBody_) {
     for (const std::string& name : *decl->memberList_) {
       if (memberName == name) {
