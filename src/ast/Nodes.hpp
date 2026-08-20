@@ -233,6 +233,18 @@ class Node {
   // Virtual so delete g_root (Program*) runs the concrete destructor chain.
   virtual ~Node();
 
+  // Nodes own their children as raw pointers and delete them in
+  // ast/Ownership.cpp, so a compiler-generated copy would be shallow: two
+  // nodes pointing at one child, each deleting it. Copy assignment would leak
+  // the children it overwrote on top of that. Neither is ever wanted -- the
+  // grammar actions build the tree once and every walker visits it in place --
+  // so both are deleted here at the root, which is what makes all 100+ node
+  // classes below non-copyable without repeating anything. Deleting the copy
+  // operations suppresses the implicit move ones too, so a node cannot be
+  // moved out of the tree either.
+  Node(const Node&) = delete;
+  Node& operator=(const Node&) = delete;
+
   void setLoc(unsigned line, unsigned col = 0) {
     loc_.line = line;
     loc_.col = col;

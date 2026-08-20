@@ -41,6 +41,14 @@
 #       reads as the DOT line it produces. Splitting each into five `+=` calls
 #       to avoid temporaries would obscure that, and this runs once per AST node
 #       only under -v, so it is not a path worth optimizing for.
+#   cppcoreguidelines-special-member-functions
+#       Reports every one of the 100+ node classes for declaring a destructor
+#       without copy operations. The hazard is real, and it is fixed at the
+#       root instead: ast/Nodes.hpp deletes Node's copy constructor and copy
+#       assignment, which makes every node below it non-copyable and every
+#       shallow copy a compile error. The check is per-class and syntactic, so
+#       it goes on reporting derived classes regardless; satisfying it would
+#       mean repeating four declarations in each of them.
 #   readability-use-anyofallof
 #       Would replace a four-line `for` in DeclToIr.cpp with std::any_of and a
 #       lambda. The loop is the more approachable form for this audience.
