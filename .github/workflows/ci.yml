@@ -69,6 +69,10 @@ jobs:
         working-directory: scripts
         run: ./run-tests.sh
 
+      - name: Lex error smoke test
+        working-directory: scripts
+        run: ./check-lex-errors.sh
+
       - name: Debug info smoke test
         working-directory: scripts
         run: ./check-debug-info.sh

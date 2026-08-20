@@ -13,6 +13,7 @@ All commands below assume `cd lcc/scripts`.
 | `compile-tests.sh` | Compile the test programs to `../../lcc-build/*.o`; writes AST/IR/asm under `../debug/` |
 | `link-tests.sh` | Link `../../lcc-build/*.o` to executables with `LCC_LINKER` |
 | `run-tests.sh` | Run linked test binaries |
+| `check-lex-errors.sh` | Smoke test: a literal the lexer rejects exits 4 and writes no object |
 | `check-debug-info.sh` | Smoke test: compile with `-g -O0`, verify `llvm-dwarfdump` output |
 | `check-asm-smoke.sh` | Smoke test: `-O2 -S` on one test; verify non-empty asm (M18 CI) |
 | `check-machine-pass-smoke.sh` | Smoke test: `-machine-stats` emits a summary and leaves the object byte-identical (M17 CI) |
@@ -104,6 +105,18 @@ They are compiled but never linked or run, since they assert nothing — behavio
 
 `0.hello_world.c` is the one suite program that still gets a graph: at 54 nodes it is already fixture-sized, and `README.md` embeds `debug/0.hello_world.png`.
 
+### Lex error smoke test
+
+```bash
+./check-lex-errors.sh
+```
+
+Compiles a file holding three out-of-range integer literals and checks that `lcc` exits **4** and writes no object file.
+
+The regression suite cannot cover this, which is how the bug it guards survived: every file in `tests/` is meant to compile, so nothing there exercises a front end that reports an error and keeps going. The lexer does exactly that — it reports a malformed or out-of-range literal, substitutes `0`, and hands the parser a valid token, so `yyparse()` returns 0 and every later stage sees a clean parse. `lcc` used to emit an object from the substituted values and exit 0.
+
+Three literals rather than one, because a single one would pass whether the driver counts errors or merely latches a flag; the check asserts the summary line reports all three. It also compiles `0.hello_world.c` afterwards, so a build that rejected everything could not pass.
+
 ### Debug-info smoke test
 
 ```bash
@@ -167,7 +180,7 @@ See [Benchmarks.md](Benchmarks.md) for workloads, timed runs, and recording resu
 
 ## CI
 
-GitHub Actions (`.github/workflows/ci.yml`) runs a matrix on `ubuntu-24.04`, `ubuntu-26.04`, and `macos-latest`: install, `format.sh --check`, build, `tidy.sh`, compile, link, run, `check-debug-info.sh`, `check-asm-smoke.sh`, `check-machine-pass-smoke.sh`, and `bench.sh --smoke`. See [Install.md](Install.md) for dependencies.
+GitHub Actions (`.github/workflows/ci.yml`) runs a matrix on `ubuntu-24.04`, `ubuntu-26.04`, and `macos-latest`: install, `format.sh --check`, build, `tidy.sh`, compile, link, run, `check-lex-errors.sh`, `check-debug-info.sh`, `check-asm-smoke.sh`, `check-machine-pass-smoke.sh`, and `bench.sh --smoke`. See [Install.md](Install.md) for dependencies.
 
 `format.sh --check` runs before the build so a formatting slip fails in seconds rather than after a full LLVM link. `tidy.sh` runs after it, because clang-tidy needs the compile database the build produces, and only on `ubuntu-24.04` — its findings are host-independent, so a second and third copy would add cost without signal.
 

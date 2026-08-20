@@ -3,11 +3,14 @@
 %{
 #include "ast/Nodes.hpp"
 
-#include <iostream>
+#include "frontend/Diagnostics.hpp"
 
-void yyerror(const char* s) {
-    std::cerr << "ERROR: " << s << '\n';
-}
+// The one funnel for front-end diagnostics: bison calls this for a syntax
+// error, and frontend/Lexer.l calls it for a literal it had to reject. The
+// counting inside reportError is what lets the driver refuse to compile after
+// a rejected literal, which the lexer recovers from; see
+// frontend/Diagnostics.hpp.
+void yyerror(const char* s) { frontend::reportError(s); }
 
 int yylex(void);
 

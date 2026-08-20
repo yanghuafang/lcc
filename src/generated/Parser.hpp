@@ -45,7 +45,7 @@
 extern int yydebug;
 #endif
 /* "%code requires" blocks.  */
-#line 19 "frontend/Parser.y"
+#line 22 "frontend/Parser.y"
 
     #include "ast/Nodes.hpp"
 
@@ -154,7 +154,7 @@ extern int yydebug;
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 union YYSTYPE
 {
-#line 27 "frontend/Parser.y"
+#line 30 "frontend/Parser.y"
 
     char charVal;
     unsigned char ucharVal;
