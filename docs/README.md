@@ -29,7 +29,7 @@ Guides for using and extending the **lcc** teaching compiler. The [root README](
 
 ## Generated API reference
 
-The headers under `src/` carry Doxygen comments, and `scripts/docs.sh` renders them to `../../lcc-build/docs/html/index.html` — beside the build tree, for the same reason object files go there.
+The headers under `src/` carry Doxygen comments. The rendered result is published at <https://yanghuafang.github.io/lcc/>, rebuilt from `main` on every push. `scripts/docs.sh` builds the same site locally, into `../../lcc-build/docs/html/index.html` — beside the build tree, for the same reason object files go there.
 
 The prose is the same either way: the comments in the headers are the source, and reading them in place is often quicker. What the generated site adds is the two things a header cannot show — inheritance and collaboration diagrams for the `Node` hierarchy, which runs six levels deep across 90 classes, and a link from every declaration to the places that use it.
 

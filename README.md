@@ -2,6 +2,7 @@
 
 [![CI](https://github.com/yanghuafang/lcc/actions/workflows/ci.yml/badge.svg)](https://github.com/yanghuafang/lcc/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![API reference](https://img.shields.io/badge/docs-API%20reference-blue)](https://yanghuafang.github.io/lcc/)
 
 A teaching C compiler built with **flex**, **bison**, and **LLVM 20**.
 
@@ -192,7 +193,7 @@ lcc/
 | [docs/FrontendNotes.md](docs/FrontendNotes.md) | How the front-end reached its current feature set; deferred language work |
 | [docs/MiddleBackendNotes.md](docs/MiddleBackendNotes.md) | What each middle/back-end milestone built, with acceptance criteria |
 
-[docs/README.md](docs/README.md) indexes the same guides with a milestone-to-doc map. `scripts/docs.sh` renders the header comments into a browsable API reference, with diagrams of the six-level `Node` hierarchy that the sources cannot show.
+[docs/README.md](docs/README.md) indexes the same guides with a milestone-to-doc map. The generated [API reference](https://yanghuafang.github.io/lcc/) renders the same comments the headers carry, adding diagrams of the six-level `Node` hierarchy that the sources cannot show; `scripts/docs.sh` builds it locally.
 
 ## Requirements
 
