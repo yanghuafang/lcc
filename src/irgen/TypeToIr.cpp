@@ -1,8 +1,6 @@
 #include <llvm/IR/Constants.h>
 #include <llvm/IR/DerivedTypes.h>
 
-#include <exception>
-#include <memory>
 #include <stdexcept>
 
 #include "ast/Nodes.hpp"
