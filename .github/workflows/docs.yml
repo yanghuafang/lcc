@@ -32,7 +32,7 @@ jobs:
       name: github-pages
       url: ${{ steps.deploy.outputs.page_url }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       # Deliberately not install-deps-ubuntu.sh: that installs LLVM 20 and the
       # rest of the build toolchain, none of which Doxygen needs. graphviz is
@@ -46,9 +46,9 @@ jobs:
 
       # docs.sh writes beside the build tree rather than inside the repo, which
       # is why this path leaves the workspace.
-      - uses: actions/upload-pages-artifact@v3
+      - uses: actions/upload-pages-artifact@v5
         with:
           path: ${{ github.workspace }}/../lcc-build/docs/html
 
       - id: deploy
-        uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@v5
