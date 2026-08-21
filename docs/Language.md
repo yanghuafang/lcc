@@ -36,9 +36,9 @@ Unlike industrial compilers (clang, gcc) that use recursive-descent parsing, `lc
 - Prefix and postfix increment / decrement: `++`, `--`
 - Bitwise: `&`, `|`, `^`, `~`, and the compound forms `&=`, `|=`, `^=`
 - Shift: `<<`, `>>`, and the compound forms `<<=`, `>>=`
-- Logical: `&&`, `||`, `!`
+- Logical: `&&`, `||`, `!` — none of them short-circuit; see [Not supported](#not-supported-yet)
 - Comparison: `==`, `!=`, `<`, `<=`, `>`, `>=`
-- Ternary: `condition ? trueExpr : falseExpr`
+- Ternary: `condition ? trueExpr : falseExpr` — both arms evaluate; see [Not supported](#not-supported-yet)
 - Pointer arithmetic over arrays of builtin and user-defined types, via `++`, `--`, `+=` and `-=`
 - `sizeof`
 - Explicit (`(Type)varObject`) and implicit type casts
@@ -70,6 +70,13 @@ Unlike industrial compilers (clang, gcc) that use recursive-descent parsing, `lc
   Any other operator after the identifier parses fine (`(a + 7)`, `(a == 3)`, `(a > 3)`), as does a parenthesized expression that does not begin with a bare identifier (`(7 * a)`, `(*p * 7)`, `(arr[0] * 7)`). Work around it by reordering the operands, dropping the parentheses, or assigning to a temporary. Root cause: state 133 in `Parser.output` — see [ParserConflicts.md](ParserConflicts.md#4-identifier-type-name-or-expression-4-reducereduce).
 - Typedef names used as variables in the same scope (rejected; same root cause as above).
 - `extern`: `lcc` requires function declaration for linkage; extern variables are not allowed.
+- **Short-circuit evaluation of `&&`, `||`, and `?:`.** Unlike everything else in
+  this list, these compile — and then evaluate both operands, or both ternary
+  arms, because all three are lowered eagerly with LLVM `select`. The guarding
+  idioms therefore guard nothing: `p != 0 && *p` still dereferences `p`, and
+  `i < n && a[i]` still reads `a[i]`. Write the guard as a nested `if` instead.
+  The reasoning, and the shape a fix would take, are in the header comment of
+  `src/irgen/LogicToIr.cpp`.
 
 For front-end feature history and test coverage per language item, see [FrontendNotes.md](FrontendNotes.md). For the active middle-end, optimization, and back-end track, see [LearningPlan.md](LearningPlan.md).
 
