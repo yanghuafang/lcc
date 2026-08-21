@@ -28,19 +28,19 @@ From the repository root:
 cd src
 
 # Generate Parser.cpp / Parser.hpp and a full state machine report
-bison -d Parser.y -v
+bison -d frontend/Parser.y -v
 
 # Human-readable conflict report (search for "conflicts:")
 less generated/Parser.output
 
 # Concrete ambiguous examples (Bison 3.7+)
-bison -d Parser.y -Wcounterexamples 2>&1 | less
+bison -d frontend/Parser.y -Wcounterexamples 2>&1 | less
 ```
 
 Or use the project build script (same bison invocation as CMake):
 
 ```bash
-cd scripts
+cd ../scripts
 ./build-lcc.sh
 ```
 

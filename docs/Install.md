@@ -153,10 +153,10 @@ From `lcc/src`:
 All outputs land in `src/generated/` (set by `%option outfile` in `Lexer.l` and `%output` in `Parser.y`):
 
 ```bash
-flex Lexer.l                                   # generated/Lexer.cpp
-bison -d Parser.y                              # generated/Parser.cpp / Parser.hpp
-bison -d Parser.y -v                           # generated/Parser.output (conflicts)
-bison -d Parser.y -v -Wcounterexamples &> generated/Parser.counterexamples
+flex frontend/Lexer.l                          # generated/Lexer.cpp
+bison -d frontend/Parser.y                     # generated/Parser.cpp / Parser.hpp
+bison -d frontend/Parser.y -v                  # generated/Parser.output (conflicts)
+bison -d frontend/Parser.y -v -Wcounterexamples &> generated/Parser.counterexamples
 ```
 
 Building `lcc` (or running `bison` on `Parser.y`) reports **48 shift/reduce** and **6 reduce/reduce** conflicts. That is expected for this compact grammar: Bison resolves them with default rules, and the test suite still passes. For a learner-oriented breakdown, see [ParserConflicts.md](ParserConflicts.md).

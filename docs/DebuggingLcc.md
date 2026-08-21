@@ -31,14 +31,14 @@ settings set target.source-map /Users/you/study-projects/lcc-build /Users/you/st
 
 Adjust paths for your checkout layout.
 
-Example `launch.json` args for a smoke compile (IR and AST under `lcc/debug/`, object under `lcc-build/`). `-i` and `-o` are required; the rest are optional dumps:
+Example `launch.json` args for a smoke compile, writing every artifact under `lcc-build/` — the paths the repo's own `.vscode/launch.json` uses. Do not point `-l` or `-v` into `lcc/debug/`: those files are committed goldens that `check-ir-opt.sh` diffs against, and only `./compile-tests.sh --release` should rewrite them. `-i` and `-o` are required; the rest are optional dumps:
 
 ```json
 "args": [
   "-i", "${workspaceFolder}/tests/0.hello_world.c",
   "-o", "${workspaceFolder}/../lcc-build/0.hello_world.o",
-  "-l", "${workspaceFolder}/debug/0.hello_world.debug.ll",
-  "-v", "${workspaceFolder}/debug/0.hello_world.dot"
+  "-l", "${workspaceFolder}/../lcc-build/0.hello_world.debug.ll",
+  "-v", "${workspaceFolder}/../lcc-build/0.hello_world.dot"
 ]
 ```
 
