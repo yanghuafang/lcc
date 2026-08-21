@@ -32,6 +32,9 @@ class CodeGenerator;
 /// CodeGenerator, because building IR means walking the AST against its symbol
 /// tables. Everything after it needs only an llvm::Module — once the module
 /// exists, nothing downstream cares where it came from.
+
+/// \namespace pipeline
+/// The compiler's phase ordering, and the only place the phases meet.
 namespace pipeline {
 
 struct IrCodeGenOptions {

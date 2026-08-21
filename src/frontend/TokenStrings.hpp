@@ -23,6 +23,9 @@
 /// create(), the grammar actions copy the text into AST nodes (which hold
 /// std::string by value), and the driver calls releaseAll() once the parse is
 /// over. No rule owns anything, so no rule can leak.
+
+/// \namespace tokenstrings
+/// Owns the text the lexer captures for IDENTIFIER and STRING tokens.
 namespace tokenstrings {
 
 /// Allocate a token string that stays valid until releaseAll(). Never null.

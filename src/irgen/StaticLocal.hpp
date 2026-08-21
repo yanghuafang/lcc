@@ -39,6 +39,10 @@ class CodeGenerator;
 /// Depends on irgen/Arrays.hpp — a block-scope static array needs the
 /// same four initializer shapes as any other array. The dependency runs one way
 /// only.
+
+/// \namespace staticlocal
+/// Block-scope static: a module global, plus a first-execution guard when the
+/// initializer is not a constant.
 namespace staticlocal {
 
 /// Define var as a block-scope static and bind it in the current scope.

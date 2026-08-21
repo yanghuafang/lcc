@@ -42,6 +42,10 @@ class TypeEnv;
 /// It is also what states each rule once for an operator and its
 /// compound-assignment twin: Add::genCode and AddAssign::genCodePtr both call
 /// createAdd.
+
+/// \namespace ops
+/// One function per C binary operator, choosing the LLVM instruction the
+/// operand types call for.
 namespace ops {
 
 /// Relation for icmp only (EQ/LT/… plus signed vs unsigned). Float/double

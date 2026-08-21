@@ -30,6 +30,9 @@ class Type;
 /// irgen/TypeConversion.cpp — use nothing else from there, so reaching this
 /// table meant including nine VarType queries to call the one function that
 /// queries no VarType at all.
+
+/// \namespace builtinmap
+/// C's scalar width table: AST::BuiltinTypeId to llvm::Type.
 namespace builtinmap {
 
 /// The llvm::Type a C builtin type is represented by; null for UNKNOWN.

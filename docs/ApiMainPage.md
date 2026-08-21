@@ -18,14 +18,14 @@ from the bottom up:
 | Layer | Start at | Depends on |
 | --- | --- | --- |
 | `ast/` | AST::Node, AST::Expr, AST::VarType | nothing — not even the type rules |
-| `types/` | TypeEnv, `typerules`, `vartype` | `ast/` |
+| `types/` | TypeEnv, ::typerules, ::vartype | `ast/` |
 | `irgen/` | CodeGenerator, SymbolTable, ControlFlowContext | `ast/`, `types/` |
 | `opt/`, `backend/` | IrOptimizer, TargetBackend | LLVM only |
-| `dot/` | `dotfile` | `ast/` |
-| `driver/` | `pipeline` | all of the above |
+| `dot/` | ::dotfile | `ast/` |
+| `driver/` | ::pipeline | all of the above |
 
-The emission services the lowering shares — `ops`, `convert`, `iridiom`,
-`arrays`, `staticlocal` — sit inside `irgen/` and are named for the one file
+The emission services the lowering shares — ::ops, ::convert, ::iridiom,
+::arrays, ::staticlocal — sit inside `irgen/` and are named for the one file
 that defines each.
 
 ## What this site adds

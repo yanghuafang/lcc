@@ -22,6 +22,10 @@
 ///
 /// The driver reads errorCount() once yyparse() returns and refuses to compile
 /// when it is non-zero; see the exit-code table in driver/main.cpp.
+
+/// \namespace frontend
+/// The front end's diagnostic funnel: where an error is reported, and how many
+/// have been.
 namespace frontend {
 
 /// Report one front-end error on stderr. yyerror forwards here and is the only

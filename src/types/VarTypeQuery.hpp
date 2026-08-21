@@ -30,6 +30,10 @@ class Type;
 /// Every function below takes an AST::VarType, which is what makes this file
 /// one subject. The scalar width table that used to sit among them takes only a
 /// BuiltinTypeId and no AST node at all, so it is types/BuiltinTypeMap.hpp now.
+
+/// \namespace vartype
+/// What type an AST::VarType denotes — as an AST::BuiltinTypeId, or as a
+/// materialized llvm::Type.
 namespace vartype {
 
 [[nodiscard]] AST::BuiltinTypeId varTypeToTypeId(const AST::VarType* varType);

@@ -38,6 +38,9 @@ class Value;
 /// types/TypeRules.hpp. The load and store helpers do take a TypeEnv, because
 /// LLVM 20+ opaque pointers mean the pointee type has to be recovered from the
 /// AST rather than read off the llvm::Value; see types/VarTypeQuery.hpp.
+
+/// \namespace iridiom
+/// The LLVM IR shapes lcc builds over and over, each stated once.
 namespace iridiom {
 
 /// C locals go in the entry block so mem2reg can promote them to registers.

@@ -26,6 +26,10 @@ class Value;
 ///
 /// The signedness that drives every choice below comes from BuiltinTypeId, not
 /// from llvm::Type: an LLVM i32 records no signedness of its own.
+
+/// \namespace convert
+/// Emits C's conversions: the instruction that carries a value from one
+/// AST::BuiltinTypeId to another.
 namespace convert {
 
 /// Convert value to type. Returns nullptr if no conversion applies.

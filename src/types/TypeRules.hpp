@@ -27,6 +27,11 @@
 ///     double. Real C keeps float when neither operand is double.
 ///   - char/short/bool are the only types promoted; C's bit-fields and enums
 ///     with fixed underlying types are out of scope for lcc's C subset.
+
+/// \namespace typerules
+/// C's type rules as pure predicates over AST::BuiltinTypeId: signedness,
+/// integer promotion, and the usual arithmetic conversions. Decides which type
+/// an operand pair converts to; emits nothing.
 namespace typerules {
 
 /// Named without the AST:: prefix in the bodies below; the enum itself belongs

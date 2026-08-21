@@ -46,6 +46,10 @@ class Value;
 /// Both brace paths normalize to one slot per element with nullptr meaning
 /// zero-fill before they diverge, which is what keeps 1D and 2D from needing
 /// two spellings of the same loop.
+
+/// \namespace arrays
+/// Array declarator bounds, and the four initializer shapes AST::VarDecl's
+/// lowering delegates to.
 namespace arrays {
 
 /// Element type and length of a one-dimensional array type.
