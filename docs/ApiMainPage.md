@@ -31,12 +31,9 @@ that defines each.
 ## What this site adds
 
 The prose here is the same prose as in the headers, so reading the sources
-directly loses nothing. Two things are easier to see rendered:
-
-- **The class hierarchy.** AST::Node runs six levels deep across 90 classes,
-  and the inheritance diagrams show at a glance what the source shows one
-  `: public` clause at a time.
-- **Who calls what.** Every declaration links to the places that use it.
+directly loses nothing. What is easier to see rendered is the class hierarchy:
+AST::Node runs six levels deep across 90 classes, and the inheritance diagrams
+show at a glance what the source shows one `: public` clause at a time.
 
 For the stage-by-stage description of how a `.c` file becomes an object file,
 see

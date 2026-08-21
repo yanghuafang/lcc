@@ -44,6 +44,14 @@ UML_LOOK               = YES
 DOT_IMAGE_FORMAT       = svg
 INTERACTIVE_SVG        = YES
 
+# The class diagrams are wanted; the directory ones are not. Left on, Doxygen
+# emits a page per pair of directories that include each other -- seven here,
+# each restating a single #include edge. What they would tell a reader is the
+# layering, and that is already prose in two places: the table on the landing
+# page and the dependency section of docs/Architecture.md. The eleven
+# per-directory listings are a different thing, and are unaffected by this.
+DIRECTORY_GRAPH        = NO
+
 GENERATE_LATEX         = NO
 GENERATE_HTML          = YES
 

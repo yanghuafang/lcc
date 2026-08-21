@@ -51,6 +51,16 @@ mkdir -p "${docs_dir}"
 log="${docs_dir}/doxygen-warnings.log"
 rm -f "${log}"
 
+# Doxygen writes into html/ without clearing it, so a page that stops being
+# generated stays on disk and keeps being served locally. The directory pair
+# pages showed why that bites: their file names carry directory indices, which
+# shift whenever a source file is added, so a tree holding seven of them
+# accumulated thirty-four across one afternoon of rebuilds. CI is unaffected --
+# a fresh runner starts empty -- which is exactly why the local site has to be
+# cleared to match what CI publishes. Only html/ goes: the warning log above
+# lives beside it and is written before Doxygen runs.
+rm -rf "${docs_dir}/html"
+
 # Paths in the Doxyfile are repo-relative, so run from there.
 cd "${repo_root}"
 doxygen docs/Doxyfile
