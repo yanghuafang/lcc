@@ -19,6 +19,24 @@ linkAll() {
   echo "All tests linked."
 }
 
+usage() {
+  cat <<'EOF'
+Usage: link-tests.sh [TEST.c]
+
+Link the test suite built by lcc (stage 2 of 3).
+
+Options:
+  -h, --help  Show this help.
+
+With no TEST.c, links every test. Objects must exist already: run compile-tests.sh first. Then run-tests.sh.
+EOF
+}
+
+if [[ "${1:-}" == "-h" || "${1:-}" == "--help" ]]; then
+  usage
+  exit 0
+fi
+
 if [ $# -eq 0 ]; then
   linkAll
 else

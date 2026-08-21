@@ -9,6 +9,32 @@ script_dir="$(cd "$(dirname "$0")" && pwd)"
 # shellcheck source=build-env.sh
 source "${script_dir}/build-env.sh"
 
+usage() {
+  cat <<'EOF'
+Usage: mir-study.sh [IR.ll] [FUNCTION]
+
+Print MIR at four codegen stages for one function (M13 study helper): after
+instruction selection, either side of the greedy register allocator, and after
+prolog/epilog insertion where physical register names appear.
+
+Arguments:
+  IR.ll       LLVM IR to study (default: debug/25.quick_sort.release.post.ll,
+              which compile-tests.sh --release produces).
+  FUNCTION    Function to filter for (default: partition).
+
+Options:
+  -h, --help  Show this help.
+
+Environment:
+  MIR_STUDY_HEAD  Lines to print per stage (default: 40).
+EOF
+}
+
+if [[ "${1:-}" == "-h" || "${1:-}" == "--help" ]]; then
+  usage
+  exit 0
+fi
+
 ir="${1:-${script_dir}/../debug/25.quick_sort.release.post.ll}"
 func="${2:-partition}"
 head_lines="${MIR_STUDY_HEAD:-40}"

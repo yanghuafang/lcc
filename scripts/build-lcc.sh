@@ -37,6 +37,33 @@ set -euo pipefail
 
 source ./build-env.sh || exit 1
 
+usage() {
+  cat <<'EOF'
+Usage: build-lcc.sh [--debug|--release|--relwithdebinfo] [--parse]
+                    [--asan] [--ubsan] [--werror]
+
+Configure and build lcc with CMake, into a sibling of the repo.
+
+Build modes (at most one, default --release):
+  --debug           CMAKE_BUILD_TYPE=Debug
+  --release         CMAKE_BUILD_TYPE=Release
+  --relwithdebinfo  CMAKE_BUILD_TYPE=RelWithDebInfo
+
+Options:
+  --parse     Also regenerate src/generated/Parser.counterexamples, bison's
+              explanation of each grammar conflict (docs/ParserConflicts.md).
+  --asan      Build lcc with AddressSanitizer.
+  --ubsan     Build lcc with UndefinedBehaviorSanitizer; combinable with --asan.
+  --werror    Fail the build on any compiler warning.
+  -h, --help  Show this help.
+
+Environment:
+  LCC_BUILD_DIR   Where to build (default: ../../lcc-build beside the repo).
+  LCC_BUILD_JOBS  Parallel jobs (default: one per logical core).
+  LLVM_DIR        LLVMConfig.cmake to use; PATH follows it.
+EOF
+}
+
 build_type="Release"
 build_mode=""
 parse_counterexamples=false
@@ -89,10 +116,13 @@ while [[ $# -gt 0 ]]; do
       werror=ON
       shift
       ;;
+    -h|--help)
+      usage
+      exit 0
+      ;;
     *)
       echo "Unknown option: $1" >&2
-      echo "Usage: $0 [--debug|--release|--relwithdebinfo] [--parse] [--asan]" \
-           "[--ubsan] [--werror]" >&2
+      usage >&2
       exit 1
       ;;
   esac

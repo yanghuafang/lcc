@@ -22,6 +22,22 @@ compileAll() {
   done
 }
 
+usage() {
+  cat <<'EOF'
+Usage: compile-tests.sh [--debug|--release] [TEST.c]
+
+Compile the test suite with lcc (stage 1 of 3), writing objects plus the AST
+graph, IR and assembly artifacts under debug/.
+
+Options:
+  --debug     Compile with -g -O0 (default).
+  --release   Compile with -O2; see docs/Testing.md for the golden naming.
+  -h, --help  Show this help.
+
+With no TEST.c, compiles every test. Then run link-tests.sh and run-tests.sh.
+EOF
+}
+
 compile_mode=""
 remaining=()
 
@@ -34,6 +50,10 @@ while [[ $# -gt 0 ]]; do
       fi
       compile_mode="$1"
       shift
+      ;;
+    -h|--help)
+      usage
+      exit 0
       ;;
     *)
       remaining+=("$1")
