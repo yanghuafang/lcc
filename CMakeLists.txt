@@ -12,21 +12,35 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 message(STATUS "C Compiler: ${CMAKE_C_COMPILER}")
 message(STATUS "CXX Compiler: ${CMAKE_CXX_COMPILER}")
 
+# Locate the generators before running them, rather than trusting whatever the
+# name resolves to. macOS still ships bison 2.3 in /usr/bin, which cannot read
+# `%define parse.error verbose` and reports
+#
+#     frontend/Parser.y:19.9-30: syntax error, unexpected string, expecting =
+#
+# blaming the grammar for the age of the tool. Asking for a version turns that
+# into a message about bison. scripts/build-env.sh puts the right ones first on
+# PATH; this is what catches a plain `cmake ..` run without it.
+find_package(FLEX REQUIRED)
+find_package(BISON 3.0 REQUIRED)
+
 # Generate lexer and parser (fail configure if either tool errors). Outputs land
-# in src/generated/ so they are never mistaken for handwritten sources; the
-# destination is set by "%option outfile" in Lexer.l and "%output" in Parser.y.
+# in src/generated/ so they are never mistaken for handwritten sources. Only
+# Lexer.cpp and Parser.cpp are placed by the sources themselves, through
+# "%option outfile" and "%output"; -d adds Parser.hpp beside them and -v adds
+# Parser.output, both following the .cpp rather than being named anywhere.
 
 file(MAKE_DIRECTORY ${CMAKE_SOURCE_DIR}/src/generated)
 
 execute_process(WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/src
-    COMMAND flex frontend/Lexer.l
+    COMMAND ${FLEX_EXECUTABLE} frontend/Lexer.l
     RESULT_VARIABLE FLEX_RESULT)
 if(NOT FLEX_RESULT EQUAL 0)
     message(FATAL_ERROR "flex frontend/Lexer.l failed (exit ${FLEX_RESULT})")
 endif()
 
 execute_process(WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/src
-    COMMAND bison -d frontend/Parser.y -v
+    COMMAND ${BISON_EXECUTABLE} -d frontend/Parser.y -v
     RESULT_VARIABLE BISON_RESULT)
 if(NOT BISON_RESULT EQUAL 0)
     message(FATAL_ERROR "bison frontend/Parser.y failed (exit ${BISON_RESULT})")
@@ -50,6 +64,22 @@ endif()
 # Config LLVM
 
 find_package(LLVM REQUIRED CONFIG)
+
+# The major is checked here rather than asked for above, because LLVM's own
+# LLVMConfigVersion.cmake compares major AND minor for equality: a request for
+# "20" carries minor 0, so it rejects the 20.1.x that Homebrew and apt both
+# ship. Asking for "20.1" would work today and break on a 20.2 release. This
+# accepts every 20.x and nothing else, which is what the docs promise.
+#
+# Without it an LLVM 18 or 19 configures cleanly and fails much later, inside
+# the opaque-pointer APIs, with an error about lcc rather than about LLVM.
+if(NOT LLVM_VERSION_MAJOR EQUAL 20)
+  message(FATAL_ERROR
+    "lcc requires LLVM 20; found ${LLVM_PACKAGE_VERSION} via ${LLVM_DIR}.\n"
+    "  macOS:  brew install llvm@20\n"
+    "  Ubuntu: sudo apt install llvm-20-dev\n"
+    "Then build through scripts/build-lcc.sh, which points LLVM_DIR at it.")
+endif()
 
 message(STATUS "Found LLVM ${LLVM_PACKAGE_VERSION}")
 message(STATUS "Found LLVMConfig.cmake in ${LLVM_DIR}")
