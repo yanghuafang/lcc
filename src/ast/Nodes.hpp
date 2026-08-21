@@ -459,6 +459,13 @@ class TypedefDecl final : public Decl {
 // types/VarTypeQuery.hpp rather than reading it off the llvm::Value.
 // ===========================================================================
 
+/// Base of the type nodes: builtin, pointer, array, struct, union, enum, and
+/// the DefinedType a typedef alias resolves through. getType() materializes one
+/// into an llvm::Type against a TypeEnv.
+///
+/// Under LLVM 20 opaque pointers these nodes are the only record a pointee type
+/// has, which is why load, store, and GEP recover their element types from here
+/// rather than from the llvm::Value they operate on.
 class VarType : public Node {
  public:
   bool isConst_ = false;
@@ -840,6 +847,13 @@ class Block final : public Stmt {
 // irgen/Operators.hpp, which is why so many classes here are near-empty.
 // ===========================================================================
 
+/// Base of every C expression, and of the 58 classes below it. Derives from
+/// Stmt because a bare expression is a valid C statement.
+///
+/// Every Expr answers two questions the lowering asks of it: what value it
+/// produces, and what storage it designates. That is C's rvalue/lvalue
+/// distinction made concrete, and picking the wrong one is the most common way
+/// to break the expression walk -- see genCodePtr below.
 class Expr : public Stmt {
  public:
   Expr() = default;
