@@ -22,7 +22,8 @@
 /// types/TypeRules.cpp spends that ability on static_asserts, which check the
 /// ladder below at build time instead of leaving it to the test suite.
 ///
-/// Two deliberate simplifications, both visible below:
+/// Three deliberate simplifications, all visible below — the third is on
+/// usualArithmeticConversion itself:
 ///   - float never survives a binary operation; any floating operand yields
 ///     double. Real C keeps float when neither operand is double.
 ///   - char/short/bool are the only types promoted; C's bit-fields and enums

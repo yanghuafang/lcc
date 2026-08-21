@@ -62,12 +62,12 @@ class ControlFlowContext {
   std::vector<llvm::BasicBlock*> fallthroughBlockStack_;
 };
 
-/// RAII guards for the two stacks above, and the way StmtToIr.cpp is meant to
-/// reach them: nothing calls enterLoop / leaveLoop or enterSwitch / leaveSwitch
-/// by hand. They live here rather than at the call sites for the reason
-/// ScopedSymbolTable lives beside its stack in irgen/SymbolTable.hpp — the
-/// pairing is visible next to what it balances, and a body that throws partway
-/// through cannot leave a target pushed behind it.
+/// RAII guards for the three stacks above, and the way StmtToIr.cpp is meant
+/// to reach them: nothing calls enterLoop / leaveLoop or enterSwitch /
+/// leaveSwitch by hand. They live here rather than at the call sites for the
+/// reason ScopedSymbolTable lives beside its stack in irgen/SymbolTable.hpp —
+/// the pairing is visible next to what it balances, and a body that throws
+/// partway through cannot leave a target pushed behind it.
 ///
 /// Two guards rather than one because the constructs push different things: a
 /// loop pushes continue and break, a switch pushes only break. That asymmetry

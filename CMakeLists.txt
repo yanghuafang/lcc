@@ -123,19 +123,18 @@ add_executable(${CMAKE_PROJECT_NAME} ${SOURCES})
 # Warnings.
 #
 # -Wunused-parameter is on, and every parameter that is genuinely unused says so
-# where it sits, with `(void)param;`. There are fourteen. Thirteen are virtuals
-# whose body does not need what the interface hands it: six genCode() overrides
-# returning nullptr because a parent lowers that node (Param, ParamList,
-# VarInit, VarType, FieldDecl, Enum), five genCodePtr() overrides that throw
-# because their expression is never an lvalue, and the two Expr type queries a
-# node overrides only when its answer differs. The fourteenth is createSub's
+# where it sits, with `(void)param;`. Nearly all are virtuals whose body does
+# not need what the interface hands it: genCode() overrides returning nullptr
+# because a parent lowers that node, genCodePtr() overrides that throw because
+# their expression is never an lvalue, and the Expr type queries a node
+# overrides only when its answer differs. The odd one out is createSub's
 # rhsVarType, kept so the signature mirrors createAdd, where it is used.
 #
-# Suppressing at the site rather than with -Wno-unused-parameter costs fourteen
-# casts and keeps the warning able to do its job. Switched off it reports
-# nothing, so a parameter that was meant to be read -- a newly threaded TypeEnv&
-# that some overload quietly ignores -- looks exactly like these fourteen. The
-# name stays in the signature either way, because it documents the slot.
+# Suppressing at the site rather than with -Wno-unused-parameter keeps the
+# warning able to do its job. Switched off it reports nothing, so a parameter
+# that was meant to be read -- a newly threaded TypeEnv& that some overload
+# quietly ignores -- would look exactly like these. The name stays in the
+# signature either way, because it documents the slot.
 target_compile_options(${CMAKE_PROJECT_NAME} PRIVATE -Wall -Wextra)
 
 # The flex and bison output is regenerated on every configure and must never be

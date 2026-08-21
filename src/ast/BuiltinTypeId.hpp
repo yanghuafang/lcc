@@ -7,7 +7,7 @@
 /// irgen/Operators.hpp.
 ///
 /// This header exists so those modules can name the enum without including
-/// ast/Nodes.hpp (1600+ lines, 185 classes). That is what keeps
+/// ast/Nodes.hpp (1700+ lines, 91 classes). That is what keeps
 /// types/TypeRules.hpp a true leaf: this file is its only include. Keep it that
 /// way — declare nothing here but the enum, and forward-declare AST classes in
 /// the header that needs them.

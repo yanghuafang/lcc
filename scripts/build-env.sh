@@ -9,7 +9,7 @@
 #
 # No `set -euo pipefail` here, unlike every script that runs directly: shell
 # options are not scoped to a file, so setting them in something sourced
-# changes the caller's shell too. Each of the ten callers sets its own, and
+# changes the caller's shell too. Each of the callers sets its own, and
 # this file runs under whichever one sourced it.
 #
 # LCC_LINKER deliberately prefers the *system* clang/gcc over the LLVM 20 clang

@@ -9,15 +9,14 @@
 // stitches its children's fragments in and main assembles the whole graph, then
 // hands it to dotfile::write (dot/DotFileWriter.hpp) for -v.
 //
-// The other two implementations of these same node classes are
-// irgen/ (genCode, LLVM IR — see ExprToIr/StmtToIr/DeclToIr/TypeToIr) and
-// ast/Ownership.cpp
-// (destructors).
+// The other two implementations of these same node classes are the seven
+// walkers under irgen/ (genCode, LLVM IR) and ast/Ownership.cpp (destructors).
 
 namespace AST {
 
 namespace {
-// Sequential IDs keep DOT output stable across runs (see also README).
+// Sequential IDs keep DOT output stable across runs, so a regenerated graph
+// diffs cleanly against the goldens in debug/graphs/.
 std::string getId() {
   static size_t nextId = 0;
   return std::to_string(nextId++);
