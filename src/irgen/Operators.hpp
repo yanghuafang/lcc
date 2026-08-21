@@ -20,6 +20,12 @@ class TypeEnv;
 /// urem, ashr vs lshr, icmp slt vs ult — since LLVM integer types do not record
 /// signedness themselves.
 ///
+/// One exception, and it is a deviation rather than a simplification: the two
+/// shifts run through the same convert::typeUpgrade as everything else. C
+/// promotes each shift operand on its own and gives the result the promoted
+/// left operand's type, so `int >> unsigned` stays signed in C and becomes an
+/// lshr here.
+///
 /// == This file is not irgen/OperatorToIr.cpp ==
 ///
 /// The two are halves of one lowering, split at a single line: whether the code

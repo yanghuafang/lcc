@@ -207,9 +207,14 @@ llvm::Value* SwitchStmt::genCode(CodeGenerator& generator) {
   //   ...[n]                both end at "switch.end"
   //
   // Test i branches to caseBlocks[i] on match, else to comparisionBlocks[i+1] —
-  // walking the chain. `default` emits an unconditional branch instead, so any
-  // test after it is unreachable, matching C's rule that default is tried last
-  // only in the sense that its label never matches a value.
+  // walking the chain. `default` emits an unconditional branch instead, which
+  // makes every test after it unreachable.
+  //
+  // That is a deviation from C. 6.8.4.2p5 tries every case label first and
+  // reaches default only when none matched, so
+  // `switch (2) { default: …; case 2: …; }` runs case 2 in C and default here.
+  // Emitting default's branch as the tail of the chain rather than at its
+  // textual position is what would fix it.
   //
   // Fallthrough is why bodies do not branch to switch.end when they finish:
   // each body is told its *successor* body (caseBlocks[i + 1]) by the

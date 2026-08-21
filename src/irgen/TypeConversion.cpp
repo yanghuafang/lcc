@@ -12,8 +12,13 @@ using AST::BuiltinTypeId;
 namespace convert {
 namespace {
 
-// CreateIntCast wants the signedness of the value being cast, which is only
-// meaningful when both ends of the cast are known C types.
+// CreateIntCast picks sext or zext from the signedness of the value being
+// cast — a property of the source type alone. The destination's signedness
+// does not enter into it: C converts a negative value to a wider unsigned
+// type by sign-extending and reinterpreting, not by zero-extending.
+//
+// The isSigned expression below ANDs both ends anyway, so a char holding -1
+// widened to unsigned long zero-extends to 255 where C requires ULONG_MAX.
 bool isSrcSignedForCast(BuiltinTypeId srcTypeId) {
   if (srcTypeId == BuiltinTypeId::UNKNOWN) {
     return true;

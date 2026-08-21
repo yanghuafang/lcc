@@ -24,7 +24,12 @@
 // operator selection agree with the value actually produced. Leaving the i1 in
 // place would let it be *sign* extended later, making `int r = a < b` store -1.
 //
-// == Known deviations from C, all three of them here ==
+// == The three lazy-evaluation deviations from C ==
+//
+// Three, not all of lcc's: the deviations that come from evaluating eagerly
+// live here, and the rest live with the rules they bend — types/TypeRules.hpp
+// for the conversion ladder, irgen/Operators.hpp for the shift operands, and
+// irgen/StmtToIr.cpp for switch's default label.
 //
 // lcc lowers the "lazy" operators eagerly, with select instead of branches, so
 // an untaken operand's side effects still run:
