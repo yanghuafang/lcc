@@ -21,6 +21,20 @@
 #
 # Override the job count with LCC_BUILD_JOBS=N.
 
+# Stop at the first failing step, on an unset variable, and on a failure
+# anywhere in a pipe. Without -e the script ran every step regardless: a
+# configure that failed -- a wrong LLVM, a missing bison -- was followed by
+# `cmake --build` anyway, and the message the user ended on was make's
+# complaint about re-running configure, with CMake's own error scrolled off
+# the top. The same gap covered the `cd` pair below, which would have run
+# bison in scripts/ had ../src been missing.
+#
+# -u earns its place on the job count: `--parallel "${build_jobss}"` is a typo
+# that expands to empty without it, and an unbound variable with it. It is
+# inherited by the sourced build-env.sh, which is why that file now reads
+# ${CPPFLAGS:-} the way it already read ${EXT_CPPFLAGS:-} beside it.
+set -euo pipefail
+
 source ./build-env.sh || exit 1
 
 build_type="Release"

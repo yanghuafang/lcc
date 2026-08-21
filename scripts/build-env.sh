@@ -94,7 +94,7 @@ case "$(uname -s)" in
 esac
 
 export PATH="${EXT_PATH}:${PATH}"
-export CPPFLAGS="${EXT_CPPFLAGS} ${CPPFLAGS}"
+export CPPFLAGS="${EXT_CPPFLAGS} ${CPPFLAGS:-}"
 
 # Do not export LDFLAGS here: CMake caches CMAKE_EXE_LINKER_FLAGS from the
 # environment on first configure; lcc links LLVM via CMake targets, not LDFLAGS.
