@@ -121,8 +121,8 @@ struct IrOptimizerOptions {
 
 class IrOptimizer {
  public:
-  void run(llvm::Module& module, const std::string& optimizationLevel,
-           const IrOptimizerOptions& options = {});
+  static void run(llvm::Module& module, const std::string& optimizationLevel,
+                  const IrOptimizerOptions& options = {});
 };
 ```
 
@@ -217,10 +217,10 @@ struct TargetBackendOptions {
 
 class TargetBackend {
  public:
-  void emitObject(llvm::Module& module, const std::string& path,
-                  const TargetBackendOptions& options = {});
-  void emitAssembly(llvm::Module& module, const std::string& path,
-                    const TargetBackendOptions& options = {});
+  static void emitObject(llvm::Module& module, const std::string& path,
+                         const TargetBackendOptions& options = {});
+  static void emitAssembly(llvm::Module& module, const std::string& path,
+                           const TargetBackendOptions& options = {});
 };
 ```
 

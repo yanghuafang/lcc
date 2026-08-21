@@ -148,7 +148,7 @@ error: object of type 'YYSTYPE' cannot be assigned because its copy
 ```
 
 Owning smart pointers therefore require the C++ skeleton — `%skeleton
-"lalr1.cc"` with `%define api.value.type variant` — which rewrites all 640 lines
+"lalr1.cc"` with `%define api.value.type variant` — which rewrites all 661 lines
 of the grammar, the flex interface it shares, `main()`'s use of `yyparse()` and
 `g_root`, and every `Node*` member the seven walkers under `irgen/` read. That
 is a rewrite of the front end rather than a cleanup.
@@ -158,7 +158,7 @@ is a rewrite of the front end rather than a cleanup.
 | Failure | Mechanism |
 | ------ | ---------------- |
 | Leak or double free on the success path | `AstRootOwner` in `driver/main.cpp` — RAII, and constructed *before* `yyparse()` so the failure path is covered too |
-| Leak when a parse fails partway | `%destructor` on 11 declaration groups in `Parser.y`, which bison runs on the symbols still on its stack. **Not complete:** the nodes a partial `AST::Decls` holds still leak. The gap is deliberate and recorded in `.github/workflows/ci.yml`; no test in the suite fails to parse, so CI never reaches it, and adding one means fixing the leak first |
+| Leak when a parse fails partway | `%destructor` on the 9 declaration groups in `Parser.y`, which bison runs on the symbols still on its stack. **Not complete:** the nodes a partial `AST::Decls` holds still leak. The gap is deliberate and recorded in `.github/workflows/ci.yml`; no test in the suite fails to parse, so CI never reaches it, and adding one means fixing the leak first |
 | Double free through a copied node | `Node`'s copy constructor and copy assignment are deleted, so all 91 node classes are non-copyable and a shallow copy is a compile error |
 | Double free of the shared array-type tail | `AST::releaseArrayTypeChain` unlinks as it walks, and `irgen/Arrays.cpp` holds the chain in a `unique_ptr` with a custom deleter while it is being built |
 | Use-after-free, and leaks already fixed | ASan and UBSan compile the whole suite with an instrumented `lcc`, in both `-O0` and `-O2`. LeakSanitizer rides along on Linux only, so a macOS developer build cannot check it |
@@ -184,7 +184,7 @@ blocks in `StmtToIr.cpp`, the token-string arena in `frontend/TokenStrings.cpp`.
 
 ### `irgen/` — AST to LLVM IR
 
-`irgen/` is **seven walkers, five emission services, two bookkeeping subsystems, and one shared context.**
+`irgen/` is **seven walkers, five emission services, `DebugInfoBuilder`, two bookkeeping subsystems, and one shared context.**
 
 The walk is split by node category — the same `Decl` / `Stmt` / `Expr` / `VarType` taxonomy the grammar and `ast/Nodes.hpp` already use, so the file to open follows from the kind of node you are chasing. `Expr` is four files rather than one, because C's expression grammar is the largest part of the language. All seven define members of classes declared in `ast/Nodes.hpp`, so none of them has a header of its own.
 
