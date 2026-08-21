@@ -93,9 +93,11 @@ headers so their warnings stay out of the way, and the generated
 `src/generated/Lexer.cpp` / `Parser.cpp` are compiled with warnings off, since
 they are regenerated on every configure and must not be hand-edited.
 
-`-Wunused-parameter` is disabled deliberately. Every AST node overrides
-`genCode(CodeGenerator&)` whether or not it uses the generator, so around
-eighty of these are unavoidable and the parameter name documents the slot.
+`-Wunused-parameter` is on, and every parameter that is genuinely unused says
+so where it sits, with `(void)param;`. Nearly all are virtuals whose body does
+not need what the interface hands it. Suppressing at the site rather than with
+`-Wno-unused-parameter` keeps the warning able to do its job; the reasoning is
+in `CMakeLists.txt` beside the flag.
 
 `--werror` is opt-in rather than the default: a compiler upgrade can add a new
 warning at any time, and cloning the repo should give you a build rather than a
@@ -110,10 +112,12 @@ use-after-free and buffer overflows while it compiles a program:
 ./compile-tests.sh
 ```
 
-CI runs exactly this on Ubuntu. Note that it sets `ASAN_OPTIONS=detect_leaks=0`:
-LeakSanitizer comes along with ASan on Linux, and `lcc` has two known leaks it
-would stop on — an orphaned `llvm::BasicBlock` in `SwitchStmt::genCode`, and the
-AST nodes a partial `AST::Decls` holds when a parse fails.
+CI builds with both sanitizers rather than ASan alone — see `--ubsan` below —
+and sets `ASAN_OPTIONS=detect_leaks=1`. LeakSanitizer comes along with ASan on
+Linux, and is worth having now that the leaks it would have tripped over are
+gone. One known leak is deliberately not covered: the AST nodes a partial
+`AST::Decls` holds when a parse fails. No test in the suite fails to parse, so
+the job never reaches it.
 
 `--ubsan` covers what ASan does not: signed overflow and out-of-range shifts in
 the constant folder and the integer conversions, and out-of-range `enum` and
