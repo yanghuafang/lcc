@@ -94,7 +94,7 @@ Use an existing test such as [`tests/25.quick_sort.c`](tests/25.quick_sort.c) as
 
 ## Commit & pull request
 
-- Write commit messages in the **imperative mood**, capitalized, ending with a period, matching the existing history — e.g. `Add tiled matrix-multiply benchmarks (M15).` Tag the milestone in parentheses when relevant.
+- Write commit messages as **Conventional Commits** — `type(scope): description`, lowercase, imperative, no trailing period — matching the history since 2026-08-17, e.g. `feat(scripts): give every script that takes flags a --help`. The types in use are `refactor`, `docs`, `fix`, `build`, `feat`, `ci` and `test`. Tag the milestone in the description when relevant. Commits before that date use an older `Capitalized sentence.` style; do not follow it.
 - Keep unrelated changes out of the same commit, and avoid committing bulk `debug/` diffs your change did not intend to produce.
 - Before opening a PR: rebuild, run the full suite and smoke checks above, and update any affected docs (e.g. [docs/Usage.md](docs/Usage.md) for new CLI flags).
 - Describe **what** changed and **why** in the PR, and confirm CI passes on Ubuntu 24.04 / 26.04 and macOS.
