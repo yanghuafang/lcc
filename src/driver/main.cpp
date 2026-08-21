@@ -36,7 +36,10 @@
 //      by substituting 0 and returning a valid token, so a parse can succeed
 //      with errors behind it, and lcc used to emit an object from the
 //      substituted values and exit 0
-//   5  writing the -v AST graph failed
+//   5  writing the -v AST graph threw — but the common failure does not reach
+//      here: dotfile::write reports an unopenable path on stderr and returns,
+//      so an unwritable -v path still prints success and exits 0. Contrast
+//      stage 8, where pipeline::dumpIr throws and the code is reachable
 //   6  IR generation or the middle end failed — including an unresolvable
 //      --target, since the module is configured for its target before the AST
 //      walk begins (sizeof and DWARF offsets both need the data layout)
@@ -56,13 +59,16 @@ extern AST::Program* g_root;
 namespace {
 
 // Frees g_root after compile; must outlive CodeGenerator, which stores
-// non-owning AST::VarType* pointers in symbol tables during genIrCode.
+// non-owning AST::VarType* pointers in symbol tables during pipeline::genIr.
 //
-// Constructed before yyparse() rather than after it, so the tree is freed on
-// the parse-failure path too — bison leaves a partial tree in g_root when it
-// aborts — without that path having to remember. Declaring it early also puts
-// its destructor after CodeGenerator's, which is the ordering the pointers into
-// the AST require.
+// Constructed before yyparse() rather than after it so that every later exit
+// path frees the tree without having to remember — the -v, IR, object, dump,
+// and assembly stages each return early on failure. A failed parse needs no
+// help here: g_root is only assigned by the Program reduction in
+// frontend/Parser.y, so it is still null. The AST nodes a partial Decls holds
+// are leaked instead; see the %destructor note there. Declaring it early also
+// puts its destructor after CodeGenerator's, which is the ordering the
+// pointers into the AST require.
 class AstRootOwner {
  public:
   AstRootOwner() = default;

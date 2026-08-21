@@ -508,11 +508,13 @@ class VarType : public Node {
 
  protected:
   /// Memoized result of getType(), filled by the derived overrides in
-  /// irgen/TypeToIr.cpp the first time a type is materialized. Unlike isConst_
-  /// and typeName_ above, this is not part of the tree the parser builds — it
-  /// is a cache, and the reason getType() is the one query on a type node that
-  /// cannot be const. Nothing outside the hierarchy reads it, so nothing
-  /// outside can be tempted to trust it before it is filled.
+  /// irgen/TypeToIr.cpp the first time a type is materialized — except
+  /// EnumType::getType, which returns its i32 without ever filling this, so
+  /// its own guard never fires. Unlike isConst_ and typeName_ above, this is
+  /// not part of the tree the parser builds — it is a cache, and the reason
+  /// getType() is the one query on a type node that cannot be const. Nothing
+  /// outside the hierarchy reads it, so nothing outside can be tempted to
+  /// trust it before it is filled.
   llvm::Type* llvmType_ = nullptr;
 };
 

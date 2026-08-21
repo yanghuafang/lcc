@@ -29,8 +29,8 @@ void DebugInfoBuilder::initialize(const std::string& sourcePath) {
   llvm::sys::path::remove_filename(dir);
   const llvm::StringRef fileName = llvm::sys::path::filename(sourcePath);
 
-  // DIFile uses the user -i path so LLDB resolves the generated C source, not
-  // lcc.
+  // DIFile names the user's -i path, so a debugger opens the original .c
+  // rather than anything under lcc's build tree.
   file_ = dib_->createFile(fileName, dir);
   compileUnit_ = dib_->createCompileUnit(llvm::dwarf::DW_LANG_C, file_, "lcc",
                                          /*isOptimized=*/false, "", 0, "",

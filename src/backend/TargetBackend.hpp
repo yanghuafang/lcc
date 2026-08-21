@@ -12,7 +12,8 @@ struct TargetBackendOptions {
   std::string triple;  // empty = host default
   std::string cpu = "generic";
   std::string features;
-  /// CLI -O for backend codegen (see TargetBackend::resolveCodeGenOptLevel).
+  /// CLI -O for backend codegen; backend/TargetBackend.cpp maps it to an
+  /// llvm::CodeGenOptLevel, which is a separate ladder from the middle end's.
   std::string optimizationLevel;
   /// When non-empty, splice MachineInstrStatsPass into the codegen pipeline and
   /// write machine-instruction counts here ("-" = stderr). M17 machine pass;

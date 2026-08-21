@@ -201,7 +201,9 @@ bool parseDoubleLiteral(const char* text, size_t len, double& out) {
     return true;
 }
 
-// Unsuffixed hex: pick the narrowest lcc token that fits (C integer promotion).
+// Unsuffixed hex: pick the narrowest lcc token the value fits. That is C11
+// 6.4.4.1p5 on the type of an integer constant — not the integer promotion in
+// types/TypeRules.hpp, which widens narrow types inside an expression.
 int returnLexHexConstant(const char* text, size_t len) {
     if (len > 0 && text[0] == '-') {
         long signedVal = 0;
@@ -481,7 +483,10 @@ int returnLexHexConstant(const char* text, size_t len) {
     return CHARACTER;
 }
 
- /** String (non-greedy: stops at unescaped closing quote) **/
+ /** String **/
+ /* The class excludes " and \ so the match cannot run past the closing quote;
+    \\. covers an escaped one. flex has no non-greedy operator — this is an
+    ordinary greedy match, unambiguous because of the class. */
 \"([^\"\\]|\\.)*\" {
     yylval.strVal = tokenstrings::createEmpty();
     for (int i = 1; i < yyleng - 1; ++i) {

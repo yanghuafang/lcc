@@ -1,8 +1,8 @@
 #include "types/BuiltinTypeMap.hpp"
 
-// DerivedTypes.h, not Type.h: getIntNTy returns llvm::IntegerType*, and
-// converting that to the llvm::Type* this returns needs the derived type
-// complete.
+// DerivedTypes.h, not Type.h: Type::getInt8Ty and the rest used below return
+// llvm::IntegerType*, and converting that to the llvm::Type* this returns
+// needs the derived type complete.
 #include <llvm/IR/DerivedTypes.h>
 
 // See types/BuiltinTypeMap.hpp. Signedness is not expressed here: LLVM integer

@@ -176,7 +176,9 @@ class CodeGenerator final : public TypeEnv {
       unsigned paramArgNo = 0);  // 1-based for params; 0 = local
 
  private:
-  /// order; llvm::Module and llvm::IRBuilder require a live LLVMContext.
+  /// Declared first so it is destroyed last: members are torn down in reverse
+  /// declaration order; llvm::Module and llvm::IRBuilder require a live
+  /// LLVMContext.
   llvm::LLVMContext context_;
   llvm::IRBuilder<> builder_;
   /// Top-level container for all LLVM IR in this compilation unit. Owned here,
