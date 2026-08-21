@@ -187,8 +187,10 @@ if(LCC_UBSAN)
   message(STATUS "UndefinedBehaviorSanitizer enabled")
 endif()
 
-# Link only the LLVM pieces lcc uses. LLVM_AVAILABLE_LIBS links every archive
-# twice on Homebrew (static list + libLLVM.dylib); map components instead.
+# Map components rather than LLVM_AVAILABLE_LIBS, which links every archive
+# twice on Homebrew (static list + libLLVM.dylib). all-targets is deliberate
+# and not "only what lcc uses": --target accepts any triple registered in the
+# LLVM build, so every backend has to be linked in.
 if(LLVM_LINK_LLVM_DYLIB)
   target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE argparse::argparse LLVM)
 else()

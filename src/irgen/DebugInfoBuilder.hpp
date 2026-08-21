@@ -70,6 +70,11 @@ class Type;
 /// The three caches below are not just an optimization. DWARF composite types
 /// must be emitted once and referenced thereafter; building a second DIType for
 /// the same struct produces duplicate, conflicting type entries in the .o.
+///
+/// Only getOrCreateDIType and the two composite builders consult one. The
+/// basic-type helpers keep the getOrCreate prefix for symmetry but build a
+/// fresh DIType every call, which is harmless: LLVM uniques basic types, and it
+/// is the composites above that must not be duplicated.
 class DebugInfoBuilder {
  public:
   explicit DebugInfoBuilder(llvm::Module& module);
