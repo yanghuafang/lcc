@@ -335,7 +335,7 @@ This is the **most subtle** conflict group. Industrial compilers often:
 - parse typedef names in a separate scope and lexer hack (`TYPENAME` vs `IDENTIFIER`), or
 - run a semantic pass that disambiguates.
 
-lcc keeps one token and relies on rule order. The 41-test suite avoids the affected shapes, but this is **not** a theoretical risk: because rule 29 wins on lookahead `ASTERISK` and `RPARENTHESES`, a parenthesized expression that begins with a bare identifier followed by `)` or `*` commits to the type reading and fails outright:
+lcc keeps one token and relies on rule order. The 43-test suite avoids the affected shapes, but this is **not** a theoretical risk: because rule 29 wins on lookahead `ASTERISK` and `RPARENTHESES`, a parenthesized expression that begins with a bare identifier followed by `)` or `*` commits to the type reading and fails outright:
 
 ```c
 r = (a);            /* syntax error, unexpected SEMICOLON  — parsed as a cast */

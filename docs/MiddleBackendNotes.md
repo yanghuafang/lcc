@@ -16,7 +16,7 @@ Implementation details and acceptance criteria for [LearningPlan.md](LearningPla
 | Assembly emission | `TargetBackend::emitAssembly` via `-S` | Same `TargetBackendOptions` as object emission |
 | Machine instrumentation (optional) | `MachineInstrStatsPass` (`-machine-stats`) | Legacy MachineFunctionPass on final MIR; counts only, no codegen change |
 | Debug info | `DebugInfoBuilder` | `-g` skips IR opts |
-| Reference IR | `debug/*.{debug,release}.{pre,post}.ll`, `*.debug.ll`, `*.release.ll` | 41 tests × 2 modes |
+| Reference IR | `debug/*.{debug,release}.{pre,post}.ll`, `*.debug.ll`, `*.release.ll` | 43 tests × 2 modes |
 
 Files the milestones added:
 
