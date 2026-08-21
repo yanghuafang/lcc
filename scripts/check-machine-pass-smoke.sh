@@ -12,7 +12,7 @@ set -eo pipefail
 script_dir="$(cd "$(dirname "$0")" && pwd)"
 source "${script_dir}/build-env.sh"
 
-lcc="${script_dir}/../../lcc-build/lcc"
+lcc="${LCC_BUILD_DIR}/lcc"
 source="${script_dir}/../tests/25.quick_sort.c"
 with="$(mktemp "${TMPDIR:-/tmp}/lcc-mstats-with-XXXXXX.o")"
 without="$(mktemp "${TMPDIR:-/tmp}/lcc-mstats-without-XXXXXX.o")"

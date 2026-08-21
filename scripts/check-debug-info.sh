@@ -13,7 +13,7 @@ script_dir="$(cd "$(dirname "$0")" && pwd)"
 export EXT_PATH="${EXT_PATH:-}"
 source "${script_dir}/build-env.sh"
 
-lcc="${script_dir}/../../lcc-build/lcc"
+lcc="${LCC_BUILD_DIR}/lcc"
 hello_source="${script_dir}/../tests/0.hello_world.c"
 struct_source="${script_dir}/../tests/2.struct_type.c"
 hello_obj="$(mktemp "${TMPDIR:-/tmp}/lcc-check-hello-XXXXXX")"

@@ -15,7 +15,7 @@ script_dir="$(cd "$(dirname "$0")" && pwd)"
 # shellcheck source=build-env.sh
 source "${script_dir}/build-env.sh"
 
-lcc="${script_dir}/../../lcc-build/lcc"
+lcc="${LCC_BUILD_DIR}/lcc"
 benchmarks_dir="${script_dir}/../benchmarks"
 smoke=0
 min_runs=10

@@ -26,7 +26,7 @@ set -eo pipefail
 script_dir="$(cd "$(dirname "$0")" && pwd)"
 source "${script_dir}/build-env.sh"
 
-lcc="${script_dir}/../../lcc-build/lcc"
+lcc="${LCC_BUILD_DIR}/lcc"
 work_dir="$(mktemp -d "${TMPDIR:-/tmp}/lcc-lex-errors-XXXXXX")"
 
 cleanup() {

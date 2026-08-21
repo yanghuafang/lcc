@@ -30,7 +30,7 @@ script_dir="$(cd "$(dirname "$0")" && pwd)"
 source "${script_dir}/build-env.sh" || exit 1
 
 repo_root="$(cd "${script_dir}/.." && pwd)"
-build_dir="$(cd "${repo_root}/.." && pwd)/lcc-build"
+build_dir="${LCC_BUILD_DIR}"
 
 fix=false
 files=()

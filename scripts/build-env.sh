@@ -48,6 +48,13 @@ lcc_detect_linker() {
   echo clang
 }
 
+# A preset LLVM_DIR wins over detection, and the prefix is derived back out of
+# it so that PATH follows: llvm-dwarfdump, opt and llc have to come from the
+# same install CMake links against, or check-debug-info.sh reads one LLVM while
+# lcc was built against another. LLVM_DIR is <prefix>/lib/cmake/llvm, so the
+# prefix is three levels up.
+LCC_LLVM_DIR_PRESET="${LLVM_DIR:-}"
+
 EXT_PATH="${EXT_PATH:-}"
 EXT_CPPFLAGS="${EXT_CPPFLAGS:-}"
 EXT_LDFLAGS="${EXT_LDFLAGS:-}"
@@ -58,14 +65,18 @@ case "$(uname -s)" in
       lcc_fail_env "Homebrew is required on macOS. See docs/Install.md."
       return 1
     fi
-    LLVM_PREFIX="$(brew --prefix llvm@20 2>/dev/null)" || {
-      lcc_fail_env "Install LLVM 20: brew install llvm@20"
-      return 1
-    }
+    if [[ -n "${LCC_LLVM_DIR_PRESET}" ]]; then
+      LLVM_PREFIX="$(cd "${LCC_LLVM_DIR_PRESET}/../../.." && pwd)"
+    else
+      LLVM_PREFIX="$(brew --prefix llvm@20 2>/dev/null)" || {
+        lcc_fail_env "Install LLVM 20: brew install llvm@20"
+        return 1
+      }
+    fi
     FLEX_DIR="$(brew --prefix flex)"
     BISON_DIR="$(brew --prefix bison)"
 
-    export LLVM_DIR="${LLVM_PREFIX}/lib/cmake/llvm"
+    export LLVM_DIR="${LCC_LLVM_DIR_PRESET:-${LLVM_PREFIX}/lib/cmake/llvm}"
     EXT_PATH="${EXT_PATH}:${FLEX_DIR}/bin"
     EXT_PATH="${EXT_PATH}:${BISON_DIR}/bin"
     EXT_PATH="${EXT_PATH}:${LLVM_PREFIX}/bin"
@@ -74,7 +85,9 @@ case "$(uname -s)" in
     EXT_CPPFLAGS="${EXT_CPPFLAGS} -I${LLVM_PREFIX}/include"
     ;;
   Linux)
-    if [[ -d /usr/lib/llvm-20/lib/cmake/llvm ]]; then
+    if [[ -n "${LCC_LLVM_DIR_PRESET}" ]]; then
+      LLVM_PREFIX="$(cd "${LCC_LLVM_DIR_PRESET}/../../.." && pwd)"
+    elif [[ -d /usr/lib/llvm-20/lib/cmake/llvm ]]; then
       LLVM_PREFIX=/usr/lib/llvm-20
     elif command -v llvm-config-20 >/dev/null 2>&1; then
       LLVM_PREFIX="$(llvm-config-20 --prefix)"
@@ -83,7 +96,7 @@ case "$(uname -s)" in
       return 1
     fi
 
-    export LLVM_DIR="${LLVM_PREFIX}/lib/cmake/llvm"
+    export LLVM_DIR="${LCC_LLVM_DIR_PRESET:-${LLVM_PREFIX}/lib/cmake/llvm}"
     EXT_PATH="${EXT_PATH}:${LLVM_PREFIX}/bin"
     EXT_CPPFLAGS="${EXT_CPPFLAGS} -I${LLVM_PREFIX}/include"
     ;;
@@ -101,3 +114,11 @@ export CPPFLAGS="${EXT_CPPFLAGS} ${CPPFLAGS:-}"
 
 # Link lcc-built .o files with the system toolchain (not necessarily LLVM clang).
 export LCC_LINKER="${LCC_LINKER:-$(lcc_detect_linker)}"
+
+# Where every script reads and writes build output. A sibling of the repo by
+# default, so the source tree stays clean; overridable because the default is a
+# choice about someone else's filesystem, and ten scripts spelled it three
+# different ways rather than asking one place. BASH_SOURCE rather than $0,
+# since this file is sourced and $0 is the caller's name.
+lcc_env_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+export LCC_BUILD_DIR="${LCC_BUILD_DIR:-$(cd "${lcc_env_dir}/../.." && pwd)/lcc-build}"

@@ -105,7 +105,7 @@ if [[ "$parse_counterexamples" == true ]]; then
   cd ../scripts
 fi
 
-cmake -S ../ -B ../../lcc-build \
+cmake -S ../ -B "${LCC_BUILD_DIR}" \
   -DCMAKE_BUILD_TYPE="${build_type}" \
   -DLLVM_DIR="${LLVM_DIR}" \
   -DLCC_ASAN="${asan}" \
@@ -127,4 +127,4 @@ else
 fi
 
 echo "Building lcc with ${build_jobs} parallel jobs..."
-cmake --build ../../lcc-build --parallel "${build_jobs}"
+cmake --build "${LCC_BUILD_DIR}" --parallel "${build_jobs}"

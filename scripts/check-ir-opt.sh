@@ -27,7 +27,7 @@ script_dir="$(cd "$(dirname "$0")" && pwd)"
 # shellcheck source=tests-compile-link-run.sh
 source "${script_dir}/tests-compile-link-run.sh"
 
-lcc="${script_dir}/../../lcc-build/lcc"
+lcc="${LCC_BUILD_DIR}/lcc"
 debug_dir="${script_dir}/../debug"
 tests_dir="${script_dir}/../tests"
 

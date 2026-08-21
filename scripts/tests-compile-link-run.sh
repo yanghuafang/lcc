@@ -135,12 +135,12 @@ compileC2Obj() {
   if [[ -n "${graph}" ]]; then
     graph_flag="-v ../debug/${graph}"
   fi
-  if ! ../../lcc-build/lcc ${lcc_debug_flags} ${lcc_opt_flags} \
-    -i ../tests/${source} -o ../../lcc-build/${obj} \
+  if ! ${LCC_BUILD_DIR}/lcc ${lcc_debug_flags} ${lcc_opt_flags} \
+    -i ../tests/${source} -o ${LCC_BUILD_DIR}/${obj} \
     -l-pre-opt ../debug/${ir_pre} -l-post-opt ../debug/${ir_post} \
     -l ../debug/${ir} ${graph_flag} -S ../debug/${asm}; then
     echo "Failed to compile ${source}" >&2
-    rm -f ../../lcc-build/${obj} ../debug/${ir_pre} ../debug/${ir_post} \
+    rm -f ${LCC_BUILD_DIR}/${obj} ../debug/${ir_pre} ../debug/${ir_post} \
       ../debug/${asm}
     return 1
   fi
@@ -170,8 +170,8 @@ compileGraphFixture() {
   local source=$1
   local base=${source%.c}
   printf '\n========== [graph] %s ==========\n' "${source}"
-  if ! ../../lcc-build/lcc -i ../tests/graphs/${source} \
-    -o ../../lcc-build/graph.${base}.o -v ../debug/graphs/${base}.dot; then
+  if ! ${LCC_BUILD_DIR}/lcc -i ../tests/graphs/${source} \
+    -o ${LCC_BUILD_DIR}/graph.${base}.o -v ../debug/graphs/${base}.dot; then
     echo "Failed to compile graph fixture ${source}" >&2
     return 1
   fi
@@ -221,7 +221,7 @@ linkObj2Bin() {
   local bin=$2
   # lcc emits position-independent objects (TargetBackend uses Reloc::PIC_), so
   # they link into Ubuntu's default PIE executables without -no-pie.
-  if ! "${LCC_LINKER}" ../../lcc-build/${obj} -o ../../lcc-build/${bin}; then
+  if ! "${LCC_LINKER}" ${LCC_BUILD_DIR}/${obj} -o ${LCC_BUILD_DIR}/${bin}; then
     echo "Failed to link ${obj} with ${LCC_LINKER}" >&2
     return 1
   fi
@@ -238,7 +238,7 @@ link() {
 }
 
 runBin() {
-  ../../lcc-build/${bin}
+  ${LCC_BUILD_DIR}/${bin}
 }
 
 run() {
