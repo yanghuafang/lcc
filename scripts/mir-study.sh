@@ -3,7 +3,7 @@
 # Print MIR at key codegen stages for one function (M13 study helper).
 # Uses llc from build-env.sh (LLVM 20). No lcc changes required.
 
-set -eo pipefail
+set -euo pipefail
 
 script_dir="$(cd "$(dirname "$0")" && pwd)"
 # shellcheck source=build-env.sh

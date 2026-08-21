@@ -10,7 +10,7 @@
 # Smoke test: lcc -S emits non-empty machine assembly (M18 CI).
 # compile-tests.sh also writes debug/*.s; this is a fast, explicit check.
 
-set -eo pipefail
+set -euo pipefail
 
 script_dir="$(cd "$(dirname "$0")" && pwd)"
 source "${script_dir}/build-env.sh"

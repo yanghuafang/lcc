@@ -22,6 +22,8 @@
 #   ./format.sh
 #   ./format.sh --check
 
+set -euo pipefail
+
 script_dir="$(cd "$(dirname "$0")" && pwd)"
 source "${script_dir}/build-env.sh" || exit 1
 

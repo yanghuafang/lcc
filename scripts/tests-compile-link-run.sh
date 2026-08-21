@@ -9,6 +9,11 @@
 # Compile modes (setCompileMode) decide which lcc flags each test gets:
 # --debug adds -g, --release adds -O2. The debug/ artifacts are named after the
 # mode, which is why the goldens do not collide — see docs/Testing.md.
+#
+# No `set -euo pipefail` here, unlike every script that runs directly: shell
+# options are not scoped to a file, so setting them in something sourced
+# changes the caller's shell too. Each of the callers sets its own, and this
+# file runs under whichever one sourced it.
 
 script_dir="$(cd "$(dirname "$0")" && pwd)"
 source "${script_dir}/build-env.sh" || exit 1

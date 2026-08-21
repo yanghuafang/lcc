@@ -47,7 +47,7 @@ if [[ -z "$compile_mode" ]]; then
 fi
 setCompileMode "$compile_mode" || exit 1
 
-set -e
+set -euo pipefail
 
 mkdir -p "${LCC_BUILD_DIR}/debug"
 

@@ -26,6 +26,8 @@
 #   ./tidy.sh --fix
 #   ./tidy.sh ../src/irgen/ExprToIr.cpp   # limit to specific files
 
+set -euo pipefail
+
 script_dir="$(cd "$(dirname "$0")" && pwd)"
 source "${script_dir}/build-env.sh" || exit 1
 
@@ -144,9 +146,12 @@ trap cleanup EXIT
 # independent signals: findings on stdout, trouble on stderr, and clang-tidy's
 # own exit status. Any one of them alone misses cases the other two catch.
 echo "Running clang-tidy over ${#files[@]} file(s)..."
+# `|| tidy_status=$?` rather than a bare call followed by $?: a non-zero
+# clang-tidy is an expected outcome here, and set -e would abort on it before
+# the status could be read.
+tidy_status=0
 clang-tidy "${tidy_args[@]}" "${files[@]}" \
-  >"${work_dir}/stdout" 2>"${work_dir}/stderr"
-tidy_status=$?
+  >"${work_dir}/stdout" 2>"${work_dir}/stderr" || tidy_status=$?
 
 # Findings are expected output in --fix mode (they are what just got fixed), so
 # they are tracked separately from the failures that make a run untrustworthy.
@@ -161,8 +166,11 @@ broken=0
 # Everything on stderr except the known-benign progress and tally lines is worth
 # showing; keeping the filter narrow means an unfamiliar message surfaces rather
 # than being swallowed the way all of stderr used to be.
+# `|| true` because grep exits 1 when it prints nothing, and printing nothing is
+# the ordinary outcome here: a clean run's stderr is all progress and tally
+# lines, every one of which this filters out.
 grep -vE '^(\[[0-9]+/[0-9]+\] Processing file |[0-9]+ warnings? generated\.|Suppressed [0-9]+ warnings? )' \
-  "${work_dir}/stderr" >"${work_dir}/stderr-notable"
+  "${work_dir}/stderr" >"${work_dir}/stderr-notable" || true
 
 if [[ -s "${work_dir}/stderr-notable" ]]; then
   echo "clang-tidy wrote to stderr:" >&2

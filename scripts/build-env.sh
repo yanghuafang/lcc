@@ -7,6 +7,11 @@
 # apt layout on Ubuntu, and fails with an actionable message when LLVM 20 is
 # missing rather than letting a later script fail obscurely.
 #
+# No `set -euo pipefail` here, unlike every script that runs directly: shell
+# options are not scoped to a file, so setting them in something sourced
+# changes the caller's shell too. Each of the ten callers sets its own, and
+# this file runs under whichever one sourced it.
+#
 # LCC_LINKER deliberately prefers the *system* clang/gcc over the LLVM 20 clang
 # this script just put on PATH: lcc emits PIC objects that want a stock PIE
 # link, and Homebrew's clang mishandles them on macOS.

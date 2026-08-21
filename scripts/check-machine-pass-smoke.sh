@@ -7,7 +7,7 @@
 # This is the only CI coverage of TargetBackend's hand-rolled codegen pipeline
 # (addEmitPassesWithMachineStats); the default suite never passes -machine-stats.
 
-set -eo pipefail
+set -euo pipefail
 
 script_dir="$(cd "$(dirname "$0")" && pwd)"
 source "${script_dir}/build-env.sh"

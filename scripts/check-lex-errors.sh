@@ -21,7 +21,7 @@
 # Exit 4 with a stale or partial .o on disk would leave a Makefile believing
 # the target was up to date.
 
-set -eo pipefail
+set -euo pipefail
 
 script_dir="$(cd "$(dirname "$0")" && pwd)"
 source "${script_dir}/build-env.sh"

@@ -7,7 +7,7 @@
 # Catches the regression where debug info is emitted but hollow — which the
 # pass/fail suite cannot see, because the program still runs correctly.
 
-set -eo pipefail
+set -euo pipefail
 
 script_dir="$(cd "$(dirname "$0")" && pwd)"
 export EXT_PATH="${EXT_PATH:-}"

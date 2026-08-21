@@ -21,7 +21,7 @@
 # same host that generated them. After an intentional IR change, regenerate the
 # goldens and re-run this check.
 
-set -eo pipefail
+set -euo pipefail
 
 script_dir="$(cd "$(dirname "$0")" && pwd)"
 # shellcheck source=tests-compile-link-run.sh

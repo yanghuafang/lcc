@@ -9,7 +9,7 @@
 # matches the default. For host-specific codegen study, run lcc manually with
 # an explicit CPU name (e.g. -mcpu apple-m2, -mcpu skylake).
 
-set -eo pipefail
+set -euo pipefail
 
 script_dir="$(cd "$(dirname "$0")" && pwd)"
 # shellcheck source=build-env.sh

@@ -6,7 +6,7 @@
 # LCC_LINKER, because lcc's PIC objects want a stock PIE link. Run
 # ./compile-tests.sh first; then ./run-tests.sh.
 
-set -eo pipefail
+set -euo pipefail
 
 source ./tests-compile-link-run.sh
 

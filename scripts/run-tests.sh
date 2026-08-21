@@ -6,7 +6,7 @@
 # this is a pass/fail gate rather than an output comparison. Run
 # ./compile-tests.sh and ./link-tests.sh first.
 
-set -eo pipefail
+set -euo pipefail
 
 source ./tests-compile-link-run.sh
 
