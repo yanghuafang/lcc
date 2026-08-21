@@ -304,6 +304,9 @@ std::vector<size_t> resolveBounds(const AST::VarInit* var,
       continue;
     }
 
+    // Unreachable: the loop above already rejected an inferred bound at any
+    // index but 0. Kept so this loop states its own precondition rather than
+    // inheriting it from ten lines up.
     if (i != 0) {
       throw std::logic_error("Only the first array dimension may be inferred.");
     }

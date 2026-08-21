@@ -67,6 +67,10 @@ bool addEmitPassesWithMachineStats(llvm::TargetMachine& targetMachine,
   if (passConfig == nullptr) {
     return true;
   }
+  // Matches addPassesToEmitFile, whose DisableVerify parameter defaults to
+  // true — the stock path below passes no argument for it. Keeping the two
+  // emission paths on the same machine passes is what lets
+  // check-machine-pass-smoke.sh compare their objects byte for byte.
   passConfig->setDisableVerify(true);
   pm.add(passConfig);  // PassManager takes ownership.
 

@@ -97,6 +97,11 @@ void dumpIr(llvm::Module& module, const std::string& fileName) {
   }
 
   module.print(irFileStream, nullptr);
+
+  // The verifier writes into the IR file itself, so a failure lands at the
+  // end of the .ll rather than on stderr, and the exit status stays 0. This
+  // is also lcc's only verifyModule call: a compile that dumps no IR never
+  // verifies at all.
   if (static_cast<int>(llvm::verifyModule(module, &irFileStream)) != 0) {
     std::cout << "Errors in IR code!" << '\n';
   }

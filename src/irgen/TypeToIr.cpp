@@ -146,6 +146,8 @@ size_t StructType::getMemberIndex(const std::string& memberName) const {
     }
   }
 
+  // Not found. size_t(-1) is the sentinel; genStructMemberPtr in
+  // irgen/ExprToIr.cpp tests for it.
   return -1;
 }
 
@@ -204,6 +206,10 @@ llvm::Type* UnionType::getMemberType(const std::string& memberName,
   return nullptr;
 }
 
+// The one getType() here that fills no llvmType_, so the guard below never
+// fires and the body runs on every call. Nothing calls it twice today — a
+// TypeDecl materializes its enum once — but a second call would re-add every
+// member and throw on the redefinition.
 llvm::Type* EnumType::getType(TypeEnv& env) {
   if (llvmType_ != nullptr) {
     return llvmType_;
