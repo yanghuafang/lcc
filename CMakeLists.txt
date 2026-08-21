@@ -2,7 +2,15 @@ cmake_minimum_required(VERSION 3.22)
 
 project(lcc)
 
+# All three, because the first alone promises less than it looks. Without
+# REQUIRED, CMAKE_CXX_STANDARD is a preference: a compiler that cannot do C++17
+# silently gets an older one and the failure surfaces as an unrelated syntax
+# error. Without EXTENSIONS OFF the flag is -std=gnu++17, so a GNU extension
+# compiles here and fails wherever this is read as the C++17 the docs claim.
+# The whole tree was checked against -std=c++17 before this went in.
 set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
 
 # Emit compile_commands.json in the build directory. clang-tidy and clangd both
 # need it to know the include paths and flags each file is compiled with;
@@ -101,8 +109,12 @@ add_definitions(${LLVM_DEFINITIONS_LIST})
 # src/generated is also a root because flex emits #include "Parser.hpp".
 include_directories(${CMAKE_SOURCE_DIR}/src ${CMAKE_SOURCE_DIR}/src/generated)
 
-# Recursive so adding a layer under src/ needs no edit here.
-file(GLOB_RECURSE SOURCES
+# Recursive so adding a layer under src/ needs no edit here. CONFIGURE_DEPENDS
+# is what makes that true: a plain glob is evaluated once, at configure time, so
+# a new source is silently left out of the build until something happens to
+# reconfigure. scripts/build-lcc.sh configures on every run and hid this, which
+# is the only reason it was never noticed -- a bare `cmake --build` did not.
+file(GLOB_RECURSE SOURCES CONFIGURE_DEPENDS
   ${CMAKE_SOURCE_DIR}/src/*.hpp
   ${CMAKE_SOURCE_DIR}/src/*.cpp)
 
