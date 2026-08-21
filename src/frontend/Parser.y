@@ -446,6 +446,10 @@ Enum:       IDENTIFIER          { $$ = new AST::Enum(*$1); }
 
  /* Stmts */
 
+ /* An empty statement (`;`) reduces to nullptr rather than to a node, so the
+   guard below drops it instead of pushing a null into the list. FieldDecls
+   does the same for a stray `;` between struct members. */
+
 Stmts:      Stmts Stmt          { $$ = $1; if ($2 != nullptr) $$->push_back($2); }
             |                   { $$ = new AST::Stmts(); }
             ;
@@ -536,6 +540,15 @@ Block:      LBRACE Stmts RBRACE { $$ = new AST::Block($2);
             ;
 
  /* Expr */
+
+ /* %prec below borrows a level rather than declaring one, for the reason the
+   dangling-else note above gives: a rule takes the precedence of its last
+   terminal, which for every prefix and postfix form here is the wrong one or
+   none at all. `SUB Expr` would take the binary additive level, and
+   `Expr LBRACKET Expr RBRACKET` ends in a token the precedence table never
+   mentions. %prec ARROW gives the postfix forms C's tightest level; %prec NOT
+   gives the prefix forms the unary level above the binaries, which is what
+   makes `-a * b` parse as `(-a) * b`. See docs/ParserConflicts.md. */
 
 Expr:       IDENTIFIER          { $$ = new AST::Variable(*$1); }
             | Constant          { $$ = $1; }

@@ -385,6 +385,11 @@ int returnLexHexConstant(const char* text, size_t len) {
 }
 
  /** Integer Number **/
+ /* The [+-]? prefix here and on the three rules below folds a sign into the
+    literal. Maximal munch then takes `-1` as one INTEGER wherever the operator
+    abuts a digit, so `a-1` lexes as IDENTIFIER INTEGER and fails to parse;
+    only the spaced form `a - 1` works. Handing the sign to Parser.y's
+    UnaryMinus production instead would fix it. */
 [+-]?([1-9][0-9]*|0) {
     if (!parseIntLiteral(yytext, yyleng, yylval.intVal)) {
         yylval.intVal = 0;
@@ -498,6 +503,12 @@ int returnLexHexConstant(const char* text, size_t len) {
     }
     return STRING;
 }
+
+ /* No catch-all rule above, so flex's default action applies to anything
+    unmatched: ECHO it to stdout and carry on. A stray character is therefore
+    dropped silently and lands in lcc's own stdout — `#include <stdio.h>`
+    prints a bare `#` and then fails to parse at the `<`. `%option nodefault`
+    plus a `. { yyerror("stray character"); }` rule would report it instead. */
 
 %%
 

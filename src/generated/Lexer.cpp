@@ -1581,9 +1581,14 @@ YY_RULE_SETUP
 }
 	YY_BREAK
 /** Integer Number **/
+/* The [+-]? prefix here and on the three rules below folds a sign into the
+    literal. Maximal munch then takes `-1` as one INTEGER wherever the operator
+    abuts a digit, so `a-1` lexes as IDENTIFIER INTEGER and fails to parse;
+    only the spaced form `a - 1` works. Handing the sign to Parser.y's
+    UnaryMinus production instead would fix it. */
 case 77:
 YY_RULE_SETUP
-#line 389 "frontend/Lexer.l"
+#line 394 "frontend/Lexer.l"
 {
     if (!parseIntLiteral(yytext, yyleng, yylval.intVal)) {
         yylval.intVal = 0;
@@ -1594,7 +1599,7 @@ YY_RULE_SETUP
 /** Hex Integer Number (unsuffixed; width from value) **/
 case 78:
 YY_RULE_SETUP
-#line 397 "frontend/Lexer.l"
+#line 402 "frontend/Lexer.l"
 {
     return returnLexHexConstant(yytext, yyleng);
 }
@@ -1602,7 +1607,7 @@ YY_RULE_SETUP
 /** Hex unsigned long **/
 case 79:
 YY_RULE_SETUP
-#line 402 "frontend/Lexer.l"
+#line 407 "frontend/Lexer.l"
 {
     if (!parseUnsignedLongLiteral(yytext, yyleng, yylval.ulongVal)) {
         yylval.ulongVal = 0;
@@ -1613,7 +1618,7 @@ YY_RULE_SETUP
 /** Hex unsigned int **/
 case 80:
 YY_RULE_SETUP
-#line 410 "frontend/Lexer.l"
+#line 415 "frontend/Lexer.l"
 {
     if (!parseUnsignedIntLiteral(yytext, yyleng, yylval.uintVal)) {
         yylval.uintVal = 0;
@@ -1624,7 +1629,7 @@ YY_RULE_SETUP
 /** Hex long **/
 case 81:
 YY_RULE_SETUP
-#line 418 "frontend/Lexer.l"
+#line 423 "frontend/Lexer.l"
 {
     if (!parseLongLiteral(yytext, yyleng, yylval.longVal)) {
         yylval.longVal = 0;
@@ -1635,7 +1640,7 @@ YY_RULE_SETUP
 /** Unsigned Integer Number **/
 case 82:
 YY_RULE_SETUP
-#line 426 "frontend/Lexer.l"
+#line 431 "frontend/Lexer.l"
 {
     if (!parseUnsignedIntLiteral(yytext, yyleng, yylval.uintVal)) {
         yylval.uintVal = 0;
@@ -1646,7 +1651,7 @@ YY_RULE_SETUP
 /** Long Number **/
 case 83:
 YY_RULE_SETUP
-#line 434 "frontend/Lexer.l"
+#line 439 "frontend/Lexer.l"
 {
     if (!parseLongLiteral(yytext, yyleng, yylval.longVal)) {
         yylval.longVal = 0;
@@ -1657,7 +1662,7 @@ YY_RULE_SETUP
 /** Unsigned Long Number **/
 case 84:
 YY_RULE_SETUP
-#line 442 "frontend/Lexer.l"
+#line 447 "frontend/Lexer.l"
 {
     if (!parseUnsignedLongLiteral(yytext, yyleng, yylval.ulongVal)) {
         yylval.ulongVal = 0;
@@ -1668,7 +1673,7 @@ YY_RULE_SETUP
 /** Float Number **/
 case 85:
 YY_RULE_SETUP
-#line 450 "frontend/Lexer.l"
+#line 455 "frontend/Lexer.l"
 {
     if (!parseFloatLiteral(yytext, yyleng, yylval.floatVal)) {
         yylval.floatVal = 0.0f;
@@ -1679,7 +1684,7 @@ YY_RULE_SETUP
 /** Double Number **/
 case 86:
 YY_RULE_SETUP
-#line 458 "frontend/Lexer.l"
+#line 463 "frontend/Lexer.l"
 {
     if (!parseDoubleLiteral(yytext, yyleng, yylval.doubleVal)) {
         yylval.doubleVal = 0.0;
@@ -1690,49 +1695,49 @@ YY_RULE_SETUP
 /** Characters to ignore **/
 case 87:
 YY_RULE_SETUP
-#line 466 "frontend/Lexer.l"
+#line 471 "frontend/Lexer.l"
 { ; }
 	YY_BREAK
 case 88:
 /* rule 88 can match eol */
 YY_RULE_SETUP
-#line 467 "frontend/Lexer.l"
+#line 472 "frontend/Lexer.l"
 { yycolumn = 1; }
 	YY_BREAK
 case 89:
 YY_RULE_SETUP
-#line 468 "frontend/Lexer.l"
+#line 473 "frontend/Lexer.l"
 { BEGIN(COMMENT); }  /* multi-line; start condition, not one-line rule */
 	YY_BREAK
 case 90:
 YY_RULE_SETUP
-#line 469 "frontend/Lexer.l"
+#line 474 "frontend/Lexer.l"
 { BEGIN(INITIAL); }
 	YY_BREAK
 case 91:
 /* rule 91 can match eol */
 YY_RULE_SETUP
-#line 470 "frontend/Lexer.l"
+#line 475 "frontend/Lexer.l"
 { yycolumn = 1; }
 	YY_BREAK
 case 92:
 YY_RULE_SETUP
-#line 471 "frontend/Lexer.l"
+#line 476 "frontend/Lexer.l"
 { ; }
 	YY_BREAK
 case YY_STATE_EOF(COMMENT):
-#line 472 "frontend/Lexer.l"
+#line 477 "frontend/Lexer.l"
 { BEGIN(INITIAL); }
 	YY_BREAK
 case 93:
 YY_RULE_SETUP
-#line 473 "frontend/Lexer.l"
+#line 478 "frontend/Lexer.l"
 { ; }
 	YY_BREAK
 /** Character **/
 case 94:
 YY_RULE_SETUP
-#line 477 "frontend/Lexer.l"
+#line 482 "frontend/Lexer.l"
 {
     yylval.charVal = escapeDecode(yytext[2]);
     return CHARACTER;
@@ -1741,7 +1746,7 @@ YY_RULE_SETUP
 case 95:
 /* rule 95 can match eol */
 YY_RULE_SETUP
-#line 482 "frontend/Lexer.l"
+#line 487 "frontend/Lexer.l"
 {
     yylval.charVal = yytext[1];
     return CHARACTER;
@@ -1754,7 +1759,7 @@ YY_RULE_SETUP
 case 96:
 /* rule 96 can match eol */
 YY_RULE_SETUP
-#line 491 "frontend/Lexer.l"
+#line 496 "frontend/Lexer.l"
 {
     yylval.strVal = tokenstrings::createEmpty();
     for (int i = 1; i < yyleng - 1; ++i) {
@@ -1767,12 +1772,17 @@ YY_RULE_SETUP
     return STRING;
 }
 	YY_BREAK
+/* No catch-all rule above, so flex's default action applies to anything
+    unmatched: ECHO it to stdout and carry on. A stray character is therefore
+    dropped silently and lands in lcc's own stdout — `#include <stdio.h>`
+    prints a bare `#` and then fails to parse at the `<`. `%option nodefault`
+    plus a `. { yyerror("stray character"); }` rule would report it instead. */
 case 97:
 YY_RULE_SETUP
-#line 503 "frontend/Lexer.l"
+#line 514 "frontend/Lexer.l"
 ECHO;
 	YY_BREAK
-#line 1775 "generated/Lexer.cpp"
+#line 1785 "generated/Lexer.cpp"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
@@ -2789,7 +2799,7 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 503 "frontend/Lexer.l"
+#line 514 "frontend/Lexer.l"
 
 
  /* Subroutines Section */
