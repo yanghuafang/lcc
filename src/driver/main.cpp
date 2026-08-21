@@ -258,6 +258,11 @@ int main(int argc, char* argv[]) {
 
   AstRootOwner astRootOwner;
 
+  // The front end reads its source through stdin, which main freopened above,
+  // so it never learns the file's name on its own. Naming it here is what lets
+  // a diagnostic print file:line:column and an editor jump to it.
+  frontend::setSourcePath(parser.get<std::string>("-i"));
+
   // Lex & syntax parsing.
   const int ret = yyparse();
 
