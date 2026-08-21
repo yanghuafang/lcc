@@ -13,8 +13,8 @@ OUTPUT_DIRECTORY       = ../lcc-build/docs
 # way the #include lines do: "irgen/Operators.hpp", not a long absolute path.
 # The landing page is a file rather than a \mainpage block in a header:
 # Doxygen's index.html is otherwise the project name and nothing else.
-INPUT                  = src docs/ApiMainPage.md
-USE_MDFILE_AS_MAINPAGE = docs/ApiMainPage.md
+INPUT                  = src docs/doxygen/ApiMainPage.md
+USE_MDFILE_AS_MAINPAGE = docs/doxygen/ApiMainPage.md
 STRIP_FROM_PATH        = src
 RECURSIVE              = YES
 FILE_PATTERNS          = *.hpp *.cpp *.md

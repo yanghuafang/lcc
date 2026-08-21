@@ -2,10 +2,10 @@
 
 # docs.sh — generate lcc's API documentation with Doxygen.
 #
-# Reads ../docs/Doxyfile, which documents only what carries a /// comment: the
-# public headers under src/. Output lands in ../../lcc-build/docs/html, beside
-# the build tree rather than inside the repo, for the same reason object files
-# do.
+# Reads ../docs/doxygen/Doxyfile, which documents only what carries a ///
+# comment: the public headers under src/. Output lands in
+# ../../lcc-build/docs/html, beside the build tree rather than inside the repo,
+# for the same reason object files do.
 #
 # Pass/fail comes from the warning log, not the exit status. Doxygen exits 0
 # after complaining about an unresolved \param or a broken reference, so a
@@ -89,12 +89,13 @@ rm -rf "${docs_dir}/html"
 cd "${repo_root}"
 
 # The Doxyfile names its own output directory, which is right for anyone
-# running `doxygen docs/Doxyfile` by hand. Appending the two keys on stdin
-# lets LCC_BUILD_DIR win here without the Doxyfile depending on it being set:
+# running `doxygen docs/doxygen/Doxyfile` by hand. Appending the two keys on
+# stdin lets LCC_BUILD_DIR win here without the Doxyfile depending on it being
+# set:
 # doxygen reads a config from "-", and a later assignment overrides an earlier
 # one.
 {
-  cat docs/Doxyfile
+  cat docs/doxygen/Doxyfile
   echo "OUTPUT_DIRECTORY = ${docs_dir}"
   echo "WARN_LOGFILE = ${log}"
 } | doxygen -
