@@ -24,11 +24,28 @@ if [ ! -f "${ir}" ]; then
   exit 1
 fi
 
+work_dir="$(mktemp -d "${TMPDIR:-/tmp}/lcc-mir-study-XXXXXX")"
+cleanup() {
+  rm -rf "${work_dir}"
+}
+trap cleanup EXIT
+
+# llc writes to a file, and head reads that file, rather than llc piping into
+# head. Piping looks simpler and silently broke this script: head closes the
+# pipe once it has head_lines, llc's next write fails, and llc exits 74
+# (EX_IOERR). pipefail turns that into a failed pipeline and -e ends the run,
+# so only the first of the four stages below ever printed.
+#
+# `| head || true` would have hidden it, along with a genuine llc failure --
+# unreadable IR, an unknown pass name. Off the pipe, llc's exit status still
+# means what it says.
 dump_stage() {
   local title="$1"
   shift
   echo "=== ${title} (@${func}) ==="
-  llc -O2 --filter-print-funcs="${func}" "$@" "${ir}" -o /dev/null 2>&1 | head -n "${head_lines}"
+  llc -O2 --filter-print-funcs="${func}" "$@" "${ir}" -o /dev/null \
+    >"${work_dir}/stage.mir" 2>&1
+  head -n "${head_lines}" "${work_dir}/stage.mir"
   echo
 }
 
