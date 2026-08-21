@@ -4,8 +4,8 @@
 #include <stdexcept>
 
 #include "ast/Nodes.hpp"
-#include "irgen/CodeGenerator.hpp"
 #include "types/BuiltinTypeMap.hpp"
+#include "types/TypeEnv.hpp"
 
 // AST types -> llvm::Type: getType() for each VarType node in ast/Nodes.hpp —
 // builtin, pointer, array, struct, union, enum, and typedef alias.
