@@ -179,7 +179,7 @@ LCC_LINKER=gcc ./link-tests.sh
 
 ## Debug a program built by `lcc`
 
-`-g` embeds debug info for the **generated** C program (the `-i` file), not for debugging `lcc` itself. See [DebuggingLcc.md](DebuggingLcc.md) to debug the compiler.
+`-g` embeds debug info for the C program being compiled (the `-i` file), not for debugging `lcc` itself. See [DebuggingLcc.md](DebuggingLcc.md) to debug the compiler.
 
 ```bash
 ../../lcc-build/lcc -g -O0 -i ../tests/0.hello_world.c -o ../../lcc-build/0.hello_world.o

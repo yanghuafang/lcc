@@ -169,7 +169,7 @@ lcc/
 │   └── graphs/        # Assertion-free fixtures, one per language area, for AST graphs only
 ├── benchmarks/        # Larger workloads for bench.sh (M15)
 ├── scripts/           # build-lcc.sh, compile/link/run-tests.sh, format.sh,
-│                   # tidy.sh, docs.sh, bench
+│                          # tidy.sh, docs.sh, bench.sh
 ├── docs/              # Guides (start with LearningPlan.md)
 ├── debug/             # Committed IR / asm goldens for the suite; AST graphs in debug/graphs/
 ├── CMakeLists.txt     # flex/bison codegen + LLVM configuration
@@ -197,18 +197,9 @@ lcc/
 
 ## Requirements
 
-**macOS** (Homebrew) or **Ubuntu 24.04 / 26.04 LTS**, with:
+**macOS** (Homebrew) or **Ubuntu 24.04 / 26.04 LTS**, with **LLVM 20**, **CMake 3.22+**, a **C++17** compiler, and a system linker (`clang` or `gcc`) for lcc's PIC objects. flex, bison, argparse, graphviz and doxygen come from the setup scripts.
 
-| Needed | Note |
-| --- | --- |
-| LLVM **20**, CMake **3.22+**, **C++17** | |
-| flex, bison | required at **configure** time — CMake regenerates the lexer and parser on every run |
-| a system linker (`clang` or `gcc`) | links lcc's PIC objects |
-| argparse | used if installed; CMake downloads it otherwise |
-| graphviz | supplies `dot`, which the test scripts call to render AST images, and which Doxygen uses for the hierarchy diagrams |
-| doxygen | builds the API reference with `scripts/docs.sh`; optional for building `lcc` itself |
-
-Setup commands: [docs/Install.md](docs/Install.md).
+Full list and setup commands: [docs/Install.md](docs/Install.md).
 
 ## Project status
 
