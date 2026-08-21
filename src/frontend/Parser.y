@@ -391,9 +391,6 @@ ParamList:    ParamList COMMA Param
             |                   { $$ = new AST::ParamList(); }
             ;
 
- /* A Param is a variable that is defined in a function's declaration or definition. */
- /* It acts as a placeholder for the value that will be passed to the function */
- /* when it is called. */
 Param:      VarType IDENTIFIER  { $$ = new AST::Param($1, *$2); }
             | VarType           { $$ = new AST::Param($1); }
             ;
@@ -540,8 +537,6 @@ Block:      LBRACE Stmts RBRACE { $$ = new AST::Block($2);
 
  /* Expr */
 
- /* An argument is actual value or expression that is passed to the function */
- /* when it is invoked. */
 Expr:       IDENTIFIER          { $$ = new AST::Variable(*$1); }
             | Constant          { $$ = $1; }
             | LPARENTHESES Expr RPARENTHESES

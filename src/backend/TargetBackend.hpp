@@ -32,9 +32,8 @@ struct TargetBackendOptions {
 /// Two things about it surprise people:
 ///
 /// - **Each call emits independently.** Assembly is not derived from the
-/// object;
-///   emitAssembly runs a second, complete codegen over the same module. So
-///   calling both does the back-end work twice, by design.
+///   object; emitAssembly runs a second, complete codegen over the same
+///   module. So calling both does the back-end work twice, by design.
 ///
 /// - **Emission mutates the module.** The legacy pass manager rewrites the
 ///   module as it lowers, so a module is not pristine after emitObject. That is

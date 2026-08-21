@@ -209,7 +209,8 @@ llvm::Type* EnumType::getType(TypeEnv& env) {
     return llvmType_;
   }
 
-  // Calc value for every member.
+  // C11 6.7.2.2p3: a member with no `=` takes one more than the member
+  // before it, whether that one was explicit or implied.
   int lastDefValue = -1;
   for (Enum* member : *enumList_) {
     if (member->hasValue_) {
@@ -231,7 +232,5 @@ llvm::Type* EnumType::getType(TypeEnv& env) {
 
   return llvm::IntegerType::getInt32Ty(env.getContext());
 }
-
-// Statements
 
 }  // namespace AST

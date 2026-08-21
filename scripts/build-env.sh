@@ -16,9 +16,6 @@
 # this script just put on PATH: lcc emits PIC objects that want a stock PIE
 # link, and Homebrew's clang mishandles them on macOS.
 
-# Toolchain paths for building and testing lcc. Sourced by other scripts in this
-# directory; detects macOS (Homebrew) vs Linux (Ubuntu/Debian apt packages).
-
 lcc_fail_env() {
   echo "$1" >&2
   return 1

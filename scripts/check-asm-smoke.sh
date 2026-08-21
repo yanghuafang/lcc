@@ -5,10 +5,8 @@
 # Compiles at -O2 with -S and checks the output is non-empty and contains a
 # `main` symbol. Separate from the main suite because -S runs its own codegen
 # pipeline over the module, independent of the object path — a break there is
-# invisible to a test that only links and runs the .o.
-
-# Smoke test: lcc -S emits non-empty machine assembly (M18 CI).
-# compile-tests.sh also writes debug/*.s; this is a fast, explicit check.
+# invisible to a test that only links and runs the .o. compile-tests.sh also
+# writes debug/*.s; this is the fast explicit check (M18 CI).
 
 set -euo pipefail
 

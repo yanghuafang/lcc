@@ -49,11 +49,11 @@ class Type;
 ///
 ///   1. initialize(sourcePath)   creates the DWARF compile unit. Nothing else
 ///                               works before this; other calls no-op.
-///   2. setTypeEnv(env)          struct/union DI has to read AST field lists
-///   and
-///                               materialize member types, which needs the type
-///                               environment. Without it, aggregates degrade to
-///                               opaque basic types rather than failing loudly.
+///   2. setTypeEnv(env)          struct/union DI reads AST field lists and
+///                               materializes member types, which needs the
+///                               type environment. Without it, aggregates
+///                               degrade to opaque basic types rather than
+///                               failing loudly.
 ///   3. createFunction / createLexicalBlock / setLocation / declareAlloca
 ///                               called during the walk, in source order.
 ///   4. finalize()               resolves temporary metadata nodes. Skipping it
