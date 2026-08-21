@@ -77,7 +77,7 @@ Use an existing test such as [`tests/25.quick_sort.c`](tests/25.quick_sort.c) as
 ## Coding style
 
 - **C++17**, formatted with `clang-format` using the repo's [`.clang-format`](.clang-format) (Google base style, 2-space indent, 80-column limit).
-- Two scripts enforce this, and CI runs both — run them before committing:
+- Three scripts enforce this, and CI runs all of them — run them before committing:
 
   ```bash
   ./scripts/format.sh   # clang-format + strip trailing whitespace

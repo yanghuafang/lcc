@@ -180,8 +180,8 @@ See [Benchmarks.md](Benchmarks.md) for workloads, timed runs, and recording resu
 
 ## CI
 
-GitHub Actions (`.github/workflows/ci.yml`) runs a matrix on `ubuntu-24.04`, `ubuntu-26.04`, and `macos-latest`: install, `format.sh --check`, build, `tidy.sh`, compile, link, run, `check-lex-errors.sh`, `check-debug-info.sh`, `check-asm-smoke.sh`, `check-machine-pass-smoke.sh`, and `bench.sh --smoke`. See [Install.md](Install.md) for dependencies.
+GitHub Actions (`.github/workflows/ci.yml`) runs a matrix on `ubuntu-24.04`, `ubuntu-26.04`, and `macos-latest`: install, `format.sh --check`, build, `tidy.sh`, `docs.sh`, compile, link, run, `check-lex-errors.sh`, `check-debug-info.sh`, `check-asm-smoke.sh`, `check-machine-pass-smoke.sh`, and `bench.sh --smoke`. A second job builds `lcc` under ASan and UBSan and compiles the suite in both modes with the instrumented binary. See [Install.md](Install.md) for dependencies.
 
-`format.sh --check` runs before the build so a formatting slip fails in seconds rather than after a full LLVM link. `tidy.sh` runs after it, because clang-tidy needs the compile database the build produces, and only on `ubuntu-24.04` — its findings are host-independent, so a second and third copy would add cost without signal.
+`format.sh --check` runs before the build so a formatting slip fails in seconds rather than after a full LLVM link. `tidy.sh` runs after it, because clang-tidy needs the compile database the build produces. It and `docs.sh` run on `ubuntu-24.04` only — their findings are host-independent, so a second and third copy would add cost without signal.
 
 `check-ir-opt.sh` (M16) is **not** in CI: its `debug/` goldens are host-specific, so it is a local pre-commit guard run on the host that generated them.
