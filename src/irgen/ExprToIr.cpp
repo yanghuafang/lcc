@@ -206,6 +206,7 @@ llvm::Value* Constant::genCode(CodeGenerator& generator) {
 }
 
 llvm::Value* Constant::genCodePtr(CodeGenerator& generator) {
+  (void)generator;
   throw std::logic_error("constant is not left value!");
 }
 
@@ -214,6 +215,7 @@ llvm::Value* ConstStr::genCode(CodeGenerator& generator) {
 }
 
 llvm::Value* ConstStr::genCodePtr(CodeGenerator& generator) {
+  (void)generator;
   throw std::logic_error("Left value const string is not supported!");
 }
 
@@ -288,6 +290,7 @@ llvm::Value* FuncCall::genCode(CodeGenerator& generator) {
 }
 
 llvm::Value* FuncCall::genCodePtr(CodeGenerator& generator) {
+  (void)generator;
   throw std::logic_error("Function call can not return left value!");
 }
 
@@ -369,6 +372,7 @@ llvm::Value* TypeCast::genCode(CodeGenerator& generator) {
 }
 
 llvm::Value* TypeCast::genCodePtr(CodeGenerator& generator) {
+  (void)generator;
   throw std::logic_error("Type cast can not return left value!");
 }
 
@@ -399,6 +403,7 @@ llvm::Value* SizeOf::genCode(CodeGenerator& generator) {
 }
 
 llvm::Value* SizeOf::genCodePtr(CodeGenerator& generator) {
+  (void)generator;
   throw std::logic_error("sizeof can not return left value!");
 }
 

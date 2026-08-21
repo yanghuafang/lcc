@@ -38,10 +38,12 @@
 namespace AST {
 
 VarType* Expr::getExprVarType(CodeGenerator& generator) const {
+  (void)generator;
   return nullptr;
 }
 
 VarType* Expr::getLValueVarType(CodeGenerator& generator) const {
+  (void)generator;
   return nullptr;
 }
 
