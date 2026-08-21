@@ -11,6 +11,37 @@
 using AST::BuiltinTypeId;
 
 namespace ops {
+namespace {
+
+// The icmp half of createCompare: one IntCmpPred and a signedness flag to one
+// LLVM predicate. Signedness splits the four orderings and not EQ/NE, which is
+// the whole of the table.
+llvm::Value* createIntegerCmp(llvm::IRBuilder<>& builder, IntCmpPred pred,
+                              llvm::Value* lhs, llvm::Value* rhs,
+                              bool isUnsigned) {
+  switch (pred) {
+    case IntCmpPred::EQ:
+      return builder.CreateICmpEQ(lhs, rhs);
+    case IntCmpPred::NE:
+      return builder.CreateICmpNE(lhs, rhs);
+    case IntCmpPred::LT:
+      return isUnsigned ? builder.CreateICmpULT(lhs, rhs)
+                        : builder.CreateICmpSLT(lhs, rhs);
+    case IntCmpPred::LE:
+      return isUnsigned ? builder.CreateICmpULE(lhs, rhs)
+                        : builder.CreateICmpSLE(lhs, rhs);
+    case IntCmpPred::GT:
+      return isUnsigned ? builder.CreateICmpUGT(lhs, rhs)
+                        : builder.CreateICmpSGT(lhs, rhs);
+    case IntCmpPred::GE:
+      return isUnsigned ? builder.CreateICmpUGE(lhs, rhs)
+                        : builder.CreateICmpSGE(lhs, rhs);
+  }
+
+  return nullptr;
+}
+
+}  // namespace
 
 llvm::Value* createCompare(llvm::IRBuilder<>& builder, IntCmpPred intPred,
                            llvm::CmpInst::Predicate floatPred, llvm::Value* lhs,
@@ -65,31 +96,6 @@ llvm::Value* createCmpEq(llvm::IRBuilder<>& builder, llvm::Value* lhs,
   }
 
   return result;
-}
-
-llvm::Value* createIntegerCmp(llvm::IRBuilder<>& builder, IntCmpPred pred,
-                              llvm::Value* lhs, llvm::Value* rhs,
-                              bool isUnsigned) {
-  switch (pred) {
-    case IntCmpPred::EQ:
-      return builder.CreateICmpEQ(lhs, rhs);
-    case IntCmpPred::NE:
-      return builder.CreateICmpNE(lhs, rhs);
-    case IntCmpPred::LT:
-      return isUnsigned ? builder.CreateICmpULT(lhs, rhs)
-                        : builder.CreateICmpSLT(lhs, rhs);
-    case IntCmpPred::LE:
-      return isUnsigned ? builder.CreateICmpULE(lhs, rhs)
-                        : builder.CreateICmpSLE(lhs, rhs);
-    case IntCmpPred::GT:
-      return isUnsigned ? builder.CreateICmpUGT(lhs, rhs)
-                        : builder.CreateICmpSGT(lhs, rhs);
-    case IntCmpPred::GE:
-      return isUnsigned ? builder.CreateICmpUGE(lhs, rhs)
-                        : builder.CreateICmpSGE(lhs, rhs);
-  }
-
-  return nullptr;
 }
 
 // ptr + int is lowered to a GEP whose element type comes from the AST pointer/
