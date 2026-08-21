@@ -19,7 +19,7 @@ The master plan for studying and extending **lcc** across the full compiler stac
 
 **Key idea:** IR **generation** is `genCode()` + `IRBuilder`; LLVM only ever sees IR that lcc already built. `IrOptimizer` runs the custom passes first, then the LLVM pipeline. `-l-pre-opt` / `-l-post-opt` bracket the middle-end; `-l` dumps after `pipeline::emitObject()`, with target metadata attached.
 
-The committed goldens make the `-g` branch concrete: at `-O2`, `25.quick_sort.release.pre.ll` → `.post.ll` drops 294 → 174 lines, while under `-g` the same file goes 408 → 409 — a single line of DWARF, because `-g` skips the LLVM pipeline entirely ([Usage.md](Usage.md#optimization-levels--o)).
+The committed goldens make the `-g` branch concrete: at `-O2`, `25.quick_sort.release.pre.ll` → `.post.ll` drops 301 → 181 lines, while under `-g` the same file goes 413 → 414 — a single line of DWARF, because `-g` skips the LLVM pipeline entirely ([Usage.md](Usage.md#optimization-levels--o)).
 
 Acceptance criteria for M4–M18: [MiddleBackendNotes.md](MiddleBackendNotes.md). Front-end language history: [FrontendNotes.md](FrontendNotes.md).
 
