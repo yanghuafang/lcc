@@ -4,7 +4,7 @@ The master plan for studying and extending **lcc** across the full compiler stac
 
 | Layer | lcc today | This plan |
 | ------- | ----------- | ----------- |
-| **Front-end** | flex/bison, AST, single-pass `genCode()` | Study track; language deferrals live in [FrontendNotes.md](FrontendNotes.md) |
+| **Front-end** | flex/bison, AST, single-pass `genCode()` | Study track; language deferrals live in [Language.md](Language.md#not-supported-yet) |
 | **Middle-end (IR)** | Raw IR via `IRBuilder`; `-O` via `IrOptimizer` | Observability, custom New PM passes, pipeline control |
 | **Back-end** | `TargetBackend` → `.o` / `.s` on the host target | Asm via `-S`, target flags, MIR inspection |
 | **Optimization** | LLVM default pipelines | Study classical opts and vectorization; optional benchmarks |
@@ -348,7 +348,7 @@ The front-end is feature-complete ([FrontendNotes.md](FrontendNotes.md) records 
 | Single-pass typing | `getExprTypeId`, `getExprVarType` during `genCode()` |
 | Debug info | `irgen/DebugInfoBuilder.cpp`, the `-g` path |
 
-Future **language** work (preprocessor, 3D arrays, `extern`) stays in [FrontendNotes.md](FrontendNotes.md) — it is not part of M0–M18.
+Future **language** work (preprocessor, 3D arrays, `extern`) is listed in [Language.md § Not supported](Language.md#not-supported-yet) — it is not part of M0–M18.
 
 ---
 
@@ -391,7 +391,7 @@ This page is the index for scope questions. The table below is work lcc will **n
 | New CPU or new LLVM backend target | A port, not a milestone |
 | Custom greedy register allocator | Research-scale (see [M17](#m17-machine-pass-advanced-optional)) |
 | Full loop vectorizer implementation | Use LLVM's (see [M14](#m14-vectorization-study-llvm)) |
-| Preprocessor, 3D arrays | [FrontendNotes.md](FrontendNotes.md) deferrals |
+| Preprocessor, 3D arrays | Front-end deferrals, listed in [Language.md § Not supported](Language.md#not-supported-yet) |
 | Optimized debugging (`dbg.value` salvage) | Why `-g` skips IR opts instead of mixing them; see [Usage.md](Usage.md) |
 
 ---

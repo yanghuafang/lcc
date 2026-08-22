@@ -191,7 +191,7 @@ lcc/
 | [docs/DebuggingLcc.md](docs/DebuggingLcc.md) | Debug `lcc` in VS Code / LLDB |
 | [docs/Language.md](docs/Language.md) | Full feature list and limitations |
 | [docs/ParserConflicts.md](docs/ParserConflicts.md) | Bison parser conflicts |
-| [docs/FrontendNotes.md](docs/FrontendNotes.md) | How the front-end reached its current feature set; deferred language work |
+| [docs/FrontendNotes.md](docs/FrontendNotes.md) | How the front-end reached its current feature set |
 | [docs/MiddleBackendNotes.md](docs/MiddleBackendNotes.md) | What each middle/back-end milestone built, with acceptance criteria |
 
 [docs/README.md](docs/README.md) indexes the same guides with a milestone-to-doc map. The generated [API reference](https://yanghuafang.github.io/lcc/) renders the same comments the headers carry, adding diagrams of the six-level `Node` hierarchy that the sources cannot show; `scripts/docs.sh` builds it locally.

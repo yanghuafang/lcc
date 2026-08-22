@@ -41,7 +41,7 @@ How each half of the compiler was built, and what was deliberately left out. Bot
 
 | Document | Contents |
 |----------|----------|
-| [FrontendNotes.md](FrontendNotes.md) | How the front-end reached its current C feature set, priority by priority, plus deferred language work |
+| [FrontendNotes.md](FrontendNotes.md) | How the front-end reached its current C feature set, priority by priority |
 | [MiddleBackendNotes.md](MiddleBackendNotes.md) | What each middle/back-end milestone (M4–M18) built, with acceptance criteria and how to verify it |
 
 ## Milestone map (quick index)
