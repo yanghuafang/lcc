@@ -31,10 +31,10 @@
 //   1  no arguments — help text printed to stdout, not an error
 //   2  bad command line: unparseable flags, or -O-passes combined with -O0..Oz
 //   3  cannot open the -i source file
-//   4  lex/parse failed — either yyparse returned non-zero, or the lexer
-//      rejected a literal. The second half needs saying: the lexer recovers
-//      by substituting 0 and returning a valid token, so a parse can succeed
-//      with errors behind it, and lcc used to emit an object from the
+//   4  lex/parse failed — yyparse returned non-zero, or the lexer rejected a
+//      literal or a byte no rule matches. The lexer half needs saying: it
+//      recovers by substituting 0 and returning a valid token, so a parse can
+//      succeed with errors behind it, and lcc used to emit an object from the
 //      substituted values and exit 0
 //   5  writing the -v AST graph threw — but the common failure does not reach
 //      here: dotfile::write reports an unopenable path on stderr and returns,
