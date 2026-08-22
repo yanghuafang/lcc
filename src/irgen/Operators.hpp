@@ -14,17 +14,15 @@ class TypeEnv;
 
 /// \file
 /// One function per C binary operator, lowering it to the matching LLVM
-/// instruction. Each applies the usual arithmetic conversions to its operands
-/// first (via convert::typeUpgrade), then picks the signed or unsigned opcode
-/// using the C signedness carried in AST::BuiltinTypeId — sdiv vs udiv, srem vs
-/// urem, ashr vs lshr, icmp slt vs ult — since LLVM integer types do not record
-/// signedness themselves.
+/// instruction, then picking the signed or unsigned opcode using the C
+/// signedness carried in AST::BuiltinTypeId — sdiv vs udiv, srem vs urem, ashr
+/// vs lshr, icmp slt vs ult — since LLVM integer types do not record signedness
+/// themselves.
 ///
-/// One exception, and it is a deviation rather than a simplification: the two
-/// shifts run through the same convert::typeUpgrade as everything else. C
-/// promotes each shift operand on its own and gives the result the promoted
-/// left operand's type, so `int >> unsigned` stays signed in C and becomes an
-/// lshr here.
+/// Most operators reach their operands through convert::typeUpgrade, the usual
+/// arithmetic conversions. The two shifts do not: C promotes each shift operand
+/// on its own and gives the result the promoted left operand's type, so
+/// `int >> unsigned` stays signed. prepareShiftOperands applies that rule.
 ///
 /// == This file is not irgen/OperatorToIr.cpp ==
 ///

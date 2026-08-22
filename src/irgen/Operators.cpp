@@ -210,7 +210,7 @@ llvm::Value* createMul(llvm::IRBuilder<>& builder, llvm::Value* lhs,
   throw std::logic_error("Mul with unsupported types!");
 }
 
-// isUnsigned selects udiv/urem/lshr vs sdiv/srem/ashr for integer operands.
+// isUnsigned selects udiv vs sdiv and urem vs srem for integer operands.
 llvm::Value* createDiv(llvm::IRBuilder<>& builder, llvm::Value* lhs,
                        llvm::Value* rhs, BuiltinTypeId lhsTypeId,
                        BuiltinTypeId rhsTypeId, bool isUnsigned) {
