@@ -317,15 +317,12 @@ Pure infrastructure — no new C syntax. Valuable for debugging, but does not un
 
 ## Explicitly out of scope (for now)
 
-These are **deliberately deferred** — larger subsystems or architectural non-goals, each with a reason not to pursue it near-term (they also appear under **Not supported** in [Language.md](Language.md)). Smaller, self-contained ideas live under [Future directions](#future-directions-no-milestones) below.
+These are **deliberately deferred** — architectural non-goals, each with a reason not to pursue it near-term. Language features `lcc` does not accept are listed in [Language.md § Not supported](Language.md#not-supported-yet), each with its own reason. Smaller, self-contained ideas live under [Future directions](#future-directions-no-milestones) below.
 
 | Feature | Reason to defer |
 | --------- | ----------------- |
-| Preprocessing (`#include`, `#define`) | Separate pipeline stage; very large |
-| `extern` variables | Linkage + multi-TU model; manual decls work today |
 | Separate semantic-analysis pass | Add only when a feature requires it (e.g. heavy typedef disambiguation) — see architecture notes in `ast/Nodes.hpp` |
 | Split `Expr` from `Stmt` | Large churn; low ROI unless rewriting the frontend for pedagogy |
-| 3D arrays | 2D covers multidim teaching goals; high complexity for diminishing returns |
 
 ---
 
@@ -345,16 +342,9 @@ Self-contained; adds no new language semantics; high UX/teaching value.
 
 ### C language features not yet implemented
 
-| Idea | Touches | Notes |
-| ------ | --------- | ------- |
-| `goto` + labels | lexer, `Parser.y`, codegen | Self-contained; reuses the basic-block machinery from loops / `switch` |
-| Function pointers | declarator grammar, type system, call lowering | Hardest corner of the type system; enables callbacks |
-| More scalar types | lexer, `BuiltinType`, codegen | `signed`, `long long`, `long double` |
-| Struct bit-fields | AST, struct layout, codegen | Packing rules |
-| Designated initializers | init grammar, codegen | `{ .x = 1, [2] = 3 }` |
-| Block-scope `typedef` | scope handling, State 133 conflicts | Extends the current file-scope `typedef` |
+The list is [Language.md § Not supported](Language.md#not-supported-yet), which is the page a reader asking whether `lcc` accepts something is already on, and the one place to update when the answer changes.
 
-Each would follow the same one-idea-per-change discipline (grammar → AST → codegen → tests), but none is scheduled.
+Any of them would follow the same one-idea-per-change discipline (grammar → AST → codegen → tests), but none is scheduled.
 
 Deeper **optimization / back-end** ideas are recorded in [MiddleBackendNotes.md § Future directions](MiddleBackendNotes.md#future-directions-no-milestones).
 

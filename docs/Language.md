@@ -55,9 +55,13 @@ Unlike industrial compilers (clang, gcc) that use recursive-descent parsing, `lc
 
 ## Not supported (yet)
 
-- Preprocessing: such as `#include`
-- Macro definition `#define` and expansion
-- Three dimensional and higher arrays, and their initialization: such as `int a[2][8][5];` (deferred)
+- Preprocessing: such as `#include`, and macro definition `#define` and expansion. A separate pipeline stage, and a large one.
+- `goto` and labels
+- Function pointers: declaring one (`int (*p)(int);`) and calling through it
+- Struct bit-fields: `struct S { int a : 3; };`
+- Designated initializers: `{ .x = 1, [2] = 3 }`
+- Scalar types beyond the builtin set: `signed`, `long long`, `long double`
+- Three dimensional and higher arrays, and their initialization: such as `int a[2][8][5];` (deferred — 2D already covers the multidimensional case, and the complexity climbs steeply from there)
 - Block-scope typedef: only file-scope `typedef` is supported.
 - Struct tag typedefs before definition: `typedef struct Employee Employee;` requires the struct to be defined first, or use the combined form `typedef struct S { … } S;`.
 - **Parentheses starting with a bare identifier followed by `)` or `*`.** In that position the parser reduces `IDENTIFIER` to a type name and reads the parentheses as a cast, so these are syntax errors:
@@ -69,7 +73,7 @@ Unlike industrial compilers (clang, gcc) that use recursive-descent parsing, `lc
 
   Any other operator after the identifier parses fine (`(a + 7)`, `(a == 3)`, `(a > 3)`), as does a parenthesized expression that does not begin with a bare identifier (`(7 * a)`, `(*p * 7)`, `(arr[0] * 7)`). Work around it by reordering the operands, dropping the parentheses, or assigning to a temporary. Root cause: state 133 in `Parser.output` — see [ParserConflicts.md](ParserConflicts.md#4-identifier-type-name-or-expression-4-reducereduce).
 - Typedef names used as variables in the same scope (rejected; same root cause as above).
-- `extern`: `lcc` requires function declaration for linkage; extern variables are not allowed.
+- `extern`: `lcc` requires function declaration for linkage; extern variables are not allowed. Supporting them means a linkage and multi-translation-unit model, and manual declarations cover what the tests need.
 - **Unsuffixed decimal literals wider than `int`.** Unsuffixed *hex* promotes to
   the narrowest type that fits, but decimal does not: `3000000000` and
   `-2147483648` are both rejected as out of range. Add an `l` suffix
