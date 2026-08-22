@@ -96,52 +96,70 @@ then:                                             ; preds = %entry
 else:                                             ; preds = %entry
   %4 = load i32, ptr %age, align 4, !dbg !39
   %5 = icmp sgt i32 %4, 6, !dbg !39
+  br i1 %5, label %land.rhs, label %land.end, !dbg !39
+
+land.rhs:                                         ; preds = %else
   %6 = load i32, ptr %age, align 4, !dbg !39
   %7 = icmp sle i32 %6, 14, !dbg !39
-  %8 = select i1 %5, i1 %7, i1 false, !dbg !39
+  br label %land.end, !dbg !39
+
+land.end:                                         ; preds = %land.rhs, %else
+  %8 = phi i1 [ false, %else ], [ %7, %land.rhs ], !dbg !39
   br i1 %8, label %then1, label %else2, !dbg !39
 
-then1:                                            ; preds = %else
+then1:                                            ; preds = %land.end
   %9 = load i32, ptr %age, align 4, !dbg !40
   ret i32 %9, !dbg !40
 
-else2:                                            ; preds = %else
+else2:                                            ; preds = %land.end
   %10 = load i32, ptr %age, align 4, !dbg !42
   %11 = icmp sgt i32 %10, 14, !dbg !42
+  br i1 %11, label %land.rhs3, label %land.end4, !dbg !42
+
+land.rhs3:                                        ; preds = %else2
   %12 = load i32, ptr %age, align 4, !dbg !42
   %13 = icmp sle i32 %12, 18, !dbg !42
-  %14 = select i1 %11, i1 %13, i1 false, !dbg !42
-  br i1 %14, label %then3, label %else4, !dbg !42
+  br label %land.end4, !dbg !42
 
-then3:                                            ; preds = %else2
+land.end4:                                        ; preds = %land.rhs3, %else2
+  %14 = phi i1 [ false, %else2 ], [ %13, %land.rhs3 ], !dbg !42
+  br i1 %14, label %then5, label %else6, !dbg !42
+
+then5:                                            ; preds = %land.end4
   %15 = load i32, ptr %age, align 4, !dbg !43
   ret i32 %15, !dbg !43
 
-else4:                                            ; preds = %else2
+else6:                                            ; preds = %land.end4
   %16 = load i32, ptr %age, align 4, !dbg !45
   %17 = icmp sgt i32 %16, 18, !dbg !45
+  br i1 %17, label %land.rhs7, label %land.end8, !dbg !45
+
+land.rhs7:                                        ; preds = %else6
   %18 = load i32, ptr %age, align 4, !dbg !45
   %19 = icmp sle i32 %18, 35, !dbg !45
-  %20 = select i1 %17, i1 %19, i1 false, !dbg !45
-  br i1 %20, label %then5, label %else6, !dbg !45
+  br label %land.end8, !dbg !45
 
-then5:                                            ; preds = %else4
+land.end8:                                        ; preds = %land.rhs7, %else6
+  %20 = phi i1 [ false, %else6 ], [ %19, %land.rhs7 ], !dbg !45
+  br i1 %20, label %then9, label %else10, !dbg !45
+
+then9:                                            ; preds = %land.end8
   %21 = load i32, ptr %age, align 4, !dbg !46
   ret i32 %21, !dbg !46
 
-else6:                                            ; preds = %else4
+else10:                                           ; preds = %land.end8
   br label %if.end, !dbg !46
 
-if.end:                                           ; preds = %else6
-  br label %if.end7, !dbg !46
+if.end:                                           ; preds = %else10
+  br label %if.end11, !dbg !46
 
-if.end7:                                          ; preds = %if.end
-  br label %if.end8, !dbg !46
+if.end11:                                         ; preds = %if.end
+  br label %if.end12, !dbg !46
 
-if.end8:                                          ; preds = %if.end7
-  br label %if.end9, !dbg !46
+if.end12:                                         ; preds = %if.end11
+  br label %if.end13, !dbg !46
 
-if.end9:                                          ; preds = %if.end8
+if.end13:                                         ; preds = %if.end12
   %22 = load i32, ptr %age, align 4, !dbg !48
   ret i32 %22, !dbg !48
 }

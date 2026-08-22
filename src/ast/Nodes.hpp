@@ -1600,9 +1600,7 @@ class LogicExpr : public LhsRhsExpr {
 
   [[nodiscard]] virtual const char* nonLValueErrorMessage() const = 0;
 
-  llvm::Value* genBoolBinaryCode(
-      CodeGenerator& generator,
-      const std::function<llvm::Value*(llvm::Value*, llvm::Value*)>& combine);
+  llvm::Value* genShortCircuitCode(CodeGenerator& generator, bool isAnd);
 
   llvm::Value* genEqualityCode(CodeGenerator& generator);
 
@@ -1752,7 +1750,7 @@ class TernaryCondition final : public Expr {
   std::pair<std::string, std::string> genGraph() const override;
 
  protected:
-  llvm::Value* genTernarySelect(
+  llvm::Value* genTernaryBranch(
       CodeGenerator& generator,
       const std::function<llvm::Value*(Expr*)>& evalBranch,
       const char* typeMismatchMessage) const;
