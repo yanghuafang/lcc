@@ -18,6 +18,7 @@ All commands below assume `cd lcc/scripts`.
 | `check-asm-smoke.sh` | Smoke test: `-O2 -S` on one test; verify non-empty asm (M18 CI) |
 | `check-machine-pass-smoke.sh` | Smoke test: `-machine-stats` emits a summary and leaves the object byte-identical (M17 CI) |
 | `check-ir-opt.sh` | IR opt regression: recompile `-O2`, compare IR vs committed `debug/` goldens (M16) |
+| `check-differential.sh` | Compile `tests/differential/*` with lcc and the system compiler, run both, compare output |
 | `mir-study.sh` | Study helper: print MIR before/after regalloc via `llc` (M13) |
 | `bench.sh` | Benchmark `benchmarks/*` (compile time, IR count, runtime); `--smoke` for CI — see [Benchmarks.md](Benchmarks.md) |
 | `format.sh` | `clang-format` plus trailing-whitespace strip; `--check` reports without writing |
@@ -177,6 +178,43 @@ The final-IR goldens (`*.debug.ll`, `*.release.ll`) embed the full host triple, 
 ```
 
 See [Benchmarks.md](Benchmarks.md) for workloads, timed runs, and recording results.
+
+### Differential check
+
+```bash
+./check-differential.sh                 # every program
+./check-differential.sh shifts.c        # one of them
+```
+
+Compiles each program under `tests/differential/` twice — once with `lcc`, once
+with the system compiler — runs both, and compares stdout and exit status. Any
+difference is a miscompilation in `lcc`.
+
+The numbered suite cannot cover this ground. Every program in `tests/` checks
+itself and prints `PASS` or `FAIL`, which catches only a value someone already
+knew was wrong: a construct nobody thought to test passes silently, and so does
+one whose expected value was worked out with `lcc` itself. The programs here
+assert nothing. They print computed values, and the system compiler supplies
+the answers — so a semantics fix can be verified rather than asserted by
+running the check before the change and after.
+
+| Program | Covers |
+| --------- | -------- |
+| `baseline.c` | A control: semantics `lcc` already gets right, so it must always agree |
+| `conversions.c` | Integer conversions across signedness and width |
+| `shifts.c` | `<<` and `>>` with mixed operand types |
+| `usual_conversions.c` | The usual arithmetic conversions on mixed signed/unsigned pairs |
+| `switch_order.c` | `case` and `default` label order |
+
+`baseline.c` is what tells a broken harness apart from a real divergence: if it
+ever reports a difference, the reference compiler or the capture is at fault,
+not the operand types its neighbours are testing.
+
+Set `LCC_REFERENCE_CC` to compare against something other than `LCC_LINKER`.
+
+**Not in CI, and currently failing on purpose.** Four of the five programs
+diverge today, each on a known bug in `lcc`'s conversion, shift, and `switch`
+lowering. Wire it into `.github/workflows/ci.yml` once it is green.
 
 ## CI
 
