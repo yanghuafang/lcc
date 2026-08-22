@@ -212,9 +212,12 @@ not the operand types its neighbours are testing.
 
 Set `LCC_REFERENCE_CC` to compare against something other than `LCC_LINKER`.
 
-**Not in CI, and currently failing on purpose.** Four of the five programs
-diverge today, each on a known bug in `lcc`'s conversion, shift, and `switch`
-lowering. Wire it into `.github/workflows/ci.yml` once it is green.
+**Not in CI yet.** All five programs agreed once the conversion, shift and
+`switch` lowering were fixed — the check reported four diverging programs when
+it was written and reports none now. What is left before wiring it into
+`.github/workflows/ci.yml` is confirming it on the Linux runners: the values
+these programs print should be identical on any LP64 host, but that has only
+been verified on macOS arm64.
 
 ## CI
 

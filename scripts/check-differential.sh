@@ -14,8 +14,10 @@
 # is what lets a semantics fix be verified rather than asserted: run this
 # before the change and after.
 #
-# Deliberately not in CI. The divergences it reports are real bugs in lcc, so
-# it fails today on purpose; wire it in once it is green.
+# Not in CI yet. It reported four diverging programs when it was written and
+# reports none now, so the remaining question is whether the reference
+# compiler's answers travel: every value it prints should be identical on any
+# LP64 host, but that has only been confirmed on macOS arm64.
 
 set -euo pipefail
 
