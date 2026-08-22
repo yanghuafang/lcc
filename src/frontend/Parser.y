@@ -442,6 +442,10 @@ EnumList:   EnumList COMMA Enum
 Enum:       IDENTIFIER          { $$ = new AST::Enum(*$1); }
             | IDENTIFIER ASSIGN INTEGER
                                 { $$ = new AST::Enum(*$1, true, $3); }
+             /* The lexer hands `-` to the grammar, and this rule needs a
+                literal rather than an Expr, so it spells the sign itself. */
+            | IDENTIFIER ASSIGN SUB INTEGER
+                                { $$ = new AST::Enum(*$1, true, -$4); }
             ;
 
  /* Stmts */

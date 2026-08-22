@@ -1199,6 +1199,7 @@ class UnaryPlus final : public ThrowingUnaryExpr {
   ~UnaryPlus() override = default;
 
   VarType* getExprVarType(CodeGenerator& generator) const override;
+  BuiltinTypeId getExprTypeId(CodeGenerator& generator) const override;
 
   llvm::Value* genCode(CodeGenerator& generator) override;
 

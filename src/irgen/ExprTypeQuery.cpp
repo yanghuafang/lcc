@@ -166,6 +166,14 @@ VarType* UnaryPlus::getExprVarType(CodeGenerator& generator) const {
   return operand_->getExprVarType(generator);
 }
 
+// Forwarded rather than left to the base, for the same reason UnaryMinus does
+// it below: a Constant overrides getExprTypeId but not getExprVarType, so the
+// base's "ask getExprVarType" default answers UNKNOWN for `+13`, and the
+// operator lowering then rejects `3 + +13` as an untyped operand pair.
+BuiltinTypeId UnaryPlus::getExprTypeId(CodeGenerator& generator) const {
+  return operand_->getExprTypeId(generator);
+}
+
 VarType* UnaryMinus::getExprVarType(CodeGenerator& generator) const {
   return operand_->getExprVarType(generator);
 }

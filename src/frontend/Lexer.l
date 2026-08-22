@@ -205,25 +205,6 @@ bool parseDoubleLiteral(const char* text, size_t len, double& out) {
 // 6.4.4.1p5 on the type of an integer constant — not the integer promotion in
 // types/TypeRules.hpp, which widens narrow types inside an expression.
 int returnLexHexConstant(const char* text, size_t len) {
-    if (len > 0 && text[0] == '-') {
-        long signedVal = 0;
-        if (!parseSignedLong(text, len, signedVal)) {
-            yylval.longVal = 0;
-            return LONGVAL;
-        }
-        if (signedVal >= INT_MIN && signedVal <= INT_MAX) {
-            yylval.intVal = static_cast<int>(signedVal);
-            return INTEGER;
-        }
-        if (signedVal >= LONG_MIN && signedVal <= LONG_MAX) {
-            yylval.longVal = signedVal;
-            return LONGVAL;
-        }
-        yyerror("integer literal out of range");
-        yylval.longVal = 0;
-        return LONGVAL;
-    }
-
     unsigned long val = 0;
     if (!parsePlainUnsignedLong(text, len, val)) {
         yylval.ulongVal = 0;
@@ -385,12 +366,13 @@ int returnLexHexConstant(const char* text, size_t len) {
 }
 
  /** Integer Number **/
- /* The [+-]? prefix here and on the three rules below folds a sign into the
-    literal. Maximal munch then takes `-1` as one INTEGER wherever the operator
-    abuts a digit, so `a-1` lexes as IDENTIFIER INTEGER and fails to parse;
-    only the spaced form `a - 1` works. Handing the sign to Parser.y's
-    UnaryMinus production instead would fix it. */
-[+-]?([1-9][0-9]*|0) {
+ /* No sign prefix on any numeric rule below: `-` and `+` are operators, and
+    Parser.y applies them through its UnaryMinus / UnaryPlus productions. A
+    prefix here instead lets maximal munch take `-1` as a single token wherever
+    the operator abuts a digit, which made `a-1` lex as IDENTIFIER INTEGER --
+    and `a-1.5` worse still, since the integer rule won "-1" away from the
+    float rule below and left a stray `.5` behind. */
+([1-9][0-9]*|0) {
     if (!parseIntLiteral(yytext, yyleng, yylval.intVal)) {
         yylval.intVal = 0;
     }
@@ -398,7 +380,7 @@ int returnLexHexConstant(const char* text, size_t len) {
 }
 
  /** Hex Integer Number (unsuffixed; width from value) **/
-[+-]?0x[0-9a-fA-F]+ {
+0x[0-9a-fA-F]+ {
     return returnLexHexConstant(yytext, yyleng);
 }
 
@@ -419,7 +401,7 @@ int returnLexHexConstant(const char* text, size_t len) {
 }
 
  /** Hex long **/
-[+-]?0x[0-9a-fA-F]+[lL] {
+0x[0-9a-fA-F]+[lL] {
     if (!parseLongLiteral(yytext, yyleng, yylval.longVal)) {
         yylval.longVal = 0;
     }
@@ -427,7 +409,7 @@ int returnLexHexConstant(const char* text, size_t len) {
 }
 
  /** Unsigned Integer Number **/
-\+?([1-9][0-9]*|0)(u|U) {
+([1-9][0-9]*|0)(u|U) {
     if (!parseUnsignedIntLiteral(yytext, yyleng, yylval.uintVal)) {
         yylval.uintVal = 0;
     }
@@ -435,7 +417,7 @@ int returnLexHexConstant(const char* text, size_t len) {
 }
 
  /** Long Number **/
-[+-]?([1-9][0-9]*|0)(l|L) {
+([1-9][0-9]*|0)(l|L) {
     if (!parseLongLiteral(yytext, yyleng, yylval.longVal)) {
         yylval.longVal = 0;
     }
@@ -443,7 +425,7 @@ int returnLexHexConstant(const char* text, size_t len) {
 }
 
  /** Unsigned Long Number **/
-\+?([1-9][0-9]*|0)(ul|UL|Ul|uL) {
+([1-9][0-9]*|0)(ul|UL|Ul|uL) {
     if (!parseUnsignedLongLiteral(yytext, yyleng, yylval.ulongVal)) {
         yylval.ulongVal = 0;
     }
