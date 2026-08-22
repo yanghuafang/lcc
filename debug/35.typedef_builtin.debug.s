@@ -17,7 +17,7 @@ Ltmp1:
 	.loc	1 11 3
 	ldr	x9, [sp, #24]
 	ldr	x8, [sp, #8]
-	ldr	w10, [sp, #20]
+	ldrsw	x10, [sp, #20]
 	add	x8, x8, x10
 	str	w8, [x9]
 	.loc	1 11 3 epilogue_begin is_stmt 0
