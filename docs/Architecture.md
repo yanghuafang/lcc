@@ -133,7 +133,7 @@ Two properties are worth stating because they are easy to lose:
 #### Why the tree owns raw pointers
 
 Every node owns its children as plain `Node*`, the grammar actions allocate them
-with `new` (140 sites in `Parser.y`), and `ast/Ownership.cpp` frees them with
+with `new` (141 sites in `Parser.y`), and `ast/Ownership.cpp` frees them with
 `delete` (61 sites). Modern C++ would reach for `std::unique_ptr`, and this is
 the one place lcc does not. The reason is bison, not preference.
 
@@ -148,7 +148,7 @@ error: object of type 'YYSTYPE' cannot be assigned because its copy
 ```
 
 Owning smart pointers therefore require the C++ skeleton — `%skeleton
-"lalr1.cc"` with `%define api.value.type variant` — which rewrites all 661 lines
+"lalr1.cc"` with `%define api.value.type variant` — which rewrites all 665 lines
 of the grammar, the flex interface it shares, `main()`'s use of `yyparse()` and
 `g_root`, and every `Node*` member the seven walkers under `irgen/` read. That
 is a rewrite of the front end rather than a cleanup.
@@ -192,7 +192,7 @@ The walk is split by node category — the same `Decl` / `Stmt` / `Expr` / `VarT
 | ------ | ---------------- |
 | `irgen/ExprToIr.cpp` | `genCode()` / `genCodePtr()` for the `Expr` nodes that name or produce a value directly: variables, literals, calls, member access, subscript, cast, `sizeof`, unary |
 | `irgen/OperatorToIr.cpp` | Assignment, arithmetic, increment/decrement, bitwise, shift. Each operator and its compound-assignment twin share one `ops::` function, called from `genBinaryCode` / `genCompoundAssignPtr` |
-| `irgen/LogicToIr.cpp` | `&&`, `\|\|`, `!`, the six comparisons, and `?:` — the operators whose result is `int` regardless of operand type. Also the three that branch: `&&`, `\|\|`, and `?:` short-circuit, so each builds a block and a phi rather than a `select` |
+| `irgen/LogicToIr.cpp` | `&&`, `\|\|`, `!`, the six comparisons, and `?:` — the operators whose result is `int` regardless of operand type. Also the three that branch: `&&`, `\|\|`, and `?:` short-circuit, so inside a function each builds a block and a phi. At file scope, where there is nothing to skip, they fall back to a `select` |
 | `irgen/ExprTypeQuery.cpp` | The `getExpr*` / `getLValue*` queries for every `Expr` node — lcc's stand-in for a semantic-analysis pass. Answers what type an expression *has*; emits no instructions, which is why it is separate from the three lowering files above |
 | `irgen/StmtToIr.cpp` | `genCode()` for every `Stmt` node, plus `FuncBody` (a statement list). Where lcc's basic-block structure is built: if/else joins, loop header/body/latch, switch dispatch, break/continue targets |
 | `irgen/DeclToIr.cpp` | `genCode()` for `Program`, `FuncDecl`, `VarDecl`, `TypeDecl`, `TypedefDecl`. `VarDecl::genCode` reads as a decision table — resolve bounds, build the nested `ArrayType`, pick storage, initialize — and delegates the initializing itself to the two services below |
