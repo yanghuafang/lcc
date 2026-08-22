@@ -31,11 +31,38 @@ void pickLast(int v) {
   }
 }
 
+// Dispatch order and body order are separate things, and this is where they
+// meet: reaching default by falling off the end of the case above it, or
+// falling out of default into the case below.
+void fallThrough(int v) {
+  printf("v=%d", v);
+  switch (v) {
+    case 1:
+      printf(" one");
+    default:
+      printf(" default");
+    case 3:
+      printf(" three");
+  }
+  printf("\n");
+}
+
+void onlyDefault(int v) {
+  switch (v) {
+    default:
+      printf("v=%d only-default\n", v);
+  }
+}
+
 int main() {
   pick(1);
   pick(2);
   pick(3);
   pickLast(1);
   pickLast(2);
+  fallThrough(1);
+  fallThrough(2);
+  fallThrough(3);
+  onlyDefault(7);
   return 0;
 }

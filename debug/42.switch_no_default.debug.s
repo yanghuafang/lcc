@@ -63,17 +63,15 @@ Ltmp4:
 	.loc	1 26 3
 	ldr	w8, [sp, #12]
 	subs	w8, w8, #1
-	b.eq	LBB1_2
+	b.ne	LBB1_2
 	b	LBB1_1
 LBB1_1:
-	b	LBB1_3
-LBB1_2:
 	.loc	1 28 7
 	mov	w0, #100
 	.loc	1 28 7 epilogue_begin is_stmt 0
 	add	sp, sp, #16
 	ret
-LBB1_3:
+LBB1_2:
 	.loc	1 30 7 is_stmt 1
 	mov	w0, #200
 	.loc	1 30 7 epilogue_begin is_stmt 0

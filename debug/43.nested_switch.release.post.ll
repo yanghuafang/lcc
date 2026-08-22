@@ -8,23 +8,23 @@ target triple = "arm64-apple-darwin25.6.0"
 ; Function Attrs: mustprogress nofree norecurse nosync nounwind willreturn memory(none)
 define range(i32 100, 1001) i32 @nested(i32 %0, i32 %1) local_unnamed_addr #0 {
 entry:
-  switch i32 %0, label %case.25 [
+  switch i32 %0, label %case.24 [
     i32 1, label %case.0
-    i32 2, label %switch.end6
+    i32 2, label %switch.end5
   ]
 
 case.0:                                           ; preds = %entry
   %switch.selectcmp = icmp eq i32 %1, 2
   %switch.select = select i1 %switch.selectcmp, i32 112, i32 114
-  %switch.selectcmp19 = icmp eq i32 %1, 1
-  %switch.select20 = select i1 %switch.selectcmp19, i32 111, i32 %switch.select
-  br label %switch.end6
+  %switch.selectcmp18 = icmp eq i32 %1, 1
+  %switch.select19 = select i1 %switch.selectcmp18, i32 111, i32 %switch.select
+  br label %switch.end5
 
-case.25:                                          ; preds = %entry
-  br label %switch.end6
+case.24:                                          ; preds = %entry
+  br label %switch.end5
 
-switch.end6:                                      ; preds = %case.0, %entry, %case.25
-  %r.2 = phi i32 [ 1000, %case.25 ], [ 100, %entry ], [ %switch.select20, %case.0 ]
+switch.end5:                                      ; preds = %case.0, %entry, %case.24
+  %r.2 = phi i32 [ 1000, %case.24 ], [ 100, %entry ], [ %switch.select19, %case.0 ]
   ret i32 %r.2
 }
 

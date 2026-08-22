@@ -19,8 +19,8 @@ entry:
 define range(i32 100, 201) i32 @allReturn(i32 %0) local_unnamed_addr #0 {
 entry:
   %1 = icmp eq i32 %0, 1
-  %common.ret.op = select i1 %1, i32 100, i32 200
-  ret i32 %common.ret.op
+  %. = select i1 %1, i32 100, i32 200
+  ret i32 %.
 }
 
 ; Function Attrs: nofree nounwind

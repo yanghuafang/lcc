@@ -53,10 +53,7 @@ switch.compare.7:                                 ; preds = %switch.compare.6
 
 switch.compare.8:                                 ; preds = %switch.compare.7
   %11 = icmp eq i32 %1, 10, !dbg !13
-  br i1 %11, label %case.9, label %switch.compare.9, !dbg !13
-
-switch.compare.9:                                 ; preds = %switch.compare.8
-  br label %case.10, !dbg !13
+  br i1 %11, label %case.9, label %case.10, !dbg !13
 
 case.0:                                           ; preds = %entry
   br label %case.1, !dbg !14
@@ -96,7 +93,7 @@ case.9:                                           ; preds = %case.8, %switch.com
   %15 = load i8, ptr %grade, align 1, !dbg !26
   br label %switch.end, !dbg !27
 
-case.10:                                          ; preds = %switch.compare.9
+case.10:                                          ; preds = %switch.compare.8
   store i8 69, ptr %grade, align 1, !dbg !28
   %16 = load i8, ptr %grade, align 1, !dbg !28
   br label %switch.end, !dbg !29
