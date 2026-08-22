@@ -212,16 +212,22 @@ not the operand types its neighbours are testing.
 
 Set `LCC_REFERENCE_CC` to compare against something other than `LCC_LINKER`.
 
-**Not in CI yet.** All five programs agreed once the conversion, shift and
-`switch` lowering were fixed — the check reported four diverging programs when
-it was written and reports none now. What is left before wiring it into
-`.github/workflows/ci.yml` is confirming it on the Linux runners: the values
-these programs print should be identical on any LP64 host, but that has only
-been verified on macOS arm64.
+All five programs agreed once the conversion, shift and `switch` lowering were
+fixed — the check reported four diverging programs when it was written and
+reports none now — so it runs in CI on every platform in the matrix.
+
+The reference compile passes `-fsigned-char`. Plain `char` is signed or
+unsigned by platform, and `lcc` has made its choice: `char` is signed
+everywhere, and the supported subset has no `signed char` to say so with. The
+current runners happen to agree, but on a host where they did not, `char c =
+-1` widened to `unsigned long` would come back `255` from the reference and
+`ULONG_MAX` from `lcc` — an ABI difference that reads exactly like a
+miscompilation.
 
 ## CI
 
-GitHub Actions (`.github/workflows/ci.yml`) runs a matrix on `ubuntu-24.04`, `ubuntu-26.04`, and `macos-latest`: install, `format.sh --check`, build, `tidy.sh`, `docs.sh`, compile, link, run, `check-lex-errors.sh`, `check-debug-info.sh`, `check-asm-smoke.sh`, `check-machine-pass-smoke.sh`, and `bench.sh --smoke`. A second job builds `lcc` under ASan and UBSan and compiles the suite in both modes with the instrumented binary. See [Install.md](Install.md) for dependencies.
+GitHub Actions (`.github/workflows/ci.yml`) runs a matrix on `ubuntu-24.04`, `ubuntu-26.04`, and `macos-latest`: install, `format.sh --check`, build, `tidy.sh`, `docs.sh`, compile, link, run, `check-differential.sh`,
+`check-lex-errors.sh`, `check-debug-info.sh`, `check-asm-smoke.sh`, `check-machine-pass-smoke.sh`, and `bench.sh --smoke`. A second job builds `lcc` under ASan and UBSan and compiles the suite in both modes with the instrumented binary. See [Install.md](Install.md) for dependencies.
 
 `format.sh --check` runs before the build so a formatting slip fails in seconds rather than after a full LLVM link. `tidy.sh` runs after it, because clang-tidy needs the compile database the build produces. It and `docs.sh` run on `ubuntu-24.04` only — their findings are host-independent, so a second and third copy would add cost without signal.
 

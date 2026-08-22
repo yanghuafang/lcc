@@ -14,10 +14,8 @@
 # is what lets a semantics fix be verified rather than asserted: run this
 # before the change and after.
 #
-# Not in CI yet. It reported four diverging programs when it was written and
-# reports none now, so the remaining question is whether the reference
-# compiler's answers travel: every value it prints should be identical on any
-# LP64 host, but that has only been confirmed on macOS arm64.
+# Runs in CI on every platform in the matrix. It reported four diverging
+# programs when it was written and reports none now.
 
 set -euo pipefail
 
@@ -83,7 +81,16 @@ checkOne() {
   fi
   # -w because every program declares the libc helpers it uses by hand, which
   # the real headers then disagree with. lcc has no preprocessor.
-  if ! "${reference_cc}" -w "${source}" -o "${ref_bin}" >"${log}" 2>&1; then
+  #
+  # -fsigned-char because plain `char` is signed or unsigned by platform, and
+  # lcc has made its choice: BuiltinTypeId::CHAR is signed everywhere, and the
+  # subset has no `signed char` to say so with. x86_64 Linux and arm64 macOS
+  # both happen to agree, but an arm64 Linux runner would not, and `char c =
+  # -1` widened to unsigned long would come back 255 from the reference and
+  # ULONG_MAX from lcc. That is an ABI difference wearing a miscompilation's
+  # clothes, so the flag settles it rather than leaving it to the host.
+  if ! "${reference_cc}" -w -fsigned-char "${source}" -o "${ref_bin}" \
+       >"${log}" 2>&1; then
     printf '%-22s reference compiler rejected it\n' "${base}"
     sed 's/^/    /' "${log}"
     return 1

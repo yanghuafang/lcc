@@ -69,6 +69,14 @@ jobs:
         working-directory: scripts
         run: ./run-tests.sh
 
+      # Compiles each program under tests/differential/ with lcc and with the
+      # system compiler and diffs what they print. Unlike the suite above,
+      # nothing here asserts an expected value -- the reference supplies it --
+      # so this is what catches a construct nobody thought to write a test for.
+      - name: Differential check
+        working-directory: scripts
+        run: ./check-differential.sh
+
       - name: Lex error smoke test
         working-directory: scripts
         run: ./check-lex-errors.sh
