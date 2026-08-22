@@ -139,7 +139,6 @@ enum class IntCmpPred { EQ, NE, LT, LE, GT, GE };
 [[nodiscard]] llvm::Value* createShr(llvm::IRBuilder<>& builder,
                                      llvm::Value* lhs, llvm::Value* rhs,
                                      AST::BuiltinTypeId lhsTypeId,
-                                     AST::BuiltinTypeId rhsTypeId,
-                                     bool isUnsigned);
+                                     AST::BuiltinTypeId rhsTypeId);
 
 }  // namespace ops

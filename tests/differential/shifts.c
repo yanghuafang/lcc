@@ -30,5 +30,36 @@ int main() {
 
   short sh = -8;
   printf("short -8 >> int 1      %d\n", sh >> 1);
+
+  char ch = -8;
+  printf("char -8 >> int 1       %d\n", ch >> 1);
+
+  // The compound forms take the same path, then store back through the
+  // lvalue's own type.
+  int cx = -8;
+  cx >>= u;
+  printf("int -8 >>= unsigned 1  %d\n", cx);
+
+  long cl = -8;
+  cl >>= u;
+  printf("long -8 >>= unsigned 1 %ld\n", cl);
+
+  unsigned int cu = 4294967288u;
+  cu >>= 1;
+  printf("unsigned >>= int 1     %u\n", cu);
+
+  short cs = -8;
+  cs >>= 1;
+  printf("short -8 >>= int 1     %d\n", cs);
+
+  int cshl = 1;
+  cshl <<= u;
+  printf("int 1 <<= unsigned 1   %d\n", cshl);
+
+  // A shift's type is its promoted left operand, which matters once the
+  // result takes part in something wider.
+  int fx = -8;
+  long widened = (fx >> u) + 1;
+  printf("(int >> unsigned) + 1  %ld\n", widened);
   return 0;
 }

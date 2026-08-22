@@ -382,13 +382,12 @@ llvm::Value* LeftShift::genCode(CodeGenerator& generator) {
 }
 
 llvm::Value* RightShift::genCode(CodeGenerator& generator) {
-  return genBinaryCode(
-      generator, [this, &generator](llvm::Value* lhs, llvm::Value* rhs) {
-        return ops::createShr(generator.getBuilder(), lhs, rhs,
-                              lhs_->getExprTypeId(generator),
-                              rhs_->getExprTypeId(generator),
-                              Expr::binaryIsUnsigned(lhs_, rhs_, generator));
-      });
+  return genBinaryCode(generator,
+                       [this, &generator](llvm::Value* lhs, llvm::Value* rhs) {
+                         return ops::createShr(generator.getBuilder(), lhs, rhs,
+                                               lhs_->getExprTypeId(generator),
+                                               rhs_->getExprTypeId(generator));
+                       });
 }
 
 llvm::Value* LeftShiftAssign::genCodePtr(CodeGenerator& generator) {
@@ -405,8 +404,7 @@ llvm::Value* RightShiftAssign::genCodePtr(CodeGenerator& generator) {
       generator, [this, &generator](llvm::Value* loaded, llvm::Value* rhs) {
         return ops::createShr(generator.getBuilder(), loaded, rhs,
                               lhs_->getLValueTypeId(generator),
-                              rhs_->getExprTypeId(generator),
-                              Expr::binaryIsUnsigned(lhs_, rhs_, generator));
+                              rhs_->getExprTypeId(generator));
       });
 }
 

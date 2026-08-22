@@ -5,6 +5,7 @@
 #include <stdexcept>
 
 #include "irgen/TypeConversion.hpp"
+#include "types/BuiltinTypeMap.hpp"
 #include "types/TypeRules.hpp"
 #include "types/VarTypeQuery.hpp"
 
@@ -39,6 +40,39 @@ llvm::Value* createIntegerCmp(llvm::IRBuilder<>& builder, IntCmpPred pred,
   }
 
   return nullptr;
+}
+
+// The half both shifts share. C11 6.5.7p3 promotes each operand on its own and
+// gives the result the promoted type of the *left* one — unlike every other
+// binary operator here, a shift does not run the usual arithmetic conversions
+// across the pair. An unsigned count therefore does not make the shift
+// logical, and a long count does not widen it.
+//
+// LLVM still needs both operands in one type, so the count is brought to the
+// value's afterwards. Narrowing it there loses nothing: a count at or above
+// the value's width is undefined in C, so the bits being dropped could not
+// have described a defined shift.
+//
+// Returns the promoted left type, which is both the type of the result and
+// what decides ashr against lshr.
+BuiltinTypeId prepareShiftOperands(llvm::IRBuilder<>& builder,
+                                   llvm::Value*& lhs, llvm::Value*& rhs,
+                                   BuiltinTypeId lhsTypeId,
+                                   BuiltinTypeId rhsTypeId) {
+  const BuiltinTypeId promotedLhs = typerules::integerPromotion(lhsTypeId);
+  const BuiltinTypeId promotedRhs = typerules::integerPromotion(rhsTypeId);
+
+  llvm::Type* resultType =
+      builtinmap::toLlvmType(promotedLhs, builder.getContext());
+  if (resultType == nullptr) {
+    // No C type to promote to, so there is nothing to widen the value to.
+    // Keep what it already has and only bring the count into line with it.
+    resultType = lhs->getType();
+  }
+
+  lhs = convert::typeCast(builder, lhs, resultType, lhsTypeId, promotedLhs);
+  rhs = convert::typeCast(builder, rhs, resultType, promotedRhs, promotedLhs);
+  return promotedLhs;
 }
 
 }  // namespace
@@ -254,26 +288,24 @@ llvm::Value* createShl(llvm::IRBuilder<>& builder, llvm::Value* lhs,
                        llvm::Value* rhs, BuiltinTypeId lhsTypeId,
                        BuiltinTypeId rhsTypeId) {
   if (lhs->getType()->isIntegerTy() && rhs->getType()->isIntegerTy()) {
-    BuiltinTypeId resultTypeId = BuiltinTypeId::UNKNOWN;
-    if (convert::typeUpgrade(builder, lhs, rhs, lhsTypeId, rhsTypeId,
-                             resultTypeId)) {
-      return builder.CreateShl(lhs, rhs);
-    }
+    prepareShiftOperands(builder, lhs, rhs, lhsTypeId, rhsTypeId);
+    return builder.CreateShl(lhs, rhs);
   }
 
   throw std::logic_error("SHL should operate on 2 integers!");
 }
 
+// No isUnsigned parameter: the rule fixes it at the promoted left operand, so
+// a caller has nothing left to decide.
 llvm::Value* createShr(llvm::IRBuilder<>& builder, llvm::Value* lhs,
                        llvm::Value* rhs, BuiltinTypeId lhsTypeId,
-                       BuiltinTypeId rhsTypeId, bool isUnsigned) {
+                       BuiltinTypeId rhsTypeId) {
   if (lhs->getType()->isIntegerTy() && rhs->getType()->isIntegerTy()) {
-    BuiltinTypeId resultTypeId = BuiltinTypeId::UNKNOWN;
-    if (convert::typeUpgrade(builder, lhs, rhs, lhsTypeId, rhsTypeId,
-                             resultTypeId)) {
-      return isUnsigned ? builder.CreateLShr(lhs, rhs)
-                        : builder.CreateAShr(lhs, rhs);
-    }
+    const BuiltinTypeId resultTypeId =
+        prepareShiftOperands(builder, lhs, rhs, lhsTypeId, rhsTypeId);
+    return typerules::isUnsignedTypeId(resultTypeId)
+               ? builder.CreateLShr(lhs, rhs)
+               : builder.CreateAShr(lhs, rhs);
   }
 
   throw std::logic_error("SHR should operate on 2 integers!");
