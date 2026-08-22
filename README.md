@@ -109,12 +109,10 @@ Useful extra flags: `-O2` to optimize, `-g` for a debuggable build, `-S /tmp/sum
 - Types: builtin, struct, union, enum, `typedef`, and pointers
 - 1D and 2D arrays, including brace and string initialization
 - Functions (including variadic declarations), file- and block-scope `static`
-- The full expression and statement grammar: operators, `sizeof`, casts, control flow, `break` / `continue`
+- Expressions and statements: operators, `sizeof`, casts, control flow, `break` / `continue`
 - DWARF debug info under `-g`
 
-**Not included:** preprocessor (`#include`, `#define`), 3D arrays, `extern` variables, block-scope `typedef`.
-
-Details: [docs/Language.md](docs/Language.md)
+There is no preprocessor, which is why the example in [Compile and run your own program](#compile-and-run-your-own-program) declares `printf` by hand instead of including `<stdio.h>`. For what `lcc` rejects, and the reason in each case, see [docs/Language.md § Not supported](docs/Language.md#not-supported-yet).
 
 ## Repository layout
 
