@@ -7,6 +7,7 @@
 
 #include <cerrno>
 #include <climits>
+#include <cstdio>
 #include <cstdlib>
 #include <cstring>
 #include <string>
@@ -233,11 +234,27 @@ int returnLexHexConstant(const char* text, size_t len) {
     return ULONGVAL;
 }
 
+// Render one unmatched byte for a diagnostic. A printable character speaks for
+// itself; anything else would be invisible in the message, so it is shown as a
+// hex escape. The buffer is static because yyerror takes a const char* and
+// copies nothing — it is formatted and read before the next token is scanned.
+const char* strayCharacterMessage(char c) {
+    static char message[32];
+    const unsigned char byte = static_cast<unsigned char>(c);
+    if (byte >= 0x20 && byte < 0x7f) {
+        snprintf(message, sizeof(message), "stray '%c' in program", byte);
+    } else {
+        snprintf(message, sizeof(message), "stray '\\x%02x' in program", byte);
+    }
+    return message;
+}
+
 }  // namespace
 %}
 
 %option noyywrap
 %option yylineno
+%option nodefault
 %option outfile="generated/Lexer.cpp"
 
 %x COMMENT
@@ -486,11 +503,24 @@ int returnLexHexConstant(const char* text, size_t len) {
     return STRING;
 }
 
- /* No catch-all rule above, so flex's default action applies to anything
-    unmatched: ECHO it to stdout and carry on. A stray character is therefore
-    dropped silently and lands in lcc's own stdout — `#include <stdio.h>`
-    prints a bare `#` and then fails to parse at the `<`. `%option nodefault`
-    plus a `. { yyerror("stray character"); }` rule would report it instead. */
+ /** Anything else **/
+ /* Last rule in the file on purpose. flex takes the longest match and breaks
+    ties by rule order, so every pattern above gets first refusal and this one
+    only ever sees a byte nothing else wanted.
+
+    Reported and skipped rather than returned as a token: the grammar has no
+    symbol to represent it, and carrying on lets one run name every stray byte
+    instead of stopping at the first — the same recovery the literal rules
+    above use, and the reason the driver checks frontend::errorCount() rather
+    than trusting yyparse's return value.
+
+    Without this rule flex supplies its own, which ECHOes the byte to stdout
+    and continues: `#include <stdio.h>` printed a bare `#` onto lcc's own
+    stdout and compiled the rest. %option nodefault above now makes that
+    shape a build-time warning rather than a silent one. */
+. {
+    yyerror(strayCharacterMessage(yytext[0]));
+}
 
 %%
 

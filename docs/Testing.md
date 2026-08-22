@@ -112,7 +112,7 @@ They are compiled but never linked or run, since they assert nothing — behavio
 ./check-lex-errors.sh
 ```
 
-Compiles a file holding three out-of-range integer literals and checks that `lcc` exits **4** and writes no object file.
+Two shapes of one contract. First, a file holding three out-of-range integer literals: `lcc` must exit **4** and write no object. Then a file holding three bytes no lexer rule matches, with the same two assertions plus a third — that `lcc` wrote nothing to stdout. Before the catch-all rule existed, flex's default one echoed the stray byte there and carried on, so the program compiled, exited 0, and the byte came back mixed into lcc's own output.
 
 The regression suite cannot cover this, which is how the bug it guards survived: every file in `tests/` is meant to compile, so nothing there exercises a front end that reports an error and keeps going. The lexer does exactly that — it reports a malformed or out-of-range literal, substitutes `0`, and hands the parser a valid token, so `yyparse()` returns 0 and every later stage sees a clean parse. `lcc` used to emit an object from the substituted values and exit 0.
 

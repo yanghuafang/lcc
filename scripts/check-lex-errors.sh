@@ -1,6 +1,10 @@
 #!/bin/bash
 
-# check-lex-errors.sh — a rejected literal must fail the build.
+# check-lex-errors.sh — a front end that reports must not produce an object.
+#
+# Two shapes of the same contract: a literal the lexer rejects, and a byte no
+# rule matches. Both report and keep going, so neither reaches the parser as a
+# failure, and both used to end in a successful compile.
 #
 # The lexer recovers from a malformed or out-of-range literal: it reports the
 # problem, substitutes 0, and hands the parser a valid token. That recovery is
@@ -88,6 +92,61 @@ done
 if ! grep -q 'Front end reported 3 error(s)' <<<"${output}"; then
   echo "Expected all three rejected literals to be counted." >&2
   echo "${output}" >&2
+  exit 1
+fi
+
+# The same contract for a byte no rule matches. Before the catch-all rule
+# existed, flex supplied its own default: echo the byte to *stdout* and carry
+# on. The program compiled, exited 0, and the stray byte came back mixed into
+# lcc's own output. Hence the third assertion below — an empty stdout is the
+# part that regressed silently, and the part an exit-code check cannot see.
+stray_source="${work_dir}/stray.c"
+stray_obj="${work_dir}/stray.o"
+stray_stdout="${work_dir}/stray.out"
+
+cat >"${stray_source}" <<'EOF'
+int main() {
+  int a = 1;
+  @ $ `
+  return a;
+}
+EOF
+
+# 2>&1 before >file: stderr goes to the capture, stdout to the file.
+set +e
+stray_errors="$("${lcc}" -i "${stray_source}" -o "${stray_obj}" 2>&1 >"${stray_stdout}")"
+stray_status=$?
+set -e
+
+if [ "${stray_status}" -ne 4 ]; then
+  echo "Expected exit 4 for a stray character, got ${stray_status}." >&2
+  echo "${stray_errors}" >&2
+  exit 1
+fi
+
+if [ -e "${stray_obj}" ]; then
+  echo "Object file written despite a stray character: ${stray_obj}" >&2
+  exit 1
+fi
+
+if [ -s "${stray_stdout}" ]; then
+  echo "lcc wrote to stdout for a stray character; flex's default rule is back:" >&2
+  cat "${stray_stdout}" >&2
+  exit 1
+fi
+
+# The three stray bytes sit on line 3 at columns 3, 5 and 7.
+for position in 3:3 3:5 3:7; do
+  if ! grep -q "${stray_source}:${position}: error: stray " <<<"${stray_errors}"; then
+    echo "Expected a stray-character diagnostic at ${position}." >&2
+    echo "${stray_errors}" >&2
+    exit 1
+  fi
+done
+
+if ! grep -q 'Front end reported 3 error(s)' <<<"${stray_errors}"; then
+  echo "Expected all three stray characters to be counted." >&2
+  echo "${stray_errors}" >&2
   exit 1
 fi
 
