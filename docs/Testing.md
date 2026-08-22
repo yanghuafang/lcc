@@ -160,7 +160,7 @@ Catches unintended middle-end IR changes after a compiler edit. It recompiles ev
 | `--diff` | `debug/<t>.release.post.ll` | Full textual diff of post-opt IR (exact) |
 | `--release` | `debug/<t>.release.ll` | Full diff of final IR, ignoring `target datalayout` / `target triple` |
 
-Post-opt goldens (`.release.post.ll`) contain no `target datalayout` / `target triple` lines, so the count and `--diff` modes need no filtering; the `--release` mode strips those lines from the final IR instead. This is only about the header lines — the IR body is still shaped by the host datalayout (see below). Any mismatch prints the offending test and exits non-zero:
+Post-opt goldens (`.release.post.ll`) contain no `target datalayout` / `target triple` lines, so the count and `--diff` modes need no filtering; the `--release` mode strips those lines from the final IR instead. This is only about the header lines — the IR body is still shaped by the host datalayout. Any mismatch prints the offending test and exits non-zero:
 
 ```text
 12.arithmetic                             3        2  CHANGED

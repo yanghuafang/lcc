@@ -73,7 +73,7 @@ names the one file to open, which a directory-wide namespace could not do.
 | `opt/` | Middle-end: the pass pipeline and lcc's own New PM IR passes |
 | `backend/` | `TargetMachine`, object/assembly emission, and MIR-level passes |
 | `dot/` | AST → Graphviz DOT — a second consumer of the same tree, independent of `irgen/` |
-| `generated/` | flex and bison output, never edited by hand (see below) |
+| `generated/` | flex and bison output, never edited by hand |
 
 The library layers form a DAG whose arrows all point downward, with `driver/`
 alone on top:

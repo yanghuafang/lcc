@@ -47,7 +47,7 @@ The back-end level follows the CLI `-O` flag alone. Since `-O-passes` cannot be 
 | Form | Example |
 |------|---------|
 | Comma-separated passes | `-O-passes mem2reg,instcombine,simplifycfg` |
-| Preset | `-O-passes O2-peephole` (same three passes as above) |
+| Preset | `-O-passes O2-peephole` — expands to `mem2reg,instcombine,simplifycfg` |
 
 Combine with `-fold-add-zero` or `-ir-stats`; do **not** combine with `-O2` (etc.) on the same command line.
 

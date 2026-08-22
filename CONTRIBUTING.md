@@ -7,7 +7,7 @@ Because `lcc` is primarily a **learning resource**, clarity and small, reviewabl
 ## Ways to contribute
 
 - **Fix a bug** in the front-end, middle-end, or back-end — [docs/Architecture.md](docs/Architecture.md) maps `src/` files to responsibilities.
-- **Add a test** that covers a supported language feature (see below).
+- **Add a test** that covers a supported language feature — see [Adding a test](#adding-a-test).
 - **Improve documentation** in `docs/`, or add code comments that explain *why*.
 - **Work a milestone** or one of the unscheduled [future directions](docs/LearningPlan.md#future-directions-no-milestones).
 
