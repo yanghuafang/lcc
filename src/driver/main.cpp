@@ -42,7 +42,9 @@
 //      stage 8, where pipeline::dumpIr throws and the code is reachable
 //   6  IR generation or the middle end failed — including an unresolvable
 //      --target, since the module is configured for its target before the AST
-//      walk begins (sizeof and DWARF offsets both need the data layout)
+//      walk begins (sizeof and DWARF offsets both need the data layout), and
+//      including a module that fails llvm::verifyModule, which genIr checks
+//      before the back end can see it
 //   7  object emission failed
 //   8  writing the -l IR dump failed
 //   9  assembly emission failed

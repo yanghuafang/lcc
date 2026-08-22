@@ -6,6 +6,7 @@
 
 #include <iostream>
 #include <stdexcept>
+#include <string>
 #include <system_error>
 
 #include "backend/TargetBackend.hpp"
@@ -72,6 +73,29 @@ void genIr(CodeGenerator& generator, AST::Program* root,
   if (!options.postOptIrPath.empty()) {
     dumpIr(generator.getModule(), options.postOptIrPath);
   }
+
+  // The module the back end is about to receive, checked before it gets there.
+  // This used to live in dumpIr, which meant it ran only when an IR dump had
+  // been asked for: a plain `lcc -i f.c -o f.o` never verified anything, so
+  // the one thing standing between a lowering bug and TargetMachine was off
+  // for the ordinary invocation. It also wrote its findings into the .ll being
+  // dumped and let the compile succeed regardless.
+  //
+  // lcc has no semantic-analysis pass — each node emits its own IR and reports
+  // what it cannot lower by throwing — so this is the only check that the
+  // instructions those nodes produced fit together.
+  //
+  // After the dumps above rather than before, deliberately: when this fires,
+  // the .ll files are what you read to find out why, so they need to be on
+  // disk already.
+  std::string verifierReport;
+  llvm::raw_string_ostream verifierStream(verifierReport);
+  if (llvm::verifyModule(generator.getModule(), &verifierStream)) {
+    // logic_error, not runtime_error: nothing about the environment failed.
+    // The IR lcc built does not hold together, which is a defect in lcc.
+    throw std::logic_error("Generated IR failed verification:\n" +
+                           verifierReport);
+  }
 }
 
 void emitObject(llvm::Module& module, const std::string& fileName,
@@ -97,14 +121,6 @@ void dumpIr(llvm::Module& module, const std::string& fileName) {
   }
 
   module.print(irFileStream, nullptr);
-
-  // The verifier writes into the IR file itself, so a failure lands at the
-  // end of the .ll rather than on stderr, and the exit status stays 0. This
-  // is also lcc's only verifyModule call: a compile that dumps no IR never
-  // verifies at all.
-  if (static_cast<int>(llvm::verifyModule(module, &irFileStream)) != 0) {
-    std::cout << "Errors in IR code!" << '\n';
-  }
 }
 
 }  // namespace pipeline
