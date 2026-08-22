@@ -73,7 +73,7 @@ If you are working through the plan yourself, do not start a milestone until the
 
 ## M0: Environment & full test run
 
-**Goal:** Confirm the build and the 43-test regression suite.
+**Goal:** Confirm the build and the 45-test regression suite.
 
 | Step | Action |
 | ------ | -------- |
@@ -276,7 +276,7 @@ These flags reach **codegen only**. They do not steer the IR vectorizers inside 
 
 | Step | Action |
 | ------ | -------- |
-| Study | Compile `tests/40.array_sum.c` at `-O3` (a study fixture, deliberately outside the 43-test suite) |
+| Study | Compile `tests/40.array_sum.c` at `-O3` (a study fixture, deliberately outside the 45-test suite) |
 | Study | Compare asm with and without SIMD features (`-mattr +avx2` on x86; NEON is default on ARM64) |
 | Study | Optional: `llvm-mca` on the hot loop |
 | Verify | Document whether LLVM vectorized and why — see [LlvmTools.md § M14](LlvmTools.md#auto-vectorization-study-m14) |

@@ -1,5 +1,6 @@
-// Comparison and logical operators. Note lcc evaluates both operands of &&
-// and || — see the deviation note in src/irgen/ExprToIr.cpp.
+// Comparison and logical operators, and the int-typed value they produce.
+// That && and || skip their right operand is 45.short_circuit.c's subject;
+// this file is about the results, so every operand here is side-effect free.
 
 int printf(char*, ...);
 

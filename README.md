@@ -165,7 +165,7 @@ lcc/
 │   │   ├── AstToDot.cpp         # genGraph() for every node (-v)
 │   │   └── DotFileWriter.*      # writes the assembled DOT graph to disk
 │   └── generated/               # flex/bison output — never edit (Lexer.cpp, Parser.*)
-├── tests/             # 43 suite programs (+1 study fixture); each prints "<name> PASS" or "FAIL"
+├── tests/             # 45 suite programs (+1 study fixture); each prints "<name> PASS" or "FAIL"
 │   └── graphs/        # Assertion-free fixtures, one per language area, for AST graphs only
 ├── benchmarks/        # Larger workloads for bench.sh (M15)
 ├── scripts/           # build-lcc.sh, compile/link/run-tests.sh, format.sh,

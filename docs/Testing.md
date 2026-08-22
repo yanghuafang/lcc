@@ -30,7 +30,7 @@ All commands below assume `cd lcc/scripts`.
 `link-tests.sh` prints progress when linking the full suite:
 
 ```text
-Linking 43 tests with /usr/bin/clang...
+Linking 45 tests with /usr/bin/clang...
 All tests linked.
 ```
 
@@ -54,7 +54,7 @@ Single test:
 
 Each test prints `PASS` or `FAIL` on stdout. Scripts exit non-zero on the first compile, link, or run failure.
 
-### Study fixtures (not in the 43-test suite)
+### Study fixtures (not in the 45-test suite)
 
 | File | Purpose |
 |------|---------|
@@ -84,7 +84,7 @@ Examples:
 ./compile-tests.sh --release 25.quick_sort.c
 ```
 
-`compile-tests.sh` always passes `-l-pre-opt`, `-l-post-opt`, `-l`, and `-S`, so middle-end IR, final IR, and assembly land in `lcc/debug/`. The repo keeps reference snapshots for both modes (43 tests × 2 modes × 4 IR/asm types for pre/post/final/asm).
+`compile-tests.sh` always passes `-l-pre-opt`, `-l-post-opt`, `-l`, and `-S`, so middle-end IR, final IR, and assembly land in `lcc/debug/`. The repo keeps reference snapshots for both modes (45 tests × 2 modes × 4 IR/asm types for pre/post/final/asm).
 
 ### AST graphs
 
@@ -168,7 +168,7 @@ If the change is intentional, regenerate: ./compile-tests.sh --release
 
 The goldens are host-specific (their datalayout shapes struct-heavy IR), so run this on the same host that generated them. After an **intentional** IR change, regenerate the goldens with `./compile-tests.sh --release` and re-run the check. Not wired into CI for that reason — it is a local pre-commit / pre-PR guard.
 
-The final-IR goldens (`*.debug.ll`, `*.release.ll`) embed the full host triple, including the OS patch version (`arm64-apple-darwin25.6.0`). An OS point upgrade therefore makes `compile-tests.sh` rewrite all 86 of them (43 per mode) with nothing but a triple change — review such diffs before committing. `check-ir-opt.sh` is unaffected: its default and `--diff` modes read `.post.ll`, which has no target lines, and `--release` strips them.
+The final-IR goldens (`*.debug.ll`, `*.release.ll`) embed the full host triple, including the OS patch version (`arm64-apple-darwin25.6.0`). An OS point upgrade therefore makes `compile-tests.sh` rewrite all 90 of them (45 per mode) with nothing but a triple change — review such diffs before committing. `check-ir-opt.sh` is unaffected: its default and `--diff` modes read `.post.ll`, which has no target lines, and `--release` strips them.
 
 ### Benchmark smoke test
 
